@@ -134,7 +134,10 @@ BCTAppControllers.controller('BCTController', ['$scope',
             $scope.body_styles["hide-scroll"] = true;
 
             if (!from_trip_planner) {
+                googleMapUtilities.clearMap();
                 googleMapUtilities.setMapPosition($scope.stops[stop].LatLng);
+                googleMapUtilities.displayRoute(route, $scope.routes);
+                googleMapUtilities.displayStops(route, $scope.routes, $scope.stops);
             }
             else {
                 googleMapUtilities.setMapPosition();

@@ -6,8 +6,10 @@ window.isr = {};
 //Initial DOM queries
 isr.dom_q = {
     map: {
-        overlays: {},
-        points: []
+        overlays: {
+            open_info: [{ close: function() {} }],
+            points: {}
+        }
     },
     inputs: {}
 };

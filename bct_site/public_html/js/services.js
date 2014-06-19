@@ -36,11 +36,23 @@ BCTAppServices.service('scheduleSocketService', ['$q', 'scheduleWebSocket',
     };
 }]);
 
-BCTAppServices.service('scheduleDownloadService', ['$http',
-    function($http) {
+BCTAppServices.service('scheduleDownloadService', ['$http', '$q',
+    function($http, $q) {
     //TO DO: Backend will create "booking version" string for all data sets;
     //It will be requested and compared to see if and what data needs to be updated
     this.downloadRouteInfo = function() {
+        if (localStorage.route_data) {
+            var deferred = $q.defer();
+            var promise = deferred.promise;
+            var virtual_response = {
+                data: JSON.parse(localStorage.route_data)
+            };
+
+            deferred.resolve(virtual_response);
+
+            return promise;
+        }
+
         return $http({
             method: 'POST',
             url: 'http://174.94.153.48:7777/TransitApi/Routes/',
@@ -56,6 +68,18 @@ BCTAppServices.service('scheduleDownloadService', ['$http',
         });
     };
     this.downloadStopInfo = function() {
+        if (localStorage.stop_data) {
+            var deferred = $q.defer();
+            var promise = deferred.promise;
+            var virtual_response = {
+                data: JSON.parse(localStorage.stop_data)
+            };
+
+            deferred.resolve(virtual_response);
+
+            return promise;
+        }
+
         return $http({
             method: 'POST',
             url: 'http://174.94.153.48:7777/TransitApi/Stops/',
@@ -64,7 +88,7 @@ BCTAppServices.service('scheduleDownloadService', ['$http',
             },
             transformResponse: function(res) {
                 if (localStorage) {
-                    localStorage.setItem('route_data', res);
+                    localStorage.setItem('stop_data', res);
                 }
                 return JSON.parse(res);
             }
@@ -83,56 +107,12 @@ BCTAppServices.service('scheduleDownloadService', ['$http',
 
             },
             transformResponse: function(res) {
-                if (localStorage) {
-                    localStorage.setItem('route_data', res);
-                }
+//                if (localStorage) {
+//                    localStorage.setItem('route_data', res);
+//                }
                 return JSON.parse(res);
             }
         });
-    };
-}]);
-
-BCTAppServices.service('decodeData', [ function() {
-    this.decodeLine = function(encoded) {
-        var len = encoded.length;
-        var index = 0;
-        var array = [];
-        var lat = 0;
-        var lng = 0;
-
-        while (index < len) {
-            var b;
-            var shift = 0;
-            var result = 0;
-
-            do {
-                b = encoded.charCodeAt(index++) - 63;
-                result |= (b & 0x1f) << shift;
-                shift += 5;
-            } 
-            while (b >= 0x20);
-
-            var dlat = ((result & 1) ? ~(result >> 1) : (result >> 1));
-            lat += dlat;
-
-            shift = 0;
-            result = 0;
-
-            do 
-            {
-                b = encoded.charCodeAt(index++) - 63;
-                result |= (b & 0x1f) << shift;
-                shift += 5;
-            } 
-            while (b >= 0x20);
-
-            var dlng = ((result & 1) ? ~(result >> 1) : (result >> 1));
-            lng += dlng;
-
-            array.push([lat * 1e-5, lng * 1e-5]);
-        }
-
-        return array;
     };
 }]);
 
@@ -160,7 +140,7 @@ BCTAppServices.service('googleMapUtilities', [ function() {
 
     this.setMapPosition = function(coords, zoom) {
         if (!zoom) {
-            var zoom = 14;
+            var zoom = 18;
         }
         if (!coords) {
             var coords = {
@@ -187,6 +167,117 @@ BCTAppServices.service('googleMapUtilities', [ function() {
             isr.dom_q.map.inst.setZoom(zoom);
             isr.dom_q.map.inst.setCenter(coords);
         });
+    };
+
+    this.clearMap = function() {
+        var points = isr.dom_q.map.overlays.points;
+        var pline =  isr.dom_q.map.overlays.pline;
+
+        for (p in points) {
+            points[p].marker.setMap(null);
+        }
+
+        isr.dom_q.map.overlays.points = {};
+
+        if (pline) {
+            isr.dom_q.map.overlays.pline.setMap(null);
+        }
+    };
+
+    this.displayRoute = function(route, routes) {
+        var route_coords = self.decodePath(routes[route].Shp);
+        var route_coords_cor = [];
+
+        for (var i=0;i<route_coords.length;i++) {
+            var coords_obj = { lat: "", lng: "" };
+
+            coords_obj.lat = route_coords[i][0];
+            coords_obj.lng = route_coords[i][1];
+
+            route_coords_cor.push(coords_obj);
+        }
+
+        isr.dom_q.map.overlays.pline = new google.maps.Polyline({
+            map: isr.dom_q.map.inst,
+            path: route_coords_cor,
+            strokeColor: "#017AC2",
+            strokeWeight: 5
+        });
+    };
+
+    this.displayStops = function(route, routes, stops) {
+        var cur_route = routes[route];
+        var bstops_names = cur_route.Stops;
+        var stop_coords = [];
+
+        for (var i=0;i<bstops_names.length;i++) {
+            if (!stops[bstops_names[i]].LatLng.Latitude) { continue; }
+            var lat = stops[bstops_names[i]].LatLng.Latitude;
+            var lng = stops[bstops_names[i]].LatLng.Longitude;
+
+            var coords = new google.maps.LatLng(lat, lng);
+            var marker = new google.maps.Marker({
+                map: isr.dom_q.map.inst,
+                position: coords,
+                title: route + ' ' + bstops_names[i]
+//                icon: {
+//                    path: google.maps.SymbolPath.CIRCLE
+//                }
+            });
+
+            var info_cts = '' +
+                '<div class="marker-info-window">' +
+                    '<span> Route: ' + route + '</span>' +
+                    '<span> Stop: ' + bstops_names[i] + '</span>' +
+                    '<span> Name: ' + stops[bstops_names[i]].Name + '</span>' +
+                    '<span> Other Routes: ' + stops[bstops_names[i]].Routes.join(", ") + '</span>' +
+                '</div>';
+
+            var info_window = new google.maps.InfoWindow({ content: info_cts });
+
+            isr.dom_q.map.overlays.points[bstops_names[i]] = {
+                marker: marker,
+                info: info_window
+            };
+
+            isr.dom_q.map.overlays.points[bstops_names[i]].ShowWindow = new (function() {
+                var self = this;
+                this.pt = isr.dom_q.map.overlays.points[bstops_names[i]];
+                this.func = function() {
+                    self.pt.info.open(
+                    isr.dom_q.map.inst,
+                    self.pt.marker);
+
+                    //Store a reference to the latest opened info window
+                    //so it can be closed when another is opened
+                    isr.dom_q.map.overlays.open_info[0].close();
+                    isr.dom_q.map.overlays.open_info.pop();
+                    isr.dom_q.map.overlays.open_info.push(self.pt.info);
+                };
+            });
+
+            google.maps.event.addListener(
+                isr.dom_q.map.overlays.points[bstops_names[i]].marker,
+                'click',
+                isr.dom_q.map.overlays.points[bstops_names[i]].ShowWindow.func);
+        }
+
+//        for (var pt in isr.dom_q.map.overlays.points) {
+//            isr.dom_q.map.overlays.points[pt].ShowWindow = new (function() {
+//                var self = this;
+//                this.pt = isr.dom_q.map.overlays.points[pt];
+//                this.func = function() {
+//                    self.pt.info.open(
+//                    isr.dom_q.map.inst,
+//                    self.pt.marker);
+//                };
+//            });
+//
+//            google.maps.event.addListener(
+//                isr.dom_q.map.overlays.points[pt].marker,
+//                'click',
+//                isr.dom_q.map.overlays.points[pt].ShowWindow.func);
+//        }
     };
 
     this.displayPath = function(line_data) {
@@ -223,6 +314,49 @@ BCTAppServices.service('googleMapUtilities', [ function() {
 //            });
 //            isr.dom_q.map.overlays.point.push(marker);
 //        }
+    };
+
+    this.decodePath = function(encoded) {
+        var len = encoded.length;
+        var index = 0;
+        var array = [];
+        var lat = 0;
+        var lng = 0;
+
+        encoded = encoded.replace(/\\/g,"\\");
+        while (index < len) {
+            var b;
+            var shift = 0;
+            var result = 0;
+
+            do {
+                b = encoded.charCodeAt(index++) - 63;
+                result |= (b & 0x1f) << shift;
+                shift += 5;
+            } 
+            while (b >= 0x20);
+
+            var dlat = ((result & 1) ? ~(result >> 1) : (result >> 1));
+            lat += dlat;
+
+            shift = 0;
+            result = 0;
+
+            do 
+            {
+                b = encoded.charCodeAt(index++) - 63;
+                result |= (b & 0x1f) << shift;
+                shift += 5;
+            } 
+            while (b >= 0x20);
+
+            var dlng = ((result & 1) ? ~(result >> 1) : (result >> 1));
+            lng += dlng;
+
+            array.push([lat * 1e-5, lng * 1e-5]);
+        }
+
+        return array;
     };
 }]);
 

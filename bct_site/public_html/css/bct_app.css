@@ -74,8 +74,7 @@ img {
     display: table;
     width: 100%;
     padding: 0.5em;
-    border-style: solid;
-    border-width: 0px 0px 1px;
+    margin: 0px;
 }
 #index-search-input {
     width: calc(100% - 0.5em);
@@ -125,12 +124,11 @@ img {
     text-align: center;
     width: 100%;
     overflow: auto;
-    height: 100%;
     position: fixed;
-    top: 0px;
+    top: 2.2em;
     left: 0px;
     z-index: 1029;
-    height: 39em;
+    height: 36.8em;
     border-style: solid;
     border-width: 1px;
 }
@@ -227,7 +225,20 @@ img {
 }
 #map-canvas {
     height: 100%;
+    -webkit-flex: 0 1 auto;
     flex: 0 1 auto;
+}
+.marker-info-window {
+    height: 8em;
+    font-weight: bold;
+    padding: 0.5em;
+    width: 16em;
+    text-align: left;
+    display: table;
+    font-size: 1.1em;
+}
+.marker-info-window span {
+    display: table-row;
 }
 #map-loading-screen {
     height: 100%;
@@ -332,6 +343,7 @@ img {
     overflow: auto;
     position: relative;
     background-color: white;
+    z-index: 1;
 }
 .input-area {
     position: relative;
@@ -347,12 +359,12 @@ img {
     width: 100%;
     border-style: solid;
     border-width: 1px;
-    padding: 0.5em 0em;
     z-index: 1;
 }
 #schedule-search-area-top{
     display: table;
     width: 100%;
+    padding: 0.5em 0em;
 }
 .agency-filter,
 #schedule-search-back-button,
@@ -370,14 +382,14 @@ img {
 #schedule-search-area-bottom {
     display: none;
     width: 100%;
-    padding: 1em 1em 0.5em;
+    padding: 0em 1em 0.5em;
 }
 #schedule-search-area-options-mobile {
     display: table;
     width: 100%;
     border-width: 1px 0px 0px;
     border-style: dotted;
-    padding: 1em 0em 0em;
+    padding: 0.5em 0em 0em;
 }
 .agency-filter {
     border-width: 0px;
@@ -418,6 +430,8 @@ img {
 #bstop-list {
     
 }
+
+.schedule-results-module-title,
 .schedule-results-title,
 .trip-planner-module-title,
 .trip-planner-module-title-map {
@@ -426,17 +440,19 @@ img {
     font-weight: bold;
     width: 100%;
     display: block;
-    font-size: 1.5em;
+    font-size: 1.2em;
     padding: .2em;
 }
 .trip-planner-module-title-map {
-    font-size: 1.2em;
     box-shadow: 0px 1px 4px 0px black;
     z-index: 1029;
 }
+.schedule-results-module-title {
+    text-align: center;
+}
 #accordion {
     position: relative;
-    top: 3.5em;
+    top: 6em;
 }
 @media (max-width: 450px) {
     .schedule-results-icons-inline {
@@ -452,7 +468,7 @@ img {
         border-width: 0px 0px 0px 1px;
     }
     #accordion {
-        top: 7.5em;
+        top: 8.5em;
     }
 }
 .route-title {
@@ -512,7 +528,7 @@ img {
     transition: margin 1s;
 }
 .trip-planner-module-active {
-    margin-top: calc(-3em + 1px) !important;
+    margin-top: calc(-2.5em + 2px) !important;
     border-top: 0px;
 }
 #planner-top-bar {
