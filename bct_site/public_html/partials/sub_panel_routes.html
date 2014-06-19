@@ -1,0 +1,23 @@
+<div id="{{ route.Id }}" toggleable active-class="in"
+    exclusion-group="accordion1"
+    class="panel-collapse collapse">
+    <div class="panel-body">
+        <input type="text" class="result-filter" ng-model="bstopFilter.f"
+            placeholder="Filter stops...">
+        <div class="list-group scrollable-content stops-list no-highlight">
+            <div class="list-group-item list-group-item-responsive"
+                ng-repeat="stop in route.bstop_refs | filter:bstopFilter.f">
+                <div class="result-icon-container">
+                    <i class="fa fa-star-o fa-lg favorite-route-icon"></i>
+                </div>
+                <div class="result-list-text">
+                    {{ stop.Id }} {{ stop.Name }}
+                </div>
+                <div class="result-icon-container ptr"
+                    ng-click="toggleMapSchedule(false, route.Id, stop.Id);">
+                    <i class="fa fa-chevron-right fa-lg arrow-right-icon ptr"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

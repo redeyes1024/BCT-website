@@ -1,0 +1,157 @@
+<div id="index-page">
+
+    <!-- Schedule Search Bar -->
+
+    <form id="index-search-form" ng-submit="changeURLHash('#routeschedules', 'schedule_search');">
+        <input type="text" id="index-search-input" class="form-control needsclick"
+            placeholder="Search routes, stops or intersections"
+            ng-model="query_data.schedule_search">
+        <span id="schedule-search-clear-button-top"
+                class="link-icon">
+                <i class="fa fa-times-circle ptr"
+                    ng-click="clearSearch('schedule_search');"></i>
+        </span>
+        <span id="broward-filter"
+            class="link-icon agency-filter schedule-results-icons-inline">
+            <img class="agency-filter-icon ptr
+                {{ agency_filter_icon_selection.broward }}"
+                ng-click="enableAgencyFilter('broward');" src="css/ico/broward_fav.png">
+        </span>
+        <span id="miami-dade-filter"
+            class="link-icon agency-filter schedule-results-icons-inline">
+            <img class="agency-filter-icon ptr
+                {{ agency_filter_icon_selection.miami }}"
+                ng-click="enableAgencyFilter('miami');" src="css/ico/miami_dade_fav.png">
+        </span>
+        <span id="palm-beach-filter"
+            class="link-icon agency-filter schedule-results-icons-inline">
+            <img class="agency-filter-icon ptr
+                {{ agency_filter_icon_selection.palm }}"
+                ng-click="enableAgencyFilter('palm');" src="css/ico/palm_beach_fav.ico">
+        </span>
+    </form>
+    
+    <!-- Recently Viewed Schedules -->
+
+    <div class="panel-group" id="recent-accordion">
+        <div class="panel panel-default">
+            <h2 class="panel-heading panel-title no-highlight ptr" toggle
+                target="recent-stops" ng-click="foldOptions($event);">
+                <span class="collapse-button">
+                    <i class="fa fa-plus-circle collapse-icon"></i>
+                </span>
+                Recently Viewed Schedules
+            </h2>
+            <div id="recent-stops" toggleable active-class="in"
+                exclusion-group="accordion1"
+                class="panel-collapse collapse">
+                <div class="panel-body">
+                    <input type="text" class="result-filter" ng-model="recentStopFilter"
+                        placeholder="Filter stops...">
+                    <div class="list-group scrollable-content stops-list no-highlight">
+                        <div class="list-group-item list-group-item-responsive"
+                            ng-repeat="recent_stop in recently_viewed.stops | filter:{name:recentStopFilter}">
+                            <div class="result-icon-container link-icon ptr">
+                                <i class="fa fa-star-o fa-lg"></i>
+                            </div>
+                            <div class="result-list-text">
+                                {{ recent_stop.name }}
+                            </div>
+                            <div class="result-icon-container link-icon ptr"
+                                ng-click="toggleMapSchedule();">
+                                <i class="fa fa-chevron-right fa-lg arrow-right-icon ptr"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recently Viewed Trips -->
+
+        <div class="panel panel-default">
+            <h2 class="panel-heading panel-title no-highlight ptr" toggle
+                target="recent-trips" ng-click="foldOptions($event);">
+                <span class="collapse-button">
+                    <i class="fa fa-plus-circle collapse-icon"></i>
+                </span>
+                Recently Viewed Trips
+            </h2>
+            <div id="recent-trips" toggleable active-class="in"
+                exclusion-group="accordion1"
+                class="panel-collapse collapse">
+                <div class="panel-body">
+                    <input type="text" class="result-filter" ng-model="recentTripFilter"
+                        placeholder="Filter trips...">
+                    <div class="list-group scrollable-content stops-list no-highlight">
+                        <div class="list-group-item list-group-item-responsive"
+                            ng-repeat="recent_trip in recently_viewed.trips | filter:{name:recentTripFilter}">
+                            <div class="result-icon-container link-icon ptr">
+                                <i class="fa fa-star-o fa-lg"></i>
+                            </div>
+                            <div class="result-list-text">
+                                {{ recent_trip.name }}
+                            </div>
+                            <div class="result-icon-container link-icon
+                                link-icon ptr" ng-click="changeURLHash('#tripplanner')">
+                                <i class="fa fa-chevron-right fa-lg
+                                    arrow-right-icon ptr">
+                                </i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nearest Stops -->
+
+        <div id="nearest-stops-header" class="list-group-item
+            list-group-item-custom no-highlight ptr">
+            Find nearest stops
+        </div>
+        <!--<div id="nearest-bstop-list" class="no-highlight">
+            <div class="panel panel-default" ng-repeat="stop in stops">
+                <h2 class="panel-heading panel-title route-title ptr" toggle
+                    target="{{ stop.id }}" ng-click="foldOptions($event);">
+                    <span class="collapse-button">
+                        <i class="fa fa-plus-circle collapse-icon ptr"></i>
+                    </span>
+                    {{ stop.stop_id }} {{ stop.inter }}
+                </h2>
+                <div id="{{ stop.id }}" toggleable active-class="in"
+                    exclusion-group="accordion1"
+                    class="panel-collapse collapse">
+                    <div class="panel-body">
+                        <input type="text" class="result-filter" ng-model="routeFilter.f"
+                            placeholder="Filter routes...">
+                        <div class="list-group scrollable-content stops-list no-highlight">
+                            <div class="list-group-item list-group-item-responsive"
+                                ng-repeat="route in stop.route_refs | filter:routeFilter.f">
+                                <div class="result-icon-container">
+                                    <i class="fa fa-star-o fa-lg favorite-route-icon ptr"></i>
+                                </div>
+                                <div class="result-list-text">
+                                    {{ route.number }} {{ route.name }} {{ route.direction }}
+                                </div>
+                                <div class="result-icon-container ptr" ng-click="toggleMapSchedule();">
+                                    <i class="fa fa-chevron-right fa-lg arrow-right-icon ptr"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>-->
+    </div>
+
+    <!-- Other Index Options -->
+
+    <div id="other-index-options">
+        <a>
+            <div class="list-group-item list-group-item-custom">
+                Sign in with BCT
+            </div>
+        </a>
+    </div>
+</div>

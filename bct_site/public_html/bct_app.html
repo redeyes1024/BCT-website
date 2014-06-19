@@ -1,0 +1,45 @@
+<html>
+    <head>
+        <title>BCT Scheduling Module</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <!-- Third-party Stylesheets -->
+        <link rel="stylesheet" type="text/css" href="css/mobile-angular-ui-desktop.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="css/mobile-angular-ui-base.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="css/fa/css/font-awesome.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="css/ngQuickDate/ng-quick-date-plus-default-theme.css" media="screen" />
+        <!-- Project Stylesheets -->
+        <link rel="stylesheet" type="text/css" href="css/bct_app.css" media="screen" />
+        <!-- Third-party dependencies -->
+        <script type="text/javascript" src="js/libraries/angular.min.js"></script>
+        <script type="text/javascript" src="js/libraries/angular-route.min.js"></script>
+        <script type="text/javascript" src="js/libraries/mobile-angular.min.js"></script>
+        <script type="text/javascript" src="js/libraries/ng-quick-date.min.js"></script>
+        <!--<script type="text/javascript" src="js/libraries/jquery.min.js"></script> -->
+        <!-- Third-party APIs -->
+        <script type="text/javascript"
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCXxtwuyy3k9Ot5d44hgjHQt4kkg5KZ5Hw&sensor=false">
+        </script>
+        <!-- Project Dependencies -->
+        <script type="text/javascript" src="js/main.js"></script>
+        <script type="text/javascript" src="js/controllers.js"></script>
+        <script type="text/javascript" src="js/services.js"></script>
+        <script type="text/javascript" src="js/directives.js"></script>
+    </head>
+    <body id="bct-app" ng-app="BCTApp" ng-controller="BCTController"
+        ng-class="body_styles">
+        <div ng-view></div>
+        <schedule-map ng-class="schedule_map_canvas_styles"></schedule-map>
+        <trip-planner></trip-planner>
+        <!--    
+            {{echo}}
+            <br>
+
+            <input id="test-input" type="text" value='{ "test" : "testdata" }'>
+            <input id="test-submit" type="submit" value="submit" ng-click="testRequest();">
+            <input id="path-test" type="submit" value="Draw Path" ng-click="drawPath();">
+            <br>
+            <div id="map-canvas"></div>
+        -->
+    </body>
+</html>

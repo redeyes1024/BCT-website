@@ -1,0 +1,70 @@
+﻿<!-- saved from url=(0022)http://internet.e-mail -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Example for David</title>
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?v=3.5&sensor=false"></script>
+<script type="text/javascript" src="exampleRtes.js"></script>
+<script type="text/javascript">
+
+var GM = google.maps;
+var map;
+
+function toggleDraw(item) {
+  var route = routes[item.value];
+  if (!route.line) {  // create the Google entities if not already created
+    // convert the lat longs to Google lat/lons
+    for (var i = 0; i < route.crds.length; i++) route.crds[i] = new GM.LatLng(route.crds[i][0], route.crds[i][1]);
+    route.line = new GM.Polyline({strokeColor:route.color, strokeWeight: 3, strokeOpacity: 0.6, path:route.crds, icons: [{
+          icon: {
+            path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+            fillOpacity: 0.7
+          },
+          repeat: '150px'
+        }]
+    }); 
+    // create a Google marker for the relevant stops 
+    route.markers = [];
+    for (var i = 0; i < route.stops.length; i++) {
+      var stop = stops[route.stops[i]];
+      route.markers.push(new GM.Marker({icon:route.stopIcon, position:new GM.LatLng(stop.lt, stop.ln), title:"Stop #"+(i+1)+": "+stop.n}));
+    }
+  }
+  // now turn item on or off according to checked value
+  route.line.setMap(item.checked?map:null);
+  for (var i = 0; i < route.stops.length; i++) route.markers[i].setMap(item.checked?map:null);
+  if (item.checked) map.setCenter(route.crds[0]); // if checked go to first point.
+}
+
+function initGUI() {
+ var center = new GM.LatLng(45, -73); // center it somewhere
+ map = new GM.Map(document.getElementById("map"), {  // create the Google Map
+                "zoom": 16,
+                "center": center,
+                "mapTypeId": GM.MapTypeId.ROADMAP
+            });
+// add a list on the left
+  var td = document.getElementById("list");
+  var inner = "<div>";
+  for (var i = 0; i < routes.length; i++) {
+    inner += '<input type="checkbox" value="'+i+'" onclick="toggleDraw(this)" />'+routes[i].name+'<br />';
+  }
+ td.innerHTML = inner;
+}
+</script>
+</head>
+
+<body onload="initGUI()">
+<table>
+<tbody>
+<tr>
+<td id="list" style="vertical-align:top">
+</td>
+<td><div id="map" style="width:640px;height:500px"></div></td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>
