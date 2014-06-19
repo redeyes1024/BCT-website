@@ -1,0 +1,44 @@
+<div id="schedule-map" ng-show="map_schedule_toggle" ng-class="schedule_map_scroll">
+    <div id="schedule-map-top-panel">
+        <div id="schedule-map-info-bar">
+            101 Picard Street Picard Blvd. / Riker St. 10101
+        </div>
+        <schedule-map-overlay></schedule-map-overlay>
+        <div id="schedule-map-info" ng-hide="schedule_full_toggle">
+            <div id="schedule-map-hide"
+                class="schedule-map-mini-schedule-button link-icon no-highlight ptr"
+                ng-click="toggleMapSchedule();">
+                <span class="schedule-map-mini-schedule-time-text">
+                    <i class="fa fa-arrow-circle-left fa-lg ptr"></i>
+                </span>
+            </div>
+            <div id="schedule-map-mini-schedule">
+                <div id="schedule-map-mini-schedule-time-group">
+                    <div class="schedule-map-mini-schedule-time"
+                        ng-repeat="time in schedule.cur">
+                        <span class="schedule-map-mini-schedule-time-text">
+                            {{ time }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div id="schedule-map-view-full"
+                class="schedule-map-mini-schedule-button link-icon no-highlight ptr">
+                <span class="schedule-map-mini-schedule-time-text"
+                    ng-click="toggleFullSchedule();">
+                    <i class="fa fa-list-alt fa-lg ptr"></i>
+                </span>
+            </div>
+        </div>
+        <div id="schedule-map-alert-area" ng-hide="schedule_full_toggle">
+            <span id="schedule-map-alert-area-text">
+                <i class="fa fa-exclamation-circle"></i>
+                {{ alerts[0] }}
+            </span>
+        </div>
+    </div>
+    <div id="map-canvas" ng-hide="schedule_full_toggle"></div>
+    <div id="map-loading-screen" ng-show="show_loading_screen">
+        Loading Google Maps...
+    </div>
+</div>
