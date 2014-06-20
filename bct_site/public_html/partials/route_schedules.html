@@ -1,6 +1,12 @@
 <div id="route-schedules-module" ng-controller="routeSchedulesController">
     <div id="schedule-search-area" class="no-highlight">
-        <span class="schedule-results-module-title">Search schedules</span>
+        <span class="schedule-results-module-title" ng-hide="map_schedule_toggle">
+            Search schedules
+        </span>
+        <span class="schedule-results-module-title no-highlight ptr"
+            ng-click="tripPlannerBack();" ng-show="map_schedule_toggle">
+            Search schedules
+        </span>
         <div id="schedule-search-area-top">
             <span id="schedule-search-back-button">
                 <a href="#bctappindex" class="link-icon">

@@ -262,6 +262,7 @@ img {
     position: relative;
     width: 100%;
     background: white;
+    height: 34.5em;
 }
 #schedule-full-result-dialog-title {
     position: relative;
@@ -314,6 +315,12 @@ img {
     font-size: 20px;
     margin: 4px 0px;
     text-align: left;
+    height: 2.5em;
+    display: table-cell;
+    vertical-align: middle;
+}
+.schedule-full-result-day .quickdate-popup {
+    top: auto;
 }
 .schedule-full-result-row {
     display: table;

@@ -94,7 +94,12 @@ BCTAppServices.service('scheduleDownloadService', ['$http', '$q',
             }
         });
     };
-    this.downloadSchedule = function(route, stop) {
+    this.downloadSchedule = function(route, stop, date) {
+        if (!date) {
+            var date = new Date;
+        }
+        var iso_date = date.toISOString().slice(0,10).replace(/-/g,"");
+
         return $http({
             method: 'POST',
             url: 'http://174.94.153.48:7777/TransitApi/Schedules/',
@@ -102,8 +107,8 @@ BCTAppServices.service('scheduleDownloadService', ['$http', '$q',
                 "AgencyId": "BCT",
                 "RouteId": route,
 		"StopId": stop,	
-		"Direction":"1",
-		"Date":"20140630"
+		"Direction": "1",
+		"Date": iso_date
 
             },
             transformResponse: function(res) {

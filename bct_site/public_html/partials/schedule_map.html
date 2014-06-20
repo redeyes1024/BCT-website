@@ -6,13 +6,13 @@
         </div>
         <schedule-map-overlay></schedule-map-overlay>
         <div id="schedule-map-info" ng-hide="schedule_full_toggle">
-            <div id="schedule-map-hide"
+            <!--<div id="schedule-map-hide"
                 class="schedule-map-mini-schedule-button link-icon no-highlight ptr"
                 ng-click="toggleMapSchedule();">
                 <span class="schedule-map-mini-schedule-time-text">
                     <i class="fa fa-arrow-circle-left fa-lg ptr"></i>
                 </span>
-            </div>
+            </div>-->
             <div id="schedule-map-mini-schedule">
                 <div id="schedule-map-mini-schedule-time-group">
                     <div class="schedule-map-mini-schedule-time"
@@ -42,5 +42,5 @@
         ng-show="schedule_bar_hide">
         Trip Planner
     </span>
-    <div id="map-canvas"></div>
+    <div id="map-canvas" ng-hide="map_canvas_hide"></div>
 </div>

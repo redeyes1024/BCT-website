@@ -49,6 +49,23 @@ BCTAppControllers.controller('BCTController', ['$scope',
         stop: ""
     };
 
+    $scope.full_schedule_date = new Date;
+
+    angular.element(document).ready(function() {
+        $scope.$watch("full_schedule_date", function(new_val, old_val) {
+            if (new_val !== old_val) {
+                scheduleDownloadService.downloadSchedule(
+                    $scope.map_schedule_info.route,
+                    $scope.map_schedule_info.stop,
+                    $scope.full_schedule_date).
+                    then(function(res) {
+                        transformSchedule("datepick", res.data);
+                    });
+            }
+        });
+    });
+
+
     function convertToTime(time_int) {
         var int_arr = String(time_int).split("")
         int_arr.splice(-2,0,":");
@@ -92,20 +109,36 @@ BCTAppControllers.controller('BCTController', ['$scope',
         return nearest;
     };
 
-    function transformSchedule() {
+    $scope.schedule = {
+        nearest: {},
+        planned: {
+            weekdays: [],
+            saturday: [],
+            sunday: []
+        },
+        date_pick: []
+    };
+
+    function transformSchedule(output_type, s_data) {
         var date_time = new Date;
         var now = date_time.toTimeString().slice(0,5);
-        var s_data = $scope.schedule_data;
         var s_times = s_data.Today;
-        $scope.schedule = {
-            departures: []
-        };
+        var departures = [];
 
         for (var i=0;i<s_times.length;i++) {
-            $scope.schedule.departures.push(s_times[i].DepartureTime);
+            departures.push(s_times[i].DepartureTime);
         }
-        $scope.schedule.nearest = getNearestTimes(now, $scope.schedule.departures);
-        $scope.schedule.nearest.all = $scope.schedule.nearest.prev_times.concat($scope.schedule.nearest.next_times);
+        switch (output_type) {
+            case "nearest":
+                $scope.schedule.nearest = getNearestTimes(
+                    now, departures);
+                $scope.schedule.nearest.all = $scope.schedule.nearest.
+                    prev_times.concat($scope.schedule.nearest.next_times);
+                break;
+            case "datepick":
+                $scope.schedule.date_pick = departures.slice();
+                break;
+        }
     }
 
     $scope.toggleMapSchedule = function(from_trip_planner, route, stop) {
@@ -125,8 +158,7 @@ BCTAppControllers.controller('BCTController', ['$scope',
         }
         else {
             scheduleDownloadService.downloadSchedule(route, stop).then(function(res) {
-                $scope.schedule_data = res.data;
-                transformSchedule();
+                transformSchedule("nearest", res.data);
             });
             $scope.map_schedule_info.route = route;
             $scope.map_schedule_info.stop = stop;
@@ -146,24 +178,24 @@ BCTAppControllers.controller('BCTController', ['$scope',
     };
 
     $scope.schedule_full_toggle = false;
+
     $scope.toggleFullSchedule = function() {
         if ($scope.schedule_full_toggle) {
+            $scope.map_canvas_hide = false;
             $scope.schedule_full_toggle = false; 
             $scope.schedule_map_styles["hide-scroll"] = true;
             googleMapUtilities.touchMap();
         }
         else {
+            $scope.full_schedule_date = new Date;
+            $scope.map_canvas_hide = true;
             $scope.schedule_full_toggle = true;
             $scope.schedule_map_styles["hide-scroll"] = false;
         }
     };
 
     $scope.all_days = [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
+        "Weekdays",
         "Saturday",
         "Sunday"
     ];
@@ -176,11 +208,11 @@ BCTAppControllers.controller('BCTController', ['$scope',
         $scope.routeFilter.f = "";
     };
 
-    var c_buttons = document.getElementsByClassName("collapse-button");
-
     $scope.foldOptions = function(event) {
+        var c_buttons = document.getElementsByClassName("collapse-button");
+
         var targ_cl = event.target.children[0].children[0].classList;
-        var list = event.target.parentNode.children[1].classList.contains("in");
+        var list = event.target.parentNode.children[1].children[0].classList.contains("in");
 
         for (var i=0;i<c_buttons.length;i++) {
             c_buttons[i].children[0].classList.remove("fa-minus-circle");
@@ -540,6 +572,7 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
         $scope.submitShowMap = function() {
             if (!$scope.submitTripCheck()) return true;
             $scope.getTripPlan();
+            $scope.$parent.map_canvas_hide = false;
             //Modify show map, hide map's top bar, and slide in trip planner...
             $scope.$parent.schedule_bar_hide = true;
             $scope.trip_planner_styles["trip-planner-module-active"] = true;
@@ -550,8 +583,8 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
                 //}, 1000);
             }
             //Display "back" button and move the preferences button to make room
-            $scope.trip_back_show = true;
-            $scope.planner_prefs_styles["planner-pref-pushed"] = true;
+            $scope.$parent.trip_back_show = true;
+            //$scope.planner_prefs_styles["planner-pref-pushed"] = true;
 
             //Do not toggle map the subsequent times this function is called
             //until function is re-defined yet again (when map is closed)
@@ -565,11 +598,15 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
         //The first time the trip form is submitted, the map is shown (see above)
         $scope.submitTrip = $scope.submitShowMap;
 
-        $scope.tripPlannerBack = function() {
-            $scope.trip_back_show = false;
-            $scope.planner_prefs_styles["planner-pref-pushed"] = false;
+        $scope.$parent.tripPlannerBack = function() {
+            $scope.$parent.trip_back_show = false;
+            //$scope.planner_prefs_styles["planner-pref-pushed"] = false;
             $scope.toggleMapSchedule();
             $scope.$parent.schedule_bar_hide = false;
+
+            //If full schedule overlay was enabled when trip planner was active
+            $scope.$map_canvas_hide = false;
+            $scope.$parent.schedule_full_toggle = false;
 
             $scope.submitTrip = $scope.submitShowMap;
         };

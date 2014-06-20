@@ -1,5 +1,11 @@
 <div id="index-page">
-    <span class="trip-planner-module-title">Welcome to the BCT Transit App</span>
+    <span class="trip-planner-module-title no-highlight ptr" ng-show="trip_back_show"
+        ng-click="tripPlannerBack();">
+        Welcome to the BCT Transit App
+    </span>
+    <span class="trip-planner-module-title no-highlight" ng-hide="trip_back_show">
+        Welcome to the BCT Transit App
+    </span>
 
     <!-- Schedule Search Bar -->
 

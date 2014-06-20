@@ -19,6 +19,23 @@
             </div>
         </div>
         <div id="schedule-full-result-dialog-all-days">
+            <div>
+                <div class="schedule-full-result-day">
+                    Choose Date:
+                    <quick-datepicker ng-model="full_schedule_date"
+                    disable-timepicker="true"></quick-datepicker>
+                </div>
+                <div class="horizontal-scroll">
+                    <div class="schedule-full-result-row">
+                        <div class="schedule-full-result-time"
+                            ng-repeat="time in schedule.date_pick">
+                            <span class="schedule-full-result-time-text">
+                                {{ time }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div ng-repeat="day in all_days">
                 <div class="schedule-full-result-day">
                     {{ day }}
