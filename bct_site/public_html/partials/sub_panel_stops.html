@@ -1,10 +1,10 @@
 <div class="list-group-item list-group-item-responsive"
-    ng-repeat="stop in route.bstop_refs | filter:bstopFilter.f">
+    ng-repeat="route in stop.route_refs | filter:routeFilter.f">
     <div class="result-icon-container">
-        <i class="fa fa-star-o fa-lg favorite-route-icon"></i>
+        <i class="fa fa-star-o fa-lg favorite-route-icon ptr"></i>
     </div>
     <div class="result-list-text">
-        {{ stop.Id }} {{ stop.Name }}
+        {{ route.Id }} {{ route.LName }}
     </div>
     <div class="result-icon-container ptr"
         ng-click="toggleMapSchedule(false, route.Id, stop.Id);">

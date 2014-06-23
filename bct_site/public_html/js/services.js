@@ -36,8 +36,53 @@ BCTAppServices.service('scheduleSocketService', ['$q', 'scheduleWebSocket',
     };
 }]);
 
-BCTAppServices.service('scheduleDownloadService', ['$http', '$q',
-    function($http, $q) {
+BCTAppServices.service('nearestTimeService', [ function() {
+    var self = this;
+    this.convertToTime = function(time_int) {
+        var int_arr = String(time_int).split("")
+        int_arr.splice(-2,0,":");
+
+        return int_arr.join("");
+    };
+    this.getNearestTimes = function(time, times, bef, aft) {
+        if (!bef) {
+            var bef = 1;
+            var aft = 3;
+        }
+        else if (!aft) {
+            var aft = 3;
+        }
+        
+        var times_int = times.map(function(a) { return parseInt(a.replace(/:/,"")) })
+        var now_int = parseInt(time.replace(/:/,""));
+        var nearest = {
+            prev_times: [],
+            next_times: []
+        };
+
+        times_int.push(now_int);
+        times_int.sort((function(a,b) { return (a-b); }));
+
+        var int_index = times_int.indexOf(now_int);
+
+        for (var b=0;b<bef;b++) {
+            if (!times_int[int_index - (1 + b)]) { break; }
+            nearest.prev_times.push(times_int[int_index - (1 + b)]);
+        }
+        for (var a=0;a<aft;a++) {
+            if (!times_int[int_index + (1 + a)]) { break; }
+            nearest.next_times.push(times_int[int_index + (1 + a)]);
+        }
+
+        nearest.prev_times = nearest.prev_times.map(self.convertToTime);
+        nearest.next_times = nearest.next_times.map(self.convertToTime);
+
+        return nearest;
+    };
+}]);
+
+BCTAppServices.service('scheduleDownloadService', ['$http', '$q', 'nearestTimeService',
+    function($http, $q, nearestTimeService) {
     //TO DO: Backend will create "booking version" string for all data sets;
     //It will be requested and compared to see if and what data needs to be updated
     this.downloadRouteInfo = function() {
@@ -119,9 +164,34 @@ BCTAppServices.service('scheduleDownloadService', ['$http', '$q',
             }
         });
     };
+    
+    this.transformSchedule = function(output_type, s_data) {
+        var date_time = new Date;
+        var now = date_time.toTimeString().slice(0,5);
+        var s_times = s_data.Today;
+        var departures = [];
+        var schedule_output = {};
+
+        for (var i=0;i<s_times.length;i++) {
+            departures.push(s_times[i].DepartureTime);
+        }
+        switch (output_type) {
+            case "nearest":
+                schedule_output.nearest = nearestTimeService.getNearestTimes(
+                    now, departures);
+                schedule_output.nearest.all = schedule_output.nearest.
+                    prev_times.concat(schedule_output.nearest.next_times);
+                break;
+            case "datepick":
+                schedule_output.date_pick = departures.slice();
+                break;
+        }
+        return schedule_output;
+    };
 }]);
 
-BCTAppServices.service('googleMapUtilities', [ function() {
+BCTAppServices.service('googleMapUtilities', [ 'scheduleDownloadService',
+    function(scheduleDownloadService) {
     var self = this;
 
     this.mapMaker = function(container, lat, lng) {
@@ -224,10 +294,13 @@ BCTAppServices.service('googleMapUtilities', [ function() {
             var marker = new google.maps.Marker({
                 map: isr.dom_q.map.inst,
                 position: coords,
-                title: route + ' ' + bstops_names[i]
-//                icon: {
-//                    path: google.maps.SymbolPath.CIRCLE
-//                }
+                title: route + ' ' + bstops_names[i],
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    scale: 10,
+                    strokeColor: "#C14E4E",
+                    strokeWeight: 4
+                }
             });
 
             var info_cts = '' +
@@ -236,6 +309,11 @@ BCTAppServices.service('googleMapUtilities', [ function() {
                     '<span> Stop: ' + bstops_names[i] + '</span>' +
                     '<span> Name: ' + stops[bstops_names[i]].Name + '</span>' +
                     '<span> Other Routes: ' + stops[bstops_names[i]].Routes.join(", ") + '</span>' +
+                    '<span>' +
+                        'Next departures: ' +
+                        '<span id="stop-window-times-' + bstops_names[i] + '">' +
+                        'Loading...</span>' +
+                    '</span>' +
                 '</div>';
 
             var info_window = new google.maps.InfoWindow({ content: info_cts });
@@ -247,8 +325,14 @@ BCTAppServices.service('googleMapUtilities', [ function() {
 
             isr.dom_q.map.overlays.points[bstops_names[i]].ShowWindow = new (function() {
                 var self = this;
+                this.s_id = bstops_names[i];
                 this.pt = isr.dom_q.map.overlays.points[bstops_names[i]];
                 this.func = function() {
+                    var open_info_stop = isr.dom_q.map.overlays.open_info[0].
+                        content.match(/Stop: .*?<\/span>/)[0].slice(6,-7);
+                    //Do nothing if the target info window is already open
+                    //unless a different info window is being triggered
+                    if (self.s_id === open_info_stop) { return true; }
                     self.pt.info.open(
                     isr.dom_q.map.inst,
                     self.pt.marker);
@@ -258,6 +342,14 @@ BCTAppServices.service('googleMapUtilities', [ function() {
                     isr.dom_q.map.overlays.open_info[0].close();
                     isr.dom_q.map.overlays.open_info.pop();
                     isr.dom_q.map.overlays.open_info.push(self.pt.info);
+
+                    scheduleDownloadService.downloadSchedule(route, self.s_id).then(function(res) {
+                        var nearest_schedule = scheduleDownloadService.transformSchedule("nearest", res.data);
+                        angular.element(document).ready(function() {
+                            document.getElementById("stop-window-times-" + self.s_id).
+                            innerHTML = nearest_schedule.nearest.next_times.join(", ");
+                        });
+                    });
                 };
             });
 

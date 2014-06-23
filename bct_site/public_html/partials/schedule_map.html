@@ -1,7 +1,7 @@
 <div id="schedule-map" ng-show="map_schedule_toggle"
     ng-class="schedule_map_styles" class="fbox">
     <div id="schedule-map-top-panel" ng-hide="schedule_bar_hide">
-        <div id="schedule-map-info-bar">
+        <div id="schedule-map-info-bar" class="no-highlight ptr" ng-click="resetCenter();">
             {{ map_schedule_info.route }} {{ stops[map_schedule_info.stop].Name }}
         </div>
         <schedule-map-overlay></schedule-map-overlay>

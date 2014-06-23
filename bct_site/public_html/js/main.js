@@ -7,7 +7,11 @@ window.isr = {};
 isr.dom_q = {
     map: {
         overlays: {
-            open_info: [{ close: function() {} }],
+            //Dummy properties for first-time function calls
+            open_info: [{
+                close: function() {},
+                content: "<span>Stop: First</span>"
+            }],
             points: {}
         }
     },

@@ -229,7 +229,7 @@ img {
     flex: 0 1 auto;
 }
 .marker-info-window {
-    height: 8em;
+    height: 12em;
     font-weight: bold;
     padding: 0.5em;
     width: 16em;
@@ -239,6 +239,9 @@ img {
 }
 .marker-info-window span {
     display: table-row;
+}
+.marker-info-window span span {
+    display: inline;
 }
 #map-loading-screen {
     height: 100%;

@@ -11,9 +11,9 @@ BCTAppControllers.controller('BCTController', ['$scope',
 
     $scope.clearSearch = function(model) {
         $scope.query_data[model] = "";
-        $scope.routes = {};
-        $scope.stops = {};
     };
+
+    $scope.cur_center = {};
 
     //Class expressions to be used to ng-class, with defaults
     $scope.body_styles = {
@@ -43,7 +43,7 @@ BCTAppControllers.controller('BCTController', ['$scope',
     $scope.alerts = [
       "Bus route will change to include Data Ave. starting in January"
     ];
-
+$scope.bindtest = "works";
     $scope.map_schedule_info = {
         route: "",
         stop: ""
@@ -59,55 +59,12 @@ BCTAppControllers.controller('BCTController', ['$scope',
                     $scope.map_schedule_info.stop,
                     $scope.full_schedule_date).
                     then(function(res) {
-                        transformSchedule("datepick", res.data);
+                        var t_schedule = scheduleDownloadService.transformSchedule("datepick", res.data);
+                        $scope.schedule.date_pick = t_schedule.date_pick;
                     });
             }
         });
     });
-
-
-    function convertToTime(time_int) {
-        var int_arr = String(time_int).split("")
-        int_arr.splice(-2,0,":");
-
-        return int_arr.join("");
-    }
-
-    window.getNearestTimes = function(time, times, bef, aft) {
-        if (!bef) {
-            var bef = 1;
-            var aft = 3;
-        }
-        else if (!aft) {
-            var aft = 3;
-        }
-        
-        var times_int = times.map(function(a) { return parseInt(a.replace(/:/,"")) })
-        var now_int = parseInt(time.replace(/:/,""));
-        var nearest = {
-            prev_times: [],
-            next_times: []
-        };
-
-        times_int.push(now_int);
-        times_int.sort((function(a,b) { return (a-b); }));
-
-        var int_index = times_int.indexOf(now_int);
-
-        for (var b=0;b<bef;b++) {
-            if (!times_int[int_index - (1 + b)]) { break; }
-            nearest.prev_times.push(times_int[int_index - (1 + b)]);
-        }
-        for (var a=0;a<aft;a++) {
-            if (!times_int[int_index + (1 + a)]) { break; }
-            nearest.next_times.push(times_int[int_index + (1 + a)]);
-        }
-
-        nearest.prev_times = nearest.prev_times.map(convertToTime);
-        nearest.next_times = nearest.next_times.map(convertToTime);
-
-        return nearest;
-    };
 
     $scope.schedule = {
         nearest: {},
@@ -118,28 +75,6 @@ BCTAppControllers.controller('BCTController', ['$scope',
         },
         date_pick: []
     };
-
-    function transformSchedule(output_type, s_data) {
-        var date_time = new Date;
-        var now = date_time.toTimeString().slice(0,5);
-        var s_times = s_data.Today;
-        var departures = [];
-
-        for (var i=0;i<s_times.length;i++) {
-            departures.push(s_times[i].DepartureTime);
-        }
-        switch (output_type) {
-            case "nearest":
-                $scope.schedule.nearest = getNearestTimes(
-                    now, departures);
-                $scope.schedule.nearest.all = $scope.schedule.nearest.
-                    prev_times.concat($scope.schedule.nearest.next_times);
-                break;
-            case "datepick":
-                $scope.schedule.date_pick = departures.slice();
-                break;
-        }
-    }
 
     $scope.toggleMapSchedule = function(from_trip_planner, route, stop) {
         if ($scope.map_schedule_toggle) {
@@ -158,7 +93,8 @@ BCTAppControllers.controller('BCTController', ['$scope',
         }
         else {
             scheduleDownloadService.downloadSchedule(route, stop).then(function(res) {
-                transformSchedule("nearest", res.data);
+                var t_schedule = scheduleDownloadService.transformSchedule("nearest", res.data);
+                $scope.schedule.nearest = t_schedule.nearest;
             });
             $scope.map_schedule_info.route = route;
             $scope.map_schedule_info.stop = stop;
@@ -166,8 +102,10 @@ BCTAppControllers.controller('BCTController', ['$scope',
             $scope.body_styles["hide-scroll"] = true;
 
             if (!from_trip_planner) {
+                $scope.cur_center = $scope.stops[stop].LatLng;
+
                 googleMapUtilities.clearMap();
-                googleMapUtilities.setMapPosition($scope.stops[stop].LatLng);
+                googleMapUtilities.setMapPosition($scope.cur_center);
                 googleMapUtilities.displayRoute(route, $scope.routes);
                 googleMapUtilities.displayStops(route, $scope.routes, $scope.stops);
             }
@@ -177,18 +115,29 @@ BCTAppControllers.controller('BCTController', ['$scope',
         }
     };
 
+    $scope.resetCenter = function() {
+        isr.dom_q.map.inst.setZoom(18);
+        isr.dom_q.map.inst.setCenter($scope.cur_center);
+    };
+
     $scope.schedule_full_toggle = false;
+
+//    $scope.$watch('schedule_full_toggle', function(new_val, old_val) {
+//        if (new_val !== old_val) {
+//            if (!new_val) {
+//                $scope.map_canvas_hide = false;
+//            }
+//        }
+//    });
 
     $scope.toggleFullSchedule = function() {
         if ($scope.schedule_full_toggle) {
-            $scope.map_canvas_hide = false;
             $scope.schedule_full_toggle = false; 
             $scope.schedule_map_styles["hide-scroll"] = true;
             googleMapUtilities.touchMap();
         }
         else {
             $scope.full_schedule_date = new Date;
-            $scope.map_canvas_hide = true;
             $scope.schedule_full_toggle = true;
             $scope.schedule_map_styles["hide-scroll"] = false;
         }
@@ -212,7 +161,7 @@ BCTAppControllers.controller('BCTController', ['$scope',
         var c_buttons = document.getElementsByClassName("collapse-button");
 
         var targ_cl = event.target.children[0].children[0].classList;
-        var list = event.target.parentNode.children[1].children[0].classList.contains("in");
+        var list = event.target.parentNode.children[1].classList.contains("in");
 
         for (var i=0;i<c_buttons.length;i++) {
             c_buttons[i].children[0].classList.remove("fa-minus-circle");
@@ -407,6 +356,11 @@ BCTAppControllers.controller('routeSchedulesController', ['$scope',
             isr.dom_q.map.setZoom(13);
             isr.dom_q.pline.setPath(path_coords);
         };
+
+        $scope.loaded_results = {
+            routes: [],
+            stops: []
+        };
 }]);
 
 BCTAppControllers.controller('indexController', ['$scope',
@@ -571,8 +525,9 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
 
         $scope.submitShowMap = function() {
             if (!$scope.submitTripCheck()) return true;
+            googleMapUtilities.clearMap();
             $scope.getTripPlan();
-            $scope.$parent.map_canvas_hide = false;
+            //$scope.$parent.map_canvas_hide = false;
             //Modify show map, hide map's top bar, and slide in trip planner...
             $scope.$parent.schedule_bar_hide = true;
             $scope.trip_planner_styles["trip-planner-module-active"] = true;
@@ -582,10 +537,7 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
                     $scope.toggleMapSchedule(true);
                 //}, 1000);
             }
-            //Display "back" button and move the preferences button to make room
             $scope.$parent.trip_back_show = true;
-            //$scope.planner_prefs_styles["planner-pref-pushed"] = true;
-
             //Do not toggle map the subsequent times this function is called
             //until function is re-defined yet again (when map is closed)
             $scope.submitTrip = $scope.submitKeepMap;
@@ -605,7 +557,7 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
             $scope.$parent.schedule_bar_hide = false;
 
             //If full schedule overlay was enabled when trip planner was active
-            $scope.$map_canvas_hide = false;
+            //$scope.$map_canvas_hide = false;
             $scope.$parent.schedule_full_toggle = false;
 
             $scope.submitTrip = $scope.submitShowMap;
