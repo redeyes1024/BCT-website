@@ -247,6 +247,20 @@ BCTAppServices.service('googleMapUtilities', [ 'scheduleDownloadService',
     this.clearMap = function() {
         var points = isr.dom_q.map.overlays.points;
         var pline =  isr.dom_q.map.overlays.pline;
+        var trip_plines = isr.dom_q.map.overlays.trip_plines;
+        var trip_points = isr.dom_q.map.overlays.trip_points;
+
+        for (var mk=0;mk<trip_points.length;mk++) {
+            trip_points[mk].marker.setMap(null);
+        }
+
+        trip_markers = isr.dom_q.map.overlays.trip_points = [];
+
+        for (var pl=0;pl<trip_plines.length;pl++) {
+            trip_plines[pl].setMap(null);
+        }
+
+        isr.dom_q.map.overlays.plines = [];
 
         for (p in points) {
             points[p].marker.setMap(null);
@@ -358,59 +372,146 @@ BCTAppServices.service('googleMapUtilities', [ 'scheduleDownloadService',
                 'click',
                 isr.dom_q.map.overlays.points[bstops_names[i]].ShowWindow.func);
         }
-
-//        for (var pt in isr.dom_q.map.overlays.points) {
-//            isr.dom_q.map.overlays.points[pt].ShowWindow = new (function() {
-//                var self = this;
-//                this.pt = isr.dom_q.map.overlays.points[pt];
-//                this.func = function() {
-//                    self.pt.info.open(
-//                    isr.dom_q.map.inst,
-//                    self.pt.marker);
-//                };
-//            });
-//
-//            google.maps.event.addListener(
-//                isr.dom_q.map.overlays.points[pt].marker,
-//                'click',
-//                isr.dom_q.map.overlays.points[pt].ShowWindow.func);
-//        }
     };
 
     this.displayPath = function(line_data) {
-        if (isr.dom_q.map.overlays.pline) {
-            isr.dom_q.map.overlays.pline.setMap(null);
-        }
+        self.clearMap();
 
-        var path_coords = [];
         var legs = line_data;
 
         for (var i=0;i<legs.length;i++) {
-            var from_coord = {
+            var path_coords_raw = self.decodePath(legs[i].legGeometryField.pointsField);
+            var path_coords = [];
+
+            for (var j=0;j<path_coords_raw.length;j++) {
+                var LatLng = {};
+
+                LatLng.lat = path_coords_raw[j][0];
+                LatLng.lng = path_coords_raw[j][1];
+
+                path_coords.push(LatLng);
+            }
+
+            var leg_color = "";
+            var route_text = "";
+
+            switch (legs[i].modeField) {
+                case "BUS":
+                    leg_color = "#017AC2";
+                    route_text = "BCT" + legs[i].routeField;
+                    label = "Bus route";
+                    break;
+                case "WALK":
+                    leg_color = "#000000";
+                    route_text = "";
+                    label = "Walk";
+                    break;
+                case "TRAIN":
+                    leg_color = "#009933";
+                    route_text = "";
+                    label = "Train";
+                    break;
+                default:
+                    throw (new Error).message = "" +
+                    "Invalid transit mode setting: " + legs[i].modeField;
+            }
+
+            var leg_pline = new google.maps.Polyline({
+                map: isr.dom_q.map.inst,
+                path: path_coords,
+                strokeColor: leg_color,
+                strokeWeight: 4
+            });
+
+            isr.dom_q.map.overlays.trip_plines.push(leg_pline);
+
+            var marker_coords = {
                 lat: legs[i].fromField.latField,
                 lng: legs[i].fromField.lonField
             };
-            var to_coord = {
-                lat: legs[i].toField.latField,
-                lng: legs[i].toField.lonField
+
+            var marker = new google.maps.Marker({
+                map: isr.dom_q.map.inst,
+                position: marker_coords,
+                //title: route + ' ' + bstops_names[i],
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    scale: 10,
+                    strokeColor: "#C14E4E",
+                    strokeWeight: 4
+                }
+            });
+
+            var reported_distance = 0;
+            var reported_distance_unit = "";
+
+            var d_in_yards = legs[i].distanceField * 1.0936133;
+
+            if (d_in_yards >= 880) {
+                var d_in_miles = d_in_yards / 1760;
+                reported_distance = d_in_miles.toFixed(1);
+                reported_distance_unit = "miles";
+            }
+            else {
+                reported_distance = d_in_yards.toFixed(0);
+                reported_distance_unit = "yards";
+            }
+
+            var info_cts = '' +
+                '<div class="trip-marker-info-window">' +
+                    "<span>" +
+                        "<em>" + (i+1) + ". </em> " +
+                        label + " " + route_text +
+                    "</span>" +
+                    "<span>" +
+                        "<em>Distance: </em>" +
+                        reported_distance + " " + reported_distance_unit +
+                    "</span>" +
+                    "<span>" +
+                        "<em> Time (approx): </em>" +
+                        (legs[i].durationField / 1000 / 60).toFixed(1) +
+                        " minutes" +
+                    "</span>";
+                '</div>';
+
+            var info_window = new google.maps.InfoWindow({ content: info_cts });
+            info_window.set("trip_marker_window_id", i);
+            
+            var trip_marker_window = {
+                marker: marker,
+                info: info_window
             };
-            path_coords.push(from_coord, to_coord);
+
+            isr.dom_q.map.overlays.trip_points.push(trip_marker_window);
+
+            isr.dom_q.map.overlays.trip_points[i].ShowWindow = new (function() {
+                var self = this;
+                this.pt = isr.dom_q.map.overlays.trip_points[i];
+                this.func = function() {
+                    //Do nothing if the target info window is already open
+                    //unless a different info window is being triggered
+                    var open_window = isr.dom_q.map.overlays.trip_open_info[0];
+                    if (self.pt.info.trip_marker_window_id ===
+                        open_window.trip_marker_window_id)
+                        { return true; }
+
+                    self.pt.info.open(
+                        isr.dom_q.map.inst,
+                        self.pt.marker);
+
+                    //Store a reference to the latest opened info window
+                    //so it can be closed when another is opened
+                    isr.dom_q.map.overlays.trip_open_info[0].close();
+                    isr.dom_q.map.overlays.trip_open_info.pop();
+                    isr.dom_q.map.overlays.trip_open_info.push(self.pt.info);
+                };
+            });
+
+            google.maps.event.addListener(
+                isr.dom_q.map.overlays.trip_points[i].marker,
+                'click',
+                isr.dom_q.map.overlays.trip_points[i].ShowWindow.func);
         }
-
-        isr.dom_q.map.overlays.pline = new google.maps.Polyline({
-            map: isr.dom_q.map.inst,
-            path: path_coords
-        });
-
-//        var marker;
-//
-//        for (var j=0;j<path_coords.length;j++) {
-//            marker = new google.maps.marker({
-//                map: isr.dom_q.map.inst,
-//                
-//            });
-//            isr.dom_q.map.overlays.point.push(marker);
-//        }
     };
 
     this.decodePath = function(encoded) {
@@ -495,6 +596,8 @@ BCTAppServices.service('tripPlannerService', [ '$http', '$q',
     };
 
     this.getTripPlanPromise = function(trip_opts, start, finish) {
+        trip_opts.datepick = new Date;
+        
         var arrdep = false;
         var date = trip_opts.datepick.toISOString().slice(0,10).replace(/-/g,"");
         var time = trip_opts.datepick.toTimeString().slice(0,5);
@@ -510,10 +613,6 @@ BCTAppServices.service('tripPlannerService', [ '$http', '$q',
                 modearr.push(mode.toUpperCase());
             }
         }
-
-        if (modearr.length === 1) {
-            modearr.push("BUS");
-        } 
 
         for (var i=0;i<coord_objs.length;i++) {
             coord_objs[i]["Latitude"] = coord_objs[i]["lat"];

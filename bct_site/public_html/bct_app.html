@@ -22,24 +22,16 @@
         </script>
         <!-- Project Dependencies -->
         <script type="text/javascript" src="js/main.js"></script>
+        <script type="text/javascript" src="js/top_level_controller.js"></script>
         <script type="text/javascript" src="js/controllers.js"></script>
         <script type="text/javascript" src="js/services.js"></script>
         <script type="text/javascript" src="js/directives.js"></script>
+        <script type="text/javascript" src="js/filters.js"></script>
     </head>
     <body id="bct-app" ng-app="BCTApp" ng-controller="BCTController"
         ng-class="body_styles">
         <div ng-view></div>
         <schedule-map ng-class="schedule_map_canvas_styles"></schedule-map>
         <trip-planner></trip-planner>
-        <!--    
-            {{echo}}
-            <br>
-
-            <input id="test-input" type="text" value='{ "test" : "testdata" }'>
-            <input id="test-submit" type="submit" value="submit" ng-click="testRequest();">
-            <input id="path-test" type="submit" value="Draw Path" ng-click="drawPath();">
-            <br>
-            <div id="map-canvas"></div>
-        -->
     </body>
 </html>

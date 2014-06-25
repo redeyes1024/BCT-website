@@ -8,7 +8,7 @@
         <div id="planner-option-bar" ng-show="show_trip_options">
             <div id="planner-option-optimization">
                 <span class="planner-pref-option">
-                    <input type="radio" name="planner-options" value="fastest"
+                    <input type="radio" name="planner-options" value="QUICK"
                         ng-model="trip_opts.optimize">
                     <span class="planner-pref-option-title">
                         Fastest
@@ -16,14 +16,14 @@
                 </span>
                 <span class="planner-pref-option">
                     <input type="radio" name="planner-options" value="transfers"
-                        ng-model="trip_opts.optimize">
+                        ng-model="trip_opts.optimize" disabled="true">
                     <span class="planner-pref-option-title">
                         Less Transfers
                     </span>
                 </span>
                 <span class="planner-pref-option">
                     <input type="radio" name="planner-options" value="walking"
-                        ng-model="trip_opts.optimize">
+                        ng-model="trip_opts.optimize" disabled="true">
                     <span class="planner-pref-option-title">
                         Less Walking
                     </span>
@@ -71,6 +71,7 @@
         </div>
 
         <!-- Mobile Option Bar -->
+
         <div id="trip-planner-input-options">
             <div id="planner-mobile-controls" class="no-highlight">
                 <!--<span id="planner-mobile-back" class="planner-mobile-option"
@@ -122,4 +123,24 @@
         </div>
 
     </div>
+
+    <!-- Itinerary Selection Overlay -->
+
+    <!--<div id="trip-planner-itinerary-selector" ng-show="schedule_bar_hide">
+        <span id="trip-planner-itinerary-selector-title">Select An Itinerary</span>
+            <div id="trip-planner-itinerary-panel-area">
+            <div class="trip-planner-itinerary-panel no-highlight ptr"
+                ng-repeat="itinerary in current_trip_plan_data.planField.itinerariesField">
+                {{ itinerary.loading }}
+                <span class="trip-planer-itinerary-step"
+                    ng-repeat="leg in itinerary.legsField">
+                    {{ leg.modeField }}
+                    <span ng-show=" ! $last ">
+                        >
+                    </span>
+                </span>
+            </div>
+        </div>
+    </div>-->
+
 </div>
