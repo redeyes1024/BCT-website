@@ -1,5 +1,5 @@
 <div class="list-group-item list-group-item-responsive"
-    ng-repeat="stop in route.bstop_refs | filter:bstopFilter.f">
+    ng-repeat="stop in route.bstop_refs | stopFilterSub:bstopFilter.f">
     <div class="result-icon-container">
         <i class="fa fa-star-o fa-lg favorite-route-icon"></i>
     </div>

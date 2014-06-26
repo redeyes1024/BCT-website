@@ -2,9 +2,9 @@ var BCTAppTopController = angular.module('BCTAppTopController', []);
 
 BCTAppTopController.controller('BCTController', ['$scope',
     '$timeout', 'scheduleWebSocket', 'scheduleSocketService',
-    'scheduleDownloadService', 'googleMapUtilities', '$q',
+    'scheduleDownloadService', 'googleMapUtilities', '$q', '$interval',
     function ($scope, $timeout, scheduleWebSocket, scheduleSocketService,
-    scheduleDownloadService, googleMapUtilities, $q) {
+    scheduleDownloadService, googleMapUtilities, $q, $interval) {
 
     //For ease of debugging
     window.main_scope = $scope;
@@ -16,6 +16,8 @@ BCTAppTopController.controller('BCTController', ['$scope',
     };
 
     $scope.cur_center = {};
+
+    $scope.map_schedule_toggle = false;
 
     /* START Class expressions to be used to ng-class, with defaults */
 
@@ -39,12 +41,7 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
     /* END Class expressions to be used to ng-class, with defaults */
 
-    /* START Display toggles */
-
-    $scope.schedule_bar_hide = false;
     $scope.trip_back_show = false;
-
-    $scope.map_schedule_toggle = false;
 
     $scope.alerts = [
       "Bus route will change to include Data Ave. starting in January"
@@ -54,8 +51,6 @@ BCTAppTopController.controller('BCTController', ['$scope',
         route: "",
         stop: ""
     };
-
-    /* END Display Toggles */
 
     /* START Custom Watchers */
 
@@ -90,6 +85,14 @@ BCTAppTopController.controller('BCTController', ['$scope',
                     }
                 });
             }
+        }
+    });
+
+    $scope.schedule_bar_hide = false;
+
+    $scope.$watch("schedule_bar_hide", function(new_val, old_val) {
+        if (new_val < old_val) {
+            $interval.cancel($scope.time_diff_interval);
         }
     });
 
@@ -146,8 +149,29 @@ BCTAppTopController.controller('BCTController', ['$scope',
                 $scope.map_schedule_info.stop = stop;
 
                 scheduleDownloadService.downloadSchedule(route, stop).then(function(res) {
+                    var nearest_full = {
+                        times_and_diffs: []
+                    };
+
                     var t_schedule = scheduleDownloadService.transformSchedule("nearest", res.data);
-                    $scope.schedule.nearest = t_schedule.nearest;
+                    var nearest_times = t_schedule.nearest.all;
+                    var diffs = scheduleDownloadService.calculateTimeDifference(nearest_times);
+                    var diff_msgs = scheduleDownloadService.addTimeDiffMessages(diffs);
+
+                    for (var i=0;i<nearest_times.length;i++) {
+                        var time_and_diff = {
+                            time: nearest_times[i],
+                            diff: diff_msgs[i]
+                        };
+                        nearest_full.times_and_diffs.push(time_and_diff);
+                    }
+
+                    $scope.schedule.nearest = nearest_full.times_and_diffs;
+
+                    $scope.time_diff_interval = $interval(function() {
+                        $scope.schedule.nearest = scheduleDownloadService.
+                            updateTimeDifferences($scope.schedule.nearest);
+                    }, 30000);
                 });
 
                 $scope.cur_center = $scope.stops[stop].LatLng;

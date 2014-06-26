@@ -208,6 +208,7 @@ em.hint-text {
 }
 .schedule-map-mini-schedule-time:first-child {
     background-color: #CCC;
+    border-left: 0px;
 }
 .schedule-map-mini-schedule-time {
     height: 100%;

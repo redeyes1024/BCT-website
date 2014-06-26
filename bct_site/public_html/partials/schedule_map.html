@@ -16,9 +16,10 @@
             <div id="schedule-map-mini-schedule">
                 <div id="schedule-map-mini-schedule-time-group">
                     <div class="schedule-map-mini-schedule-time"
-                        ng-repeat="time in schedule.nearest.all">
+                        ng-repeat="time in schedule.nearest">
                         <span class="schedule-map-mini-schedule-time-text">
-                            {{ time }}
+                            {{ time.time }} <br>
+                            ({{ time.diff }})
                         </span>
                     </div>
                 </div>

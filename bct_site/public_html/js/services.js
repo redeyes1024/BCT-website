@@ -85,6 +85,8 @@ BCTAppServices.service('scheduleDownloadService', ['$http', '$q', 'nearestTimeSe
     function($http, $q, nearestTimeService) {
     //TO DO: Backend will create "booking version" string for all data sets;
     //It will be requested and compared to see if and what data needs to be updated
+    var self = this;
+
     this.downloadRouteInfo = function() {
         if (localStorage.route_data) {
             var deferred = $q.defer();
@@ -187,6 +189,86 @@ BCTAppServices.service('scheduleDownloadService', ['$http', '$q', 'nearestTimeSe
                 break;
         }
         return schedule_output;
+    };
+    
+    this.calculateTimeDifference = function(times_arr) {
+        var diff_arr = [];
+
+        var t2 = (new Date).toTimeString().slice(0,5);
+        var t2_h = Number(t2.split(":")[0]);
+        var t2_m = Number(t2.split(":")[1]);
+        var min_t2 = t2_h * 60 + t2_m;
+
+        for (var i=0;i<times_arr.length;i++) {
+            var t1 = times_arr[i];
+            var t1_h = Number(t1.split(":")[0]);
+            var t1_m = Number(t1.split(":")[1]);
+            var min_t1 = t1_h * 60 + t1_m;
+
+            var diff = min_t1 - min_t2;
+            diff_arr.push(diff);
+        }
+        return diff_arr;
+    };
+
+    this.addTimeDiffMessages = function(diff_arr) {
+        var message_arr = [];
+
+        for (var i=0;i<diff_arr.length;i++) {
+            var time_diff_message = "";
+            var start_text = "";
+            var end_text = "";
+            var number_of_minutes = "";
+            var time_unit = " minute";
+            var plural_modifier = "s";
+
+            if (diff_arr[i] < 0) {
+                number_of_minutes = diff_arr[i] * -1;
+                end_text = " ago";
+            }
+            else if (diff_arr[i] > 0) {
+                number_of_minutes = diff_arr[i];
+                start_text = "in ";
+            }
+            else if (diff_arr[i] === 0) {
+                time_unit = "";
+                plural_modifier = "";
+                start_text = "about now";
+            }
+
+            if(Math.abs(diff_arr[i]) === 1) {
+                plural_modifier = "";
+            }
+
+            time_diff_message += start_text + number_of_minutes +
+                time_unit + plural_modifier + end_text;
+
+            message_arr.push(time_diff_message);
+        }
+        return message_arr;
+    };
+
+    this.updateTimeDifferences = function(nearest) {
+        var new_nearest_full = [];
+        var nearest_times = [];
+
+        for (var i=0;i<nearest.length;i++) {
+            nearest_times.push(nearest[i].time);
+        }
+
+        var new_diffs = self.calculateTimeDifference(nearest_times);
+        var new_diff_msgs = self.addTimeDiffMessages(new_diffs);
+
+        for (var j=0;j<nearest.length;j++) {
+            var new_nearest_time_diff = {
+                time: nearest_times[j],
+                diff: new_diff_msgs[j]
+            };
+
+            new_nearest_full.push(new_nearest_time_diff);
+        }
+
+        return new_nearest_full;
     };
 }]);
 
