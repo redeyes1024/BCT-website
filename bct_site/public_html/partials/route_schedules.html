@@ -1,10 +1,12 @@
 <div id="route-schedules-module" ng-controller="routeSchedulesController">
     <div id="schedule-search-area" class="no-highlight">
-        <span class="schedule-results-module-title" ng-hide="map_schedule_toggle">
+        <span class="schedule-results-module-title"
+            ng-show="show_schedule_results_module_title_normal">
             Search schedules
         </span>
         <span class="schedule-results-module-title no-highlight ptr"
-            ng-click="tripPlannerBack();" ng-show="map_schedule_toggle">
+            ng-click="closeMapAndResetTripPlanner();"
+            ng-show="show_schedule_results_module_title_with_back_function">
             Search schedules
         </span>
         <div id="schedule-search-area-top">

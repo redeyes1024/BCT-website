@@ -81,7 +81,7 @@ BCTAppServices.service('nearestTimeService', [ function() {
     };
 }]);
 
-BCTAppServices.service('scheduleDownloadService', ['$http', '$q', 'nearestTimeService',
+BCTAppServices.service('scheduleDownloadAndTransformation', ['$http', '$q', 'nearestTimeService',
     function($http, $q, nearestTimeService) {
     //TO DO: Backend will create "booking version" string for all data sets;
     //It will be requested and compared to see if and what data needs to be updated
@@ -167,10 +167,9 @@ BCTAppServices.service('scheduleDownloadService', ['$http', '$q', 'nearestTimeSe
         });
     };
     
-    this.transformSchedule = function(output_type, s_data) {
+    this.transformSchedule = function(output_type, s_times) {
         var date_time = new Date;
         var now = date_time.toTimeString().slice(0,5);
-        var s_times = s_data.Today;
         var departures = [];
         var schedule_output = {};
 
@@ -188,6 +187,8 @@ BCTAppServices.service('scheduleDownloadService', ['$http', '$q', 'nearestTimeSe
                 schedule_output.date_pick = departures.slice();
                 break;
         }
+        schedule_output.raw = s_times;
+
         return schedule_output;
     };
     
@@ -272,8 +273,8 @@ BCTAppServices.service('scheduleDownloadService', ['$http', '$q', 'nearestTimeSe
     };
 }]);
 
-BCTAppServices.service('googleMapUtilities', [ 'scheduleDownloadService',
-    function(scheduleDownloadService) {
+BCTAppServices.service('googleMapUtilities', [ 'scheduleDownloadAndTransformation',
+    function(scheduleDownloadAndTransformation) {
     var self = this;
 
     this.mapMaker = function(container, lat, lng) {
@@ -404,7 +405,9 @@ BCTAppServices.service('googleMapUtilities', [ 'scheduleDownloadService',
                     '<span> Route: ' + route + '</span>' +
                     '<span> Stop: ' + bstops_names[i] + '</span>' +
                     '<span> Name: ' + stops[bstops_names[i]].Name + '</span>' +
-                    '<span> Other Routes: ' + stops[bstops_names[i]].Routes.join(", ") + '</span>' +
+                    '<span> Other Routes: ' +
+                    stops[bstops_names[i]].Routes.join(", ") + 
+                    '</span>' +
                     '<span>' +
                         'Next departures: ' +
                         '<span id="stop-window-times-' + bstops_names[i] + '">' +
@@ -439,15 +442,32 @@ BCTAppServices.service('googleMapUtilities', [ 'scheduleDownloadService',
                     isr.dom_q.map.overlays.open_info.pop();
                     isr.dom_q.map.overlays.open_info.push(self.pt.info);
 
-                    scheduleDownloadService.downloadSchedule(route, self.s_id).then(function(res) {
-                        var nearest_schedule = scheduleDownloadService.transformSchedule("nearest", res.data);
+                    scheduleDownloadAndTransformation.downloadSchedule(route, self.s_id).then(function(res) {
+                        var nearest_schedule = scheduleDownloadAndTransformation.
+                        transformSchedule("nearest", res.data.Today);
                         angular.element(document).ready(function() {
-                            document.getElementById("stop-window-times-" + self.s_id).
-                            innerHTML = nearest_schedule.nearest.next_times.join(", ");
+                            try {
+                                document.getElementById("stop-window-times-" + self.s_id).
+                                innerHTML = nearest_schedule.nearest.next_times.join(", ");
+                            } catch(e) { 
+                                console.log("A Google Maps infowindow was " +
+                                "closed before next times were fully loaded.");
+                            }
                         });
                     });
                 };
             });
+
+            google.maps.event.addListener(
+                isr.dom_q.map.overlays.points[bstops_names[i]].info,
+                'closeclick',
+                function() {
+                    isr.dom_q.map.overlays.open_info = [{
+                        close: function() {},
+                        content: "<span>Stop: First</span>"
+                    }];
+                }
+            );
 
             google.maps.event.addListener(
                 isr.dom_q.map.overlays.points[bstops_names[i]].marker,
@@ -639,12 +659,6 @@ BCTAppServices.service('googleMapUtilities', [ 'scheduleDownloadService',
         return array;
     };
 }]);
-
-//        google.maps.event.addListenerOnce(isr.dom_q.map, 'idle', function() {
-//            scope.map_schedule_toggle = false;
-//            scope.show_loading_screen = false;
-//            scope.$apply();
-//        });
     
 BCTAppServices.service('tripPlannerService', [ '$http', '$q',
     function($http, $q) {

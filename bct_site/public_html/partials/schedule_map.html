@@ -1,11 +1,11 @@
-<div id="schedule-map" ng-show="map_schedule_toggle"
+<div id="schedule-map" ng-show="show_map_overlay_module"
     ng-class="schedule_map_styles" class="fbox">
-    <div id="schedule-map-top-panel" ng-hide="schedule_bar_hide">
+    <div id="schedule-map-top-panel" ng-show="show_schedule_result_top_bar">
         <div id="schedule-map-info-bar" class="no-highlight ptr" ng-click="resetCenter();">
             {{ map_schedule_info.route }} {{ stops[map_schedule_info.stop].Name }}
         </div>
         <schedule-map-overlay></schedule-map-overlay>
-        <div id="schedule-map-info" ng-hide="schedule_full_toggle">
+        <div id="schedule-map-info" ng-show="show_schedule_result_top_info_bar">
             <!--<div id="schedule-map-hide"
                 class="schedule-map-mini-schedule-button link-icon no-highlight ptr"
                 ng-click="toggleMapSchedule();">
@@ -16,7 +16,7 @@
             <div id="schedule-map-mini-schedule">
                 <div id="schedule-map-mini-schedule-time-group">
                     <div class="schedule-map-mini-schedule-time"
-                        ng-repeat="time in schedule.nearest">
+                        ng-repeat="time in schedule.nearest.times_and_diffs">
                         <span class="schedule-map-mini-schedule-time-text">
                             {{ time.time }} <br>
                             ({{ time.diff }})
@@ -32,7 +32,8 @@
                 </span>
             </div>
         </div>
-        <div id="schedule-map-alert-area" ng-hide="schedule_full_toggle">
+        <div id="schedule-map-alert-area"
+            ng-show="show_schedule_result_top_alert_bar">
             <span id="schedule-map-alert-area-text">
                 <i class="fa fa-exclamation-circle"></i>
                 {{ alerts[0] }}
@@ -40,8 +41,8 @@
         </div>
     </div>
     <span class="trip-planner-module-title-map no-highlight"
-        ng-show="schedule_bar_hide">
+        ng-show="show_trip_planner_title">
         Trip Planner
     </span>
-    <div id="map-canvas" ng-hide="map_canvas_hide"></div>
+    <div id="map-canvas"></div>
 </div>

@@ -3,6 +3,8 @@ var BCTAppControllers = angular.module('BCTAppControllers', []);
 BCTAppControllers.controller('routeSchedulesController', ['$scope',
     '$timeout', '$interval', 'scheduleWebSocket', 'scheduleSocketService',
         function ($scope, $timeout, $interval, scheduleWebSocket, scheduleSocketService) {
+
+        //For ease of testing
         window.rs_scope = $scope;
 
         $scope.loaded_results = {
@@ -106,28 +108,11 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
             datepick: new Date
         };
 
-//        googleMapUtilities.resetMap();
-//
-//        $scope.top_scope.map_schedule_toggle = true;
-//        $scope.top_scope.schedule_bar_hide = true;
-
         //Using the ng-class directive, the flow of these DOM elements is
         //altered significantly in order for the map only to be loaded once.
-        //Here, they are set to flow with the Trip Planner module...
+        //Here, they are set to flow with the Trip Planner module.
         $scope.top_scope.schedule_map_styles["schedule-map-planner"] = true;
         $scope.top_scope.schedule_map_styles["schedule-map-overlay"] = false;
-        //$scope.top_scope.schedule_map_canvas_styles["schedule-map-canvas-planner"] = true;
-
-        $scope.$on("$destroy", function(){
-            $scope.top_scope.map_schedule_toggle = false;
-            $scope.top_scope.schedule_bar_hide = false;
-
-            //...and upon being routed away from the module, the map is taken
-            //out of the flow again, in order to return to being an overlay
-            $scope.top_scope.schedule_map_styles["schedule-map-planner"] = false;
-            $scope.top_scope.schedule_map_styles["schedule-map-overlay"] = true;
-            //$scope.top_scope.schedule_map_canvas_styles["schedule-map-canvas-planner"] = false;
-        });
 
         //Placeholder trip plan itinerary labels
         //Deleted after successful trip plan request
@@ -172,13 +157,12 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
             });
         };
 
-        $scope.show_trip_options = false;
         $scope.toggleTripOptions = function() {
-            if ($scope.show_trip_options) {
-                $scope.show_trip_options = false;
+            if ($scope.top_scope.show_trip_options) {
+                $scope.top_scope.show_trip_options = false;
             }
             else {
-                $scope.show_trip_options = true;
+                $scope.top_scope.show_trip_options = true;
             }
         };
 
@@ -192,41 +176,38 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
         };
 
         $scope.submitTripPlannerQueryAndShowMap = function() {
-            if (!$scope.tripPlannerInputsEmpty()) return true;
+            if ( !$scope.tripPlannerInputsEmpty() ) { return true; }
+
             googleMapUtilities.clearMap();
             $scope.getTripPlan();
-            //$scope.$parent.map_canvas_hide = false;
-            //Modify show map, hide map's top bar, and slide in trip planner...
-            $scope.$parent.schedule_bar_hide = true;
+
             $scope.trip_planner_styles["trip-planner-module-active"] = true;
-            //...after its slide animation completes (1 second long in CSS)
-            if (!$scope.map_schedule_toggle) {
+            //Wait for tripplanner slide animation (1 second long in CSS)
+            if (!$scope.show_map_overlay_module) {
                 //$timeout(function() {
                     $scope.toggleMapSchedule(true);
                 //}, 1000);
             }
-            $scope.$parent.trip_back_show = true;
+
+            $scope.top_scope.show_trip_planner_title = true;
+            $scope.top_scope.show_schedule_result_top_bar = false;
+
             //Do not toggle map the subsequent times this function is called
             //until function is re-defined yet again (when map is closed)
             $scope.submitTrip = $scope.submitTripPlannerQueryWithoutNewMap;
         };
+
         $scope.submitTripPlannerQueryWithoutNewMap = function() {
-            if (!$scope.tripPlannerInputsEmpty()) return true;
+            if (!$scope.tripPlannerInputsEmpty()) { return true; }
+
             $scope.getTripPlan();
         };
 
         //The first time the trip form is submitted, the map is shown (see above)
         $scope.submitTrip = $scope.submitTripPlannerQueryAndShowMap;
 
-        $scope.$parent.tripPlannerBack = function() {
-            $scope.$parent.trip_back_show = false;
-            //$scope.planner_prefs_styles["planner-pref-pushed"] = false;
+        $scope.top_scope.closeMapAndResetTripPlanner = function() {
             $scope.toggleMapSchedule();
-            $scope.$parent.schedule_bar_hide = false;
-
-            //If full schedule overlay was enabled when trip planner was active
-            //$scope.$map_canvas_hide = false;
-            $scope.$parent.schedule_full_toggle = false;
 
             $scope.submitTrip = $scope.submitTripPlannerQueryAndShowMap;
         };

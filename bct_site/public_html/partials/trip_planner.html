@@ -5,7 +5,7 @@
 
         <!-- Trip Options -->
 
-        <div id="planner-option-bar" ng-show="show_trip_options">
+        <div id="planner-option-bar" ng-show="show_trip_planner_options">
             <div id="planner-option-optimization">
                 <span class="planner-pref-option">
                     <input type="radio" name="planner-options" value="QUICK"
@@ -74,10 +74,6 @@
 
         <div id="trip-planner-input-options">
             <div id="planner-mobile-controls" class="no-highlight">
-                <!--<span id="planner-mobile-back" class="planner-mobile-option"
-                    ng-show="trip_back_show" ng-click="tripPlannerBack();">
-                    <i class="fa fa-arrow-circle-left ptr link-icon"></i>
-                </span>-->
                 <span id="planner-mobile-gps" class="planner-mobile-option">
                     <i class="fa fa-crosshairs ptr"></i>
                 </span>
@@ -93,10 +89,6 @@
         <!-- Search Inputs and Embedded Options -->
 
             <form id="planner-top-inputs" ng-submit="submitTrip();" class="no-highlight">
-                <!--<span id="planner-embed-back" class="planner-embed-option"
-                    ng-show="trip_back_show" ng-click="tripPlannerBack();">
-                    <i class="fa fa-arrow-circle-left ptr link-icon"></i>
-                </span>-->
                 <span id="planner-embed-gps" class="planner-embed-option">
                     <i class="fa fa-crosshairs ptr"></i>
                 </span>
@@ -126,7 +118,8 @@
 
     <!-- Itinerary Selection Overlay -->
 
-    <!--<div id="trip-planner-itinerary-selector" ng-show="schedule_bar_hide">
+    <!--<div id="trip-planner-itinerary-selector"
+        ng-show="show_trip_planner_itinerary_selector">
         <span id="trip-planner-itinerary-selector-title">Select An Itinerary</span>
             <div id="trip-planner-itinerary-panel-area">
             <div class="trip-planner-itinerary-panel no-highlight ptr"

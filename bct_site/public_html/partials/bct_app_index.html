@@ -1,9 +1,11 @@
 <div id="index-page">
-    <span class="trip-planner-module-title no-highlight ptr" ng-show="trip_back_show"
-        ng-click="tripPlannerBack();">
+    <span class="trip-planner-module-title no-highlight"
+        ng-show="show_index_title_normal">
         Welcome to the BCT Transit App
     </span>
-    <span class="trip-planner-module-title no-highlight" ng-hide="trip_back_show">
+    <span class="trip-planner-module-title no-highlight ptr" 
+        ng-show="show_index_title_with_back_function"
+        ng-click="closeMapAndResetTripPlanner();">
         Welcome to the BCT Transit App
     </span>
 

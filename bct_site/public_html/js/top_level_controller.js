@@ -2,63 +2,62 @@ var BCTAppTopController = angular.module('BCTAppTopController', []);
 
 BCTAppTopController.controller('BCTController', ['$scope',
     '$timeout', 'scheduleWebSocket', 'scheduleSocketService',
-    'scheduleDownloadService', 'googleMapUtilities', '$q', '$interval',
+    'scheduleDownloadAndTransformation', 'googleMapUtilities', '$q', '$interval',
     function ($scope, $timeout, scheduleWebSocket, scheduleSocketService,
-    scheduleDownloadService, googleMapUtilities, $q, $interval) {
+    scheduleDownloadAndTransformation, googleMapUtilities, $q, $interval) {
 
     //For ease of debugging
     window.main_scope = $scope;
 
     $scope.top_scope = $scope;
 
-    $scope.clearSearch = function(model) {
-        $scope.query_data[model] = "";
-    };
-
-    $scope.cur_center = {};
-
-    $scope.map_schedule_toggle = false;
-
-    /* START Class expressions to be used to ng-class, with defaults */
+    /* START CSS class expressions to be used to ng-class, with defaults */
 
     $scope.body_styles = {
         "hide-scroll": false
     };
+
     $scope.schedule_map_styles = {
         "hide-scroll": true,
         "schedule-map-overlay": true,
         "schedule-map-planner": false
     };
-//    $scope.schedule_map_canvas_styles = {
-//        "schedule-map-canvas-planner": false
-//    };
+
     $scope.trip_planner_styles = {
         "trip-planner-module-active": false
     };
+
     $scope.planner_prefs_styles = {
         "planner-pref-pushed": false
     };
 
-    /* END Class expressions to be used to ng-class, with defaults */
+    /* END CSS class expressions to be used to ng-class, with defaults */
 
-    $scope.trip_back_show = false;
+    /* START Overlay Display Controls */
 
-    $scope.alerts = [
-      "Bus route will change to include Data Ave. starting in January"
-    ];
-
-    $scope.map_schedule_info = {
-        route: "",
-        stop: ""
-    };
-
-    /* START Custom Watchers */
-
-    $scope.query_data = {
-        schedule_search: ""
-    };
     $scope.show_empty_result_message_search_too_short = true;
     $scope.show_empty_result_message_no_results = false;
+
+    $scope.show_map_overlay_module = false;
+
+    $scope.show_schedule_result_top_bar = true;
+    $scope.show_schedule_result_top_info_bar = true;
+    $scope.show_schedule_result_top_alert_bar = true;
+
+    $scope.show_full_schedule_module = false;
+
+    $scope.show_index_title_normal = true;
+    $scope.show_index_title_with_back_function = false;
+
+    $scope.show_trip_planner_title = false;
+    $scope.show_trip_planner_options = false;
+
+    $scope.show_schedule_results_module_title_normal = true;
+    $scope.show_schedule_results_module_title_with_back_function = false;
+
+    /* END Overlay Display Controls */
+
+    /* START Custom Watchers */
 
     //Display correct hint text when no route/stop results are available
     $scope.$watch("query_data.schedule_search", function(new_val, old_val) {
@@ -88,25 +87,23 @@ BCTAppTopController.controller('BCTController', ['$scope',
         }
     });
 
-    $scope.schedule_bar_hide = false;
-
-    $scope.$watch("schedule_bar_hide", function(new_val, old_val) {
+    $scope.$watch("show_schedule_result_top_bar", function(new_val, old_val) {
+        //If top bar is being closed
         if (new_val < old_val) {
-            $interval.cancel($scope.time_diff_interval);
+            $interval.cancel($scope.schedule_update_interval);
         }
     });
-
-    $scope.full_schedule_date = new Date;
 
     angular.element(document).ready(function() {
         $scope.$watch("full_schedule_date", function(new_val, old_val) {
             if (new_val !== old_val) {
-                scheduleDownloadService.downloadSchedule(
+                scheduleDownloadAndTransformation.downloadSchedule(
                     $scope.map_schedule_info.route,
                     $scope.map_schedule_info.stop,
                     $scope.full_schedule_date).
                     then(function(res) {
-                        var t_schedule = scheduleDownloadService.transformSchedule("datepick", res.data);
+                        var t_schedule = scheduleDownloadAndTransformation.
+                        transformSchedule("datepick", res.data.Today);
                         $scope.schedule.date_pick = t_schedule.date_pick;
                     });
             }
@@ -114,6 +111,23 @@ BCTAppTopController.controller('BCTController', ['$scope',
     });
 
     /* END Custom Watchers */
+
+    /* START Data Object Templates */
+
+    $scope.cur_center = {};
+
+    $scope.alerts = [
+      "Bus route will change to include Data Ave. starting in January"
+    ];
+
+    $scope.query_data = {
+        schedule_search: ""
+    };
+
+    $scope.map_schedule_info = {
+        route: "",
+        stop: ""
+    };
 
     $scope.schedule = {
         nearest: {},
@@ -125,96 +139,6 @@ BCTAppTopController.controller('BCTController', ['$scope',
         date_pick: []
     };
 
-    $scope.toggleMapSchedule = function(from_trip_planner, route, stop) {
-        if ($scope.map_schedule_toggle) {
-            if (from_trip_planner) {
-                $timeout(function() {
-                    $scope.map_schedule_toggle = false;
-                    $scope.trip_inputs.start = "";
-                    $scope.trip_inputs.finish = "";
-                }, 1000);
-            }
-            else {
-                $scope.map_schedule_toggle = false;
-            }
-            $scope.body_styles["hide-scroll"] = false;
-            $scope.trip_planner_styles["trip-planner-module-active"] = false;
-        }
-        else {
-            $scope.map_schedule_toggle = true;
-            $scope.body_styles["hide-scroll"] = true;
-
-            if (!from_trip_planner) {
-                $scope.map_schedule_info.route = route;
-                $scope.map_schedule_info.stop = stop;
-
-                scheduleDownloadService.downloadSchedule(route, stop).then(function(res) {
-                    var nearest_full = {
-                        times_and_diffs: []
-                    };
-
-                    var t_schedule = scheduleDownloadService.transformSchedule("nearest", res.data);
-                    var nearest_times = t_schedule.nearest.all;
-                    var diffs = scheduleDownloadService.calculateTimeDifference(nearest_times);
-                    var diff_msgs = scheduleDownloadService.addTimeDiffMessages(diffs);
-
-                    for (var i=0;i<nearest_times.length;i++) {
-                        var time_and_diff = {
-                            time: nearest_times[i],
-                            diff: diff_msgs[i]
-                        };
-                        nearest_full.times_and_diffs.push(time_and_diff);
-                    }
-
-                    $scope.schedule.nearest = nearest_full.times_and_diffs;
-
-                    $scope.time_diff_interval = $interval(function() {
-                        $scope.schedule.nearest = scheduleDownloadService.
-                            updateTimeDifferences($scope.schedule.nearest);
-                    }, 30000);
-                });
-
-                $scope.cur_center = $scope.stops[stop].LatLng;
-
-                googleMapUtilities.clearMap();
-                googleMapUtilities.setMapPosition($scope.cur_center);
-                googleMapUtilities.displayRoute(route, $scope.routes);
-                googleMapUtilities.displayStops(route, $scope.routes, $scope.stops);
-            }
-            else {
-                googleMapUtilities.setMapPosition(undefined, 10);
-            }
-        }
-    };
-
-    $scope.resetCenter = function() {
-        isr.dom_q.map.inst.setZoom(18);
-        isr.dom_q.map.inst.setCenter($scope.cur_center);
-    };
-
-    $scope.schedule_full_toggle = false;
-
-//    $scope.$watch('schedule_full_toggle', function(new_val, old_val) {
-//        if (new_val !== old_val) {
-//            if (!new_val) {
-//                $scope.map_canvas_hide = false;
-//            }
-//        }
-//    });
-
-    $scope.toggleFullSchedule = function() {
-        if ($scope.schedule_full_toggle) {
-            $scope.schedule_full_toggle = false; 
-            $scope.schedule_map_styles["hide-scroll"] = true;
-            googleMapUtilities.touchMap();
-        }
-        else {
-            $scope.full_schedule_date = new Date;
-            $scope.schedule_full_toggle = true;
-            $scope.schedule_map_styles["hide-scroll"] = false;
-        }
-    };
-
     $scope.all_days = [
         "Weekdays",
         "Saturday",
@@ -223,6 +147,177 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
     $scope.routeFilter = { f: "" };
     $scope.bstopFilter = { f: "" };
+
+    $scope.agency_filter_icon_selection = {
+        broward: "",
+        miami: "",
+        palm: ""
+    };
+
+    $scope.full_schedule_date = new Date;
+
+    //Defaults are for demonstration purposes only
+    $scope.trip_inputs = {
+        start: "14791 Miramar Pkwy",
+        finish: "12400 Pembroke Rd"
+    };
+
+    /* END Data Object Templates */
+
+    $scope.disableMapToggleOnTitles = function() {
+        $scope.show_index_title_normal = true;
+        $scope.show_schedule_results_module_title_normal = true;
+
+        $scope.show_index_title_with_back_function = false;
+        $scope.show_schedule_results_module_title_with_back_function = false;
+    };
+
+    $scope.enableMapToggleOnTitles = function() {
+        $scope.show_index_title_normal = false;
+        $scope.show_schedule_results_module_title_normal = false;
+
+        $scope.show_index_title_with_back_function = true;
+        $scope.show_schedule_results_module_title_with_back_function = true;
+    };
+
+    $scope.clearSearch = function(model) {
+        $scope.query_data[model] = "";
+    };
+
+    $scope.updateAndPushSchedule = function (transformed_schedule) {
+        reprocessed_schedule = scheduleDownloadAndTransformation.
+        transformSchedule("nearest", transformed_schedule.raw);
+
+        $scope.schedule.nearest = reprocessed_schedule.nearest;
+
+        var nearest_full = {
+            times_and_diffs: []
+        };
+        var nearest_times = reprocessed_schedule.nearest.all;
+        var diffs = scheduleDownloadAndTransformation.
+        calculateTimeDifference(nearest_times);
+        var diff_msgs = scheduleDownloadAndTransformation.
+        addTimeDiffMessages(diffs);
+
+        for (var i=0;i<nearest_times.length;i++) {
+            var time_and_diff = {
+                time: nearest_times[i],
+                diff: diff_msgs[i]
+            };
+            nearest_full.times_and_diffs.push(time_and_diff);
+        }
+
+        $scope.schedule.nearest.times_and_diffs = nearest_full.times_and_diffs;
+
+        $scope.schedule_update_interval = $timeout(function() {
+            $scope.updateAndPushSchedule(reprocessed_schedule);
+        }, 20000);
+    };
+
+    $scope.toggleMapSchedule = function(from_trip_planner, route, stop) {
+
+        /* Closing the map module */
+
+        if ($scope.show_map_overlay_module) {
+
+            $scope.disableMapToggleOnTitles();
+
+            if (from_trip_planner) {
+                //Wait for trip planner's slide animation (1 second in CSS)
+                $timeout(function() {
+                    $scope.map_schedule_toggle = false;
+                    $scope.trip_inputs.start = "";
+                    $scope.trip_inputs.finish = "";
+                }, 1000);
+            }
+            else {
+                $scope.show_map_overlay_module = false;
+                $scope.show_full_schedule_module = false;
+            }
+
+            $scope.body_styles["hide-scroll"] = false;
+            $scope.trip_planner_styles["trip-planner-module-active"] = false;
+        }
+
+        /* Opening the map module */
+
+        else {
+            $scope.show_map_overlay_module =  true;
+            $scope.body_styles["hide-scroll"] = true;
+
+            $scope.enableMapToggleOnTitles();
+
+            if (!from_trip_planner) {
+                scheduleDownloadAndTransformation.downloadSchedule(route, stop).
+                then(function(res) {
+                    var t_schedule = scheduleDownloadAndTransformation.
+                    transformSchedule("nearest", res.data.Today);
+    
+                    $scope.updateAndPushSchedule(t_schedule); 
+                });
+
+                $scope.map_schedule_info.route = route;
+                $scope.map_schedule_info.stop = stop;
+                $scope.cur_center = $scope.stops[stop].LatLng;
+
+                googleMapUtilities.clearMap();
+                googleMapUtilities.setMapPosition($scope.cur_center);
+                googleMapUtilities.displayRoute(route, $scope.routes);
+                googleMapUtilities.displayStops(route, $scope.routes, $scope.stops);
+
+                $scope.show_schedule_result_top_bar = true;
+                $scope.show_schedule_result_top_info_bar = true;
+                $scope.show_schedule_result_top_alert_bar = true;
+                $scope.show_trip_planner_title = false;
+            }
+            else {
+                googleMapUtilities.setMapPosition(null, 10);
+
+                $scope.show_schedule_result_top_bar = false;
+                $scope.show_trip_planner_title = true;
+            }
+        }
+
+    };
+
+    $scope.resetCenter = function() {
+        isr.dom_q.map.inst.setZoom(18);
+        isr.dom_q.map.inst.setCenter($scope.cur_center);
+    };
+
+    $scope.hideMiniScheduleAndAlertBars = function() {
+        $scope.show_schedule_result_top_info_bar = false;
+        $scope.show_schedule_result_top_alert_bar = false;
+    };
+
+    $scope.showMiniScheduleAndAlertBars = function() {
+        $scope.show_schedule_result_top_info_bar = true;
+        $scope.show_schedule_result_top_alert_bar = true;
+    };
+
+    $scope.toggleFullSchedule = function() {
+
+        /* Closing full schedule overlay */
+
+        if ($scope.show_full_schedule_module) {
+            $scope.show_full_schedule_module = false;
+            $scope.schedule_map_styles["hide-scroll"] = true;
+            googleMapUtilities.touchMap();
+
+            $scope.showMiniScheduleAndAlertBars();
+        }
+
+        /* Opening full schedule module */
+
+        else {
+            $scope.full_schedule_date = new Date;
+            $scope.show_full_schedule_module = true;
+            $scope.schedule_map_styles["hide-scroll"] = false;
+
+            $scope.hideMiniScheduleAndAlertBars();
+        }
+
+    };
 
     $scope.clearFilters = function() {
         $scope.bstopFilter.f = "";
@@ -305,14 +400,14 @@ BCTAppTopController.controller('BCTController', ['$scope',
     }
 
     var fullDataDownloadPromise= $q.all([
-        scheduleDownloadService.downloadRouteInfo().then(function(res) {
+        scheduleDownloadAndTransformation.downloadRouteInfo().then(function(res) {
             $scope.route_data = res.data;
             transformRoutes();
         }).
         catch(function() {
             console.log("There was an error retrieving the transit data.");
         }),
-        scheduleDownloadService.downloadStopInfo().then(function(res) {
+        scheduleDownloadAndTransformation.downloadStopInfo().then(function(res) {
             $scope.bstop_data= res.data;
             transformStops();
         }).
@@ -361,11 +456,6 @@ BCTAppTopController.controller('BCTController', ['$scope',
         $scope.stops_arr = all_stops_arr;
     });
 
-    //Defaults are for demonstration purposes only
-    $scope.trip_inputs = {
-        start: "14791 Miramar Pkwy",
-        finish: "12400 Pembroke Rd"
-    };
     $scope.swapTripInputs = function() {
         var old_start = $scope.trip_inputs.start.slice();
         var old_finish = $scope.trip_inputs.finish.slice();
@@ -374,18 +464,9 @@ BCTAppTopController.controller('BCTController', ['$scope',
         $scope.trip_inputs.finish = old_start;
     };
 
-    $scope.routeFilter = { f: "" };
-    $scope.bstopFilter = { f: "" };
-
     $scope.clearFilters = function() {
         $scope.bstopFilter.f = "";
         $scope.routeFilter.f = "";
-    };
-    
-    $scope.agency_filter_icon_selection = {
-        broward: "",
-        miami: "",
-        palm: ""
     };
 
     $scope.enableAgencyFilter = function(agency) {
@@ -409,6 +490,7 @@ BCTAppTopController.controller('BCTController', ['$scope',
                 break;
         }
     };
+
 }]).config(function($routeProvider, $locationProvider) {
     $routeProvider.when('/routeschedules', {
         templateUrl: 'partials/route_schedules.html',
