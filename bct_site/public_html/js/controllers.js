@@ -97,6 +97,8 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
         //For ease of debugging
         window.trip_scope = $scope;
 
+        $scope.dialog_text = "Default dialog text";
+
         $scope.trip_opts = {
             optimize: "QUICK",
             modeswitch: {
@@ -158,6 +160,12 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
                     start_coords,
                     finish_coords
                 ).then(function(res) {
+                    if (!res.data) {
+                        //Successful communication with server, but no trip plan
+                        //i.e. no plan could be found
+                        
+                    }
+
                     $scope.current_trip_plan_data = res.data;
                     googleMapUtilities.displayTripPath(
                         res.data.planField.itinerariesField[0].legsField

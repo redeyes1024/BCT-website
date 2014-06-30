@@ -560,7 +560,6 @@ BCTAppServices.service('googleMapUtilities', [ 'scheduleDownloadAndTransformatio
     };
 
     this.inferZoomFromMaxCoordSpan = function(max_coord_span) {
-        var required_zoom = 0;
 
         /* Force zoom level break points manually here */
 

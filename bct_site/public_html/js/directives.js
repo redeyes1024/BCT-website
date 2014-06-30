@@ -31,8 +31,6 @@ BCTApp.directive('routeResultPanel', [ '$compile', function($compile) {
             var route_id = element[0].childNodes[0].getAttribute("id");
             var panel = document.getElementById(route_id + "-collapse");
             var panel_is_closed = panel.classList.contains("in");
-//            if (scope.loaded_results.routes.indexOf(route_id) !== -1) { return true; }
-//            scope.loaded_results.routes.push(route_id);
             scope.route = scope.routes[route_id];
 
             if (panel_is_closed) {
@@ -65,8 +63,6 @@ BCTApp.directive('stopResultPanel', [ '$compile', function($compile) {
             var stop_id = element[0].childNodes[0].getAttribute("id");
             var panel = document.getElementById(stop_id + "-collapse");
             var panel_is_closed = panel.classList.contains("in");
-//            if (scope.loaded_results.stops.indexOf(stop_id) !== -1) { return true; }
-//            scope.loaded_results.stops.push(stop_id);
             scope.stop = scope.stops[stop_id];
 
             if (panel_is_closed) {
@@ -90,5 +86,17 @@ BCTApp.directive('subPanelStops', [ function() {
     return {
         restrict: 'E',
         templateUrl: 'partials/sub_panel_stops.html'
+    };
+}]);
+
+BCTApp.directive('tripPlannerDialog', [ function() {
+    var template = '' +
+        '<div id="trip-planner-dialog">' +
+            '{{ dialog_text }}' +
+        '<div>';
+
+    return {
+        restrict: 'E',
+        template: template
     };
 }]);
