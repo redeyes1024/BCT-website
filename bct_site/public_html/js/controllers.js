@@ -132,13 +132,26 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
             }
         };
 
+        $scope.transformCoords = function(coords_object) {
+            var lat = coords_object.k;
+            var lng = coords_object.A;
+
+            return {
+                Latitude: lat,
+                Longitude: lng
+            };
+        };
+
         $scope.getTripPlan = function() {
             tripPlannerService.getLatLon(
                 $scope.$parent.trip_inputs.start,
                 $scope.$parent.trip_inputs.finish
             ).then(function(coords) {
-                var start_coords = coords[0].data.results[0].geometry.location;
-                var finish_coords = coords[1].data.results[0].geometry.location;
+                var start_coords_raw = coords[0][0].geometry.location;
+                var finish_coords_raw = coords[1][0].geometry.location;
+
+                var start_coords = $scope.transformCoords(start_coords_raw);
+                var finish_coords = $scope.transformCoords(finish_coords_raw);
 
                 tripPlannerService.getTripPlanPromise(
                     $scope.trip_opts,
@@ -146,10 +159,9 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
                     finish_coords
                 ).then(function(res) {
                     $scope.current_trip_plan_data = res.data;
-                    googleMapUtilities.displayPath(
+                    googleMapUtilities.displayTripPath(
                         res.data.planField.itinerariesField[0].legsField
                     );
-                    //$scope.route_data= res.data[0].Routes;
                 });
             }).
             catch(function() {
@@ -158,11 +170,11 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
         };
 
         $scope.toggleTripOptions = function() {
-            if ($scope.top_scope.show_trip_options) {
-                $scope.top_scope.show_trip_options = false;
+            if ($scope.top_scope.show_trip_planner_options) {
+                $scope.top_scope.show_trip_planner_options = false;
             }
             else {
-                $scope.top_scope.show_trip_options = true;
+                $scope.top_scope.show_trip_planner_options = true;
             }
         };
 

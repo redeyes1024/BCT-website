@@ -476,10 +476,182 @@ BCTAppServices.service('googleMapUtilities', [ 'scheduleDownloadAndTransformatio
         }
     };
 
-    this.displayPath = function(line_data) {
+    this.formatTransitModeResult = function(mode_field, route_field) {
+        var leg_color = "";
+        var route_text = "";
+
+        switch (mode_field) {
+            case "BUS":
+                leg_color = "#017AC2";
+                route_text = "BCT" + route_field;
+                label = "Bus route";
+                break;
+            case "WALK":
+                leg_color = "#000000";
+                route_text = "";
+                label = "Walk";
+                break;
+            case "TRAIN":
+                leg_color = "#009933";
+                route_text = "";
+                label = "Train";
+                break;
+            default:
+                throw (new Error).message = "" +
+                "Invalid transit mode setting: " + lmode_field;
+        }
+
+        return {
+            leg_color: leg_color,
+            route_text: route_text
+        };
+    };
+
+    this.formatReportedDistance = function(raw_distance) {
+        var reported_distance = 0;
+        var reported_distance_unit = "";
+
+        var d_in_yards = raw_distance * 1.0936133;
+
+        if (d_in_yards >= 880) {
+            var d_in_miles = d_in_yards / 1760;
+            reported_distance = d_in_miles.toFixed(1);
+            reported_distance_unit = "miles";
+        }
+        else {
+            reported_distance = d_in_yards.toFixed(0);
+            reported_distance_unit = "yards";
+        }
+
+        return {
+            reported_distance: reported_distance,
+            reported_distance_unit: reported_distance_unit
+        };
+    };
+
+    this.getCoordsMidsAndSpans = function(all_path_coords_divided) {
+        var all_lats = all_path_coords_divided.lats;
+        var all_lngs = all_path_coords_divided.lngs;
+
+        all_lats.sort();
+        all_lngs.sort();
+
+        var lat_min = all_lats[0];
+        var lat_max = all_lats[all_lats.length-1];
+        var lng_min = all_lngs[0];
+        var lng_max = all_lngs[all_lngs.length-1];
+
+        var lat_span = Number((lat_max - lat_min).toFixed(5));
+        var lng_span = Number((lng_max - lng_min).toFixed(5));
+
+        var lat_mid = Number((lat_min + (lat_span / 2)).toFixed(5));
+        var lng_mid = Number((lng_min + (lng_span / 2)).toFixed(5));
+
+        return {
+            lat: {
+                span: lat_span,
+                mid: lat_mid
+            },
+            lng: {
+                span: lng_span,
+                mid: lng_mid
+            }
+        };
+    };
+
+    this.inferZoomFromMaxCoordSpan = function(max_coord_span) {
+        var required_zoom = 0;
+
+        /* Force zoom level break points manually here */
+
+        var span_breakpoints = [
+            {
+                needed_zoom: 16,
+                manual_breakpoint: null
+            },
+            {
+                needed_zoom: 15,
+                manual_breakpoint: null
+            },
+            {
+                needed_zoom: 14,
+                manual_breakpoint: null
+            },
+            {
+                needed_zoom: 13,
+                manual_breakpoint: null
+            },
+            {
+                needed_zoom: 12,
+                manual_breakpoint: null
+            },
+            {
+                needed_zoom: 11,
+                manual_breakpoint: null
+            },
+            {
+                needed_zoom: 10,
+                manual_breakpoint: null
+            },
+            {
+                needed_zoom: 9,
+                manual_breakpoint: null
+            }
+        ];
+
+        /* Calculate zoom level break points automatically
+           Assumes log(2) relationship between breakpoints and zoom levels */
+
+        //Start of breakpoint calculation with lowest zoom (16 in this case)
+        var ZOOM_16_BREAKPOINT = 0.00200;
+
+        for (var i=0;i<span_breakpoints.length;i++) {
+            var power = i;
+
+            span_breakpoints[i].calculated_breakpoint = ZOOM_16_BREAKPOINT *
+                Math.pow(2, power);
+        }
+
+        //Use manual breakpoint if one was chosen, otherwise use calculated
+        for (var i=0;i<span_breakpoints.length;i++) {
+            var cur_zoom_breakpoint = span_breakpoints[i].manual_breakpoint ||
+                                      span_breakpoints[i].calculated_breakpoint;
+
+            if (max_coord_span <= cur_zoom_breakpoint) {
+                return span_breakpoints[i].needed_zoom;
+            }
+        }
+        //Default if coordinate span is too large, as it covers
+        //Broward, Miami-Dade and Palm Beach
+        return 8;
+    };
+
+    this.findBestZoomAndCenter = function(all_path_coords_divided) {
+        var coords_stats = self.getCoordsMidsAndSpans(all_path_coords_divided);
+
+        var center = {
+            lat: coords_stats.lat.mid,
+            lng: coords_stats.lng.mid
+        };
+
+        var max_coord_span = Math.max(coords_stats.lat.span, coords_stats.lng.span);
+
+        var zoom = self.inferZoomFromMaxCoordSpan(max_coord_span);
+
+        return {
+            zoom: zoom,
+            center: center
+        };
+    };
+
+    this.displayTripPath = function(line_data) {
         self.clearMap();
 
         var legs = line_data;
+        var all_path_coords_divided = {
+            lats: [],
+            lngs: []
+        };
 
         for (var i=0;i<legs.length;i++) {
             var path_coords_raw = self.decodePath(legs[i].legGeometryField.pointsField);
@@ -491,32 +663,16 @@ BCTAppServices.service('googleMapUtilities', [ 'scheduleDownloadAndTransformatio
                 LatLng.lat = path_coords_raw[j][0];
                 LatLng.lng = path_coords_raw[j][1];
 
+                all_path_coords_divided.lats.push(path_coords_raw[j][0]);
+                all_path_coords_divided.lngs.push(path_coords_raw[j][1]);
+
                 path_coords.push(LatLng);
             }
 
-            var leg_color = "";
-            var route_text = "";
-
-            switch (legs[i].modeField) {
-                case "BUS":
-                    leg_color = "#017AC2";
-                    route_text = "BCT" + legs[i].routeField;
-                    label = "Bus route";
-                    break;
-                case "WALK":
-                    leg_color = "#000000";
-                    route_text = "";
-                    label = "Walk";
-                    break;
-                case "TRAIN":
-                    leg_color = "#009933";
-                    route_text = "";
-                    label = "Train";
-                    break;
-                default:
-                    throw (new Error).message = "" +
-                    "Invalid transit mode setting: " + legs[i].modeField;
-            }
+            var formattedModeResult = self.formatTransitModeResult(
+                    legs[i].modeField, legs[i].routeField);
+            var leg_color = formattedModeResult.leg_color;
+            var route_text = formattedModeResult.route_text;
 
             var leg_pline = new google.maps.Polyline({
                 map: isr.dom_q.map.inst,
@@ -544,20 +700,9 @@ BCTAppServices.service('googleMapUtilities', [ 'scheduleDownloadAndTransformatio
                 }
             });
 
-            var reported_distance = 0;
-            var reported_distance_unit = "";
-
-            var d_in_yards = legs[i].distanceField * 1.0936133;
-
-            if (d_in_yards >= 880) {
-                var d_in_miles = d_in_yards / 1760;
-                reported_distance = d_in_miles.toFixed(1);
-                reported_distance_unit = "miles";
-            }
-            else {
-                reported_distance = d_in_yards.toFixed(0);
-                reported_distance_unit = "yards";
-            }
+            var formattedDistance = self.formatReportedDistance(legs[i].distanceField);
+            var reported_distance = formattedDistance.reported_distance;
+            var reported_distance_unit = formattedDistance.reported_distance_unit;
 
             var info_cts = '' +
                 '<div class="trip-marker-info-window">' +
@@ -614,6 +759,9 @@ BCTAppServices.service('googleMapUtilities', [ 'scheduleDownloadAndTransformatio
                 'click',
                 isr.dom_q.map.overlays.trip_points[i].ShowWindow.func);
         }
+        var best_zoom_and_center = self.findBestZoomAndCenter(all_path_coords_divided);
+        isr.dom_q.map.inst.setZoom(best_zoom_and_center.zoom);
+        isr.dom_q.map.inst.setCenter(best_zoom_and_center.center);
     };
 
     this.decodePath = function(encoded) {
@@ -664,30 +812,29 @@ BCTAppServices.service('tripPlannerService', [ '$http', '$q',
     function($http, $q) {
 
     var self = this;
+    var geocoder = new google.maps.Geocoder;
+
+    this.geocodeAddress = function(query_address) {
+        var deferred = $q.defer();
+
+        geocoder.geocode(
+            { 'address': query_address },
+            function(results, status) {
+                if (status === google.maps.GeocoderStatus.OK) {
+                    deferred.resolve(results);
+                }
+                else {
+                    console.log(status);
+                }
+            }
+        );
+        return deferred.promise;
+    };
 
     this.getLatLon = function(start, finish) {
-        var head = "https://maps.googleapis.com/maps/api/geocode/json?address=";
-        var api_key = "AIzaSyCXxtwuyy3k9Ot5d44hgjHQt4kkg5KZ5Hw";
-        var region = "Broward+County";
-        var state = "FL";
-
-        var tail = ",+" + region + ",+" + state + "&key" + api_key;
-
-        start = start.split(" ").join("+");
-        finish = finish.split(" ").join("+");
-
-        url_s = head + start + tail;
-        url_f = head + finish + tail;
-
         return $q.all([
-            $http({
-                method: 'GET',
-                url: url_s
-            }),
-            $http({
-                method: 'GET',
-                url: url_f
-            })
+            self.geocodeAddress(start),
+            self.geocodeAddress(finish)
         ]);
     };
 
@@ -708,14 +855,6 @@ BCTAppServices.service('tripPlannerService', [ '$http', '$q',
             if (trip_opts.modeswitch[mode] === true) {
                 modearr.push(mode.toUpperCase());
             }
-        }
-
-        for (var i=0;i<coord_objs.length;i++) {
-            coord_objs[i]["Latitude"] = coord_objs[i]["lat"];
-            coord_objs[i]["Longitude"] = coord_objs[i]["lng"];
-
-            delete coord_objs[i]["lat"];
-            delete coord_objs[i]["lng"];
         }
 
         return $http({
