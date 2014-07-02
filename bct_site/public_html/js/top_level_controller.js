@@ -31,6 +31,14 @@ BCTAppTopController.controller('BCTController', ['$scope',
         "planner-pref-pushed": false
     };
 
+    $scope.planner_dialog_styles = {
+        "trip-planner-dialog-start": false,
+        "trip-planner-dialog-finish": false,
+        "trip-planner-dialog-centered": false,
+        "trip-planner-dialog-faded-in": false,
+        "trip-planner-dialog-faded-out": true
+    };
+
     /* END CSS class expressions to be used to ng-class, with defaults */
 
     /* START Overlay Display Controls */
@@ -51,6 +59,10 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
     $scope.show_trip_planner_title = false;
     $scope.show_trip_planner_options = false;
+
+    $scope.show_geocoder_error_dialog = false;
+
+    $scope.show_trip_planner_itinerary_selector = true;
 
     $scope.show_schedule_results_module_title_normal = true;
     $scope.show_schedule_results_module_title_with_back_function = false;
@@ -250,9 +262,14 @@ BCTAppTopController.controller('BCTController', ['$scope',
             if (!from_trip_planner) {
                 scheduleDownloadAndTransformation.downloadSchedule(route, stop).
                 then(function(res) {
+                    if (!res.data.Today) {
+                        console.log("Schedule loading error.")
+                        return false;
+                    }
+
                     var t_schedule = scheduleDownloadAndTransformation.
                     transformSchedule("nearest", res.data.Today);
-    
+
                     $scope.updateAndPushSchedule(t_schedule); 
                 });
 

@@ -38,6 +38,7 @@ BCTAppServices.service('scheduleSocketService', ['$q', 'scheduleWebSocket',
 
 BCTAppServices.service('nearestTimeService', [ function() {
     var self = this;
+
     this.convertToTime = function(time_int) {
         var int_arr = String(time_int).split("")
         int_arr.splice(-2,0,":");
@@ -273,8 +274,70 @@ BCTAppServices.service('scheduleDownloadAndTransformation', ['$http', '$q', 'nea
     };
 }]);
 
+BCTAppServices.service('unitConversionAndDataReporting', [ function() {
+
+    this.formatReportedDistance = function(raw_distance) {
+        var reported_distance = 0;
+        var reported_distance_unit = "";
+
+        var d_in_yards = raw_distance * 1.0936133;
+
+        if (d_in_yards >= 880) {
+            var d_in_miles = d_in_yards / 1760;
+            reported_distance = d_in_miles.toFixed(1);
+            reported_distance_unit = "miles";
+        }
+        else {
+            reported_distance = d_in_yards.toFixed(0);
+            reported_distance_unit = "yards";
+        }
+
+        return {
+            reported_distance: reported_distance,
+            reported_distance_unit: reported_distance_unit
+        };
+    };
+
+    this.formatReportedDuration = function(raw_duration) {
+        var minutes_count =  (raw_duration / 1000 / 60).toFixed(0);
+        var minutes_label = " minute";
+        var mins_plural = "s";
+
+        var hours_label = "";
+        var hours_count = "";
+        var hours_plural = "s";
+
+        var divider = ", ";
+
+        if (Number(minutes_count) > 59) {
+            hours_count = String(parseInt(minutes_count / 60));
+            minutes_count = String(minutes_count % 60);
+
+            hours_label = " hour";
+        }
+        else {
+            hours_plural = "";
+            divider = "";
+        }
+
+        if (minutes_count === "1") {
+            mins_plural = "";
+        }
+        if (hours_count === "1") {
+            hours_plural = "";
+        }
+
+        var formatted_duration = hours_count + hours_label + hours_plural +
+            divider + minutes_count + minutes_label + mins_plural;
+
+        return formatted_duration;
+    };
+
+}]);
+
 BCTAppServices.service('googleMapUtilities', [ 'scheduleDownloadAndTransformation',
-    function(scheduleDownloadAndTransformation) {
+    'unitConversionAndDataReporting',
+    function(scheduleDownloadAndTransformation, unitConversionAndDataReporting) {
     var self = this;
 
     this.mapMaker = function(container, lat, lng) {
@@ -395,7 +458,8 @@ BCTAppServices.service('googleMapUtilities', [ 'scheduleDownloadAndTransformatio
                 icon: {
                     path: google.maps.SymbolPath.CIRCLE,
                     scale: 10,
-                    strokeColor: "#C14E4E",
+                    //strokeColor: "#C14E4E",
+                    strokeColor: "#017AC2",
                     strokeWeight: 4
                 }
             });
@@ -507,28 +571,6 @@ BCTAppServices.service('googleMapUtilities', [ 'scheduleDownloadAndTransformatio
         };
     };
 
-    this.formatReportedDistance = function(raw_distance) {
-        var reported_distance = 0;
-        var reported_distance_unit = "";
-
-        var d_in_yards = raw_distance * 1.0936133;
-
-        if (d_in_yards >= 880) {
-            var d_in_miles = d_in_yards / 1760;
-            reported_distance = d_in_miles.toFixed(1);
-            reported_distance_unit = "miles";
-        }
-        else {
-            reported_distance = d_in_yards.toFixed(0);
-            reported_distance_unit = "yards";
-        }
-
-        return {
-            reported_distance: reported_distance,
-            reported_distance_unit: reported_distance_unit
-        };
-    };
-
     this.getCoordsMidsAndSpans = function(all_path_coords_divided) {
         var all_lats = all_path_coords_divided.lats;
         var all_lngs = all_path_coords_divided.lngs;
@@ -549,11 +591,11 @@ BCTAppServices.service('googleMapUtilities', [ 'scheduleDownloadAndTransformatio
 
         return {
             lat: {
-                span: lat_span,
+                span: Math.abs(lat_span),
                 mid: lat_mid
             },
             lng: {
-                span: lng_span,
+                span: Math.abs(lng_span),
                 mid: lng_mid
             }
         };
@@ -602,13 +644,32 @@ BCTAppServices.service('googleMapUtilities', [ 'scheduleDownloadAndTransformatio
            Assumes log(2) relationship between breakpoints and zoom levels */
 
         //Start of breakpoint calculation with lowest zoom (16 in this case)
-        var ZOOM_16_BREAKPOINT = 0.00200;
+        //Increase this slightly if you need more room on edges of plan path
+        var ZOOM_16_BREAKPOINT = 0.01200;
 
         for (var i=0;i<span_breakpoints.length;i++) {
             var power = i;
 
             span_breakpoints[i].calculated_breakpoint = ZOOM_16_BREAKPOINT *
                 Math.pow(2, power);
+        }
+
+        //Factor in window/device width into required zoom breakpoint calculation
+        //This is the calibration value, and is arbitrarily assigned to 1.0
+        //e.g.: map canvas is 600px wide at some zoom (14) --> 1.0
+        //      map canvas is 300px wide at some zoom (14) --> 0.5
+        var ZOOM_14_SPAN_0_5_MAP_WIDTH = 600;
+
+        var map_width = isr.dom_q.map.cont.clientWidth;
+        var map_width_calibration_ratio = Number(
+            map_width / ZOOM_14_SPAN_0_5_MAP_WIDTH).
+            toFixed(1);
+
+        for (var j=0;j<span_breakpoints.length;j++) {
+            var old_breakpoint = span_breakpoints[j].calculated_breakpoint;
+
+            span_breakpoints[j].calculated_breakpoint = old_breakpoint *
+                map_width_calibration_ratio;
         }
 
         //Use manual breakpoint if one was chosen, otherwise use calculated
@@ -694,12 +755,14 @@ BCTAppServices.service('googleMapUtilities', [ 'scheduleDownloadAndTransformatio
                 icon: {
                     path: google.maps.SymbolPath.CIRCLE,
                     scale: 10,
-                    strokeColor: "#C14E4E",
+                    //strokeColor: "#C14E4E",
+                    strokeColor: "#017AC2",
                     strokeWeight: 4
                 }
             });
 
-            var formattedDistance = self.formatReportedDistance(legs[i].distanceField);
+            var formattedDistance = unitConversionAndDataReporting.
+                formatReportedDistance(legs[i].distanceField);
             var reported_distance = formattedDistance.reported_distance;
             var reported_distance_unit = formattedDistance.reported_distance_unit;
 
@@ -806,7 +869,7 @@ BCTAppServices.service('googleMapUtilities', [ 'scheduleDownloadAndTransformatio
         return array;
     };
 }]);
-    
+
 BCTAppServices.service('tripPlannerService', [ '$http', '$q',
     function($http, $q) {
 
@@ -814,6 +877,7 @@ BCTAppServices.service('tripPlannerService', [ '$http', '$q',
     var geocoder = new google.maps.Geocoder;
 
     this.geocodeAddress = function(query_address) {
+
         var deferred = $q.defer();
 
         geocoder.geocode(
@@ -823,18 +887,28 @@ BCTAppServices.service('tripPlannerService', [ '$http', '$q',
                     deferred.resolve(results);
                 }
                 else {
-                    console.log(status);
+                    deferred.resolve(status);
                 }
             }
         );
         return deferred.promise;
     };
 
-    this.getLatLon = function(start, finish) {
+    this.getLatLon = function(start_input_string, finish_input_string) {
         return $q.all([
-            self.geocodeAddress(start),
-            self.geocodeAddress(finish)
+            self.geocodeAddress(start_input_string),
+            self.geocodeAddress(finish_input_string)
         ]);
+    };
+
+    this.transformGeocodeCoords = function(coords_object) {
+        var lat = coords_object.lat();
+        var lng = coords_object.lng();
+
+        return {
+            Latitude: lat,
+            Longitude: lng
+        };
     };
 
     this.getTripPlanPromise = function(trip_opts, start, finish) {

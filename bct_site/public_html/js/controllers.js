@@ -93,11 +93,13 @@ BCTAppControllers.controller('indexController', ['$scope',
 
 BCTAppControllers.controller('tripPlannerController', ['$scope',
     'googleMapUtilities', '$timeout', 'tripPlannerService',
-    function ($scope, googleMapUtilities, $timeout, tripPlannerService) {
+    'unitConversionAndDataReporting',
+    function ($scope, googleMapUtilities, $timeout, tripPlannerService,
+        unitConversionAndDataReporting) {
         //For ease of debugging
         window.trip_scope = $scope;
 
-        $scope.dialog_text = "Default dialog text";
+        $scope.geocoder_error_dialog_text = "Default dialog text";
 
         $scope.trip_opts = {
             optimize: "QUICK",
@@ -116,32 +118,127 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
         $scope.top_scope.schedule_map_styles["schedule-map-planner"] = true;
         $scope.top_scope.schedule_map_styles["schedule-map-overlay"] = false;
 
-        //Placeholder trip plan itinerary labels
-        //Deleted after successful trip plan request
-        $scope.current_trip_plan_data = {
-            planField: {
-                itinerariesField: [
-                    {
-                        loading: "Loading..."
-                    },
-                    {
-                        loading: "Loading..."
-                    },
-                    {
-                        loading: "Loading..."
-                    }
-                ]
+        $scope.planner_error_alert_dialog_hide_in_progress = false;
+
+        $scope.GEOCODER_ERROR_ALERT_DIALOG_HIDE_DELAY = 3000;
+        $scope.GEOCODER_ERROR_ALERT_DIALOG_TEXT_NOT_FOUND = "Location not found.";
+        $scope.GEOCODER_ERROR_ALERT_DIALOG_TEXT_OVER_LIMIT = "Please wait before posting again.";
+
+        $scope.alertUserToGeocoderErrors = function(input_field_name, error_status) {
+            var dialog_styles = $scope.top_scope.planner_dialog_styles;
+
+            if (error_status === "ZERO_RESULTS") {
+                $scope.geocoder_error_dialog_text = $scope.GEOCODER_ERROR_ALERT_DIALOG_TEXT_NOT_FOUND;
+                dialog_styles["trip-planner-dialog-centered"] = false;
+                
+                switch (input_field_name) {
+                case "start":
+                    dialog_styles["trip-planner-dialog-finish"] = false;
+                    dialog_styles["trip-planner-dialog-start"] = true;
+                    break;
+                case "finish":
+                    dialog_styles["trip-planner-dialog-start"] = false;
+                    dialog_styles["trip-planner-dialog-finish"] = true;
+                    break;
+                }
             }
+            else if (error_status === "OVER_QUERY_LIMIT") {
+                $scope.geocoder_error_dialog_text = $scope.GEOCODER_ERROR_ALERT_DIALOG_TEXT_OVER_LIMIT;
+                dialog_styles["trip-planner-dialog-centered"] = true;
+
+                dialog_styles["trip-planner-dialog-finish"] = false;
+                dialog_styles["trip-planner-dialog-start"] = false;
+            }
+
+            $scope.top_scope.show_geocoder_error_dialog = true;
+
+            $timeout(function() {
+                dialog_styles["trip-planner-dialog-faded-out"] = false;
+                dialog_styles["trip-planner-dialog-faded-in"] = true;
+            }, 200);
+
+            $timeout.cancel($scope.geocoder_error_dialog_timeout);
+
+            $scope.geocoder_error_dialog_timeout = $timeout(function() {
+                dialog_styles["trip-planner-dialog-faded-in"] = false;
+                dialog_styles["trip-planner-dialog-faded-out"] = true;
+                $timeout(function() {
+                    $scope.top_scope.show_geocoder_error_dialog = false;
+                }, 1000);
+            }, $scope.GEOCODER_ERROR_ALERT_DIALOG_HIDE_DELAY);
         };
 
-        $scope.transformCoords = function(coords_object) {
-            var lat = coords_object.k;
-            var lng = coords_object.A;
+        $scope.TRIP_PLANNER_ERROR_TEXT_NO_PLAN_FOUND = "No trip plan found.";
 
-            return {
-                Latitude: lat,
-                Longitude: lng
-            };
+        $scope.alertUserToTripPlannerErrors = function(error_field) {
+            var dialog_styles = $scope.top_scope.planner_dialog_styles;
+
+            if ($scope.planner_error_alert_dialog_hide_in_progress ||
+                dialog_styles["trip-planner-dialog-faded-in"]) {
+                return false;
+            }
+
+            $scope.geocoder_error_dialog_text = $scope.TRIP_PLANNER_ERROR_TEXT_NO_PLAN_FOUND;
+            dialog_styles["trip-planner-dialog-centered"] = true;
+
+            dialog_styles["trip-planner-dialog-finish"] = false;
+            dialog_styles["trip-planner-dialog-start"] = false;
+
+            $scope.top_scope.show_geocoder_error_dialog = true;
+
+            $timeout(function() {
+                dialog_styles["trip-planner-dialog-faded-out"] = false;
+                dialog_styles["trip-planner-dialog-faded-in"] = true;
+            }, 200);
+            
+            $scope.geocoder_error_dialog_timeout = $timeout(function() {
+                dialog_styles["trip-planner-dialog-faded-in"] = false;
+                dialog_styles["trip-planner-dialog-faded-out"] = true;
+
+                $scope.planner_error_alert_dialog_hide_in_progress = true;
+
+                $timeout(function() {
+                    $scope.top_scope.show_geocoder_error_dialog = false;
+                    $scope.planner_error_alert_dialog_hide_in_progress = false;
+                }, 1000);
+            }, $scope.GEOCODER_ERROR_ALERT_DIALOG_HIDE_DELAY);
+
+            console.log("Trip planner error: " + error_field.idField);
+        };
+
+        $scope.checkForGeocoderErrors = function(coords) {
+            if (typeof(coords[0]) === "string") {
+                $scope.alertUserToGeocoderErrors("start", coords[0]);
+                return false;
+            } else if (typeof(coords[1]) === "string") {
+                $scope.alertUserToGeocoderErrors("finish", coords[1]);
+                return false;
+            }
+            return true;
+        };
+
+        //Placeholder trip plan itinerary labels
+        //Deleted after successful trip plan request
+        $scope.current_trip_plan_data = [
+            {
+                loading: "Loading..."
+            },
+            {
+                loading: "Loading..."
+            },
+            {
+                loading: "Loading..."
+            }
+        ];
+
+        $scope.formatRawTripStats = function(all_itineraries) {
+
+            for (var i=0;i<all_itineraries.length;i++) {
+                all_itineraries[i].durationField = unitConversionAndDataReporting.
+                    formatReportedDuration(all_itineraries[i].durationField);
+            }
+
+            return all_itineraries;
         };
 
         $scope.getTripPlan = function() {
@@ -149,26 +246,30 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
                 $scope.$parent.trip_inputs.start,
                 $scope.$parent.trip_inputs.finish
             ).then(function(coords) {
+                if (!$scope.checkForGeocoderErrors(coords)) { return false; }
+
                 var start_coords_raw = coords[0][0].geometry.location;
                 var finish_coords_raw = coords[1][0].geometry.location;
 
-                var start_coords = $scope.transformCoords(start_coords_raw);
-                var finish_coords = $scope.transformCoords(finish_coords_raw);
+                var start_coords = tripPlannerService.
+                    transformGeocodeCoords(start_coords_raw);
+                var finish_coords = tripPlannerService.
+                    transformGeocodeCoords(finish_coords_raw);
 
                 tripPlannerService.getTripPlanPromise(
                     $scope.trip_opts,
                     start_coords,
                     finish_coords
                 ).then(function(res) {
-                    if (!res.data) {
-                        //Successful communication with server, but no trip plan
-                        //i.e. no plan could be found
-                        
+                    if (!res.data.planField) {
+                        $scope.alertUserToTripPlannerErrors(res.data.errorField);
+                        return false;
                     }
 
-                    $scope.current_trip_plan_data = res.data;
+                    $scope.current_trip_plan_data = $scope.formatRawTripStats(
+                        res.data.planField.itinerariesField);
                     googleMapUtilities.displayTripPath(
-                        res.data.planField.itinerariesField[0].legsField
+                        $scope.current_trip_plan_data[0].legsField
                     );
                 });
             }).

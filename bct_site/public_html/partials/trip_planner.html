@@ -123,7 +123,7 @@
         <span id="trip-planner-itinerary-selector-title">Select An Itinerary</span>
             <div id="trip-planner-itinerary-panel-area">
             <div class="trip-planner-itinerary-panel no-highlight ptr"
-                ng-repeat="itinerary in current_trip_plan_data.planField.itinerariesField">
+                ng-repeat="itinerary in current_trip_plan_data">
                 {{ itinerary.loading }}
                 <span class="trip-planer-itinerary-step"
                     ng-repeat="leg in itinerary.legsField">
@@ -132,6 +132,18 @@
                         >
                     </span>
                 </span>
+                <div>
+                    {{ itinerary.startTimeField }} --> {{ itinerary.endTimeField }}
+                </div>
+                <div>
+                    Time:
+                    {{ itinerary.durationField }}
+                </div>
+                <div>
+                    Fare:
+                    {{ (itinerary.fareField.fare1Field[0].valueField.centsField / 100).toFixed(2) }}
+                    $
+                </div>
             </div>
         </div>
     </div>

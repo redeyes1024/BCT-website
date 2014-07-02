@@ -664,24 +664,6 @@ em.hint-text {
     top: calc(-7.5em + 5px);
     left: 0em;
 }
-@media (max-width: 490px) {
-    #planner-top-inputs {
-        display: block;
-        border-spacing: 0px;
-    }
-    #planner-mobile-controls {
-        display: table;
-    }
-    .planner-embed-option {
-        display: none;
-    }
-    #start-input,
-    #finish-input {
-        display: table;
-        width: 100%;
-        margin: 0em 0em 0.5em;
-    }
-}
 .trip-marker-info-window {
     width: 14em;
     display: table;
@@ -768,25 +750,81 @@ em.hint-text {
     
 }
 #trip-planner-dialog {
-    width: 20em;
     background-color: #F2CD00;
     position: fixed;
-    left: 4em;
     z-index: 1029;
     border-radius: 10px;
     padding: 0.5em;
     -webkit-transition: opacity 1s;
     transition: opacity 1s;
 }
-#trip-planner-dialog:after {
+.trip-planner-dialog-start,
+.trip-planner-dialog-finish {
+    bottom: 15.5em;
+}
+.trip-planner-dialog-start {
+    left: calc(5% + 4em);
+}
+.trip-planner-dialog-finish {
+    left: calc(45% + 5em);
+}
+.trip-planner-dialog-start:after,
+.trip-planner-dialog-finish:after,
+.trip-planner-dialog-centered:after {
     content: "";
     position: absolute;
-    left: 1em;
     width: 0px;
     border-width: 1.5em 0.75em 0em;
     border-style: solid;
     border-color: #F2CD00 transparent;
     top: calc(2.5em - 1px);
+    left: 1em;
+}
+.trip-planner-dialog-centered {
+    left: calc(50% - 7.5em);
+    bottom: calc(12.5em - 3px);
+    width: 15em;
+    text-align: center;
+}
+.trip-planner-dialog-centered:after {
+    border-style: none;
+}
+@media (max-width: 490px) {
+    #planner-top-inputs {
+        display: block;
+        border-spacing: 0px;
+    }
+    #planner-mobile-controls {
+        display: table;
+    }
+    .planner-embed-option {
+        display: none;
+    }
+    #start-input,
+    #finish-input {
+        display: table;
+        width: 100%;
+        margin: 0em 0em 0.5em;
+    }
+    .trip-planner-dialog-start,
+    .trip-planner-dialog-finish {
+        left: 4em;
+    }
+    .trip-planner-dialog-start {
+        bottom: 12em;
+    }
+    .trip-planner-dialog-finish {
+        bottom: 9.5em;
+    }
+    .trip-planner-dialog-centered {
+        bottom: 8em;
+    }
+}
+.trip-planner-dialog-faded-out {
+    opacity: 0;
+}
+.trip-planner-dialog-faded-in {
+    opacity: 1;
 }
 
 /* END Trip Planner */

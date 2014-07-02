@@ -91,8 +91,9 @@ BCTApp.directive('subPanelStops', [ function() {
 
 BCTApp.directive('tripPlannerDialog', [ function() {
     var template = '' +
-        '<div id="trip-planner-dialog">' +
-            '{{ dialog_text }}' +
+        '<div id="trip-planner-dialog" ng-class="planner_dialog_styles"' +
+            'ng-show="show_geocoder_error_dialog">' +
+            '{{ geocoder_error_dialog_text }}' +
         '<div>';
 
     return {
