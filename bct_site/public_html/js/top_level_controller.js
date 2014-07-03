@@ -39,6 +39,18 @@ BCTAppTopController.controller('BCTController', ['$scope',
         "trip-planner-dialog-faded-out": true
     };
 
+    $scope.itinerary_selector_styles = {
+        "trip-planner-itinerary-selector-pushed": false
+    };
+
+    $scope.itinerary_selector_panel_styles = {
+        "trip-planner-itinerary-panel-smaller": false
+    };
+
+    $scope.itinerary_selector_modal_styles = {
+        "trip-planner-itinerary-selector-modal-smaller": false
+    };
+
     /* END CSS class expressions to be used to ng-class, with defaults */
 
     /* START Overlay Display Controls */
@@ -62,7 +74,8 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
     $scope.show_geocoder_error_dialog = false;
 
-    $scope.show_trip_planner_itinerary_selector = true;
+    $scope.show_trip_planner_itinerary_selector = false;
+    $scope.show_trip_planner_itinerary_labels = false;
 
     $scope.show_schedule_results_module_title_normal = true;
     $scope.show_schedule_results_module_title_with_back_function = false;
@@ -120,6 +133,30 @@ BCTAppTopController.controller('BCTController', ['$scope',
                     });
             }
         });
+    });
+
+    //Itinerary selector's initial appearance and hiding associated with planner
+    $scope.$watch("show_trip_planner_title", function(new_val, old_val) {
+        if (new_val > old_val) {
+            $scope.show_trip_planner_itinerary_selector = true;
+        }
+        else if (new_val < old_val) {
+            $scope.show_trip_planner_itinerary_selector = false;
+        }
+    });
+
+    //Trip planner option menu pushes and compresses itinerary selector
+    $scope.$watch("show_trip_planner_options", function(new_val, old_val) {
+        if (new_val > old_val) {
+            $scope.itinerary_selector_modal_styles["trip-planner-itinerary-selector-modal-smaller"] = true;
+            $scope.itinerary_selector_styles["trip-planner-itinerary-selector-pushed"] = true;
+            $scope.itinerary_selector_panel_styles["trip-planner-itinerary-panel-smaller"] = true;
+        }
+        else if (new_val < old_val) {
+            $scope.itinerary_selector_modal_styles["trip-planner-itinerary-selector-modal-smaller"] = false;
+            $scope.itinerary_selector_styles["trip-planner-itinerary-selector-pushed"] = false;
+            $scope.itinerary_selector_panel_styles["trip-planner-itinerary-panel-smaller"] = false;
+        }
     });
 
     /* END Custom Watchers */

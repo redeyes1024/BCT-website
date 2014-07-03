@@ -333,6 +333,27 @@ BCTAppServices.service('unitConversionAndDataReporting', [ function() {
         return formatted_duration;
     };
 
+    this.formatReportedDate = function(raw_date) {
+        var current_date_ISO = (new Date).toISOString();
+
+        var input_date_time = raw_date.slice(11, 16);
+        var current_date_time = current_date_ISO.slice(11, 16);
+
+        var input_date_yymmdd = raw_date.slice(0, 10);
+        var current_date_yymmdd = current_date_ISO.slice(0, 10);
+
+        var start = "";
+        //var start = input_date_yymmdd;
+
+        if (input_date_yymmdd === current_date_yymmdd) {
+            start = "";
+        }
+
+        var formatted_date = start + " " + input_date_time;
+
+        return formatted_date;
+    };
+
 }]);
 
 BCTAppServices.service('googleMapUtilities', [ 'scheduleDownloadAndTransformation',
