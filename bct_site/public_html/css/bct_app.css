@@ -1,3 +1,5 @@
+/* START Generic Classes */
+
 .ptr {
     cursor: pointer !important;
 }
@@ -62,6 +64,11 @@ em.hint-text {
     color: orangered;
     font-weight: 400;
 }
+.text-shadow-hover:hover {
+    text-shadow: 0px 0px 12px;
+}
+
+/* END Generic Classes */
 
 /* START Index Page */
 
@@ -204,17 +211,16 @@ em.hint-text {
 }
 #schedule-map-mini-schedule-time-group {
     display: inline-table;
-    height: 100%
+    height: 4em;
 }
 .schedule-map-mini-schedule-time:first-child {
     background-color: #CCC;
     border-left: 0px;
 }
 .schedule-map-mini-schedule-time {
-    height: 100%;
     width: 50em;
     display: table-cell;
-    font-weight: bold;
+    font-weight: 400;
     border-width: 0px 1px;
 }
 #schedule-map-alert-area {

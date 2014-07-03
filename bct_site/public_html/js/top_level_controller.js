@@ -2,9 +2,11 @@ var BCTAppTopController = angular.module('BCTAppTopController', []);
 
 BCTAppTopController.controller('BCTController', ['$scope',
     '$timeout', 'scheduleWebSocket', 'scheduleSocketService',
-    'scheduleDownloadAndTransformation', 'googleMapUtilities', '$q', '$interval',
+    'scheduleDownloadAndTransformation', 'googleMapUtilities', '$q',
+    '$interval', 'unitConversionAndDataReporting', 'miniScheduleService',
     function ($scope, $timeout, scheduleWebSocket, scheduleSocketService,
-    scheduleDownloadAndTransformation, googleMapUtilities, $q, $interval) {
+    scheduleDownloadAndTransformation, googleMapUtilities, $q, $interval,
+    unitConversionAndDataReporting, miniScheduleService) {
 
     //For ease of debugging
     window.main_scope = $scope;
@@ -233,6 +235,11 @@ BCTAppTopController.controller('BCTController', ['$scope',
         $scope.query_data[model] = "";
     };
 
+    $scope.mini_schedule_loading_template = miniScheduleService.
+        makeMiniScheduleLoadingTemplate();
+
+    $scope.schedule.nearest.times_and_diffs = $scope.mini_schedule_loading_template;
+
     $scope.updateAndPushSchedule = function (transformed_schedule) {
         reprocessed_schedule = scheduleDownloadAndTransformation.
         transformSchedule("nearest", transformed_schedule.raw);
@@ -245,7 +252,7 @@ BCTAppTopController.controller('BCTController', ['$scope',
         var nearest_times = reprocessed_schedule.nearest.all;
         var diffs = scheduleDownloadAndTransformation.
         calculateTimeDifference(nearest_times);
-        var diff_msgs = scheduleDownloadAndTransformation.
+        var diff_msgs = unitConversionAndDataReporting.
         addTimeDiffMessages(diffs);
 
         for (var i=0;i<nearest_times.length;i++) {

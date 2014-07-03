@@ -4,6 +4,7 @@ BCTAppServices.value('scheduleWebSocket', new WebSocket("ws://echo.websocket.org
 
 BCTAppServices.service('scheduleSocketService', ['$q', 'scheduleWebSocket',
     function($q, scheduleWebSocket) {
+
     var self = this;
     var currentCallbackId = 0;
     //this.callbacks = {};
@@ -36,7 +37,8 @@ BCTAppServices.service('scheduleSocketService', ['$q', 'scheduleWebSocket',
     };
 }]);
 
-BCTAppServices.service('nearestTimeService', [ function() {
+BCTAppServices.service('miniScheduleService', [ function() {
+
     var self = this;
 
     this.convertToTime = function(time_int) {
@@ -45,13 +47,34 @@ BCTAppServices.service('nearestTimeService', [ function() {
 
         return int_arr.join("");
     };
+
+    this.mini_schedule_quantity_defaults = {
+        before_times: 1,
+        after_times: 3,
+        total_times: this.after_times + this.before_times
+    };
+
+    this.makeMiniScheduleLoadingTemplate = function() {
+        var mini_schedule_loading_template = [];
+
+        for (var i=0;i<self.mini_schedule_quantity_defaults.total_times;i++) {
+            var time_holder = {
+                time: "Loading...",
+                diff: ""
+            };
+            mini_schedule_loading_template.push(time_holder);
+        }
+
+        return mini_schedule_loading_template;
+    };
+
     this.getNearestTimes = function(time, times, bef, aft) {
         if (!bef) {
-            var bef = 1;
-            var aft = 3;
+            var bef = self.mini_schedule_quantity_defaults.before_times;
+            var aft = self.mini_schedule_quantity_defaults.after_times;
         }
         else if (!aft) {
-            var aft = 3;
+            var aft = self.mini_schedule_quantity_defaults.after_times;
         }
         
         var times_int = times.map(function(a) { return parseInt(a.replace(/:/,"")) })
@@ -80,10 +103,11 @@ BCTAppServices.service('nearestTimeService', [ function() {
 
         return nearest;
     };
+
 }]);
 
-BCTAppServices.service('scheduleDownloadAndTransformation', ['$http', '$q', 'nearestTimeService',
-    function($http, $q, nearestTimeService) {
+BCTAppServices.service('scheduleDownloadAndTransformation', ['$http', '$q', 'miniScheduleService',
+    function($http, $q, miniScheduleService) {
     //TO DO: Backend will create "booking version" string for all data sets;
     //It will be requested and compared to see if and what data needs to be updated
     var self = this;
@@ -115,6 +139,7 @@ BCTAppServices.service('scheduleDownloadAndTransformation', ['$http', '$q', 'nea
             }
         });
     };
+
     this.downloadStopInfo = function() {
         if (localStorage.stop_data) {
             var deferred = $q.defer();
@@ -142,6 +167,7 @@ BCTAppServices.service('scheduleDownloadAndTransformation', ['$http', '$q', 'nea
             }
         });
     };
+
     this.downloadSchedule = function(route, stop, date) {
         if (!date) {
             var date = new Date;
@@ -179,7 +205,7 @@ BCTAppServices.service('scheduleDownloadAndTransformation', ['$http', '$q', 'nea
         }
         switch (output_type) {
             case "nearest":
-                schedule_output.nearest = nearestTimeService.getNearestTimes(
+                schedule_output.nearest = miniScheduleService.getNearestTimes(
                     now, departures);
                 schedule_output.nearest.all = schedule_output.nearest.
                     prev_times.concat(schedule_output.nearest.next_times);
@@ -212,69 +238,11 @@ BCTAppServices.service('scheduleDownloadAndTransformation', ['$http', '$q', 'nea
         }
         return diff_arr;
     };
-
-    this.addTimeDiffMessages = function(diff_arr) {
-        var message_arr = [];
-
-        for (var i=0;i<diff_arr.length;i++) {
-            var time_diff_message = "";
-            var start_text = "";
-            var end_text = "";
-            var number_of_minutes = "";
-            var time_unit = " minute";
-            var plural_modifier = "s";
-
-            if (diff_arr[i] < 0) {
-                number_of_minutes = diff_arr[i] * -1;
-                end_text = " ago";
-            }
-            else if (diff_arr[i] > 0) {
-                number_of_minutes = diff_arr[i];
-                start_text = "in ";
-            }
-            else if (diff_arr[i] === 0) {
-                time_unit = "";
-                plural_modifier = "";
-                start_text = "about now";
-            }
-
-            if(Math.abs(diff_arr[i]) === 1) {
-                plural_modifier = "";
-            }
-
-            time_diff_message += start_text + number_of_minutes +
-                time_unit + plural_modifier + end_text;
-
-            message_arr.push(time_diff_message);
-        }
-        return message_arr;
-    };
-
-    this.updateTimeDifferences = function(nearest) {
-        var new_nearest_full = [];
-        var nearest_times = [];
-
-        for (var i=0;i<nearest.length;i++) {
-            nearest_times.push(nearest[i].time);
-        }
-
-        var new_diffs = self.calculateTimeDifference(nearest_times);
-        var new_diff_msgs = self.addTimeDiffMessages(new_diffs);
-
-        for (var j=0;j<nearest.length;j++) {
-            var new_nearest_time_diff = {
-                time: nearest_times[j],
-                diff: new_diff_msgs[j]
-            };
-
-            new_nearest_full.push(new_nearest_time_diff);
-        }
-
-        return new_nearest_full;
-    };
 }]);
 
 BCTAppServices.service('unitConversionAndDataReporting', [ function() {
+
+    var self = this;
 
     this.formatReportedDistance = function(raw_distance) {
         var reported_distance = 0;
@@ -298,8 +266,7 @@ BCTAppServices.service('unitConversionAndDataReporting', [ function() {
         };
     };
 
-    this.formatReportedDuration = function(raw_duration) {
-        var minutes_count =  (raw_duration / 1000 / 60).toFixed(0);
+    this.splitHoursMinutes = function(minutes_count) {
         var minutes_label = " minute";
         var mins_plural = "s";
 
@@ -327,17 +294,58 @@ BCTAppServices.service('unitConversionAndDataReporting', [ function() {
             hours_plural = "";
         }
 
-        var formatted_duration = hours_count + hours_label + hours_plural +
-            divider + minutes_count + minutes_label + mins_plural;
+        var formatted_hours_with_minutes = hours_count + hours_label +
+            hours_plural + divider + minutes_count + minutes_label +
+            mins_plural;
+
+        return formatted_hours_with_minutes;
+    };
+
+    this.formatReportedDuration = function(raw_duration) {
+        var minutes_count =  (raw_duration / 1000 / 60).toFixed(0);
+
+        var formatted_duration = self.splitHoursMinutes(minutes_count);
 
         return formatted_duration;
+    };
+
+    this.addTimeDiffMessages = function(diff_arr) {
+        var message_arr = [];
+
+        for (var i=0;i<diff_arr.length;i++) {
+            var start_text = "";
+            var end_text = "";
+            var time_difference = "";
+
+            if (diff_arr[i] < 0) {
+                time_difference = self.splitHoursMinutes(diff_arr[i] * -1);
+                end_text = " ago";
+            }
+            else if (diff_arr[i] > 0) {
+                time_difference = self.splitHoursMinutes(diff_arr[i]);
+                start_text = "in ";
+            }
+            else if (diff_arr[i] === 0) {
+                time_unit = "";
+                plural_modifier = "";
+                start_text = "about now";
+            }
+
+            if(Math.abs(diff_arr[i]) === 1) {
+                plural_modifier = "";
+            }
+
+            var time_diff_message = start_text + time_difference + end_text;
+
+            message_arr.push(time_diff_message);
+        }
+        return message_arr;
     };
 
     this.formatReportedDate = function(raw_date) {
         var current_date_ISO = (new Date).toISOString();
 
         var input_date_time = raw_date.slice(11, 16);
-        var current_date_time = current_date_ISO.slice(11, 16);
 
         var input_date_yymmdd = raw_date.slice(0, 10);
         var current_date_yymmdd = current_date_ISO.slice(0, 10);
@@ -360,6 +368,33 @@ BCTAppServices.service('googleMapUtilities', [ 'scheduleDownloadAndTransformatio
     'unitConversionAndDataReporting',
     function(scheduleDownloadAndTransformation, unitConversionAndDataReporting) {
     var self = this;
+
+    this.palette = {
+        colors: {
+            blue: "#017AC2",
+            red: "#C14E4E",
+            black: "#000000"
+        },
+        weights: {
+            markers: {
+                thick: 8,
+                mid: 7,
+                thin: 6
+            },
+            lines: {
+                thick: 5,
+                mid: 4,
+                thin: 3
+            }
+        },
+        scales: {
+            markers: {
+                big: 10,
+                mid: 5,
+                small: 3
+            }
+        }
+    };
 
     this.mapMaker = function(container, lat, lng) {
         //Default location is near Broward County
@@ -456,15 +491,14 @@ BCTAppServices.service('googleMapUtilities', [ 'scheduleDownloadAndTransformatio
         isr.dom_q.map.overlays.pline = new google.maps.Polyline({
             map: isr.dom_q.map.inst,
             path: route_coords_cor,
-            strokeColor: "#017AC2",
-            strokeWeight: 5
+            strokeColor: self.palette.colors.blue,
+            strokeWeight: self.palette.weights.lines.mid
         });
     };
 
     this.displayStops = function(route, routes, stops) {
         var cur_route = routes[route];
         var bstops_names = cur_route.Stops;
-        var stop_coords = [];
 
         for (var i=0;i<bstops_names.length;i++) {
             if (!stops[bstops_names[i]].LatLng.Latitude) { continue; }
@@ -478,10 +512,9 @@ BCTAppServices.service('googleMapUtilities', [ 'scheduleDownloadAndTransformatio
                 title: route + ' ' + bstops_names[i],
                 icon: {
                     path: google.maps.SymbolPath.CIRCLE,
-                    scale: 10,
-                    //strokeColor: "#C14E4E",
-                    strokeColor: "#017AC2",
-                    strokeWeight: 4
+                    scale: self.palette.scales.markers.small,
+                    strokeColor: self.palette.colors.red,
+                    strokeWeight: self.palette.weights.markers.thin
                 }
             });
 
@@ -567,12 +600,12 @@ BCTAppServices.service('googleMapUtilities', [ 'scheduleDownloadAndTransformatio
 
         switch (mode_field) {
             case "BUS":
-                leg_color = "#017AC2";
+                leg_color = self.palette.colors.blue;
                 route_text = "BCT" + route_field;
                 label = "Bus route";
                 break;
             case "WALK":
-                leg_color = "#000000";
+                leg_color = self.palette.colors.black;
                 route_text = "";
                 label = "Walk";
                 break;
@@ -759,7 +792,7 @@ BCTAppServices.service('googleMapUtilities', [ 'scheduleDownloadAndTransformatio
                 map: isr.dom_q.map.inst,
                 path: path_coords,
                 strokeColor: leg_color,
-                strokeWeight: 4
+                strokeWeight: self.palette.weights.lines.mid
             });
 
             isr.dom_q.map.overlays.trip_plines.push(leg_pline);
@@ -775,10 +808,9 @@ BCTAppServices.service('googleMapUtilities', [ 'scheduleDownloadAndTransformatio
                 //title: route + ' ' + bstops_names[i],
                 icon: {
                     path: google.maps.SymbolPath.CIRCLE,
-                    scale: 10,
-                    //strokeColor: "#C14E4E",
-                    strokeColor: "#017AC2",
-                    strokeWeight: 4
+                    scale: self.palette.scales.markers.small,
+                    strokeColor: self.palette.colors.red,
+                    strokeWeight: self.palette.weights.markers.thin
                 }
             });
 
