@@ -93,9 +93,9 @@ BCTAppControllers.controller('indexController', ['$scope',
 
 BCTAppControllers.controller('tripPlannerController', ['$scope',
     'googleMapUtilities', '$timeout', 'tripPlannerService',
-    'unitConversionAndDataReporting',
+    'unitConversionAndDataReporting', 'placeholderService',
     function ($scope, googleMapUtilities, $timeout, tripPlannerService,
-        unitConversionAndDataReporting) {
+        unitConversionAndDataReporting, placeholderService) {
         //For ease of debugging
         window.trip_scope = $scope;
 
@@ -120,11 +120,51 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
 
         $scope.planner_error_alert_dialog_hide_in_progress = false;
 
+        $scope.alertUserToTripPlannerErrors = function(error_field) {
+            $scope.top_scope.show_trip_planner_itinerary_selector = false;
+
+            var dialog_styles = $scope.top_scope.planner_dialog_styles;
+
+            if ($scope.planner_error_alert_dialog_hide_in_progress ||
+                dialog_styles["trip-planner-dialog-faded-in"]) {
+                return false;
+            }
+
+            $scope.geocoder_error_dialog_text = $scope.TRIP_PLANNER_ERROR_TEXT_NO_PLAN_FOUND;
+            dialog_styles["trip-planner-dialog-centered"] = true;
+
+            dialog_styles["trip-planner-dialog-finish"] = false;
+            dialog_styles["trip-planner-dialog-start"] = false;
+
+            $scope.top_scope.show_geocoder_error_dialog = true;
+
+            $timeout(function() {
+                dialog_styles["trip-planner-dialog-faded-out"] = false;
+                dialog_styles["trip-planner-dialog-faded-in"] = true;
+            }, 200);
+            
+            $scope.geocoder_error_dialog_timeout = $timeout(function() {
+                dialog_styles["trip-planner-dialog-faded-in"] = false;
+                dialog_styles["trip-planner-dialog-faded-out"] = true;
+
+                $scope.planner_error_alert_dialog_hide_in_progress = true;
+
+                $timeout(function() {
+                    $scope.top_scope.show_geocoder_error_dialog = false;
+                    $scope.planner_error_alert_dialog_hide_in_progress = false;
+                }, 1000);
+            }, $scope.GEOCODER_ERROR_ALERT_DIALOG_HIDE_DELAY);
+
+            console.log("Trip planner error: " + error_field.idField);
+        };
+
         $scope.GEOCODER_ERROR_ALERT_DIALOG_HIDE_DELAY = 3000;
         $scope.GEOCODER_ERROR_ALERT_DIALOG_TEXT_NOT_FOUND = "Location not found.";
         $scope.GEOCODER_ERROR_ALERT_DIALOG_TEXT_OVER_LIMIT = "Please wait before posting again.";
 
         $scope.alertUserToGeocoderErrors = function(input_field_name, error_status) {
+            $scope.top_scope.show_trip_planner_itinerary_selector = false;
+
             var dialog_styles = $scope.top_scope.planner_dialog_styles;
 
             if (error_status === "ZERO_RESULTS") {
@@ -170,42 +210,6 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
 
         $scope.TRIP_PLANNER_ERROR_TEXT_NO_PLAN_FOUND = "No trip plan found.";
 
-        $scope.alertUserToTripPlannerErrors = function(error_field) {
-            var dialog_styles = $scope.top_scope.planner_dialog_styles;
-
-            if ($scope.planner_error_alert_dialog_hide_in_progress ||
-                dialog_styles["trip-planner-dialog-faded-in"]) {
-                return false;
-            }
-
-            $scope.geocoder_error_dialog_text = $scope.TRIP_PLANNER_ERROR_TEXT_NO_PLAN_FOUND;
-            dialog_styles["trip-planner-dialog-centered"] = true;
-
-            dialog_styles["trip-planner-dialog-finish"] = false;
-            dialog_styles["trip-planner-dialog-start"] = false;
-
-            $scope.top_scope.show_geocoder_error_dialog = true;
-
-            $timeout(function() {
-                dialog_styles["trip-planner-dialog-faded-out"] = false;
-                dialog_styles["trip-planner-dialog-faded-in"] = true;
-            }, 200);
-            
-            $scope.geocoder_error_dialog_timeout = $timeout(function() {
-                dialog_styles["trip-planner-dialog-faded-in"] = false;
-                dialog_styles["trip-planner-dialog-faded-out"] = true;
-
-                $scope.planner_error_alert_dialog_hide_in_progress = true;
-
-                $timeout(function() {
-                    $scope.top_scope.show_geocoder_error_dialog = false;
-                    $scope.planner_error_alert_dialog_hide_in_progress = false;
-                }, 1000);
-            }, $scope.GEOCODER_ERROR_ALERT_DIALOG_HIDE_DELAY);
-
-            console.log("Trip planner error: " + error_field.idField);
-        };
-
         $scope.checkForGeocoderErrors = function(coords) {
             if (typeof(coords[0]) === "string") {
                 $scope.alertUserToGeocoderErrors("start", coords[0]);
@@ -219,20 +223,10 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
 
         //Temporary trip itinerary labels while server response is downloaded
         //Deleted after successful trip plan request
-        $scope.current_trip_plan_data_loading = [
-            {
+        $scope.current_trip_plan_data_loading =
+            placeholderService.createLoadingPlaceholder(3, {
                 loading: "Loading..."
-            },
-            {
-                loading: "Loading..."
-            },
-            {
-                loading: "Loading..."
-            }
-        ];
-
-        $scope.current_trip_plan_data = $scope.current_trip_plan_data_loading;
-        $scope.top_scope.show_trip_planner_itinerary_labels = false;
+            });
 
         $scope.formatRawTripStats = function(all_itineraries) {
 
@@ -264,6 +258,8 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
                 var finish_coords = tripPlannerService.
                     transformGeocodeCoords(finish_coords_raw);
 
+                $scope.resetItinerarySelector();
+
                 tripPlannerService.getTripPlanPromise(
                     $scope.trip_opts,
                     start_coords,
@@ -273,6 +269,8 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
                         $scope.alertUserToTripPlannerErrors(res.data.errorField);
                         return false;
                     }
+
+                    $scope.top_scope.show_trip_planner_itinerary_selector = true;
 
                     $scope.current_trip_plan_data = $scope.formatRawTripStats(
                         res.data.planField.itinerariesField);
@@ -300,6 +298,11 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
             }
         };
 
+        $scope.resetItinerarySelector = function() {
+            $scope.current_trip_plan_data = $scope.current_trip_plan_data_loading;
+            $scope.top_scope.show_trip_planner_itinerary_labels = false;
+        };
+
         //Check if inputs are empty or contain just spaces; false -> do not submit
         $scope.tripPlannerInputsEmpty = function() {
             if ($scope.trip_inputs.start === "" ||
@@ -311,10 +314,6 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
 
         $scope.submitTripPlannerQueryAndShowMap = function() {
             if ( !$scope.tripPlannerInputsEmpty() ) { return true; }
-
-            $scope.current_trip_plan_data = $scope.current_trip_plan_data_loading;
-            $scope.top_scope.show_trip_planner_itinerary_labels = false;
-            $scope.top_scope.show_trip_planner_itinerary_selector = true;
 
             googleMapUtilities.clearMap();
             $scope.getTripPlan();
@@ -338,10 +337,6 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
         $scope.submitTripPlannerQueryWithoutNewMap = function() {
             if (!$scope.tripPlannerInputsEmpty()) { return true; }
 
-            $scope.current_trip_plan_data = $scope.current_trip_plan_data_loading;
-            $scope.top_scope.show_trip_planner_itinerary_labels = false;
-            $scope.top_scope.show_trip_planner_itinerary_selector = true;
-
             $scope.getTripPlan();
         };
 
@@ -351,8 +346,6 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
         $scope.top_scope.closeMapAndResetTripPlanner = function() {
             $scope.toggleMapSchedule();
 
-            $scope.current_trip_plan_data = $scope.current_trip_plan_data_loading;
-            $scope.top_scope.show_trip_planner_itinerary_labels = false;
             $scope.top_scope.show_trip_planner_title = false;
 
             $scope.submitTrip = $scope.submitTripPlannerQueryAndShowMap;

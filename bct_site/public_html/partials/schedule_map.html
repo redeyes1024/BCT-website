@@ -6,28 +6,24 @@
         </div>
         <schedule-map-overlay></schedule-map-overlay>
         <div id="schedule-map-info" ng-show="show_schedule_result_top_info_bar">
-            <!--<div id="schedule-map-hide"
-                class="schedule-map-mini-schedule-button link-icon no-highlight ptr"
-                ng-click="toggleMapSchedule();">
-                <span class="schedule-map-mini-schedule-time-text">
-                    <i class="fa fa-arrow-circle-left fa-lg ptr"></i>
-                </span>
-            </div>-->
             <div id="schedule-map-mini-schedule">
                 <div id="schedule-map-mini-schedule-time-group">
                     <div class="schedule-map-mini-schedule-time"
                         ng-repeat="time in schedule.nearest.times_and_diffs">
                         <span class="schedule-map-mini-schedule-time-text">
                             {{ time.time }} <br>
+                            <span ng-show="time.diff">
                             ({{ time.diff }})
+                            </span>
                         </span>
                     </div>
                 </div>
             </div>
             <div id="schedule-map-view-full"
-                class="schedule-map-mini-schedule-button link-icon no-highlight ptr">
-                <span class="schedule-map-mini-schedule-time-text"
-                    ng-click="toggleFullSchedule();">
+                class="schedule-map-mini-schedule-button link-icon
+                no-highlight ptr"
+                ng-click="toggleFullSchedule();">
+                <span class="schedule-map-mini-schedule-time-text">
                     <i class="fa fa-list-alt fa-lg ptr"></i>
                 </span>
             </div>

@@ -3,7 +3,7 @@
         <div id="schedule-full-result-dialog-title">
             <div id="schedule-full-result-dialog-pdf" class="link-icon">
                 <span class="schedule-full-result-dialog-icon">
-                    <i class="fa fa-file-pdf-o fa-2x ptr no-highlight"></i>
+                    <i class="fa fa-file-pdf-o ptr no-highlight"></i>
                 </span>
             </div>
             <div id="schedule-full-result-dialog-info">
@@ -14,7 +14,7 @@
             <div id="schedule-full-result-dialog-close" class="link-icon"
                 ng-click="toggleFullSchedule();">
                 <span class="schedule-full-result-dialog-icon">
-                    <i class="fa fa-times fa-2x no-highlight ptr"></i>
+                    <i class="fa fa-times no-highlight ptr"></i>
                 </span>
             </div>
         </div>
@@ -25,10 +25,17 @@
                     <quick-datepicker ng-model="full_schedule_date"
                     disable-timepicker="true"></quick-datepicker>
                 </div>
+                <div class="schedule-full-result-loading-modal"
+                    ng-show="show_schedule_result_date_pick_row_loading">
+                    <span class="schedule-full-result-loading-modal-spinner
+                        no-highlight">
+                        <i class="fa fa-spinner fa-spin"></i>
+                    </span>
+                </div>
                 <div class="horizontal-scroll">
                     <div class="schedule-full-result-row">
                         <div class="schedule-full-result-time"
-                            ng-repeat="time in schedule.date_pick">
+                            ng-repeat="time in schedule.date_pick track by $index">
                             <span class="schedule-full-result-time-text">
                                 {{ time }}
                             </span>
@@ -43,7 +50,8 @@
                 <div class="horizontal-scroll">
                     <div class="schedule-full-result-row">
                         <div class="schedule-full-result-time"
-                            ng-repeat="time in schedule.tot">
+                            ng-repeat="time in schedule[day.toLowerCase()]
+                            track by $index">
                             <span class="schedule-full-result-time-text">
                                 {{ time }}
                             </span>

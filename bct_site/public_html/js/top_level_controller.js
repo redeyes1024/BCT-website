@@ -4,9 +4,10 @@ BCTAppTopController.controller('BCTController', ['$scope',
     '$timeout', 'scheduleWebSocket', 'scheduleSocketService',
     'scheduleDownloadAndTransformation', 'googleMapUtilities', '$q',
     '$interval', 'unitConversionAndDataReporting', 'miniScheduleService',
+    'placeholderService',
     function ($scope, $timeout, scheduleWebSocket, scheduleSocketService,
     scheduleDownloadAndTransformation, googleMapUtilities, $q, $interval,
-    unitConversionAndDataReporting, miniScheduleService) {
+    unitConversionAndDataReporting, miniScheduleService, placeholderService) {
 
     //For ease of debugging
     window.main_scope = $scope;
@@ -82,6 +83,8 @@ BCTAppTopController.controller('BCTController', ['$scope',
     $scope.show_schedule_results_module_title_normal = true;
     $scope.show_schedule_results_module_title_with_back_function = false;
 
+    $scope.show_schedule_result_date_pick_row_loading = false;
+
     /* END Overlay Display Controls */
 
     /* START Custom Watchers */
@@ -121,28 +124,32 @@ BCTAppTopController.controller('BCTController', ['$scope',
         }
     });
 
+    $scope.full_schedule_loading_placeholder =
+        placeholderService.createLoadingPlaceholder(20, " ");
+
     angular.element(document).ready(function() {
         $scope.$watch("full_schedule_date", function(new_val, old_val) {
             if (new_val !== old_val) {
+                $scope.schedule.date_pick = $scope.full_schedule_loading_placeholder;
+                $scope.show_schedule_result_date_pick_row_loading = true;
+
                 scheduleDownloadAndTransformation.downloadSchedule(
                     $scope.map_schedule_info.route,
                     $scope.map_schedule_info.stop,
                     $scope.full_schedule_date).
-                    then(function(res) {
-                        var t_schedule = scheduleDownloadAndTransformation.
-                        transformSchedule("datepick", res.data.Today);
-                        $scope.schedule.date_pick = t_schedule.date_pick;
-                    });
+                then(function(res) {
+                    $scope.show_schedule_result_date_pick_row_loading = false;
+                    var t_schedule = scheduleDownloadAndTransformation.
+                    transformSchedule("datepick", res.data.Today);
+                    $scope.schedule.date_pick = t_schedule.date_pick;
+                });
             }
         });
     });
 
     //Itinerary selector's initial appearance and hiding associated with planner
     $scope.$watch("show_trip_planner_title", function(new_val, old_val) {
-        if (new_val > old_val) {
-            $scope.show_trip_planner_itinerary_selector = true;
-        }
-        else if (new_val < old_val) {
+        if (new_val < old_val) {
             $scope.show_trip_planner_itinerary_selector = false;
         }
     });
@@ -214,6 +221,10 @@ BCTAppTopController.controller('BCTController', ['$scope',
     };
 
     /* END Data Object Templates */
+
+    $scope.schedule.weekdays = $scope.full_schedule_loading_placeholder;
+    $scope.schedule.saturday = $scope.full_schedule_loading_placeholder;
+    $scope.schedule.sunday = $scope.full_schedule_loading_placeholder;
 
     $scope.disableMapToggleOnTitles = function() {
         $scope.show_index_title_normal = true;
@@ -304,6 +315,9 @@ BCTAppTopController.controller('BCTController', ['$scope',
             $scope.enableMapToggleOnTitles();
 
             if (!from_trip_planner) {
+                $scope.schedule.nearest.times_and_diffs =
+                    $scope.mini_schedule_loading_template;
+
                 scheduleDownloadAndTransformation.downloadSchedule(route, stop).
                 then(function(res) {
                     if (!res.data.Today) {
@@ -314,7 +328,7 @@ BCTAppTopController.controller('BCTController', ['$scope',
                     var t_schedule = scheduleDownloadAndTransformation.
                     transformSchedule("nearest", res.data.Today);
 
-                    $scope.updateAndPushSchedule(t_schedule); 
+                    $scope.updateAndPushSchedule(t_schedule);
                 });
 
                 $scope.map_schedule_info.route = route;
@@ -362,7 +376,7 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
         if ($scope.show_full_schedule_module) {
             $scope.show_full_schedule_module = false;
-            $scope.schedule_map_styles["hide-scroll"] = true;
+            $scope.schedule_map_styles["hide-scroll"] = false;
             googleMapUtilities.touchMap();
 
             $scope.showMiniScheduleAndAlertBars();
@@ -373,7 +387,7 @@ BCTAppTopController.controller('BCTController', ['$scope',
         else {
             $scope.full_schedule_date = new Date;
             $scope.show_full_schedule_module = true;
-            $scope.schedule_map_styles["hide-scroll"] = false;
+            $scope.schedule_map_styles["hide-scroll"] = true;
 
             $scope.hideMiniScheduleAndAlertBars();
         }

@@ -6,8 +6,10 @@
 .horizontal-scroll {
     width: 100%;
     overflow: auto;
+    overflow-x: scroll;
     border-style: dotted;
     border-width: 1px;
+    position: relative;
 }
 .panel-group,
 .panel-title {
@@ -207,7 +209,14 @@ em.hint-text {
     border-width: 1px 0px 1px 0px;
 }
 .schedule-map-mini-schedule-button {
-    width: 2em;
+    width: 3em;
+    font-size: 1.5em;
+}
+@media (max-width: 490px) {
+    .schedule-map-mini-schedule-button {
+        width: 2em;
+        font-size: 1em;
+    }
 }
 #schedule-map-mini-schedule-time-group {
     display: inline-table;
@@ -278,6 +287,7 @@ em.hint-text {
     width: 100%;
     background: white;
     height: 34.5em;
+    overflow: auto;
 }
 #schedule-full-result-dialog-title {
     position: relative;
@@ -307,9 +317,10 @@ em.hint-text {
     border-style: dotted;
     border-width: 0px 3px;
     overflow: auto;
+    padding: 0em 0.5em;
 }
 .schedule-full-result-dialog-icon {
-    font-size: 22px;
+    font-size: 3em;
 }
 #schedule-full-result-dialog-info-text {
     position: relative;
@@ -318,21 +329,20 @@ em.hint-text {
     max-height: 5em;
     display: inline-block;
 }
-@media (max-width: 500px) {
-    #schedule-full-result-dialog-info-text {
-        font-size: 1em;
-    }
-}
 #schedule-full-result-dialog-all-days {
-    padding: 0.8em;
+    padding: 1em;
 }
 .schedule-full-result-day {
-    font-size: 20px;
+    font-size: 1.2em;
     margin: 4px 0px;
     text-align: left;
-    height: 2.5em;
+    height: 2.2em;
     display: table-cell;
     vertical-align: middle;
+    font-weight: 400;
+}
+.quickdate-popup {
+    z-index: 2;
 }
 .schedule-full-result-day .quickdate-popup {
     top: auto;
@@ -343,13 +353,44 @@ em.hint-text {
     width: 100%;
     text-align: center;
     border-collapse: collapse;
+    position: relative;
+    font-size: 1.2em;
+}
+@media (max-width: 490px) {
+    #schedule-full-result-dialog-info-text {
+        font-size: 1em;
+    }
+    .schedule-full-result-dialog-icon {
+        font-size: 2em;
+    }
+    #schedule-full-result-dialog-pdf,
+    #schedule-full-result-dialog-close {
+        width: 3.5em;
+    }
+    #schedule-full-result-dialog-title {
+        height: 4em;
+    }
+    .schedule-full-result-row {
+        font-size: 1em;
+    }
+}
+.schedule-full-result-loading-modal {
+    position: absolute;
+    width: 100%;
+    height: 5em;
+    background-color: rgba(255, 255, 255, 0.7);
+    z-index: 1;
+}
+.schedule-full-result-loading-modal-spinner {
+    font-size: 2em;
+    line-height: 1.5em;
 }
 .schedule-full-result-time {
     background-color: white;
     border-style: solid;
     border-width: 1px;
-    height: 3em;
-    width: 3em;
+    height: 3.3em;
+    width: 3.3em;
     display: table-cell;
     vertical-align: middle;
 }

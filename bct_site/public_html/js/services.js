@@ -50,9 +50,12 @@ BCTAppServices.service('miniScheduleService', [ function() {
 
     this.mini_schedule_quantity_defaults = {
         before_times: 1,
-        after_times: 3,
-        total_times: this.after_times + this.before_times
+        after_times: 3
     };
+
+    this.mini_schedule_quantity_defaults.total_times =
+        this.mini_schedule_quantity_defaults.before_times +
+        this.mini_schedule_quantity_defaults.after_times;
 
     this.makeMiniScheduleLoadingTemplate = function() {
         var mini_schedule_loading_template = [];
@@ -104,6 +107,20 @@ BCTAppServices.service('miniScheduleService', [ function() {
         return nearest;
     };
 
+}]);
+
+BCTAppServices.service('placeholderService', [ function() {
+    this.createLoadingPlaceholder = function(length, content) {
+        var placeholder_arr = [];
+        var placeholder_length = length;
+        var placeholder_content = content;
+
+        for (var i=0;i<placeholder_length;i++) {
+            placeholder_arr.push(placeholder_content);
+        }
+
+        return placeholder_arr;
+    };
 }]);
 
 BCTAppServices.service('scheduleDownloadAndTransformation', ['$http', '$q', 'miniScheduleService',

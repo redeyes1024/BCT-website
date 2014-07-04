@@ -130,7 +130,7 @@
         <div id="trip-planner-itinerary-panel-area">
             <div class="trip-planner-itinerary-panel no-highlight"
                 ng-class="itinerary_selector_panel_styles"
-                ng-repeat="itinerary in current_trip_plan_data">
+                ng-repeat="itinerary in current_trip_plan_data track by $index">
                 <div class="trip-planner-itinerary-labels">
                     {{ itinerary.loading }}
                 </div>
