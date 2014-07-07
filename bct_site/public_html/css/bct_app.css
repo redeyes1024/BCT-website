@@ -577,12 +577,16 @@ em.hint-text {
 }
 .result-list-text {
     border-style: dotted;
-    border-width: 0px 1px;
+    border-width: 0px 0px 0px 1px;
     padding: 0px 10px;
 }
 .result-icon-container {
     text-align: center;
     width: 3em;
+}
+.result-icon-container-right {
+    border-style: dotted;
+    border-width: 0px 0px 0px 1px;
 }
 .arrow-right-icon {
     cursor: default;

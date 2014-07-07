@@ -262,13 +262,19 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
             ).then(function(coords) {
                 if (!$scope.checkForGeocoderErrors(coords)) { return false; }
 
-                var start_coords_raw = coords[0][0].geometry.location;
-                var finish_coords_raw = coords[1][0].geometry.location;
+                var start_coords = coords[0];
+                var finish_coords = coords[1];
 
-                var start_coords = tripPlannerService.
-                    transformGeocodeCoords(start_coords_raw);
-                var finish_coords = tripPlannerService.
-                    transformGeocodeCoords(finish_coords_raw);
+                //If coordinate data is wrapped in an array, it is the output
+                //of the GM Geocoder and needs to be transformed
+                if (start_coords[0]) {
+                    start_coords = tripPlannerService.
+                        transformGeocodeCoords(start_coords[0].geometry.location);
+                }
+                if (finish_coords[0]) {
+                    finish_coords = tripPlannerService.
+                        transformGeocodeCoords(finish_coords[0].geometry.location);
+                }
 
                 tripPlannerService.getTripPlanPromise(
                     $scope.trip_opts,

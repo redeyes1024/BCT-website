@@ -223,6 +223,16 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
     /* END Data Object Templates */
 
+    $scope.addRouteStopToTripPlanner = function(route, stop) {
+        var bstop_coords = $scope.stops[stop].LatLng;
+        var bstop_coords_str = "";
+
+        bstop_coords_str += bstop_coords.Latitude + ",";
+        bstop_coords_str += bstop_coords.Longitude;
+
+        $scope.trip_inputs.start = bstop_coords_str;
+    };
+
     $scope.schedule.weekdays = $scope.full_schedule_loading_placeholder;
     $scope.schedule.saturday = $scope.full_schedule_loading_placeholder;
     $scope.schedule.sunday = $scope.full_schedule_loading_placeholder;

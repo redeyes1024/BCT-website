@@ -950,17 +950,30 @@ BCTAppServices.service('tripPlannerService', [ '$http', '$q',
 
         var deferred = $q.defer();
 
-        geocoder.geocode(
-            { 'address': query_address },
-            function(results, status) {
-                if (status === google.maps.GeocoderStatus.OK) {
-                    deferred.resolve(results);
+        var lat_lng_input = query_address.match(/-?[0-9]*\.[0-9]*,-?[0-9]*\.[0-9]*/);
+
+        if (lat_lng_input) {
+            var bstop_coords_arr = lat_lng_input[0].split(",");
+            var bstop_coords_obj = {
+                Latitude: Number(bstop_coords_arr[0]),
+                Longitude: Number(bstop_coords_arr[1])
+            };
+
+            deferred.resolve(bstop_coords_obj);
+        }
+        else {
+            geocoder.geocode(
+                { 'address': query_address },
+                function(results, status) {
+                    if (status === google.maps.GeocoderStatus.OK) {
+                        deferred.resolve(results);
+                    }
+                    else {
+                        deferred.resolve(status);
+                    }
                 }
-                else {
-                    deferred.resolve(status);
-                }
-            }
-        );
+            );
+        }
         return deferred.promise;
     };
 
