@@ -425,7 +425,8 @@ em.hint-text {
     position: relative;
 }
 #schedule-search-area,
-#schedule-search-clear-button-top {
+#schedule-search-clear-button-top,
+#schedule-search-begin-search-button-top {
     background-color: #fff;
 }
 #schedule-search-area {
@@ -437,20 +438,25 @@ em.hint-text {
     border-width: 1px;
     z-index: 1;
 }
-#schedule-search-area-top{
+#schedule-search-area-top {
     display: table;
     width: 100%;
     padding: 0.5em 0em;
 }
 .agency-filter,
 #schedule-search-back-button,
-#schedule-search-clear-button-top {
+#schedule-search-clear-button-top,
+#schedule-search-begin-search-button-top {
     display: table-cell;
-    width: 1.6em;
     vertical-align: middle;
     text-align: center;
     font-size: 1.5em;
     border-style: dotted;
+}
+#schedule-search-back-button,
+#schedule-search-clear-button-top,
+#schedule-search-begin-search-button-top{
+    width: 1.6em;
 }
 .schedule-results-icons-inline {
     display: table-cell;
@@ -469,6 +475,7 @@ em.hint-text {
 }
 .agency-filter {
     border-width: 0px;
+    width: 4em;
 }
 #miami-dade-filter {
     border-width: 0px 1px;
@@ -477,8 +484,7 @@ em.hint-text {
     border-width: 0px;
 }
 .agency-filter-icon {
-    height: 1em;
-    width: 1em;
+    height: 1.5em;
 }
 .agency-filter-icon-selected {
     box-shadow: 0px 0px 4px 1px #017AC2;
@@ -487,7 +493,10 @@ em.hint-text {
     border-width: 0px 2px 0px 0px;
 }
 #schedule-search-clear-button-top {
-    border-width: 0px 2px 0px 2px;
+    border-width: 0px 1px 0px 0px;
+}
+#schedule-search-begin-search-button-top {
+    border-width: 0px 1px 0px 2px;
 }
 #route-stop-search-input {
     display: table-cell;
@@ -529,23 +538,6 @@ em.hint-text {
 #accordion {
     position: relative;
     top: 6em;
-}
-@media (max-width: 450px) {
-    .schedule-results-icons-inline {
-        display: none;
-    }
-    #schedule-search-clear-button-top {
-        border-width: 0px 0px 0px 2px;
-    }
-    #schedule-search-area-bottom {
-        display: block;
-    }
-    .agency-filter {
-        border-width: 0px 0px 0px 1px;
-    }
-    #accordion {
-        top: 8.5em;
-    }
 }
 .route-title {
     position: relative;
@@ -597,7 +589,7 @@ em.hint-text {
 }
 .schedule-results-no-results-text {
     position: absolute;
-    top: 8em;
+    top: 5em;
     left: 1em;
     font-size: 1.5em;
     padding: 1em;
@@ -607,6 +599,26 @@ em.hint-text {
     width: 93%;
     width: calc(100% - 2em);
     z-index: -1;
+}
+@media (max-width: 600px) {
+    .schedule-results-icons-inline {
+        display: none;
+    }
+    #schedule-search-clear-button-top {
+        border-width: 0px;
+    }
+    #schedule-search-area-bottom {
+        display: block;
+    }
+    .agency-filter {
+        border-width: 0px 0px 0px 1px;
+    }
+    #accordion {
+        top: 9em;
+    }
+    .schedule-results-no-results-text {
+        top: 7em;
+    }
 }
 
 /* END Route Schedules Page + Nearest Stops */

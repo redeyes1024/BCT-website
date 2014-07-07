@@ -2,15 +2,15 @@ var BCTAppControllers = angular.module('BCTAppControllers', []);
 
 BCTAppControllers.controller('routeSchedulesController', ['$scope',
     '$timeout', '$interval', 'scheduleWebSocket', 'scheduleSocketService',
-        function ($scope, $timeout, $interval, scheduleWebSocket, scheduleSocketService) {
+    function ($scope, $timeout, $interval, scheduleWebSocket, scheduleSocketService) {
 
-        //For ease of testing
-        window.rs_scope = $scope;
+    //For ease of testing
+    window.rs_scope = $scope;
 
-        $scope.loaded_results = {
-            routes: [],
-            stops: []
-        };
+    $scope.loaded_results = {
+        routes: [],
+        stops: []
+    };
 }]);
 
 BCTAppControllers.controller('indexController', ['$scope',

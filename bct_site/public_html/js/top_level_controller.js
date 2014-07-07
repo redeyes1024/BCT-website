@@ -60,6 +60,7 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
     $scope.show_empty_result_message_search_too_short = true;
     $scope.show_empty_result_message_no_results = false;
+    $scope.show_schedule_results_result_panels = true;
 
     $scope.show_map_overlay_module = false;
     $scope.show_schedule_map_loading_modal = false;
@@ -96,6 +97,7 @@ BCTAppTopController.controller('BCTController', ['$scope',
             if ($scope.query_data.schedule_search.length < 3) {
                 $scope.show_empty_result_message_search_too_short = true;
                 $scope.show_empty_result_message_no_results = false;
+                $scope.show_schedule_results_result_panels = false;
             }
             else {
                 $scope.show_empty_result_message_search_too_short = false;
@@ -109,9 +111,11 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
                     if (!first_result_panel) {
                         $scope.show_empty_result_message_no_results = true;
+                        $scope.show_schedule_results_result_panels = false;
                     }
                     else {
                         $scope.show_empty_result_message_no_results = false;
+                        $scope.show_schedule_results_result_panels = true;
                     }
                 });
             }

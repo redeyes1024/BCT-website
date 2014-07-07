@@ -1,6 +1,8 @@
 var BCTAppServices = angular.module('BCTAppServices', []);
 
-BCTAppServices.value('scheduleWebSocket', new WebSocket("ws://echo.websocket.org"));
+var BCTAppValues = angular.module('BCTAppValues', []);
+
+BCTAppValues.value('scheduleWebSocket', new WebSocket("ws://echo.websocket.org"));
 
 BCTAppServices.service('scheduleSocketService', ['$q', 'scheduleWebSocket',
     function($q, scheduleWebSocket) {

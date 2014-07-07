@@ -28,19 +28,19 @@
                 class="link-icon agency-filter schedule-results-icons-inline">
                 <img class="agency-filter-icon ptr
                     {{ agency_filter_icon_selection.broward }}"
-                    ng-click="enableAgencyFilter('broward');" src="css/ico/broward_fav.png">
+                    ng-click="enableAgencyFilter('broward');" src="css/ico/broward_100px.png">
             </span>
             <span id="miami-dade-filter"
                 class="link-icon agency-filter schedule-results-icons-inline">
                 <img class="agency-filter-icon ptr
                     {{ agency_filter_icon_selection.miami }}"
-                    ng-click="enableAgencyFilter('miami');" src="css/ico/miami_dade_fav.png">
+                    ng-click="enableAgencyFilter('miami');" src="css/ico/miami_dade_100px.png">
             </span>
             <span id="palm-beach-filter"
                 class="link-icon agency-filter schedule-results-icons-inline">
                 <img class="agency-filter-icon ptr
                     {{ agency_filter_icon_selection.palm }}"
-                    ng-click="enableAgencyFilter('palm');" src="css/ico/palm_beach_fav.ico">
+                    ng-click="enableAgencyFilter('palm');" src="css/ico/palm_100px.png">
             </span>
         </div>
         <div id="schedule-search-area-bottom">
@@ -49,25 +49,25 @@
                     class="link-icon agency-filter schedule-results-icons-mobile">
                     <img class="agency-filter-icon ptr
                         {{ agency_filter_icon_selection.broward }}"
-                        ng-click="enableAgencyFilter('broward');" src="css/ico/broward_fav.png">
+                        ng-click="enableAgencyFilter('broward');" src="css/ico/broward_100px.png">
                 </span>
                 <span id="miami-dade-filter-mobile"
                     class="link-icon agency-filter schedule-results-icons-mobile">
                     <img class="agency-filter-icon ptr
                         {{ agency_filter_icon_selection.miami }}"
-                        ng-click="enableAgencyFilter('miami');" src="css/ico/miami_dade_fav.png">
+                        ng-click="enableAgencyFilter('miami');" src="css/ico/miami_dade_100px.png">
                 </span>
                 <span id="palm-beach-filter-mobile"
                     class="link-icon agency-filter schedule-results-icons-mobile">
                     <img class="agency-filter-icon ptr
                         {{ agency_filter_icon_selection.palm }}"
-                        ng-click="enableAgencyFilter('palm');" src="css/ico/palm_beach_fav.ico">
+                        ng-click="enableAgencyFilter('palm');" src="css/ico/palm_100px.png">
                 </span>
             </div>
         </div>
     </div>
 
-    <div class="panel-group" id="accordion">
+    <div class="panel-group" id="accordion" ng-show="show_schedule_results_result_panels">
         <div id="bstop-list" class="no-highlight">
             <span class="schedule-results-title">Stop and Intersection Results</span>
             <stop-result-panel

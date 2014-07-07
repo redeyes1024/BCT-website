@@ -1,6 +1,6 @@
 var BCTApp = angular.module('BCTApp', ['ngRoute', 'mobile-angular-ui',
     'BCTAppServices', 'BCTAppControllers', 'BCTAppDirectives', 'ngQuickDate',
-    'BCTAppFilters', 'BCTAppTopController']);
+    'BCTAppFilters', 'BCTAppTopController', 'BCTAppValues']);
 
 //App namespace (company name)
 window.isr = {};
@@ -12,7 +12,7 @@ window.isr.classes = {};
 window.isr.instances = {};
 
 //Initial DOM queries
-isr.dom_q = {
+window.isr.dom_q = {
     map: {
         overlays: {
             trip_plines: [],
