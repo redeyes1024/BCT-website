@@ -122,6 +122,8 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
 
         $scope.alertUserToTripPlannerErrors = function(error_field) {
             $scope.top_scope.show_trip_planner_itinerary_selector = false;
+            $scope.top_scope.show_schedule_map_loading_modal = false;
+            isr.dom_q.inputs.trip[0].focus();
 
             var dialog_styles = $scope.top_scope.planner_dialog_styles;
 
@@ -164,6 +166,7 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
 
         $scope.alertUserToGeocoderErrors = function(input_field_name, error_status) {
             $scope.top_scope.show_trip_planner_itinerary_selector = false;
+            $scope.top_scope.show_schedule_map_loading_modal = false;
 
             var dialog_styles = $scope.top_scope.planner_dialog_styles;
 
@@ -175,10 +178,12 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
                 case "start":
                     dialog_styles["trip-planner-dialog-finish"] = false;
                     dialog_styles["trip-planner-dialog-start"] = true;
+                    isr.dom_q.inputs.trip[0].focus();
                     break;
                 case "finish":
                     dialog_styles["trip-planner-dialog-start"] = false;
                     dialog_styles["trip-planner-dialog-finish"] = true;
+                    isr.dom_q.inputs.trip[1].focus();
                     break;
                 }
             }
@@ -221,13 +226,6 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
             return true;
         };
 
-        //Temporary trip itinerary labels while server response is downloaded
-        //Deleted after successful trip plan request
-        $scope.current_trip_plan_data_loading =
-            placeholderService.createLoadingPlaceholder(3, {
-                loading: "Loading..."
-            });
-
         $scope.formatRawTripStats = function(all_itineraries) {
 
             for (var i=0;i<all_itineraries.length;i++) {
@@ -243,7 +241,21 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
             return all_itineraries;
         };
 
+        window.isr.dom_q.inputs.trip = document.getElementsByClassName("planner-input");
+
+        $scope.showMapLoading = function() {
+            $scope.top_scope.show_schedule_map_loading_modal = true;
+            $scope.top_scope.show_trip_planner_options = false;
+            $scope.top_scope.show_trip_planner_itinerary_selector = false;
+
+            for (var i=0;i<isr.dom_q.inputs.trip.length;i++) {
+                isr.dom_q.inputs.trip[i].blur();
+            }
+        };
+
         $scope.getTripPlan = function() {
+            $scope.showMapLoading();
+
             tripPlannerService.getLatLon(
                 $scope.$parent.trip_inputs.start,
                 $scope.$parent.trip_inputs.finish
@@ -257,8 +269,6 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
                     transformGeocodeCoords(start_coords_raw);
                 var finish_coords = tripPlannerService.
                     transformGeocodeCoords(finish_coords_raw);
-
-                $scope.resetItinerarySelector();
 
                 tripPlannerService.getTripPlanPromise(
                     $scope.trip_opts,
@@ -275,10 +285,14 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
                     $scope.current_trip_plan_data = $scope.formatRawTripStats(
                         res.data.planField.itinerariesField);
                     $scope.top_scope.show_trip_planner_itinerary_labels = true;
+
+                    $scope.top_scope.show_schedule_map_loading_modal = false;
                 });
             }).
             catch(function() {
                 console.log("There was an error retrieving the trip plan data.");
+
+                $scope.top_scope.show_schedule_map_loading_modal = false;
             });
         };
 
@@ -296,11 +310,6 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
             else {
                 $scope.top_scope.show_trip_planner_options = true;
             }
-        };
-
-        $scope.resetItinerarySelector = function() {
-            $scope.current_trip_plan_data = $scope.current_trip_plan_data_loading;
-            $scope.top_scope.show_trip_planner_itinerary_labels = false;
         };
 
         //Check if inputs are empty or contain just spaces; false -> do not submit

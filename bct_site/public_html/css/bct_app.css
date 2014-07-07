@@ -146,6 +146,19 @@ em.hint-text {
     border-style: solid;
     border-width: 1px;
 }
+#schedule-map-loading-modal {
+    position: fixed;
+    height: 60em;
+    width: 100%;
+    width: calc(100% - 2px);
+    background-color: rgba(255, 255, 255, 0.6);
+    z-index: 1030;
+}
+#schedule-map-loading-modal-spinner {
+    font-size: 3em;
+    position: relative;
+    top: 6em;
+}
 #schedule-map-top-panel {
     -webkit-flex: 0 0 auto;
     flex: 0 0 auto;
@@ -342,7 +355,7 @@ em.hint-text {
     font-weight: 400;
 }
 .quickdate-popup {
-    z-index: 2;
+    bottom: 2.4em;
 }
 .schedule-full-result-day .quickdate-popup {
     top: auto;
@@ -707,7 +720,7 @@ em.hint-text {
     padding: 0.5em 0em;
     margin: 0em 0em 1em;
     position: absolute;
-    z-index: 1029;
+    z-index: 1031;
     top: calc(-7.5em + 5px);
     left: 0em;
 }

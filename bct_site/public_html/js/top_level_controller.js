@@ -62,6 +62,7 @@ BCTAppTopController.controller('BCTController', ['$scope',
     $scope.show_empty_result_message_no_results = false;
 
     $scope.show_map_overlay_module = false;
+    $scope.show_schedule_map_loading_modal = false;
 
     $scope.show_schedule_result_top_bar = true;
     $scope.show_schedule_result_top_info_bar = true;
