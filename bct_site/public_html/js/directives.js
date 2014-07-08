@@ -101,3 +101,31 @@ BCTApp.directive('tripPlannerDialog', [ function() {
         template: template
     };
 }]);
+
+//Keeps track of schedule result page panels through a counter in the top scope
+//Works together with query_data.schedule_search watcher (also in top scope)
+//Here theschedule_result_panels_counter reflects the value from the current $digest
+BCTApp.directive('panelTracker', [ function() {
+    function link(scope) {
+        scope.top_scope.schedule_result_panels_counter++;
+
+        if (scope.$last) {
+            scope.top_scope.show_empty_result_message_no_results = false;
+            scope.top_scope.show_schedule_results_result_panels = true;
+        }
+
+        scope.$on('$destroy', function() {
+            scope.top_scope.schedule_result_panels_counter--;
+
+            if (scope.top_scope.schedule_result_panels_counter === 0 &&
+                scope.top_scope.query_data.schedule_search.length >= 3) {
+                scope.top_scope.show_empty_result_message_no_results = true;
+                scope.top_scope.show_schedule_results_result_panels = false;
+            }
+        });
+    }
+    return {
+        link: link,
+        restrict: 'A'
+    };
+}]);

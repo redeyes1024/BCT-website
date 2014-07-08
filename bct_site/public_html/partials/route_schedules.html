@@ -71,13 +71,15 @@
         <div id="bstop-list" class="no-highlight">
             <span class="schedule-results-title">Stop and Intersection Results</span>
             <stop-result-panel
-            ng-repeat="stop in stops_arr | stopFilter:query_data.schedule_search">
+            ng-repeat="stop in stops_arr | stopFilter:query_data.schedule_search"
+            panel-tracker>
             </stop-result-panel>
         </div>
         <div id="route-list" class="no-highlight">
             <span class="schedule-results-title">Route Results</span>
             <route-result-panel
-            ng-repeat="route in routes_arr | routeFilter:query_data.schedule_search">
+            ng-repeat="route in routes_arr | routeFilter:query_data.schedule_search"
+            panel-tracker>
             </route-result-panel>
         </div>
     </div>
@@ -96,6 +98,8 @@
         ng-show="show_empty_result_message_no_results">
         <p>Sorry, there are no results for your entry.</p>
 
-        <p>Check for typos or try broadening your search by typing in fewer characters.</p>
+        <p>
+            Check for typos or try broadening your search by typing in fewer characters.
+        </p>
     </div>
 </div>
