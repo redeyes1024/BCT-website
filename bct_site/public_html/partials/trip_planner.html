@@ -5,115 +5,62 @@
 
     <div id="planner-top-bar">
 
-        <!-- Trip Options -->
-
-        <div id="planner-option-bar" ng-show="show_trip_planner_options">
-            <div id="planner-option-optimization">
-                <span class="planner-pref-option">
-                    <input type="radio" name="planner-options" value="QUICK"
-                        ng-model="trip_opts.optimize">
-                    <span class="planner-pref-option-title">
-                        Fastest
-                    </span>
-                </span>
-                <span class="planner-pref-option">
-                    <input type="radio" name="planner-options" value="transfers"
-                        ng-model="trip_opts.optimize" disabled="true">
-                    <span class="planner-pref-option-title">
-                        Less Transfers
-                    </span>
-                </span>
-                <span class="planner-pref-option">
-                    <input type="radio" name="planner-options" value="walking"
-                        ng-model="trip_opts.optimize" disabled="true">
-                    <span class="planner-pref-option-title">
-                        Less Walking
-                    </span>
-                </span>
-            </div>
-
-            <div id="planner-option-transit-modes">
-                <span class="planner-pref-option">
-                    <input type="checkbox" ng-model="trip_opts.modeswitch.bus">
-                    <span class="planner-pref-option-title">
-                        Bus
-                    </span>
-                </span>
-                <span class="planner-pref-option">
-                    <input type="checkbox" ng-model="trip_opts.modeswitch.train">
-                    <span class="planner-pref-option-title">
-                        Train
-                    </span>
-                </span>
-                <span class="planner-pref-option">
-                    <input type="checkbox" ng-model="trip_opts.modeswitch.bike">
-                    <span class="planner-pref-option-title">
-                        B-cycle
-                    </span>
-                </span>
-            </div>
-
-            <div id="planner-option-date">
-                <span class="planner-pref-option">
-                    <input type="radio" name="planner-date" value="arrive_by"
-                        ng-model="trip_opts.datetarg">
-                    <span class="planner-pref-option-title">
-                        Arrive by
-                    </span>
-                </span>
-                <span class="planner-pref-option">
-                    <input type="radio" name="planner-date" value="depart_by"
-                        ng-model="trip_opts.datetarg">
-                    <span class="planner-pref-option-title">
-                        Depart by
-                    </span>
-                </span>
-                <quick-datepicker ng-model="trip_opts.datepick"></quick-datepicker>
-            </div>
-        </div>
-
-        <!-- Mobile Option Bar -->
+        <planner-option-bar></planner-option-bar>
 
         <div id="trip-planner-input-options">
+
+            <!-- Mobile Option Bar -->
+
             <div id="planner-mobile-controls" class="no-highlight">
                 <span id="planner-mobile-gps" class="planner-mobile-option">
-                    <i class="fa fa-crosshairs ptr"></i>
+                    <i class="fa fa-crosshairs link-icon ptr"
+                    ng-click="getCurrentLocation();"
+                    ng-show="show_planner_location_icon"></i>
+                    <i class="fa fa-crosshairs link-icon-active fa-spin"
+                    ng-show="show_planner_location_icon_with_spin"></i>
                 </span>
-                <span id="planner-mobile-swap" class="planner-mobile-option"
-                    ng-click="swapTripInputs();">
-                    <i class="fa fa-exchange ptr"></i>
+                <span id="planner-mobile-swap" class="planner-mobile-option">
+                    <i class="fa fa-exchange link-icon ptr"
+                    ng-click="swapTripInputs();"></i>
                 </span>
                 <span id="planner-mobile-prefs" class="planner-mobile-option">
-                    <i class="fa fa-cog ptr" ng-click="toggleTripOptions();"></i>
+                    <i class="fa fa-cog link-icon ptr"
+                    ng-click="toggleTripOptions();"></i>
                 </span>
             </div>
 
-        <!-- Search Inputs and Embedded Options -->
+            <!-- Search Inputs and Embedded Options -->
 
             <form id="planner-top-inputs" ng-submit="submitTrip();" class="no-highlight">
                 <span id="planner-embed-gps" class="planner-embed-option">
-                    <i class="fa fa-crosshairs ptr"></i>
+                    <i class="fa fa-crosshairs link-icon ptr"
+                    ng-click="getCurrentLocation();"
+                    ng-show="show_planner_location_icon"></i>
+                    <i class="fa fa-crosshairs link-icon-active fa-spin"
+                    ng-show="show_planner_location_icon_with_spin"></i>
                 </span>
                 <span id="start-input">
                     <span class="input-title">Start</span>
-                    <input type="text" class="planner-input" 
-                        ng-model="trip_inputs.start">
+                    <input type="text" class="planner-input"
+                    ng-model="trip_inputs.start">
                 </span>
-                <span id="planner-embed-swap" class="planner-embed-option"
-                    ng-click="swapTripInputs();">
-                    <i class="fa fa-exchange ptr"></i>
+                <span id="planner-embed-swap" class="planner-embed-option">
+                    <i class="fa fa-exchange link-icon ptr"
+                    ng-click="swapTripInputs();"></i>
                 </span>
                 <span id="finish-input">
                     <span class="input-title">Finish</span>
                     <input type="text" class="planner-input"
-                        ng-model="trip_inputs.finish">
+                    ng-model="trip_inputs.finish">
                 </span>
                 <span id="planner-embed-prefs" class="planner-embed-option"
-                    ng-class="planner_prefs_styles">
-                    <i class="fa fa-cog ptr" ng-click="toggleTripOptions();"></i>
+                ng-class="planner_prefs_styles">
+                    <i class="fa fa-cog link-icon ptr"
+                    ng-click="toggleTripOptions();"></i>
                 </span>
                 <input type="submit" id="submit-trip">
             </form>
+
         </div>
 
     </div>
@@ -121,27 +68,27 @@
     <!-- Itinerary Selection Overlay -->
 
     <div id="trip-planner-itinerary-selector-modal"
-        ng-show="show_trip_planner_itinerary_selector"
-        ng-class="itinerary_selector_modal_styles"></div>
+    ng-show="show_trip_planner_itinerary_selector"
+    ng-class="itinerary_selector_modal_styles"></div>
     <div id="trip-planner-itinerary-selector"
-        ng-class="itinerary_selector_styles"
-        ng-show="show_trip_planner_itinerary_selector">
+    ng-class="itinerary_selector_styles"
+    ng-show="show_trip_planner_itinerary_selector">
         <span id="trip-planner-itinerary-selector-title" class="no-highlight">
             Select An Itinerary
         </span>
         <div id="trip-planner-itinerary-panel-area">
             <div class="trip-planner-itinerary-panel no-highlight"
-                ng-class="itinerary_selector_panel_styles"
-                ng-repeat="itinerary in current_trip_plan_data track by $index">
+            ng-class="itinerary_selector_panel_styles"
+            ng-repeat="itinerary in current_trip_plan_data track by $index">
                 <div class="trip-planner-itinerary-labels">
                     {{ itinerary.loading }}
                 </div>
                 <div class="trip-planner-itinerary-labels ptr"
-                    ng-show="show_trip_planner_itinerary_labels"
-                    ng-click="displayTripPlan($index);">
+                ng-show="show_trip_planner_itinerary_labels"
+                ng-click="displayTripPlan($index);">
                     <div>
                         <span class="trip-planer-itinerary-step"
-                            ng-repeat="leg in itinerary.legsField">
+                        ng-repeat="leg in itinerary.legsField">
                             {{ leg.modeField }}
                             <span ng-show="!$last">
                                 >

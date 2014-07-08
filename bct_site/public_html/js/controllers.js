@@ -94,8 +94,10 @@ BCTAppControllers.controller('indexController', ['$scope',
 BCTAppControllers.controller('tripPlannerController', ['$scope',
     'googleMapUtilities', '$timeout', 'tripPlannerService',
     'unitConversionAndDataReporting', 'placeholderService',
+    'nearestStopsService',
     function ($scope, googleMapUtilities, $timeout, tripPlannerService,
-        unitConversionAndDataReporting, placeholderService) {
+        unitConversionAndDataReporting, placeholderService,
+        nearestStopsService) {
         //For ease of debugging
         window.trip_scope = $scope;
 
@@ -111,6 +113,92 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
             datetarg: "arrive_by",
             datepick: new Date
         };
+
+        /*  Note on the getCurrentLocation function:
+
+            Since the geolocation API contains no indication that the user
+            agreed to share their location before loading, the loading animation
+            begins when the location button is pressed. Thus the actual loading
+            will
+            not start until the user agrees to share their location to the browser.
+
+            Furthermore, some browsers let users ignore location requests
+            without a definitive acceptance or refusal to share location. When
+            this occurs, there is no way to tell when the loading animation
+            must stop.
+
+            Therefore, the function contains a work-around that will cover
+            most cases. It depends on the presumption that if a location isn't
+            received within some (adjustable) cutoff time, it is presumed that
+            the user ignored the request, and the animation will stop. If the
+            user then decides to share their location after ignoring it, the
+            result will be ignored, requiring the user to send a fresh location
+            request, preventing the coordinates from popping up in the start
+            input section of the trip planner unexpectedly.
+
+            In short, the user has the number of seconds stored in the 
+            'constant' $scope.TIME_UNTIL_LOCATION_REQUEST_PRESUMED_IGNORED
+            *minus* the amount of time it takes the location to be retrieved,
+            otherwise it is presumed that the user ignored the location request
+            and will have to click the location button again.
+        */
+
+        $scope.TIME_UNTIL_LOCATION_REQUEST_PRESUMED_IGNORED = 15000;
+
+        $scope.getCurrentLocation = function() {
+            $scope.latest_location_prompt_time = new Date;
+
+            $scope.top_scope.show_planner_location_icon = false;
+            $scope.top_scope.show_planner_location_icon_with_spin = true;
+
+            navigator.geolocation.getCurrentPosition(
+                function(p_res) {
+                    $scope.latest_successful_location_request_time = new Date;
+
+                    if (($scope.latest_successful_location_request_time -
+                        $scope.latest_location_prompt_time)
+                        < $scope.TIME_UNTIL_LOCATION_REQUEST_PRESUMED_IGNORED) {
+
+                        $scope.top_scope.trip_inputs.start = p_res.coords.latitude +
+                        "," + p_res.coords.longitude;
+
+                        $scope.top_scope.show_planner_location_icon = true;
+                        $scope.top_scope.show_planner_location_icon_with_spin = false;
+
+                        $scope.top_scope.$apply();
+                    }
+                },
+                function() {
+                    console.log("Location request cancelled or failed.");
+
+                    $scope.top_scope.show_planner_location_icon = true;
+                    $scope.top_scope.show_planner_location_icon_with_spin = false;
+
+                    $scope.top_scope.$apply();
+                },
+                {
+                    timeout: $scope.TIME_UNTIL_LOCATION_REQUEST_PRESUMED_IGNORED
+                }
+            );
+
+            var user_ignored_location_request_timer = $timeout(function() {
+                $scope.top_scope.show_planner_location_icon = true;
+                $scope.top_scope.show_planner_location_icon_with_spin = false;
+            }, $scope.TIME_UNTIL_LOCATION_REQUEST_PRESUMED_IGNORED);
+
+        };
+
+        $scope.current_location = {
+            LatLng: {
+                Latitude: 26,
+                Longitude: -80
+            }
+        };
+
+        $scope.nearest_bstops = nearestStopsService.findNearestStops(
+            $scope.current_location,
+            $scope.stops_arr
+        );
 
         //Using the ng-class directive, the flow of these DOM elements is
         //altered significantly in order for the map only to be loaded once.
@@ -286,7 +374,9 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
                         return false;
                     }
 
-                    $scope.top_scope.show_trip_planner_itinerary_selector = true;
+                    if ($scope.top_scope.show_trip_planner_title) {
+                        $scope.top_scope.show_trip_planner_itinerary_selector = true;
+                    }
 
                     $scope.current_trip_plan_data = $scope.formatRawTripStats(
                         res.data.planField.itinerariesField);

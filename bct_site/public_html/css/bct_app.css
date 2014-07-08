@@ -38,7 +38,7 @@ a.link-icon-rev {
     color: #333;
 }
 .link-icon:hover,
-link-icon:active {
+.link-icon-active {
     color: #555;
 }
 .link-icon-rev,
@@ -444,9 +444,7 @@ em.hint-text {
     padding: 0.5em 0em;
 }
 .agency-filter,
-#schedule-search-back-button,
-#schedule-search-clear-button-top,
-#schedule-search-begin-search-button-top {
+.schedule-search-top-buttons {
     display: table-cell;
     vertical-align: middle;
     text-align: center;
@@ -455,7 +453,8 @@ em.hint-text {
 }
 #schedule-search-back-button,
 #schedule-search-clear-button-top,
-#schedule-search-begin-search-button-top{
+#schedule-search-begin-search-button-top,
+#schedule-search-clear-button-top-index {
     width: 1.6em;
 }
 .schedule-results-icons-inline {
@@ -493,10 +492,13 @@ em.hint-text {
     border-width: 0px 2px 0px 0px;
 }
 #schedule-search-clear-button-top {
-    border-width: 0px 1px 0px 0px;
+    border-width: 0px 1px 0px 2px;
 }
 #schedule-search-begin-search-button-top {
     border-width: 0px 1px 0px 2px;
+}
+#schedule-search-clear-button-top-index {
+    border-width: 0px 1px 0px 0px;
 }
 #route-stop-search-input {
     display: table-cell;
@@ -605,7 +607,7 @@ em.hint-text {
         display: none;
     }
     #schedule-search-clear-button-top {
-        border-width: 0px;
+        border-width: 0px 0px 0px 2px;
     }
     #schedule-search-area-bottom {
         display: block;
@@ -672,7 +674,10 @@ em.hint-text {
     display: none;
 }
 .planner-embed-option {
+    font-size: 1.3em;
     display: inline-block;
+    position: relative;
+    top: 0.15em;
 }
 #planner-embed-back {
     border-style: dotted;
@@ -685,13 +690,8 @@ em.hint-text {
 #planner-embed-swap {
     margin: 0% 2%;
 }
-#planner-embed-prefs,
-#planner-mobile-prefs {
-    
-}
 #planner-embed-prefs {
-    position: relative;
-    width: calc(20% - 3.5em);
+    width: calc(20% - 3em);
     text-align: right;
 }
 .planner-pref-pushed {
@@ -709,6 +709,7 @@ em.hint-text {
     padding-bottom: 0.5em;
     margin-bottom: 1em;
     padding: 0.5em 0em;
+    font-size: 1.2em;
 }
 .planner-mobile-option {
     display: table-cell;

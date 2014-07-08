@@ -53,6 +53,8 @@ BCTAppTopController.controller('BCTController', ['$scope',
     $scope.itinerary_selector_modal_styles = {
         "trip-planner-itinerary-selector-modal-smaller": false
     };
+    $scope.show_planner_location_icon = true;
+    $scope.show_planner_location_icon_with_spin = false;
 
     /* END CSS class expressions to be used to ng-class, with defaults */
 

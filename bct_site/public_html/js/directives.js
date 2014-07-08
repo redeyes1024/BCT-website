@@ -129,3 +129,10 @@ BCTApp.directive('panelTracker', [ function() {
         restrict: 'A'
     };
 }]);
+
+BCTApp.directive('plannerOptionBar', [ function() {
+    return {
+        restrict: 'E',
+        templateUrl: 'partials/planner_option_bar.html'
+    };
+}]);

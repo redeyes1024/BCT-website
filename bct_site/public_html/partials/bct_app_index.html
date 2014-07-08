@@ -15,13 +15,15 @@
         <input type="text" id="index-search-input" class="form-control needsclick"
             placeholder="Search routes, stops or intersections"
             ng-model="query_data.schedule_search">
-        <span id="schedule-search-begin-search-button-top" class="link-icon ptr"
-              ng-click="changeURLHash('#routeschedules', 'schedule_search');">
-                <i class="fa fa-search ptr"></i>
+        <span id="schedule-search-begin-search-button-top"
+        class="schedule-search-top-buttons">
+            <i class="fa fa-search link-icon ptr"
+            ng-click="changeURLHash('#routeschedules', 'schedule_search');"></i>
         </span>
-        <span id="schedule-search-clear-button-top" class="link-icon ptr"
-              ng-click="clearSearch('schedule_search');">
-                <i class="fa fa-times-circle"></i>
+        <span id="schedule-search-clear-button-top-index"
+            class="schedule-search-top-buttons">
+                <i class="fa fa-times-circle link-icon ptr"
+                ng-click="clearSearch('schedule_search');"></i>
         </span>
         <span id="broward-filter"
             class="link-icon agency-filter schedule-results-icons-inline">

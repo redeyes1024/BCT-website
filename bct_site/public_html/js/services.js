@@ -111,6 +111,63 @@ BCTAppServices.service('miniScheduleService', [ function() {
 
 }]);
 
+BCTAppServices.service('nearestStopsService', [ function() {
+    var self = this;
+
+    //Will not report stops further than this distance (in meters)
+    this.MAXIMUM_DISTANCE = 1000;
+
+    this.MAXIMUM_REPORTED_STOPS = 3;
+
+    //Calculate distance between two geographic points, not taking the Earth's
+    //curvature into account since the comparison is between relatively short
+    //distances and it is unlikely that factoring this in would change the
+    //order of shorest-to-longest distances
+    this.computeLinearDistance = function(coords1, coords2) {
+        var lat_span = coords1.Latitude - coords2.Latitude;
+        var lng_span = coords1.Longitude - coords2.Longitude;
+
+        var distance_sq = Math.pow(lat_span, 2) + Math.pow(lng_span, 2);
+        var linear_distance = Math.pow(distance_sq, 0.5);
+
+        return linear_distance;
+    };
+
+    this.findNearestStops = function(current_stop, full_bstop_list) {
+        var stops_and_distances = [];
+
+        for (var i=0;i<full_bstop_list.length;i++) {
+            var distance = self.computeLinearDistance(
+                current_stop.LatLng, full_bstop_list[i].LatLng
+            );
+
+            stops_and_distances.push({
+                bstop_id: full_bstop_list[i].Id,
+                distance: distance
+            });
+        }
+
+        stops_and_distances.sort(function(sd1, sd2) {
+            return sd1.distance - sd2.distance;
+        });
+
+        //Could combine this step with computeLinearDistance above for slightly
+        //more efficiency is needed
+        var stops_below_cutoff = stops_and_distances.filter(function(sd) {
+            return sd.distance < self.MAXIMUM_DISTANCE;
+        });
+
+        var nearest_bstops = [];
+
+        for (var j=0;j<self.MAXIMUM_REPORTED_STOPS;j++) {
+            if (!nearest_bstops[j]) { break; }
+                nearest_bstops.push(stops_below_cutoff[j].bstop_id);
+        }
+
+        return nearest_bstops;
+    };
+}]);
+
 BCTAppServices.service('placeholderService', [ function() {
     this.createLoadingPlaceholder = function(length, content) {
         var placeholder_arr = [];

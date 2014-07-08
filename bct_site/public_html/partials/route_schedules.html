@@ -10,7 +10,8 @@
             <i class="fa fa-arrow-circle-left"></i> Back to Schedule Search
         </span>
         <div id="schedule-search-area-top">
-            <span id="schedule-search-back-button">
+            <span id="schedule-search-back-button"
+                class="schedule-search-top-buttons">
                 <a href="#bctappindex" class="link-icon">
                     <i class="fa fa-arrow-circle-left ptr"></i>
                 </a>
@@ -20,8 +21,8 @@
                 placeholder="Search routes, stops or intersections"
                 ng-model="query_data.schedule_search">
             <span id="schedule-search-clear-button-top"
-                class="link-icon">
-                <i class="fa fa-times-circle ptr"
+                class="schedule-search-top-buttons">
+                <i class="fa fa-times-circle link-icon ptr"
                     ng-click="clearSearch('schedule_search');"></i>
             </span>
             <span id="broward-filter"
