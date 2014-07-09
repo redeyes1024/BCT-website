@@ -9,7 +9,8 @@
     </div>
 
     <div id="schedule-map-top-panel" ng-show="show_schedule_result_top_bar">
-        <div id="schedule-map-info-bar" class="no-highlight ptr" ng-click="resetCenter();">
+        <div id="schedule-map-info-bar" class="title-header no-highlight ptr"
+        ng-click="resetCenter();">
             {{ map_schedule_info.route }} {{ stops[map_schedule_info.stop].Name }}
         </div>
         <schedule-map-overlay></schedule-map-overlay>
@@ -44,7 +45,7 @@
             </span>
         </div>
     </div>
-    <span class="trip-planner-module-title-map no-highlight"
+    <span class="trip-planner-module-title-map title-header no-highlight"
         ng-show="show_trip_planner_title">
         Trip Planner
     </span>

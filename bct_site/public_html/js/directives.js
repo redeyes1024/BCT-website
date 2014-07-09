@@ -33,10 +33,12 @@ BCTApp.directive('routeResultPanel', [ '$compile', function($compile) {
             var panel_is_closed = panel.classList.contains("in");
             scope.route = scope.routes[route_id];
 
+            //i.e. panel was closed and is now being opened
             if (panel_is_closed) {
                 angular.element(element[0].childNodes[0].childNodes[3].childNodes[1].childNodes[3]).
                 append($compile("<sub-panel-routes></sub-panel-routes>")(scope));
             }
+            //i.e. panel was open and now is being closed
             else {
                 angular.element(element[0].childNodes[0].childNodes[3].childNodes[1].childNodes[3].childNodes[0]).
                 remove();
@@ -65,10 +67,12 @@ BCTApp.directive('stopResultPanel', [ '$compile', function($compile) {
             var panel_is_closed = panel.classList.contains("in");
             scope.stop = scope.stops[stop_id];
 
+            //i.e. panel was closed and is now being opened
             if (panel_is_closed) {
                 angular.element(element[0].childNodes[0].childNodes[3].childNodes[1].childNodes[3]).
                 append($compile("<sub-panel-stops></sub-panel-stops>")(scope));
             }
+            //i.e. panel was open and now is being closed
             else {
                 angular.element(element[0].childNodes[0].childNodes[3].childNodes[1].childNodes[3].childNodes[0]).
                 remove();
@@ -134,5 +138,12 @@ BCTApp.directive('plannerOptionBar', [ function() {
     return {
         restrict: 'E',
         templateUrl: 'partials/planner_option_bar.html'
+    };
+}]);
+
+BCTApp.directive('nearestStops', [ function() {
+    return {
+        restrict: 'E',
+        templateUrl: 'partials/nearest_stops.html'
     };
 }]);

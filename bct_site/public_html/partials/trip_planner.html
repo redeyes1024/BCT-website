@@ -1,7 +1,7 @@
 <div id="trip-planner-module" ng-controller="tripPlannerController"
     ng-class="trip_planner_styles">
 
-    <span class="trip-planner-module-title">Plan a trip</span>
+    <span class="title-header">Plan a trip</span>
 
     <div id="planner-top-bar">
 
@@ -73,7 +73,8 @@
     <div id="trip-planner-itinerary-selector"
     ng-class="itinerary_selector_styles"
     ng-show="show_trip_planner_itinerary_selector">
-        <span id="trip-planner-itinerary-selector-title" class="no-highlight">
+        <span id="trip-planner-itinerary-selector-title"
+        class="no-highlight title-header">
             Select An Itinerary
         </span>
         <div id="trip-planner-itinerary-panel-area">
@@ -95,14 +96,16 @@
                             </span>
                         </span>
                         <div>
-                            {{ itinerary.startTimeField }} - {{ itinerary.endTimeField }}
+                            {{ itinerary.startTimeField }} -
+                            {{ itinerary.endTimeField }}
                             <span class="trip-planner-itinerary-duration">
                                 ({{ itinerary.durationField }})
                             </span>
                         </div>
                         <div>
                             Fare:
-                            {{ (itinerary.fareField.fare1Field[0].valueField.centsField / 100).toFixed(2) }}
+                            {{ (itinerary.fareField.fare1Field[0].
+                            valueField.centsField / 100).toFixed(2) }}
                             $
                         </div>
                     </div>

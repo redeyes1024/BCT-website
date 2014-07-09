@@ -53,8 +53,6 @@ BCTAppTopController.controller('BCTController', ['$scope',
     $scope.itinerary_selector_modal_styles = {
         "trip-planner-itinerary-selector-modal-smaller": false
     };
-    $scope.show_planner_location_icon = true;
-    $scope.show_planner_location_icon_with_spin = false;
 
     /* END CSS class expressions to be used to ng-class, with defaults */
 
@@ -63,6 +61,11 @@ BCTAppTopController.controller('BCTController', ['$scope',
     $scope.show_empty_result_message_search_too_short = true;
     $scope.show_empty_result_message_no_results = true;
     $scope.show_schedule_results_result_panels = false;
+
+    $scope.show_index_nearest_stops_panels = false;
+
+    $scope.show_nearest_bstops_location_icon = true;
+    $scope.show_nearest_bstops_location_icon_with_spinner = false;
 
     $scope.show_map_overlay_module = false;
     $scope.show_schedule_map_loading_modal = false;
@@ -78,6 +81,9 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
     $scope.show_trip_planner_title = false;
     $scope.show_trip_planner_options = false;
+
+    $scope.show_planner_location_icon = true;
+    $scope.show_planner_location_icon_with_spin = false;
 
     $scope.show_geocoder_error_dialog = false;
 
@@ -410,6 +416,84 @@ BCTAppTopController.controller('BCTController', ['$scope',
     $scope.clearFilters = function() {
         $scope.bstopFilter.f = "";
         $scope.routeFilter.f = "";
+    };
+
+    /*  Note on the getCurrentLocation function:
+
+        Since the geolocation API contains no indication that the user
+        agreed to share their location before loading, the loading animation
+        begins when the location button is pressed. Thus the actual loading
+        will
+        not start until the user agrees to share their location to the browser.
+
+        Furthermore, some browsers let users ignore location requests
+        without a definitive acceptance or refusal to share location. When
+        this occurs, there is no way to tell when the loading animation
+        must stop.
+
+        Therefore, the function contains a work-around that will cover
+        most cases. It depends on the presumption that if a location isn't
+        received within some (adjustable) cutoff time, it is presumed that
+        the user ignored the request, and the animation will stop. If the
+        user then decides to share their location after ignoring it, the
+        result will be ignored, requiring the user to send a fresh location
+        request, preventing the coordinates from popping up in the start
+        input section of the trip planner unexpectedly.
+
+        In short, the user has the number of seconds stored in the 
+        'constant' $scope.TIME_UNTIL_LOCATION_REQUEST_PRESUMED_IGNORED
+        *minus* the amount of time it takes the location to be retrieved,
+        otherwise it is presumed that the user ignored the location request
+        and will have to click the location button again.
+    */
+
+    $scope.TIME_UNTIL_LOCATION_REQUEST_PRESUMED_IGNORED = 15000;
+
+    $scope.getCurrentLocation = function(
+            enableLoadingAnimation,
+            disableLoadingAnimation,
+            displayData
+        ) {
+        $scope.latest_location_prompt_time = new Date;
+
+        $scope.show_planner_location_icon = false;
+        $scope.show_planner_location_icon_with_spin = true;
+
+        navigator.geolocation.getCurrentPosition(
+            function(p_res) {
+                $scope.latest_successful_location_request_time = new Date;
+
+                if (($scope.latest_successful_location_request_time -
+                    $scope.latest_location_prompt_time)
+                    < $scope.TIME_UNTIL_LOCATION_REQUEST_PRESUMED_IGNORED) {
+
+                    $scope.trip_inputs.start = p_res.coords.latitude +
+                    "," + p_res.coords.longitude;
+
+                    $scope.show_planner_location_icon = true;
+                    $scope.show_planner_location_icon_with_spin = false;
+
+                    $scope.$apply();
+                }
+            },
+            function() {
+                console.log("Location request cancelled or failed.");
+
+                $scope.show_planner_location_icon = true;
+                $scope.show_planner_location_icon_with_spin = false;
+
+                $scope.$apply();
+            },
+            {
+                timeout: $scope.TIME_UNTIL_LOCATION_REQUEST_PRESUMED_IGNORED
+            }
+        );
+
+        var user_ignored_location_request_timer = $timeout(function() {
+            $scope.top_scope.show_planner_location_icon = true;
+            $scope.top_scope.show_planner_location_icon_with_spin = false;
+        }, $scope.TIME_UNTIL_LOCATION_REQUEST_PRESUMED_IGNORED);
+
     };
 
     $scope.foldOptions = function(event) {

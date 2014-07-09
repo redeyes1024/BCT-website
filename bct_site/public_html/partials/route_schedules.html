@@ -1,13 +1,16 @@
 <div id="route-schedules-module" ng-controller="routeSchedulesController">
-    <div id="schedule-search-area" class="no-highlight">
-        <span class="schedule-results-module-title"
+    <div id="schedule-search-area" class="schedule-search-area-container
+    no-highlight">
+        <span class="schedule-results-module-title title-header no-highlight"
             ng-show="show_schedule_results_module_title_normal">
-            Search schedules
+            Search schedules - BCT MyRide
         </span>
-        <span class="schedule-results-module-title no-highlight ptr text-shadow-hover"
+        <span class="schedule-results-module-title title-header
+            no-highlight ptr text-shadow-hover"
             ng-click="closeMapAndResetTripPlanner();"
             ng-show="show_schedule_results_module_title_with_back_function">
-            <i class="fa fa-arrow-circle-left"></i> Back to Schedule Search
+            <i class="fa fa-arrow-circle-left"></i>
+            Back to Schedule Search - BCT MyRide
         </span>
         <div id="schedule-search-area-top">
             <span id="schedule-search-back-button"
@@ -68,20 +71,26 @@
         </div>
     </div>
 
-    <div class="panel-group" id="accordion" ng-show="show_schedule_results_result_panels">
-        <div id="bstop-list" class="no-highlight">
-            <span class="schedule-results-title">Stop and Intersection Results</span>
-            <stop-result-panel
-            ng-repeat="stop in stops_arr | stopFilter:query_data.schedule_search"
-            panel-tracker>
-            </stop-result-panel>
-        </div>
-        <div id="route-list" class="no-highlight">
-            <span class="schedule-results-title">Route Results</span>
-            <route-result-panel
-            ng-repeat="route in routes_arr | routeFilter:query_data.schedule_search"
-            panel-tracker>
-            </route-result-panel>
+    <div class="schedule-results-main-container">
+        <div class="panel-group" id="accordion" ng-show="show_schedule_results_result_panels">
+            <div id="bstop-list" class="no-highlight">
+                <span class="schedule-results-title title-header">
+                    Stop and Intersection Results
+                </span>
+                <stop-result-panel
+                ng-repeat="stop in stops_arr | stopFilter:query_data.schedule_search"
+                panel-tracker>
+                </stop-result-panel>
+            </div>
+            <div id="route-list" class="no-highlight">
+                <span class="schedule-results-title title-header">
+                    Route Results
+                </span>
+                <route-result-panel
+                ng-repeat="route in routes_arr | routeFilter:query_data.schedule_search"
+                panel-tracker>
+                </route-result-panel>
+            </div>
         </div>
     </div>
 

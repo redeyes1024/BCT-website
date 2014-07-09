@@ -114,8 +114,9 @@ BCTAppServices.service('miniScheduleService', [ function() {
 BCTAppServices.service('nearestStopsService', [ function() {
     var self = this;
 
-    //Will not report stops further than this distance (in meters)
-    this.MAXIMUM_DISTANCE = 1000;
+    //Will not report stops further than this distance
+    //In degrees, or meters divided by 111111 as a rough conversion
+    this.MAXIMUM_DISTANCE = 500 / 111111;
 
     this.MAXIMUM_REPORTED_STOPS = 3;
 
@@ -133,16 +134,37 @@ BCTAppServices.service('nearestStopsService', [ function() {
         return linear_distance;
     };
 
-    this.findNearestStops = function(current_stop, full_bstop_list) {
+    this.findNearestStops = function(current_location_raw, full_bstop_list,
+    bus_stop_dictionary) {
+
+        var current_location = {
+            LatLng: {
+                Latitude: current_location_raw.latitude,
+                Longitude: current_location_raw.longitude
+            }
+        };
+
+        //Default reference location if client is not in South East Florida
+        //for demonstration/testing only, to make development location-agnostic
+        if (current_location.LatLng.Latitude.toFixed(0) !== "26" ||
+            current_location.LatLng.Latitude.toFixed(0) !== "-81") {
+            current_location = {
+                LatLng: {
+                    Latitude: 25.977301,
+                    Longitude: -80.12027
+                }
+            };
+        }
+
         var stops_and_distances = [];
 
         for (var i=0;i<full_bstop_list.length;i++) {
             var distance = self.computeLinearDistance(
-                current_stop.LatLng, full_bstop_list[i].LatLng
+                current_location.LatLng, full_bstop_list[i].LatLng
             );
 
             stops_and_distances.push({
-                bstop_id: full_bstop_list[i].Id,
+                Id: full_bstop_list[i].Id,
                 distance: distance
             });
         }
@@ -152,16 +174,31 @@ BCTAppServices.service('nearestStopsService', [ function() {
         });
 
         //Could combine this step with computeLinearDistance above for slightly
-        //more efficiency is needed
+        //more efficiency if needed
         var stops_below_cutoff = stops_and_distances.filter(function(sd) {
             return sd.distance < self.MAXIMUM_DISTANCE;
         });
 
-        var nearest_bstops = [];
+        var nearest_bstops = stops_below_cutoff.
+        slice(0, self.MAXIMUM_REPORTED_STOPS);
 
-        for (var j=0;j<self.MAXIMUM_REPORTED_STOPS;j++) {
-            if (!nearest_bstops[j]) { break; }
-                nearest_bstops.push(stops_below_cutoff[j].bstop_id);
+        //Distance conversions of selected stops (rough estimates)
+        for (var j=0;j<nearest_bstops.length;j++) {
+            var distance_in_degrees = nearest_bstops[j].distance;
+            var distance_in_meters = distance_in_degrees * 111111;
+            var distance_in_yards = distance_in_meters * 1.09361;
+
+            //Because distances were converted roughly to and from degrees
+            //latitude and longitude, rounding is extensive
+            var rounded_distance = Number(distance_in_yards.toFixed(-1));
+
+            nearest_bstops[j].distance = rounded_distance;
+        }
+
+        //Add names to selected stops
+        //Can combine with previous loop for negligible efficiency increase
+        for (var k=0;k<nearest_bstops.length;k++) {
+            nearest_bstops[k].Name = bus_stop_dictionary[nearest_bstops[k].Id].Name;
         }
 
         return nearest_bstops;
