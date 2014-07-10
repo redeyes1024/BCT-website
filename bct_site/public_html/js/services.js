@@ -111,6 +111,79 @@ BCTAppServices.service('miniScheduleService', [ function() {
 
 }]);
 
+BCTAppServices.service('locationService', [ '$timeout', function($timeout) {
+
+    var self = this;
+
+    /*  Note on the getCurrentLocation function:
+
+        Since the geolocation API contains no indication that the user
+        agreed to share their location before loading, the loading animation
+        begins when the location button is pressed. Thus the actual loading
+        will
+        not start until the user agrees to share their location to the browser.
+
+        Furthermore, some browsers let users ignore location requests
+        without a definitive acceptance or refusal to share location. When
+        this occurs, there is no way to tell when the loading animation
+        must stop.
+
+        Therefore, the function contains a work-around that will cover
+        most cases. It depends on the presumption that if a location isn't
+        received within some (adjustable) cutoff time, it is presumed that
+        the user ignored the request, and the animation will stop. If the
+        user then decides to share their location after ignoring it, the
+        result will be ignored, requiring the user to send a fresh location
+        request, preventing the coordinates from popping up in the start
+        input section of the trip planner unexpectedly.
+
+        In short, the user has the number of seconds stored in the 
+        'constant' $scope.TIME_UNTIL_LOCATION_REQUEST_PRESUMED_IGNORED
+        *minus* the amount of time it takes the location to be retrieved,
+        otherwise it is presumed that the user ignored the location request
+        and will have to click the location button again.
+    */
+
+    this.TIME_UNTIL_LOCATION_REQUEST_PRESUMED_IGNORED = 15000;
+
+    this.getCurrentLocationAndDisplayData =
+    function(setLoadingAnimation, displayData) {
+
+        var latest_location_prompt_time = new Date;
+
+        setLoadingAnimation("active");
+
+        navigator.geolocation.getCurrentPosition(
+            function(p_res) {
+                var latest_successful_location_request_time = new Date;
+
+                if ((latest_successful_location_request_time -
+                    latest_location_prompt_time)
+                    < self.TIME_UNTIL_LOCATION_REQUEST_PRESUMED_IGNORED) {
+
+                    displayData(p_res.coords);
+
+                    setLoadingAnimation("inactive");
+                }
+            },
+            function() {
+                console.log("Location request cancelled or failed.");
+
+                setLoadingAnimation("inactive");
+            },
+            {
+                timeout: self.TIME_UNTIL_LOCATION_REQUEST_PRESUMED_IGNORED
+            }
+        );
+
+        var user_ignored_location_request_timer = $timeout(function() {
+            setLoadingAnimation("inactive");
+        }, self.TIME_UNTIL_LOCATION_REQUEST_PRESUMED_IGNORED);
+
+    };
+
+}]);
+
 BCTAppServices.service('nearestStopsService', [ function() {
     var self = this;
 
@@ -132,6 +205,27 @@ BCTAppServices.service('nearestStopsService', [ function() {
         var linear_distance = Math.pow(distance_sq, 0.5);
 
         return linear_distance;
+    };
+
+    this.labelDistancesAndConvertFromDegrees = function (distance) {
+        var units = "yards";
+        var distance_in_degrees = distance;
+        var reported_distance = "";
+        
+        if (distance > 0) {
+            var distance_in_meters = distance_in_degrees * 111111;
+            var distance_in_yards = distance_in_meters * 1.09361;
+
+            //Because distances were converted roughly to and from degrees
+            //latitude and longitude, rounding is extensive
+            var rounded_distance = distance_in_yards.toFixed(-1);
+
+            reported_distance = rounded_distance + " " + units;
+        }
+        else if (distance === 0) {
+            reported_distance = "within 10 yards";
+        }
+        return reported_distance;
     };
 
     this.findNearestStops = function(current_location_raw, full_bstop_list,
@@ -182,17 +276,9 @@ BCTAppServices.service('nearestStopsService', [ function() {
         var nearest_bstops = stops_below_cutoff.
         slice(0, self.MAXIMUM_REPORTED_STOPS);
 
-        //Distance conversions of selected stops (rough estimates)
         for (var j=0;j<nearest_bstops.length;j++) {
-            var distance_in_degrees = nearest_bstops[j].distance;
-            var distance_in_meters = distance_in_degrees * 111111;
-            var distance_in_yards = distance_in_meters * 1.09361;
-
-            //Because distances were converted roughly to and from degrees
-            //latitude and longitude, rounding is extensive
-            var rounded_distance = Number(distance_in_yards.toFixed(-1));
-
-            nearest_bstops[j].distance = rounded_distance;
+            nearest_bstops[j].distance =
+            self.labelDistancesAndConvertFromDegrees(nearest_bstops[j].distance);
         }
 
         //Add names to selected stops

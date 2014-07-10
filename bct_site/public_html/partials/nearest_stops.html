@@ -1,6 +1,9 @@
 <div id="nearest-stops-module">
     <div id="nearest-stops-header" class="title-header no-highlight ptr"
-    ng-click="getIndexCurrentLocation();">
+    ng-click="getCurrentLocationAndDisplayData(
+        setNearestStopsLocationSpinner,
+        calculateAndShowNearestBusStops
+    );">
         <i class="fa fa-crosshairs"
         ng-show="show_nearest_bstops_location_icon"></i>
         <i class="fa fa-crosshairs fa-spin"

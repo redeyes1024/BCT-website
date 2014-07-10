@@ -32,52 +32,21 @@ function ($scope, $timeout, nearestStopsService) {
         $scope.show_index_nearest_stops_panels = true;
     };
 
-    $scope.TIME_UNTIL_LOCATION_REQUEST_PRESUMED_IGNORED = 15000;
-
-    $scope.getIndexCurrentLocation = function() {
-        $scope.latest_location_prompt_time = new Date;
-
-        $scope.top_scope.show_nearest_bstops_location_icon_with_spinner = true;
-        $scope.top_scope.show_nearest_bstops_location_icon = false;
-
-        navigator.geolocation.getCurrentPosition(
-            function(p_res) {
-                $scope.latest_successful_location_request_time = new Date;
-
-                if (($scope.latest_successful_location_request_time -
-                    $scope.latest_location_prompt_time)
-                    < $scope.TIME_UNTIL_LOCATION_REQUEST_PRESUMED_IGNORED) {
-
-                    $scope.calculateAndShowNearestBusStops(p_res.coords);
-
-                    $scope.top_scope.
-                        show_nearest_bstops_location_icon_with_spinner = false;
-                    $scope.top_scope.
-                        show_nearest_bstops_location_icon = true;
-
-                    $scope.$apply();
-                }
-            },
-            function() {
-                console.log("Location request cancelled or failed.");
-
+    $scope.setNearestStopsLocationSpinner = function(new_state) {
+        switch (new_state) {
+            case "active":
                 $scope.top_scope.
-                    show_nearest_bstops_location_icon_with_spinner = false;
+                show_nearest_bstops_location_icon_with_spinner = true;
                 $scope.top_scope.
-                    show_nearest_bstops_location_icon_with = true;
-
-                $scope.$apply();
-            },
-            {
-                timeout: $scope.TIME_UNTIL_LOCATION_REQUEST_PRESUMED_IGNORED
-            }
-        );
-
-        var user_ignored_location_request_timer = $timeout(function() {
-            $scope.top_scope.show_nearest_bstops_location_icon_with_spinner = false;
-            $scope.top_scope.show_nearest_bstops_location_icon = true;
-        }, $scope.TIME_UNTIL_LOCATION_REQUEST_PRESUMED_IGNORED);
-
+                show_nearest_bstops_location_icon = false;
+                break;
+            case "inactive":
+                $scope.top_scope.
+                show_nearest_bstops_location_icon_with_spinner = false;
+                $scope.top_scope.
+                show_nearest_bstops_location_icon = true;
+                break;
+        }
     };
 
     isr.dom_q.inputs["index-schedule-search"] = document.getElementById("index-schedule-search");
@@ -175,6 +144,24 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
         },
         datetarg: "arrive_by",
         datepick: new Date
+    };
+
+    $scope.setPlannerLocationSpinner = function(new_state) {
+        switch (new_state) {
+            case "active":
+                $scope.show_planner_location_icon = false;
+                $scope.show_planner_location_icon_with_spin = true;
+                break;
+            case "inactive":
+                $scope.show_planner_location_icon = true;
+                $scope.show_planner_location_icon_with_spin = false;
+                break;
+        }
+    };
+
+    $scope.displayPlannerLocationData = function(location) {
+        $scope.trip_inputs.start = location.latitude + "," +
+        location.longitude;
     };
 
     //Using the ng-class directive, the flow of these DOM elements is

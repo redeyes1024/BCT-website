@@ -14,7 +14,10 @@
             <div id="planner-mobile-controls" class="no-highlight">
                 <span id="planner-mobile-gps" class="planner-mobile-option">
                     <i class="fa fa-crosshairs link-icon ptr"
-                    ng-click="getCurrentLocation();"
+                    ng-click="getCurrentLocationAndDisplayData(
+                        setPlannerLocationSpinner,
+                        displayPlannerLocationData
+                    );"
                     ng-show="show_planner_location_icon"></i>
                     <i class="fa fa-crosshairs link-icon-active fa-spin"
                     ng-show="show_planner_location_icon_with_spin"></i>
@@ -34,7 +37,10 @@
             <form id="planner-top-inputs" ng-submit="submitTrip();" class="no-highlight">
                 <span id="planner-embed-gps" class="planner-embed-option">
                     <i class="fa fa-crosshairs link-icon ptr"
-                    ng-click="getCurrentLocation();"
+                    ng-click="getCurrentLocationAndDisplayData(
+                        setPlannerLocationSpinner,
+                        displayPlannerLocationData
+                    );"
                     ng-show="show_planner_location_icon"></i>
                     <i class="fa fa-crosshairs link-icon-active fa-spin"
                     ng-show="show_planner_location_icon_with_spin"></i>
