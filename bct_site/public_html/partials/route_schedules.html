@@ -71,6 +71,8 @@
         </div>
     </div>
 
+    <!--  -->
+
     <div class="schedule-results-main-container">
         <div class="panel-group" id="accordion" ng-show="show_schedule_results_result_panels">
             <div id="bstop-list" class="no-highlight">
@@ -78,7 +80,8 @@
                     Stop and Intersection Results
                 </span>
                 <stop-result-panel
-                ng-repeat="stop in stops_arr | stopFilter:query_data.schedule_search"
+                ng-repeat="stop in stops_arr |
+                stopFilter:query_data.schedule_search:sort_bstops_by_distance"
                 panel-tracker>
                 </stop-result-panel>
             </div>

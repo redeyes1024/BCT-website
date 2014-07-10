@@ -3,6 +3,16 @@ var BCTAppFilters = angular.module('BCTAppFilters', []);
 isr.classes.RouteAndStopFilter = function(non_id_property, use_minimum_length) {
     var self = this;
 
+    var computeLinearDistance = function(coords1, coords2) {
+        var lat_span = coords1.Latitude - coords2.Latitude;
+        var lng_span = coords1.Longitude - coords2.Longitude;
+
+        var distance_sq = Math.pow(lat_span, 2) + Math.pow(lng_span, 2);
+        var linear_distance = Math.pow(distance_sq, 0.5);
+
+        return linear_distance;
+    };
+
     this.property_name = non_id_property;
 
     if (use_minimum_length) {
@@ -19,12 +29,12 @@ isr.classes.RouteAndStopFilter = function(non_id_property, use_minimum_length) {
         };
     }
 
-    this.filter = function(items, input) {
+    this.filter = function(items, search_string, sort_bstops_by_distance) {
         var filtered = [];
-        var input_lower = input.toLowerCase();
+        var input_lower = search_string.toLowerCase();
 
-        if (!self.filter_condition(input.length)) { return true; }
-        if (input.length === 0) {
+        if (!self.filter_condition(search_string.length)) { return true; }
+        if (search_string.length === 0) {
             return items;
         };
 
@@ -36,6 +46,34 @@ isr.classes.RouteAndStopFilter = function(non_id_property, use_minimum_length) {
                 filtered.push(items[i]);
             }
         }
+
+        if (sort_bstops_by_distance && sort_bstops_by_distance.enabled) {
+            var current_location = {
+                LatLng: {
+                    Latitude: 25.977301,
+                    Longitude: -80.12027
+                }
+            };
+
+            var distances_associated_by_index = [];
+
+            for (var i=0;i<filtered.length;i++) {
+                var distance = computeLinearDistance(
+                    current_location.LatLng, filtered[i].LatLng
+                );
+
+                filtered[i].distance = distance;
+            }
+
+            filtered.sort(function(sd1, sd2) {
+                return sd1.distance - sd2.distance;
+            });
+
+            for (var i=0;i<filtered.length;i++) {
+                delete filtered[i].distance;
+            }
+        }
+
         return filtered;
     };
 };

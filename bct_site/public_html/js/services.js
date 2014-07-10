@@ -563,9 +563,11 @@ BCTAppServices.service('unitConversionAndDataReporting', [ function() {
 
 }]);
 
-BCTAppServices.service('googleMapUtilities', [ 'scheduleDownloadAndTransformation',
-    'unitConversionAndDataReporting',
-    function(scheduleDownloadAndTransformation, unitConversionAndDataReporting) {
+BCTAppServices.service('googleMapUtilities', [
+    'scheduleDownloadAndTransformation', 'unitConversionAndDataReporting',
+    function(scheduleDownloadAndTransformation,
+    unitConversionAndDataReporting) {
+
     var self = this;
 
     this.palette = {
@@ -1210,3 +1212,102 @@ BCTAppServices.service('tripPlannerService', [ '$http', '$q',
          });
     };
 }]);
+
+BCTAppServices.provider('routeAndStopFilters', [ function() {
+
+    this.configureSomething = function() {
+        return "a changed thing";
+    };
+
+    this.$get = function() {
+        return new (function() {
+            console.log("instantiated");
+            this.test = function() { return "test property"; };
+        });
+    };
+
+//    this.$get = function() {
+//        RouteAndStopFilter = function(non_id_property, use_minimum_length) {
+//        var self = this;
+//
+//        var computeLinearDistance = function(coords1, coords2) {
+//            var lat_span = coords1.Latitude - coords2.Latitude;
+//            var lng_span = coords1.Longitude - coords2.Longitude;
+//
+//            var distance_sq = Math.pow(lat_span, 2) + Math.pow(lng_span, 2);
+//            var linear_distance = Math.pow(distance_sq, 0.5);
+//
+//            return linear_distance;
+//        };
+//
+//        this.property_name = non_id_property;
+//
+//        if (use_minimum_length) {
+//            this.filter_condition = function(input_string_length) {
+//                if (input_string_length < 3) {
+//                    return false;
+//                }
+//                return true;
+//            };
+//        }
+//        else {
+//            this.filter_condition = function() {
+//                return true;
+//            };
+//        }
+//
+//        this.filter = function(items, search_string, sort_bstops_by_distance) {
+//            var filtered = [];
+//            var input_lower = search_string.toLowerCase();
+//
+//            if (!self.filter_condition(search_string.length)) { return true; }
+//            if (search_string.length === 0) {
+//                return items;
+//            };
+//
+//            for (var i=0;i<items.length;i++) {
+//                var search_str_cased = items[i].Id + " " + items[i][self.property_name];
+//                var search_str = search_str_cased.toLowerCase();
+//
+//                if (search_str.match(input_lower)) {
+//                    filtered.push(items[i]);
+//                }
+//            }
+//
+//            if (sort_bstops_by_distance && sort_bstops_by_distance.enabled) {
+//                var current_location = {
+//                    LatLng: {
+//                        Latitude: 25.977301,
+//                        Longitude: -80.12027
+//                    }
+//                };
+//
+//                var distances_associated_by_index = [];
+//
+//                for (var i=0;i<filtered.length;i++) {
+//                    var distance = computeLinearDistance(
+//                        current_location.LatLng, filtered[i].LatLng
+//                    );
+//
+//                    filtered[i].distance = distance;
+//                }
+//
+//                filtered.sort(function(sd1, sd2) {
+//                    return sd1.distance - sd2.distance;
+//                });
+//
+//                for (var i=0;i<filtered.length;i++) {
+//                    delete filtered[i].distance;
+//                }
+//            }
+//
+//            return filtered;
+//        };
+//        };
+//    };
+
+}]);
+
+BCTApp.config(function(routeAndStopFiltersProvider) {
+    console.log(routeAndStopFiltersProvider.configureSomething());
+});
