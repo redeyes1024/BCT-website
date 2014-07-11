@@ -77,7 +77,20 @@
         <div class="panel-group" id="accordion" ng-show="show_schedule_results_result_panels">
             <div id="bstop-list" class="no-highlight">
                 <span class="schedule-results-title title-header">
+
+                    <i class="fa fa-crosshairs ptr"
+                    ng-show="show_nearest_results_bstops_location_icon"
+                    ng-click="getCurrentLocationAndDisplayData(
+                        setNearestResultStopsLocationSpinner,
+                        sortResultStopsByDistance
+                    );">
+                    </i>
+                    <i class="fa fa-crosshairs fa-spin"
+                    ng-show="show_nearest_results_bstops_location_icon_with_spinner">
+                    </i>
+
                     Stop and Intersection Results
+
                 </span>
                 <stop-result-panel
                 ng-repeat="stop in stops_arr |

@@ -115,6 +115,24 @@ BCTAppServices.service('locationService', [ '$timeout', function($timeout) {
 
     var self = this;
 
+    this.OUT_OF_REGION_CUTOFF_COORDS = {
+        lat: {
+            max: 27,
+            min: 25
+        },
+        lng: {
+            max: -81,
+            min: -82
+        }
+    };
+
+    this.DEFAULT_DEMO_LOCATION_COORDS = {
+        LatLng: {
+            Latitude: 25.977301,
+            Longitude: -80.12027
+        }
+    };
+
     /*  Note on the getCurrentLocation function:
 
         Since the geolocation API contains no indication that the user
@@ -182,9 +200,30 @@ BCTAppServices.service('locationService', [ '$timeout', function($timeout) {
 
     };
 
+    //Change reference location if client is not in South East Florida
+    //For demonstration/testing only, to make development location-agnostic
+    this.changeToDefaultLocationIfOutsideOfFlorida =
+    function(current_location) {
+
+        var bounds = self.OUT_OF_REGION_CUTOFF_COORDS;
+        var current_lat = current_location.LatLng.Latitude;
+        var current_lng = current_location.LatLng.Longitude;
+
+        if (
+            !(bounds.lat.min <= current_lat && current_lat <= bounds.lat.max) ||
+            !(bounds.lng.min <= current_lng && current_lng <= bounds.lng.max)
+        ) {
+            current_location = self.DEFAULT_DEMO_LOCATION_COORDS;
+        }
+
+        return current_location;
+    };
+
 }]);
 
-BCTAppServices.service('nearestStopsService', [ function() {
+BCTAppServices.service('nearestStopsService', [ 'locationService',
+function(locationService) {
+
     var self = this;
 
     //Will not report stops further than this distance
@@ -228,8 +267,39 @@ BCTAppServices.service('nearestStopsService', [ function() {
         return reported_distance;
     };
 
-    this.findNearestStops = function(current_location_raw, full_bstop_list,
-    bus_stop_dictionary) {
+    this.sortStopsByDistance = function(
+        current_location,
+        bstops_list,
+        keep_distance_property
+    ) {
+
+        for (var i=0;i<bstops_list.length;i++) {
+            var distance = self.computeLinearDistance(
+                current_location.LatLng,
+                bstops_list[i].LatLng
+            );
+
+            bstops_list[i].distance = distance;
+        }
+
+        bstops_list.sort(function(sd1, sd2) {
+            return sd1.distance - sd2.distance;
+        });
+
+        if (!keep_distance_property) {
+            for (var i=0;i<bstops_list.length;i++) {
+                delete bstops_list[i].distance;
+            }
+        }
+
+        return bstops_list;
+    };
+
+    this.findNearestStops = function(
+        current_location_raw,
+        full_bstop_list,
+        bus_stop_dictionary
+    ) {
 
         var current_location = {
             LatLng: {
@@ -238,38 +308,27 @@ BCTAppServices.service('nearestStopsService', [ function() {
             }
         };
 
-        //Default reference location if client is not in South East Florida
-        //for demonstration/testing only, to make development location-agnostic
-        if (current_location.LatLng.Latitude.toFixed(0) !== "26" ||
-            current_location.LatLng.Latitude.toFixed(0) !== "-81") {
-            current_location = {
-                LatLng: {
-                    Latitude: 25.977301,
-                    Longitude: -80.12027
-                }
-            };
-        }
+        current_location =
+        locationService.
+        changeToDefaultLocationIfOutsideOfFlorida(current_location);
 
-        var stops_and_distances = [];
+        var full_bstop_list_ids_coords = [];
 
         for (var i=0;i<full_bstop_list.length;i++) {
-            var distance = self.computeLinearDistance(
-                current_location.LatLng, full_bstop_list[i].LatLng
-            );
-
-            stops_and_distances.push({
+            full_bstop_list_ids_coords.push({
                 Id: full_bstop_list[i].Id,
-                distance: distance
+                LatLng: full_bstop_list[i].LatLng
             });
         }
 
-        stops_and_distances.sort(function(sd1, sd2) {
-            return sd1.distance - sd2.distance;
-        });
+        full_bstop_list_ids_coords = self.sortStopsByDistance(
+            current_location,
+            full_bstop_list_ids_coords,
+            true
+        );
 
-        //Could combine this step with computeLinearDistance above for slightly
-        //more efficiency if needed
-        var stops_below_cutoff = stops_and_distances.filter(function(sd) {
+        var stops_below_cutoff = full_bstop_list_ids_coords.
+        filter(function(sd) {
             return sd.distance < self.MAXIMUM_DISTANCE;
         });
 
@@ -289,6 +348,7 @@ BCTAppServices.service('nearestStopsService', [ function() {
 
         return nearest_bstops;
     };
+
 }]);
 
 BCTAppServices.service('placeholderService', [ function() {
@@ -1214,7 +1274,7 @@ BCTAppServices.service('tripPlannerService', [ '$http', '$q',
 }]);
 
 BCTAppServices.factory('routeAndStopFilters', [ 'nearestStopsService',
-function(nearestStopsService) {
+'locationService', function(nearestStopsService, locationService) {
     return {
 
         RouteAndStopFilterMaker: function(non_id_property, use_minimum_length) {
@@ -1247,7 +1307,8 @@ function(nearestStopsService) {
                 };
 
                 for (var i=0;i<items.length;i++) {
-                    var search_str_cased = items[i].Id + " " + items[i][self.property_name];
+                    var search_str_cased = items[i].Id + " " +
+                    items[i][self.property_name];
                     var search_str = search_str_cased.toLowerCase();
 
                     if (search_str.match(input_lower)) {
@@ -1256,6 +1317,7 @@ function(nearestStopsService) {
                 }
 
                 if (sort_bstops_by_distance && sort_bstops_by_distance.enabled) {
+
                     var current_location = {
                         LatLng: {
                             Latitude: 25.977301,
@@ -1263,43 +1325,15 @@ function(nearestStopsService) {
                         }
                     };
 
-    function sortStopsByDistance(current_location, bstops_list) {
-        for (var i=0;i<bstops_list.length;i++) {
-            var distance = nearestStopsService.
-            computeLinearDistance(
-                current_location.LatLng,
-                bstops_list[i].LatLng
-            );
+                    current_location =
+                    locationService.
+                    changeToDefaultLocationIfOutsideOfFlorida(current_location);
 
-            bstops_list[i].distance = distance;
-        }
+                    filtered = nearestStopsService.sortStopsByDistance(
+                        current_location,
+                        filtered
+                    );
 
-        bstops_list.sort(function(sd1, sd2) {
-            return sd1.distance - sd2.distance;
-        });
-
-        for (var i=0;i<filtered.length;i++) {
-            delete filtered[i].distance;
-        }
-    };
-
-                    for (var i=0;i<filtered.length;i++) {
-                        var distance = nearestStopsService.
-                        computeLinearDistance(
-                            current_location.LatLng,
-                            filtered[i].LatLng
-                        );
-
-                        filtered[i].distance = distance;
-                    }
-
-                    filtered.sort(function(sd1, sd2) {
-                        return sd1.distance - sd2.distance;
-                    });
-
-                    for (var i=0;i<filtered.length;i++) {
-                        delete filtered[i].distance;
-                    }
                 }
 
                 return filtered;

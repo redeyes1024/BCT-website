@@ -68,6 +68,9 @@ BCTAppTopController.controller('BCTController', ['$scope',
     $scope.show_nearest_bstops_location_icon = true;
     $scope.show_nearest_bstops_location_icon_with_spinner = false;
 
+    $scope.show_nearest_results_bstops_location_icon = true;
+    $scope.show_nearest_results_bstops_location_icon_with_spinner = false;
+
     $scope.show_map_overlay_module = false;
     $scope.show_schedule_map_loading_modal = false;
 
@@ -260,6 +263,10 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
         $scope.show_index_title_with_back_function = true;
         $scope.show_schedule_results_module_title_with_back_function = true;
+    };
+
+    $scope.sortResultStopsByDistance = function() {
+        
     };
 
     $scope.clearSearch = function(model) {

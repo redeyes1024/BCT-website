@@ -17,6 +17,28 @@ BCTAppControllers.controller('routeSchedulesController', ['$scope',
     $scope.enableStopSorting = function() {
         $scope.top_scope.sort_bstops_by_distance.enabled = true;
     };
+
+    $scope.setNearestResultStopsLocationSpinner = function(new_state) {
+        switch (new_state) {
+            case "active":
+                $scope.top_scope.
+                show_nearest_results_bstops_location_icon = false;
+                $scope.top_scope.
+                show_nearest_results_bstops_location_icon_with_spinner = true;
+                break;
+            case "inactive":
+                $scope.top_scope.
+                show_nearest_results_bstops_location_icon = true;
+                $scope.top_scope.
+                show_nearest_results_bstops_location_icon_with_spinner = false;
+                break;
+        }
+    };
+
+    $scope.sortResultStopsByDistance = function(location) {
+        
+    };
+
 }]);
 
 BCTAppControllers.controller('indexController', ['$scope', '$timeout',
