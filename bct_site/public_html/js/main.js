@@ -5,12 +5,6 @@ var BCTApp = angular.module('BCTApp', ['ngRoute', 'mobile-angular-ui',
 //App namespace (company name)
 window.isr = {};
 
-//Holder for classes (constructors)
-window.isr.classes = {};
-
-//Holder for instances when classes are instantiated
-window.isr.instances = {};
-
 //Initial DOM queries
 window.isr.dom_q = {
     map: {
