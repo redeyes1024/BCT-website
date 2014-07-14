@@ -94,7 +94,8 @@
                             placeholder="Filter stops...">
                         <div class="list-group scrollable-content stops-list no-highlight">
                             <div class="list-group-item list-group-item-responsive"
-                                ng-repeat="recent_stop in recently_viewed.stops | filter:{name:recentStopFilter}">
+                                ng-repeat="recent_stop in recently_viewed.stops
+                                | filter:{name:recentStopFilter}">
                                 <div class="result-icon-container link-icon ptr">
                                     <i class="fa fa-star-o fa-lg"></i>
                                 </div>

@@ -4,11 +4,11 @@ BCTAppTopController.controller('BCTController', ['$scope',
     '$timeout', 'scheduleWebSocket', 'scheduleSocketService',
     'scheduleDownloadAndTransformation', 'googleMapUtilities', '$q',
     '$interval', 'unitConversionAndDataReporting', 'miniScheduleService',
-    'placeholderService', 'locationService',
+    'placeholderService', 'locationService', 'location_icons',
     function ($scope, $timeout, scheduleWebSocket, scheduleSocketService,
     scheduleDownloadAndTransformation, googleMapUtilities, $q, $interval,
     unitConversionAndDataReporting, miniScheduleService, placeholderService,
-    locationService) {
+    locationService, location_icons) {
 
     //For ease of debugging
     window.main_scope = $scope;
@@ -65,12 +65,6 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
     $scope.show_index_nearest_stops_panels = false;
 
-    $scope.show_nearest_bstops_location_icon = true;
-    $scope.show_nearest_bstops_location_icon_with_spinner = false;
-
-    $scope.show_nearest_results_bstops_location_icon = true;
-    $scope.show_nearest_results_bstops_location_icon_with_spinner = false;
-
     $scope.show_map_overlay_module = false;
     $scope.show_schedule_map_loading_modal = false;
 
@@ -86,9 +80,6 @@ BCTAppTopController.controller('BCTController', ['$scope',
     $scope.show_trip_planner_title = false;
     $scope.show_trip_planner_options = false;
 
-    $scope.show_planner_location_icon = true;
-    $scope.show_planner_location_icon_with_spin = false;
-
     $scope.show_geocoder_error_dialog = false;
 
     $scope.show_trip_planner_itinerary_selector = false;
@@ -98,6 +89,13 @@ BCTAppTopController.controller('BCTController', ['$scope',
     $scope.show_schedule_results_module_title_with_back_function = false;
 
     $scope.show_schedule_result_date_pick_row_loading = false;
+
+    (function() {
+        for (icon in location_icons) {
+            $scope[location_icons[icon].regular_icon] = true;
+            $scope[location_icons[icon].spinning_icon] = false;
+        }
+    }());
 
     /* END Overlay Display Controls */
 
@@ -232,6 +230,19 @@ BCTAppTopController.controller('BCTController', ['$scope',
     };
 
     /* END Data Object Templates */
+
+    $scope.setLocationSpinnerAnimation = function(context, new_state) {
+        switch (new_state) {
+            case "active":
+                $scope[location_icons[context].spinning_icon] = true;
+                $scope[location_icons[context].regular_icon] = false;
+                break;
+            case "inactive":
+                $scope[location_icons[context].spinning_icon] = false;
+                $scope[location_icons[context].regular_icon]= true;
+                break;
+        }
+    };
 
     $scope.schedule_result_panels_counter = 0;
 

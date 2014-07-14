@@ -80,13 +80,10 @@
 
                     <i class="fa fa-crosshairs ptr"
                     ng-show="show_nearest_results_bstops_location_icon"
-                    ng-click="getCurrentLocationAndDisplayData(
-                        setNearestResultStopsLocationSpinner,
-                        sortResultStopsByDistance
-                    );">
+                    ng-click="getLocationAndDisplayForResultsPage();">
                     </i>
                     <i class="fa fa-crosshairs fa-spin"
-                    ng-show="show_nearest_results_bstops_location_icon_with_spinner">
+                    ng-show="show_nearest_results_bstops_location_icon_with_spin">
                     </i>
 
                     Stop and Intersection Results

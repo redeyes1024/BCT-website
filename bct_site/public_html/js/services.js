@@ -11,6 +11,27 @@ BCTAppValues.value('latest_location', {
     }
 });
 
+BCTAppValues.value('location_icons', {
+    nearest_bstops: {
+        regular_icon:
+        "show_nearest_bstops_location_icon",
+        spinning_icon:
+        "show_nearest_bstops_location_icon_with_spin"
+    },
+    trip_planner: {
+        regular_icon:
+        "show_planner_location_icon",
+        spinning_icon:
+        "show_planner_location_icon_with_spin"
+    },
+    nearest_results_bstops: {
+        regular_icon: 
+        "show_nearest_results_bstops_location_icon",
+        spinning_icon: 
+        "show_nearest_results_bstops_location_icon_with_spin"
+    }
+});
+
 BCTAppServices.service('scheduleSocketService', ['$q', 'scheduleWebSocket',
     function($q, scheduleWebSocket) {
 
@@ -184,6 +205,8 @@ function($timeout, latest_location) {
 
     this.TIME_UNTIL_LOCATION_REQUEST_PRESUMED_IGNORED = 15000;
 
+    this.TIME_ELAPSED_UNTIL_LOCATION_MUST_BE_RECALCULATED = 30000;
+
     this.getCurrentLocationAndDisplayData =
     function(setLoadingAnimation, displayData) {
 
@@ -192,7 +215,8 @@ function($timeout, latest_location) {
         var time_since_last_location_prompt = 
         latest_location_prompt_time - latest_location.timestamp;
 
-        if (time_since_last_location_prompt < 30000) {
+        if (time_since_last_location_prompt <
+            self.TIME_ELAPSED_UNTIL_LOCATION_MUST_BE_RECALCULATED) {
             displayData(latest_location);
             return true;
         }
@@ -204,8 +228,8 @@ function($timeout, latest_location) {
                 var latest_successful_location_request_time = new Date;
 
                 if ((latest_successful_location_request_time -
-                    latest_location_prompt_time)
-                    < self.TIME_UNTIL_LOCATION_REQUEST_PRESUMED_IGNORED) {
+                    latest_location_prompt_time) <
+                    self.TIME_UNTIL_LOCATION_REQUEST_PRESUMED_IGNORED) {
 
                     self.updateLatestLocation(p_res);
 
@@ -228,6 +252,8 @@ function($timeout, latest_location) {
             setLoadingAnimation("inactive");
         }, self.TIME_UNTIL_LOCATION_REQUEST_PRESUMED_IGNORED);
 
+        return user_ignored_location_request_timer;
+
     };
 
     //Change reference location if client is not in South East Florida
@@ -244,6 +270,9 @@ function($timeout, latest_location) {
             !(bounds.lng.min <= current_lng && current_lng <= bounds.lng.max)
         ) {
             current_location = self.DEFAULT_DEMO_LOCATION_COORDS;
+            console.log(
+                "User outside of local region. Using demonstration coordinates."
+            );
         }
 
         return current_location;
@@ -360,10 +389,11 @@ function(locationService) {
 
         for (var j=0;j<nearest_bstops.length;j++) {
 
-            nearest_bstops[j].distance =
-            self.labelDistancesAndConvertFromDegrees(nearest_bstops[j].distance);
+            nearest_bstops[j].distance = self.
+            labelDistancesAndConvertFromDegrees(nearest_bstops[j].distance);
 
-            nearest_bstops[j].Name = bus_stop_dictionary[nearest_bstops[j].Id].Name;
+            nearest_bstops[j].Name =
+            bus_stop_dictionary[nearest_bstops[j].Id].Name;
             
             nearest_bstops[j].show_dist = true;
 
@@ -388,10 +418,11 @@ BCTAppServices.service('placeholderService', [ function() {
     };
 }]);
 
-BCTAppServices.service('scheduleDownloadAndTransformation', ['$http', '$q', 'miniScheduleService',
+BCTAppServices.service('scheduleDownloadAndTransformation', ['$http', '$q',
+    'miniScheduleService',
     function($http, $q, miniScheduleService) {
     //TO DO: Backend will create "booking version" string for all data sets;
-    //It will be requested and compared to see if and what data needs to be updated
+    //It will be requested and compared to see if and what data must be updated
     var self = this;
 
     this.downloadRouteInfo = function() {
@@ -824,7 +855,8 @@ BCTAppServices.service('googleMapUtilities', [
                 info: info_window
             };
 
-            isr.dom_q.map.overlays.points[bstops_names[i]].ShowWindow = new (function() {
+            isr.dom_q.map.overlays.points[bstops_names[i]].ShowWindow =
+            new (function() {
                 var self = this;
                 this.s_id = bstops_names[i];
                 this.pt = isr.dom_q.map.overlays.points[bstops_names[i]];
@@ -844,13 +876,17 @@ BCTAppServices.service('googleMapUtilities', [
                     isr.dom_q.map.overlays.open_info.pop();
                     isr.dom_q.map.overlays.open_info.push(self.pt.info);
 
-                    scheduleDownloadAndTransformation.downloadSchedule(route, self.s_id).then(function(res) {
+                    scheduleDownloadAndTransformation.
+                    downloadSchedule(route, self.s_id).then(function(res) {
                         var nearest_schedule = scheduleDownloadAndTransformation.
                         transformSchedule("nearest", res.data.Today);
                         angular.element(document).ready(function() {
                             try {
-                                document.getElementById("stop-window-times-" + self.s_id).
-                                innerHTML = nearest_schedule.nearest.next_times.join(", ");
+                                document.getElementById(
+                                    "stop-window-times-" +self.s_id
+                                ).
+                                innerHTML = nearest_schedule.
+                                nearest.next_times.join(", ");
                             } catch(e) { 
                                 console.log("A Google Maps infowindow was " +
                                 "closed before next times were fully loaded.");
@@ -992,7 +1028,7 @@ BCTAppServices.service('googleMapUtilities', [
                 Math.pow(2, power);
         }
 
-        //Factor in window/device width into required zoom breakpoint calculation
+        //Factor in map canvas width into required zoom breakpoint calculation
         //This is the calibration value, and is arbitrarily assigned to 1.0
         //e.g.: map canvas is 600px wide at some zoom (14) --> 1.0
         //      map canvas is 300px wide at some zoom (14) --> 0.5
@@ -1032,7 +1068,9 @@ BCTAppServices.service('googleMapUtilities', [
             lng: coords_stats.lng.mid
         };
 
-        var max_coord_span = Math.max(coords_stats.lat.span, coords_stats.lng.span);
+        var max_coord_span = Math.max(
+            coords_stats.lat.span, coords_stats.lng.span
+        );
 
         var zoom = self.inferZoomFromMaxCoordSpan(max_coord_span);
 
@@ -1052,7 +1090,9 @@ BCTAppServices.service('googleMapUtilities', [
         };
 
         for (var i=0;i<legs.length;i++) {
-            var path_coords_raw = self.decodePath(legs[i].legGeometryField.pointsField);
+            var path_coords_raw = self.decodePath(
+                legs[i].legGeometryField.pointsField
+            );
             var path_coords = [];
 
             for (var j=0;j<path_coords_raw.length;j++) {
@@ -1101,7 +1141,8 @@ BCTAppServices.service('googleMapUtilities', [
             var formattedDistance = unitConversionAndDataReporting.
                 formatReportedDistance(legs[i].distanceField);
             var reported_distance = formattedDistance.reported_distance;
-            var reported_distance_unit = formattedDistance.reported_distance_unit;
+            var reported_distance_unit = formattedDistance.
+            reported_distance_unit;
 
             var info_cts = '' +
                 '<div class="trip-marker-info-window">' +
@@ -1158,7 +1199,10 @@ BCTAppServices.service('googleMapUtilities', [
                 'click',
                 isr.dom_q.map.overlays.trip_points[i].ShowWindow.func);
         }
-        var best_zoom_and_center = self.findBestZoomAndCenter(all_path_coords_divided);
+
+        var best_zoom_and_center = self.
+        findBestZoomAndCenter(all_path_coords_divided);
+
         isr.dom_q.map.inst.setZoom(best_zoom_and_center.zoom);
         isr.dom_q.map.inst.setCenter(best_zoom_and_center.center);
     };
@@ -1217,7 +1261,8 @@ BCTAppServices.service('tripPlannerService', [ '$http', '$q',
 
         var deferred = $q.defer();
 
-        var lat_lng_input = query_address.match(/-?[0-9]*\.[0-9]*,-?[0-9]*\.[0-9]*/);
+        var lat_lng_input = query_address.
+        match(/-?[0-9]*\.[0-9]*,-?[0-9]*\.[0-9]*/);
 
         if (lat_lng_input) {
             var bstop_coords_arr = lat_lng_input[0].split(",");
@@ -1265,7 +1310,8 @@ BCTAppServices.service('tripPlannerService', [ '$http', '$q',
         trip_opts.datepick = new Date;
         
         var arrdep = false;
-        var date = trip_opts.datepick.toISOString().slice(0,10).replace(/-/g,"");
+        var date = trip_opts.datepick.toISOString().slice(0,10).
+        replace(/-/g,"");
         var time = trip_opts.datepick.toTimeString().slice(0,5);
         var optimize = "";
         var modearr = ["WALK"];
@@ -1321,12 +1367,19 @@ function(nearestStopsService, locationService, latest_location) {
                 };
             }
 
-            this.filter = function(items, search_string, sort_bstops_by_distance) {
+            this.filter = function(
+                items,
+                search_string,
+                sort_bstops_by_distance
+            ) {
 
                 var filtered = [];
                 var input_lower = search_string.toLowerCase();
 
-                if (!self.filter_condition(search_string.length)) { return true; }
+                if (!self.filter_condition(search_string.length)) { 
+                    return true; 
+                }
+
                 if (search_string.length === 0) {
                     return items;
                 };
