@@ -256,7 +256,7 @@ em.hint-text {
     width: 3em;
     font-size: 1.5em;
 }
-@media (max-width: 490px) {
+@media (max-width: 530px) {
     .schedule-map-mini-schedule-button {
         width: 2em;
         font-size: 1em;
@@ -412,7 +412,7 @@ em.hint-text {
     position: relative;
     font-size: 1.2em;
 }
-@media (max-width: 490px) {
+@media (max-width: 530px) {
     #schedule-full-result-dialog-info-text {
         font-size: 1em;
     }
@@ -753,11 +753,10 @@ em.hint-text {
     margin: 0% 2%;
 }
 #planner-embed-prefs {
-    width: calc(20% - 3em);
-    text-align: right;
+    margin-left: 0.5em;
 }
-.planner-pref-pushed {
-    width: calc(20% - 5.5em) !important;
+#planner-embed-enter {
+    margin-left: calc(20% - 5.1em);
 }
 #planner-mobile-controls,
 .planner-mobile-option {
@@ -777,18 +776,10 @@ em.hint-text {
     display: table-cell;
     vertical-align: middle;
     font-size: 1.2em;
-}
-#planner-mobile-back {
-    border-width: 0px 1px 0px 0px;
-}
-#planner-mobile-gps {
-    border-width: 0px 1px 0px 0px;
-}
-#planner-mobile-swap {
-    border-width: 0px;
-}
-#planner-mobile-prefs {
     border-width: 0px 0px 0px 1px;
+}
+.planner-mobile-option:first-child {
+    border-width: 0px;
 }
 #planner-option-bar {
     background: none repeat scroll 0% 0% #FFF;
@@ -951,7 +942,7 @@ em.hint-text {
 .trip-planner-dialog-centered:after {
     border-style: none;
 }
-@media (max-width: 490px) {
+@media (max-width: 530px) {
     #planner-top-inputs {
         display: block;
         border-spacing: 0px;

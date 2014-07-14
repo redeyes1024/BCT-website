@@ -30,6 +30,10 @@
                     <i class="fa fa-cog link-icon ptr"
                     ng-click="toggleTripOptions();"></i>
                 </span>
+                <span id="planner-mobile-enter" class="planner-mobile-option">
+                    <i class="fa fa-location-arrow link-icon ptr"
+                    ng-click="submitTrip();"></i>
+                </span>
             </div>
 
             <!-- Search Inputs and Embedded Options -->
@@ -37,10 +41,7 @@
             <form id="planner-top-inputs" ng-submit="submitTrip();" class="no-highlight">
                 <span id="planner-embed-gps" class="planner-embed-option">
                     <i class="fa fa-crosshairs link-icon ptr"
-                    ng-click="getCurrentLocationAndDisplayData(
-                        setPlannerLocationSpinner,
-                        displayPlannerLocationData
-                    );"
+                    ng-click="getLocationAndAddToPlannerStart();"
                     ng-show="show_planner_location_icon"></i>
                     <i class="fa fa-crosshairs link-icon-active fa-spin"
                     ng-show="show_planner_location_icon_with_spin"></i>
@@ -63,6 +64,10 @@
                 ng-class="planner_prefs_styles">
                     <i class="fa fa-cog link-icon ptr"
                     ng-click="toggleTripOptions();"></i>
+                </span>
+                <span id="planner-embed-enter" class="planner-embed-option">
+                <i class="fa fa-location-arrow link-icon ptr"
+                ng-click="submitTrip();"></i>
                 </span>
                 <input type="submit" id="submit-trip">
             </form>

@@ -195,6 +195,13 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
         $scope.trip_inputs.start = lat + "," + lng;
     };
 
+    $scope.getLocationAndAddToPlannerStart = function() {
+        $scope.getCurrentLocationAndDisplayData(
+            $scope.setPlannerLocationSpinner,
+            $scope.displayPlannerLocationData
+        );
+    };
+
     //Using the ng-class directive, the flow of these DOM elements is
     //altered significantly in order for the map only to be loaded once.
     //Here, they are set to flow with the Trip Planner module.
