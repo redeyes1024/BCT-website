@@ -4,6 +4,13 @@ var BCTAppValues = angular.module('BCTAppValues', []);
 
 BCTAppValues.value('scheduleWebSocket', new WebSocket("ws://echo.websocket.org"));
 
+BCTAppValues.value('latest_location', {
+    LatLng: {
+        Latitude: 0,
+        Longitude: 0
+    }
+});
+
 BCTAppServices.service('scheduleSocketService', ['$q', 'scheduleWebSocket',
     function($q, scheduleWebSocket) {
 
@@ -111,7 +118,8 @@ BCTAppServices.service('miniScheduleService', [ function() {
 
 }]);
 
-BCTAppServices.service('locationService', [ '$timeout', function($timeout) {
+BCTAppServices.service('locationService', [ '$timeout', 'latest_location',
+function($timeout, latest_location) {
 
     var self = this;
 
@@ -131,6 +139,18 @@ BCTAppServices.service('locationService', [ '$timeout', function($timeout) {
             Latitude: 25.977301,
             Longitude: -80.12027
         }
+    };
+
+    this.updateLatestLocation = function(location) {
+        var lat = location.coords.latitude;
+        var lng = location.coords.longitude;
+        var time = location.timestamp;
+
+        latest_location.timestamp = time;
+        latest_location.LatLng = {
+            Latitude: lat,
+            Longitude: lng
+        };
     };
 
     /*  Note on the getCurrentLocation function:
@@ -169,6 +189,14 @@ BCTAppServices.service('locationService', [ '$timeout', function($timeout) {
 
         var latest_location_prompt_time = new Date;
 
+        var time_since_last_location_prompt = 
+        latest_location_prompt_time - latest_location.timestamp;
+
+        if (time_since_last_location_prompt < 30000) {
+            displayData(latest_location);
+            return true;
+        }
+
         setLoadingAnimation("active");
 
         navigator.geolocation.getCurrentPosition(
@@ -179,7 +207,9 @@ BCTAppServices.service('locationService', [ '$timeout', function($timeout) {
                     latest_location_prompt_time)
                     < self.TIME_UNTIL_LOCATION_REQUEST_PRESUMED_IGNORED) {
 
-                    displayData(p_res.coords);
+                    self.updateLatestLocation(p_res);
+
+                    displayData(latest_location);
 
                     setLoadingAnimation("inactive");
                 }
@@ -288,7 +318,7 @@ function(locationService) {
 
         if (!keep_distance_property) {
             for (var i=0;i<bstops_list.length;i++) {
-                delete bstops_list[i].distance;
+                //delete bstops_list[i].distance;
             }
         }
 
@@ -296,17 +326,10 @@ function(locationService) {
     };
 
     this.findNearestStops = function(
-        current_location_raw,
+        current_location,
         full_bstop_list,
         bus_stop_dictionary
     ) {
-
-        var current_location = {
-            LatLng: {
-                Latitude: current_location_raw.latitude,
-                Longitude: current_location_raw.longitude
-            }
-        };
 
         current_location =
         locationService.
@@ -336,14 +359,14 @@ function(locationService) {
         slice(0, self.MAXIMUM_REPORTED_STOPS);
 
         for (var j=0;j<nearest_bstops.length;j++) {
+
             nearest_bstops[j].distance =
             self.labelDistancesAndConvertFromDegrees(nearest_bstops[j].distance);
-        }
 
-        //Add names to selected stops
-        //Can combine with previous loop for negligible efficiency increase
-        for (var k=0;k<nearest_bstops.length;k++) {
-            nearest_bstops[k].Name = bus_stop_dictionary[nearest_bstops[k].Id].Name;
+            nearest_bstops[j].Name = bus_stop_dictionary[nearest_bstops[j].Id].Name;
+            
+            nearest_bstops[j].show_dist = true;
+
         }
 
         return nearest_bstops;
@@ -1274,7 +1297,8 @@ BCTAppServices.service('tripPlannerService', [ '$http', '$q',
 }]);
 
 BCTAppServices.factory('routeAndStopFilters', [ 'nearestStopsService',
-'locationService', function(nearestStopsService, locationService) {
+'locationService', 'latest_location', 
+function(nearestStopsService, locationService, latest_location) {
     return {
 
         RouteAndStopFilterMaker: function(non_id_property, use_minimum_length) {
@@ -1298,6 +1322,7 @@ BCTAppServices.factory('routeAndStopFilters', [ 'nearestStopsService',
             }
 
             this.filter = function(items, search_string, sort_bstops_by_distance) {
+
                 var filtered = [];
                 var input_lower = search_string.toLowerCase();
 
@@ -1316,18 +1341,10 @@ BCTAppServices.factory('routeAndStopFilters', [ 'nearestStopsService',
                     }
                 }
 
-                if (sort_bstops_by_distance && sort_bstops_by_distance.enabled) {
+                if (sort_bstops_by_distance) {
 
-                    var current_location = {
-                        LatLng: {
-                            Latitude: 25.977301,
-                            Longitude: -80.12027
-                        }
-                    };
-
-                    current_location =
-                    locationService.
-                    changeToDefaultLocationIfOutsideOfFlorida(current_location);
+                    var current_location = locationService.
+                    changeToDefaultLocationIfOutsideOfFlorida(latest_location);
 
                     filtered = nearestStopsService.sortStopsByDistance(
                         current_location,

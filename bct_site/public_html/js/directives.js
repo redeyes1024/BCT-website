@@ -31,7 +31,8 @@ BCTApp.directive('routeResultPanel', [ '$compile', function($compile) {
             var route_id = element[0].childNodes[0].getAttribute("id");
             var panel = document.getElementById(route_id + "-collapse");
             var panel_is_closed = panel.classList.contains("in");
-            scope.route = scope.routes[route_id];
+            //cur_route is referred to by sub-panels only
+            scope.cur_route = scope.routes[route_id];
 
             //i.e. panel was closed and is now being opened
             if (panel_is_closed) {
@@ -65,7 +66,8 @@ BCTApp.directive('stopResultPanel', [ '$compile', function($compile) {
             var stop_id = element[0].childNodes[0].getAttribute("id");
             var panel = document.getElementById(stop_id + "-collapse");
             var panel_is_closed = panel.classList.contains("in");
-            scope.stop = scope.stops[stop_id];
+            //cur_route is referred to by sub-panels only
+            scope.cur_stop = scope.stops[stop_id];
 
             //i.e. panel was closed and is now being opened
             if (panel_is_closed) {
@@ -74,8 +76,10 @@ BCTApp.directive('stopResultPanel', [ '$compile', function($compile) {
             }
             //i.e. panel was open and now is being closed
             else {
-                angular.element(element[0].childNodes[0].childNodes[3].childNodes[1].childNodes[3].childNodes[0]).
-                remove();
+                angular.element(
+                    element[0].childNodes[0].childNodes[3].
+                    childNodes[1].childNodes[3].childNodes[0]
+                ).remove();
             }
         });
     }

@@ -1,8 +1,7 @@
 var BCTAppControllers = angular.module('BCTAppControllers', []);
 
 BCTAppControllers.controller('routeSchedulesController', ['$scope',
-    '$timeout', '$interval', 'scheduleWebSocket', 'scheduleSocketService',
-    function ($scope, $timeout, $interval, scheduleWebSocket, scheduleSocketService) {
+    '$timeout', function ($scope, $timeout) {
 
     //For ease of testing
     window.rs_scope = $scope;
@@ -10,12 +9,6 @@ BCTAppControllers.controller('routeSchedulesController', ['$scope',
     $scope.loaded_results = {
         routes: [],
         stops: []
-    };
-
-    $scope.sort_bstops_by_distance = { enabled: true };
-
-    $scope.enableStopSorting = function() {
-        $scope.top_scope.sort_bstops_by_distance.enabled = true;
     };
 
     $scope.setNearestResultStopsLocationSpinner = function(new_state) {
@@ -31,12 +24,15 @@ BCTAppControllers.controller('routeSchedulesController', ['$scope',
                 show_nearest_results_bstops_location_icon = true;
                 $scope.top_scope.
                 show_nearest_results_bstops_location_icon_with_spinner = false;
+                $scope.$apply();
                 break;
         }
     };
 
-    $scope.sortResultStopsByDistance = function(location) {
-        
+    $scope.sort_bstops_by_distance = false;
+
+    $scope.sortResultStopsByDistance = function() {
+        $scope.sort_bstops_by_distance = true;
     };
 
 }]);
@@ -154,9 +150,9 @@ function ($scope, $timeout, nearestStopsService) {
 
 BCTAppControllers.controller('tripPlannerController', ['$scope',
 'googleMapUtilities', '$timeout', 'tripPlannerService',
-'unitConversionAndDataReporting', 'placeholderService',
+'unitConversionAndDataReporting',
 function ($scope, googleMapUtilities, $timeout, tripPlannerService,
-        unitConversionAndDataReporting, placeholderService) {
+        unitConversionAndDataReporting) {
 
     //For ease of debugging
     window.trip_scope = $scope;
@@ -188,8 +184,10 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
     };
 
     $scope.displayPlannerLocationData = function(location) {
-        $scope.trip_inputs.start = location.latitude + "," +
-        location.longitude;
+        var lat = location.LatLng.Latitude;
+        var lng = location.LatLng.Longitude;
+
+        $scope.trip_inputs.start = lat + "," + lng;
     };
 
     //Using the ng-class directive, the flow of these DOM elements is

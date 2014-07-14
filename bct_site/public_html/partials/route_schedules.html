@@ -94,7 +94,9 @@
                 </span>
                 <stop-result-panel
                 ng-repeat="stop in stops_arr |
-                stopFilter:query_data.schedule_search:sort_bstops_by_distance"
+                stopFilter:query_data.schedule_search:
+                sort_bstops_by_distance:
+                latest_location"
                 panel-tracker>
                 </stop-result-panel>
             </div>

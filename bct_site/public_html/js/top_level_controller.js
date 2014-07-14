@@ -265,10 +265,6 @@ BCTAppTopController.controller('BCTController', ['$scope',
         $scope.show_schedule_results_module_title_with_back_function = true;
     };
 
-    $scope.sortResultStopsByDistance = function() {
-        
-    };
-
     $scope.clearSearch = function(model) {
         $scope.query_data[model] = "";
     };
