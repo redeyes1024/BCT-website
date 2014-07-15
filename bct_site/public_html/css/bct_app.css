@@ -78,6 +78,18 @@ em.hint-text {
     background-color: #017AC2;
 }
 
+#main-app-space {
+    height: calc(100% - 5em);
+}
+#index-page,
+#route-schedules-module {
+    height: calc(100% - 1em);
+}
+@media (max-width: 530px) {
+    #main-app-space {
+        height: calc(100% - 11em);
+    }
+}
 
 /* END Generic Classes */
 
@@ -85,11 +97,6 @@ em.hint-text {
 
 #index-page {
     text-align: center;
-    /*
-    border-style: solid;
-    border-width: 1px;
-    */
-    height: 39em;
     background-color: white;
     position: relative;
     z-index: 1;
@@ -179,8 +186,18 @@ em.hint-text {
     top: calc(2em + 1px);
     left: 0px;
     z-index: 1029;
-    height: 36.8em;
-    height: calc(100% - 17em - 3px);
+    height: calc(100% - 8em);
+}
+.schedule-map-planner-inserted {
+    height: calc(100% - 5em + 1px) !important;
+}
+@media (max-width: 530px) {
+    #schedule-map {
+        height: calc(100% - 14em);
+    }
+    .schedule-map-planner-inserted {
+        height: calc(100% - 11em + 1px) !important;
+    }
 }
 #schedule-map-loading-modal {
     position: fixed;
@@ -337,8 +354,7 @@ em.hint-text {
     position: relative;
     width: 100%;
     background: white;
-    height: 35em;
-    height: calc(34.5em + 2px);
+    height: 44em;
     overflow: auto;
 }
 #schedule-full-result-dialog-title {
@@ -413,6 +429,9 @@ em.hint-text {
     font-size: 1.2em;
 }
 @media (max-width: 530px) {
+    #schedule-full-result-dialog {
+        height: 38em;
+    }
     #schedule-full-result-dialog-info-text {
         font-size: 1em;
     }
@@ -457,7 +476,6 @@ em.hint-text {
 /* START Route Schedules Page + Nearest Stops */
 
 #route-schedules-module {
-    height: 39em;
     position: relative;
     background-color: white;
     z-index: 1;
@@ -685,25 +703,7 @@ em.hint-text {
 
 /* START Trip Planner */
 
-#trip-planner-module {
-    /*
-    border-style: solid;
-    border-width: 1px;
-    */
-    margin: 1em 0em 0em 0em;
-    -webkit-transition: margin 1s;
-    transition: margin 1s;
-}
-.trip-planner-module-active {
-    margin-top: calc(-2.5em + 2px) !important;
-    border-top: 0px;
-}
 #planner-top-bar {
-    /*
-    border-style: solid;
-    border-width: 0px 0px 1px 0px;
-    box-shadow: 0px 2px 4px 0px;
-    */
     padding: 0.5em;
     position: relative;
 }
@@ -837,29 +837,30 @@ em.hint-text {
 .planner-pref-option-title {
     margin: 0em 0em 0em 0.2em;
 }
-@media (max-width: 530px) {
-    .planner-pref-option,
-    .planner-option-switch {
-        display: inline-block;
-    }
-}
 #trip-planner-itinerary-selector-modal {
     position: fixed;
     background-color: #000;
-    height: 35em;
-    height: calc(35em - 2px);
+    height: 47.1em;
+    height: calc(100% - 7em + 2px);
     width: 100%;
     top: 4em;
     left: 0px;
     z-index: 1029;
     opacity: 0.3;
 }
-.trip-planner-itinerary-selector-modal-smaller {
-    height: 27.5em !important;
+@media (max-width: 530px) {
+    .planner-pref-option,
+    .planner-option-switch {
+        display: inline-block;
+    }
+    #trip-planner-itinerary-selector-modal {
+        height: 41.1em;
+        height: calc(100% - 13em + 2px);
+    }
 }
 #trip-planner-itinerary-selector {
     position: fixed;
-    top: 6em;
+    top: 8em;
     left: calc(50% - 10em);
     width: 20em;
     background-color: #FFF;
@@ -868,7 +869,7 @@ em.hint-text {
     border-width: 1px;
 }
 .trip-planner-itinerary-selector-pushed {
-    top: 5em !important;
+    top: 6.5em !important;
 }
 #trip-planner-itinerary-selector-title {
     border-style: solid;
@@ -882,12 +883,12 @@ em.hint-text {
 .trip-planner-itinerary-panel {
     border-style: solid;
     border-width: 1px;
-    height: 9em;
+    height: 10em;
     width: 100%;
     display: table-row;
 }
 .trip-planner-itinerary-panel-smaller {
-    height: 7.5em;
+    height: 9em;
 }
 .trip-planner-itinerary-labels {
     display: table-cell;

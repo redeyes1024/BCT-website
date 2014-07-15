@@ -202,12 +202,6 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
         );
     };
 
-    //Using the ng-class directive, the flow of these DOM elements is
-    //altered significantly in order for the map only to be loaded once.
-    //Here, they are set to flow with the Trip Planner module.
-    $scope.top_scope.schedule_map_styles["schedule-map-planner"] = true;
-    $scope.top_scope.schedule_map_styles["schedule-map-overlay"] = false;
-
     $scope.planner_error_alert_dialog_hide_in_progress = false;
 
     $scope.alertUserToTripPlannerErrors = function(error_field) {

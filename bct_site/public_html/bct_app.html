@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>BCT Scheduling Module</title>
+        <title>BCT My Ride</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
         <!-- Third-party Stylesheets -->
@@ -30,7 +30,7 @@
     </head>
     <body id="bct-app" ng-app="BCTApp" ng-controller="BCTController"
         ng-class="body_styles">
-        <div ng-view></div>
+        <div id="main-app-space" ng-view></div>
         <schedule-map ng-class="schedule_map_canvas_styles"></schedule-map>
         <trip-planner></trip-planner>
     </body>

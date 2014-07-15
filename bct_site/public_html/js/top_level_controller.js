@@ -17,14 +17,19 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
     /* START CSS class expressions to be used to ng-class, with defaults */
 
+    /* 
+        N.B.: Using the ng-class directive, the positioning of map-related DOM 
+        elements is altered significantly, in order for only one map only to be
+        loaded throughout the life of the app.
+    */
+
     $scope.body_styles = {
         "hide-scroll": false
     };
 
     $scope.schedule_map_styles = {
         "hide-scroll": true,
-        "schedule-map-overlay": true,
-        "schedule-map-planner": false
+        "schedule-map-planner-inserted": false
     };
 
     $scope.trip_planner_styles = {
@@ -53,6 +58,10 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
     $scope.itinerary_selector_modal_styles = {
         "trip-planner-itinerary-selector-modal-smaller": false
+    };
+
+    $scope.main_module_styles = {
+        "page-planner-inserted": false
     };
 
     /* END CSS class expressions to be used to ng-class, with defaults */
@@ -103,7 +112,8 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
     //Display correct hint text when no route/stop results are available
     //Works with the freshly created/destroyed panelTracker directives
-    //Here theschedule_result_panels_counter reflects the value from the last $digest
+    //Here the schedule_result_panels_counter reflects the value from the
+    //last $digest
     $scope.$watch("query_data.schedule_search", function(new_val, old_val) {
         if (new_val !== old_val) {
             if ($scope.query_data.schedule_search.length < 3) {
@@ -174,6 +184,20 @@ BCTAppTopController.controller('BCTController', ['$scope',
             $scope.itinerary_selector_modal_styles["trip-planner-itinerary-selector-modal-smaller"] = false;
             $scope.itinerary_selector_styles["trip-planner-itinerary-selector-pushed"] = false;
             $scope.itinerary_selector_panel_styles["trip-planner-itinerary-panel-smaller"] = false;
+        }
+    });
+
+    $scope.$watch("trip_planner_styles['trip-planner-module-active']",
+    function(new_val, old_val) {
+        //If trip planner is activating
+        if (new_val > old_val) {
+            $scope.
+            schedule_map_styles["schedule-map-planner-inserted"] = true;
+        }
+        //If trip planner is deactivating
+        else if (new_val < old_val) {
+            $scope.
+            schedule_map_styles["schedule-map-planner-inserted"] = false;
         }
     });
 
