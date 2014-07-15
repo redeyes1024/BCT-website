@@ -182,42 +182,6 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
         datepick: new Date
     };
 
-    $scope.getIconPath = function(leg_data) {
-        var path_prefix = "css/ico/";
-        var path_suffix = "";
-
-        switch (leg_data.modeField) {
-            case "WALK":
-                path_suffix = "walk.png";
-                break;
-            case "BUS":
-                path_suffix = "bus.png";
-                break;
-        }
-
-        var full_path = path_prefix + path_suffix;
-
-        return full_path;
-    };
-
-    $scope.getAltOrTitleText = function(leg_data, step_no) {
-        var text_prefix = "Step " + (step_no + 1) + ": ";
-        var text_suffix = "";
-
-        switch (leg_data.modeField) {
-            case "WALK":
-                text_suffix = "Walk";
-                break;
-            case "BUS":
-                text_suffix = "Take bus " + leg_data.routeField;
-                break;
-        }
-
-        var full_text = text_prefix + text_suffix;
-
-        return full_text;
-    };
-
     $scope.setPlannerLocationSpinner = function(new_state) {
         $scope.setLocationSpinnerAnimation(
             "trip_planner", new_state

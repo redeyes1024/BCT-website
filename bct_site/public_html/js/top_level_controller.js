@@ -5,10 +5,11 @@ BCTAppTopController.controller('BCTController', ['$scope',
     'scheduleDownloadAndTransformation', 'googleMapUtilities', '$q',
     '$interval', 'unitConversionAndDataReporting', 'miniScheduleService',
     'placeholderService', 'locationService', 'location_icons',
+    'agency_filter_icons',
     function ($scope, $timeout, scheduleWebSocket, scheduleSocketService,
     scheduleDownloadAndTransformation, googleMapUtilities, $q, $interval,
     unitConversionAndDataReporting, miniScheduleService, placeholderService,
-    locationService, location_icons) {
+    locationService, location_icons, agency_filter_icons) {
 
     //For ease of debugging
     window.main_scope = $scope;
@@ -239,12 +240,6 @@ BCTAppTopController.controller('BCTController', ['$scope',
     $scope.routeFilter = { f: "" };
     $scope.bstopFilter = { f: "" };
 
-    $scope.agency_filter_icon_selection = {
-        broward: "",
-        miami: "",
-        palm: ""
-    };
-
     $scope.full_schedule_date = new Date;
 
     //Defaults are for demonstration purposes only
@@ -254,6 +249,9 @@ BCTAppTopController.controller('BCTController', ['$scope',
     };
 
     /* END Data Object Templates */
+
+    $scope.getIconPath = unitConversionAndDataReporting.getIconPath;
+    $scope.getAltOrTitleText = unitConversionAndDataReporting.getAltOrTitleText;
 
     $scope.setLocationSpinnerAnimation = function(context, new_state) {
         switch (new_state) {
@@ -605,26 +603,35 @@ BCTAppTopController.controller('BCTController', ['$scope',
         $scope.routeFilter.f = "";
     };
 
+    $scope.agency_filter_icons = {
+    broward: {
+        agency: "broward",
+        icon_filename: "broward_100px.png",
+        selection_class: ""
+    },
+    miami: {
+        agency: "miami",
+        icon_filename: "miami_dade_100px.png",
+        selection_class: ""
+    },
+    palm: {
+        agency: "palm",
+        icon_filename: "palm_100px.png",
+        selection_class: ""
+    }
+}
+
     $scope.enableAgencyFilter = function(agency) {
         var new_class = "";
 
-        if ($scope.agency_filter_icon_selection[agency] === "agency-filter-icon-selected") {
+        if ($scope.agency_filter_icons[agency].selection_class ===
+            "agency-filter-icon-selected") {
             new_class = "";
         }
         else {
             new_class = "agency-filter-icon-selected";
         }
-        switch (agency) {
-            case "broward":
-                $scope.agency_filter_icon_selection.broward = new_class;
-                break;
-            case "miami":
-                $scope.agency_filter_icon_selection.miami = new_class;
-                break;
-            case "palm":
-                $scope.agency_filter_icon_selection.palm = new_class;
-                break;
-        }
+        $scope.agency_filter_icons[agency].selection_class = new_class;
     };
 
 }]).config(function($routeProvider, $locationProvider) {

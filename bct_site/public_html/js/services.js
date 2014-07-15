@@ -1,37 +1,5 @@
 var BCTAppServices = angular.module('BCTAppServices', []);
 
-var BCTAppValues = angular.module('BCTAppValues', []);
-
-BCTAppValues.value('scheduleWebSocket', new WebSocket("ws://echo.websocket.org"));
-
-BCTAppValues.value('latest_location', {
-    LatLng: {
-        Latitude: 0,
-        Longitude: 0
-    }
-});
-
-BCTAppValues.value('location_icons', {
-    nearest_bstops: {
-        regular_icon:
-        "show_nearest_bstops_location_icon",
-        spinning_icon:
-        "show_nearest_bstops_location_icon_with_spin"
-    },
-    trip_planner: {
-        regular_icon:
-        "show_planner_location_icon",
-        spinning_icon:
-        "show_planner_location_icon_with_spin"
-    },
-    nearest_results_bstops: {
-        regular_icon: 
-        "show_nearest_results_bstops_location_icon",
-        spinning_icon: 
-        "show_nearest_results_bstops_location_icon_with_spin"
-    }
-});
-
 BCTAppServices.service('scheduleSocketService', ['$q', 'scheduleWebSocket',
     function($q, scheduleWebSocket) {
 
@@ -51,7 +19,8 @@ BCTAppServices.service('scheduleSocketService', ['$q', 'scheduleWebSocket',
         console.log("Received data from websocket: ", messageObj);
         if(callbacks.hasOwnProperty(messageObj.callback_id)) {
             console.log(callbacks[messageObj.callback_id]);
-            $rootScope.$apply(self.callbacks[messageObj.callback_id].cb.resolve(messageObj.data));
+            $rootScope.$apply(self.callbacks[messageObj.callback_id].
+            cb.resolve(messageObj.data));
             delete self.callbacks[messageObj.callbackID];
         }
     };
@@ -673,6 +642,42 @@ BCTAppServices.service('unitConversionAndDataReporting', [ function() {
         var formatted_date = start + " " + input_date_time;
 
         return formatted_date;
+    };
+
+    this.getIconPath = function(leg_data) {
+        var path_prefix = "css/ico/";
+        var path_suffix = "";
+
+        switch (leg_data.modeField) {
+            case "WALK":
+                path_suffix = "walk.png";
+                break;
+            case "BUS":
+                path_suffix = "bus.png";
+                break;
+        }
+
+        var full_path = path_prefix + path_suffix;
+
+        return full_path;
+    };
+
+    this.getAltOrTitleText = function(leg_data, step_no) {
+        var text_prefix = "Step " + (step_no + 1) + ": ";
+        var text_suffix = "";
+
+        switch (leg_data.modeField) {
+            case "WALK":
+                text_suffix = "Walk";
+                break;
+            case "BUS":
+                text_suffix = "Take bus " + leg_data.routeField;
+                break;
+        }
+
+        var full_text = text_prefix + text_suffix;
+
+        return full_text;
     };
 
 }]);
@@ -1409,6 +1414,46 @@ function(nearestStopsService, locationService, latest_location) {
                 return filtered;
             };
         }
+
+    };
+
+}]);
+
+BCTAppServices.service('linkFunctions', [ '$compile', function($compile) {
+
+    this.dynamicPanelContentsLoader = function(
+        scope, element, type
+    ) {
+
+        var inner_template =
+        "<sub-panel-" + type + "s></sub-panel-" + type + "s>";
+
+        angular.element(element[0].childNodes[0].childNodes[1]).
+        bind("click", function() {
+
+            var data_id = element[0].childNodes[0].getAttribute("id");
+            var panel = document.getElementById(data_id + "-collapse");
+            var panel_is_closed = panel.classList.contains("in");
+
+            //e.g. "cur_stop" and "stops"
+            scope["cur_" + type] = scope[type + "s"][data_id];
+
+            //i.e. panel was closed and is now being opened
+            if (panel_is_closed) {
+                angular.element(
+                    element[0].childNodes[0].childNodes[3].
+                    childNodes[1].childNodes[3]
+                ).append($compile(inner_template)(scope));
+            }
+            //i.e. panel was open and now is being closed
+            else {
+                angular.element(
+                    element[0].childNodes[0].childNodes[3].
+                    childNodes[1].childNodes[3].childNodes[0]
+                ).remove();
+            }
+
+        });
 
     };
 
