@@ -101,12 +101,15 @@
                     <div>
                         <span class="trip-planer-itinerary-step"
                         ng-repeat="leg in itinerary.legsField">
-                            {{ leg.modeField }}
+                            <img src="{{getIconPath(leg)}}"
+                            class="trip-planner-itinerary-transit-type-icon"
+                            alt="{{getAltOrTitleText(leg, $index)}}"
+                            title="{{getAltOrTitleText(leg, $index)}}">
                             <span ng-show="!$last">
                                 >
                             </span>
                         </span>
-                        <div>
+                        <div class="trip-planner-itinerary-time-range">
                             {{ itinerary.startTimeField }} -
                             {{ itinerary.endTimeField }}
                             <span class="trip-planner-itinerary-duration">

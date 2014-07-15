@@ -70,7 +70,7 @@ em.hint-text {
     font-weight: 400;
 }
 .text-shadow-hover:hover {
-    text-shadow: 0px 0px 12px;
+    text-shadow: 0px 0px 6px;
 }
 .large-header {
     font-family: verdana;
@@ -848,16 +848,6 @@ em.hint-text {
     z-index: 1029;
     opacity: 0.3;
 }
-@media (max-width: 530px) {
-    .planner-pref-option,
-    .planner-option-switch {
-        display: inline-block;
-    }
-    #trip-planner-itinerary-selector-modal {
-        height: 41.1em;
-        height: calc(100% - 13em + 2px);
-    }
-}
 #trip-planner-itinerary-selector {
     position: fixed;
     top: 8em;
@@ -879,6 +869,7 @@ em.hint-text {
     width: 100%;
     display: table;
     margin-top: -1px;
+    font-size: 1.1em;
 }
 .trip-planner-itinerary-panel {
     border-style: solid;
@@ -890,6 +881,25 @@ em.hint-text {
 .trip-planner-itinerary-panel-smaller {
     height: 9em;
 }
+@media (max-width: 530px) {
+    .planner-pref-option,
+    .planner-option-switch {
+        display: inline-block;
+    }
+    #trip-planner-itinerary-selector {
+        top: 7em;
+    }
+    .trip-planner-itinerary-selector-pushed {
+        top: 6em !important;
+    }
+    #trip-planner-itinerary-selector-modal {
+        height: 41.1em;
+        height: calc(100% - 13em + 2px);
+    }
+    .trip-planner-itinerary-panel-smaller {
+        height: 8.5em;
+    }
+}
 .trip-planner-itinerary-labels {
     display: table-cell;
     vertical-align: middle;
@@ -899,6 +909,12 @@ em.hint-text {
 }
 .trip-planner-itinerary-step {
     
+}
+.trip-planner-itinerary-transit-type-icon {
+    width: 2em;
+}
+.trip-planner-itinerary-time-range {
+    margin: 0.5em;
 }
 .trip-planner-itinerary-duration {
     font-weight: bold;
@@ -982,18 +998,3 @@ em.hint-text {
 }
 
 /* END Trip Planner */
-
-/* Theme Roller Options 
-
-Global
-
-Verdana,Arial,sans-serif Font Family
-0, 0 Corner Radii
-
-Header/Footer Bar
-
-#017AC2 background
-#ffffff Font color
-1px 1px 0px #5e5e5e text-shadow
-
-*/
