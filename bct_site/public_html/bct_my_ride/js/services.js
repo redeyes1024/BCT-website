@@ -723,14 +723,14 @@ BCTAppServices.service('googleMapUtilities', [
             center: new google.maps.LatLng(lat, lng),
             zoom: 10
         };
-        isr.dom_q.map.inst = new google.maps.Map(container,
+        myride.dom_q.map.inst = new google.maps.Map(container,
             map_options);
     };
 
     this.touchMap = function() {
         angular.element(document).ready(function() {
             google.maps.event.trigger(
-                isr.dom_q.map.inst, "resize"
+                myride.dom_q.map.inst, "resize"
             );
         });
     };
@@ -753,45 +753,45 @@ BCTAppServices.service('googleMapUtilities', [
         }
 
         //Map intance is re-centered before re-showing the map...
-        isr.dom_q.map.inst.setZoom(zoom);
-        isr.dom_q.map.inst.setCenter(coords);
+        myride.dom_q.map.inst.setZoom(zoom);
+        myride.dom_q.map.inst.setCenter(coords);
         self.touchMap();
         angular.element(document).ready(function() {
             //...but it must be re-centered once more in case a resize
             //occured since the map instance was last hidden.
             //N.B. the event.trigger method does not have a callback arg
             //triggered upon resize, so second re-centering is always attempted
-            isr.dom_q.map.inst.setZoom(zoom);
-            isr.dom_q.map.inst.setCenter(coords);
+            myride.dom_q.map.inst.setZoom(zoom);
+            myride.dom_q.map.inst.setCenter(coords);
         });
     };
 
     this.clearMap = function() {
-        var points = isr.dom_q.map.overlays.points;
-        var pline =  isr.dom_q.map.overlays.pline;
-        var trip_plines = isr.dom_q.map.overlays.trip_plines;
-        var trip_points = isr.dom_q.map.overlays.trip_points;
+        var points = myride.dom_q.map.overlays.points;
+        var pline =  myride.dom_q.map.overlays.pline;
+        var trip_plines = myride.dom_q.map.overlays.trip_plines;
+        var trip_points = myride.dom_q.map.overlays.trip_points;
 
         for (var mk=0;mk<trip_points.length;mk++) {
             trip_points[mk].marker.setMap(null);
         }
 
-        trip_markers = isr.dom_q.map.overlays.trip_points = [];
+        trip_markers = myride.dom_q.map.overlays.trip_points = [];
 
         for (var pl=0;pl<trip_plines.length;pl++) {
             trip_plines[pl].setMap(null);
         }
 
-        isr.dom_q.map.overlays.plines = [];
+        myride.dom_q.map.overlays.plines = [];
 
         for (p in points) {
             points[p].marker.setMap(null);
         }
 
-        isr.dom_q.map.overlays.points = {};
+        myride.dom_q.map.overlays.points = {};
 
         if (pline) {
-            isr.dom_q.map.overlays.pline.setMap(null);
+            myride.dom_q.map.overlays.pline.setMap(null);
         }
     };
 
@@ -808,8 +808,8 @@ BCTAppServices.service('googleMapUtilities', [
             route_coords_cor.push(coords_obj);
         }
 
-        isr.dom_q.map.overlays.pline = new google.maps.Polyline({
-            map: isr.dom_q.map.inst,
+        myride.dom_q.map.overlays.pline = new google.maps.Polyline({
+            map: myride.dom_q.map.inst,
             path: route_coords_cor,
             strokeColor: self.palette.colors.blue,
             strokeWeight: self.palette.weights.lines.mid
@@ -827,7 +827,7 @@ BCTAppServices.service('googleMapUtilities', [
 
             var coords = new google.maps.LatLng(lat, lng);
             var marker = new google.maps.Marker({
-                map: isr.dom_q.map.inst,
+                map: myride.dom_q.map.inst,
                 position: coords,
                 title: route + ' ' + bstops_names[i],
                 icon: {
@@ -855,31 +855,31 @@ BCTAppServices.service('googleMapUtilities', [
 
             var info_window = new google.maps.InfoWindow({ content: info_cts });
 
-            isr.dom_q.map.overlays.points[bstops_names[i]] = {
+            myride.dom_q.map.overlays.points[bstops_names[i]] = {
                 marker: marker,
                 info: info_window
             };
 
-            isr.dom_q.map.overlays.points[bstops_names[i]].ShowWindow =
+            myride.dom_q.map.overlays.points[bstops_names[i]].ShowWindow =
             new (function() {
                 var self = this;
                 this.s_id = bstops_names[i];
-                this.pt = isr.dom_q.map.overlays.points[bstops_names[i]];
+                this.pt = myride.dom_q.map.overlays.points[bstops_names[i]];
                 this.func = function() {
-                    var open_info_stop = isr.dom_q.map.overlays.open_info[0].
+                    var open_info_stop = myride.dom_q.map.overlays.open_info[0].
                         content.match(/Stop: .*?<\/span>/)[0].slice(6,-7);
                     //Do nothing if the target info window is already open
                     //unless a different info window is being triggered
                     if (self.s_id === open_info_stop) { return true; }
                     self.pt.info.open(
-                    isr.dom_q.map.inst,
+                    myride.dom_q.map.inst,
                     self.pt.marker);
 
                     //Store a reference to the latest opened info window
                     //so it can be closed when another is opened
-                    isr.dom_q.map.overlays.open_info[0].close();
-                    isr.dom_q.map.overlays.open_info.pop();
-                    isr.dom_q.map.overlays.open_info.push(self.pt.info);
+                    myride.dom_q.map.overlays.open_info[0].close();
+                    myride.dom_q.map.overlays.open_info.pop();
+                    myride.dom_q.map.overlays.open_info.push(self.pt.info);
 
                     scheduleDownloadAndTransformation.
                     downloadSchedule(route, self.s_id).then(function(res) {
@@ -902,10 +902,10 @@ BCTAppServices.service('googleMapUtilities', [
             });
 
             google.maps.event.addListener(
-                isr.dom_q.map.overlays.points[bstops_names[i]].info,
+                myride.dom_q.map.overlays.points[bstops_names[i]].info,
                 'closeclick',
                 function() {
-                    isr.dom_q.map.overlays.open_info = [{
+                    myride.dom_q.map.overlays.open_info = [{
                         close: function() {},
                         content: "<span>Stop: First</span>"
                     }];
@@ -913,9 +913,9 @@ BCTAppServices.service('googleMapUtilities', [
             );
 
             google.maps.event.addListener(
-                isr.dom_q.map.overlays.points[bstops_names[i]].marker,
+                myride.dom_q.map.overlays.points[bstops_names[i]].marker,
                 'click',
-                isr.dom_q.map.overlays.points[bstops_names[i]].ShowWindow.func);
+                myride.dom_q.map.overlays.points[bstops_names[i]].ShowWindow.func);
         }
     };
 
@@ -1039,7 +1039,7 @@ BCTAppServices.service('googleMapUtilities', [
         //      map canvas is 300px wide at some zoom (14) --> 0.5
         var ZOOM_14_SPAN_0_5_MAP_WIDTH = 600;
 
-        var map_width = isr.dom_q.map.cont.clientWidth;
+        var map_width = myride.dom_q.map.cont.clientWidth;
         var map_width_calibration_ratio = Number(
             map_width / ZOOM_14_SPAN_0_5_MAP_WIDTH).
             toFixed(1);
@@ -1118,13 +1118,13 @@ BCTAppServices.service('googleMapUtilities', [
             var route_text = formattedModeResult.route_text;
 
             var leg_pline = new google.maps.Polyline({
-                map: isr.dom_q.map.inst,
+                map: myride.dom_q.map.inst,
                 path: path_coords,
                 strokeColor: leg_color,
                 strokeWeight: self.palette.weights.lines.mid
             });
 
-            isr.dom_q.map.overlays.trip_plines.push(leg_pline);
+            myride.dom_q.map.overlays.trip_plines.push(leg_pline);
 
             var marker_coords = {
                 lat: legs[i].fromField.latField,
@@ -1132,7 +1132,7 @@ BCTAppServices.service('googleMapUtilities', [
             };
 
             var marker = new google.maps.Marker({
-                map: isr.dom_q.map.inst,
+                map: myride.dom_q.map.inst,
                 position: marker_coords,
                 //title: route + ' ' + bstops_names[i],
                 icon: {
@@ -1174,42 +1174,42 @@ BCTAppServices.service('googleMapUtilities', [
                 info: info_window
             };
 
-            isr.dom_q.map.overlays.trip_points.push(trip_marker_window);
+            myride.dom_q.map.overlays.trip_points.push(trip_marker_window);
 
-            isr.dom_q.map.overlays.trip_points[i].ShowWindow = new (function() {
+            myride.dom_q.map.overlays.trip_points[i].ShowWindow = new (function() {
                 var self = this;
-                this.pt = isr.dom_q.map.overlays.trip_points[i];
+                this.pt = myride.dom_q.map.overlays.trip_points[i];
                 this.func = function() {
                     //Do nothing if the target info window is already open
                     //unless a different info window is being triggered
-                    var open_window = isr.dom_q.map.overlays.trip_open_info[0];
+                    var open_window = myride.dom_q.map.overlays.trip_open_info[0];
                     if (self.pt.info.trip_marker_window_id ===
                         open_window.trip_marker_window_id)
                         { return true; }
 
                     self.pt.info.open(
-                        isr.dom_q.map.inst,
+                        myride.dom_q.map.inst,
                         self.pt.marker);
 
                     //Store a reference to the latest opened info window
                     //so it can be closed when another is opened
-                    isr.dom_q.map.overlays.trip_open_info[0].close();
-                    isr.dom_q.map.overlays.trip_open_info.pop();
-                    isr.dom_q.map.overlays.trip_open_info.push(self.pt.info);
+                    myride.dom_q.map.overlays.trip_open_info[0].close();
+                    myride.dom_q.map.overlays.trip_open_info.pop();
+                    myride.dom_q.map.overlays.trip_open_info.push(self.pt.info);
                 };
             });
 
             google.maps.event.addListener(
-                isr.dom_q.map.overlays.trip_points[i].marker,
+                myride.dom_q.map.overlays.trip_points[i].marker,
                 'click',
-                isr.dom_q.map.overlays.trip_points[i].ShowWindow.func);
+                myride.dom_q.map.overlays.trip_points[i].ShowWindow.func);
         }
 
         var best_zoom_and_center = self.
         findBestZoomAndCenter(all_path_coords_divided);
 
-        isr.dom_q.map.inst.setZoom(best_zoom_and_center.zoom);
-        isr.dom_q.map.inst.setCenter(best_zoom_and_center.center);
+        myride.dom_q.map.inst.setZoom(best_zoom_and_center.zoom);
+        myride.dom_q.map.inst.setCenter(best_zoom_and_center.center);
     };
 
     this.decodePath = function(encoded) {

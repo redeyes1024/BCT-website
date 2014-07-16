@@ -85,7 +85,7 @@ function ($scope, $timeout, nearestStopsService) {
     };
 
 
-    isr.dom_q.inputs["index-schedule-search"] = document.getElementById("index-schedule-search");
+    myride.dom_q.inputs["index-schedule-search"] = document.getElementById("index-schedule-search");
     $scope.recently_viewed = {
         trips: [
             {
@@ -207,7 +207,7 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
     $scope.alertUserToTripPlannerErrors = function(error_field) {
         $scope.top_scope.show_trip_planner_itinerary_selector = false;
         $scope.top_scope.show_schedule_map_loading_modal = false;
-        isr.dom_q.inputs.trip[0].focus();
+        myride.dom_q.inputs.trip[0].focus();
 
         var dialog_styles = $scope.top_scope.planner_dialog_styles;
 
@@ -262,12 +262,12 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
             case "start":
                 dialog_styles["trip-planner-dialog-finish"] = false;
                 dialog_styles["trip-planner-dialog-start"] = true;
-                isr.dom_q.inputs.trip[0].focus();
+                myride.dom_q.inputs.trip[0].focus();
                 break;
             case "finish":
                 dialog_styles["trip-planner-dialog-start"] = false;
                 dialog_styles["trip-planner-dialog-finish"] = true;
-                isr.dom_q.inputs.trip[1].focus();
+                myride.dom_q.inputs.trip[1].focus();
                 break;
             }
         }
@@ -325,15 +325,15 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
         return all_itineraries;
     };
 
-    window.isr.dom_q.inputs.trip = document.getElementsByClassName("planner-input");
+    window.myride.dom_q.inputs.trip = document.getElementsByClassName("planner-input");
 
     $scope.showMapLoading = function() {
         $scope.top_scope.show_schedule_map_loading_modal = true;
         $scope.top_scope.show_trip_planner_options = false;
         $scope.top_scope.show_trip_planner_itinerary_selector = false;
 
-        for (var i=0;i<isr.dom_q.inputs.trip.length;i++) {
-            isr.dom_q.inputs.trip[i].blur();
+        for (var i=0;i<myride.dom_q.inputs.trip.length;i++) {
+            myride.dom_q.inputs.trip[i].blur();
         }
     };
 

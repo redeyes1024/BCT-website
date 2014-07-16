@@ -6,6 +6,7 @@
             <name>bct_site</name>
         </data>
         <spellchecker-wordlist xmlns="http://www.netbeans.org/ns/spellchecker-wordlist/1">
+            <word>app</word>
             <word>BCT</word>
             <word>MyRide</word>
         </spellchecker-wordlist>

@@ -412,8 +412,8 @@ BCTAppTopController.controller('BCTController', ['$scope',
     };
 
     $scope.resetCenter = function() {
-        isr.dom_q.map.inst.setZoom(18);
-        isr.dom_q.map.inst.setCenter($scope.cur_center);
+        myride.dom_q.map.inst.setZoom(18);
+        myride.dom_q.map.inst.setCenter($scope.cur_center);
     };
 
     $scope.hideMiniScheduleAndAlertBars = function() {

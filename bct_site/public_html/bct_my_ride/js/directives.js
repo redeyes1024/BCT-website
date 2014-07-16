@@ -4,8 +4,8 @@ BCTApp.directive('scheduleMap', [ 'googleMapUtilities',
 function(googleMapUtilities) {
     return {
         link: function() {
-            isr.dom_q.map.cont = document.getElementById("map-canvas");
-            googleMapUtilities.mapMaker(isr.dom_q.map.cont);
+            myride.dom_q.map.cont = document.getElementById("map-canvas");
+            googleMapUtilities.mapMaker(myride.dom_q.map.cont);
         },
         restrict: 'E',
         templateUrl: 'partials/schedule_map.html'
