@@ -1458,3 +1458,44 @@ BCTAppServices.service('linkFunctions', [ '$compile', function($compile) {
     };
 
 }]);
+
+BCTAppServices.service('templateGenerators', [ 'agency_filter_icons',
+function(agency_filter_icons) {
+
+    this.createFilterIconBarTemplate = function(filter_type) {
+
+        var icon_arrangement_class = "";
+
+        switch (filter_type) {
+            case "mobile":
+                icon_arrangement_class = "schedule-results-icons-mobile";
+                break;
+            case "inline":
+                icon_arrangement_class = "schedule-results-icons-inline";
+                break;
+        }
+
+        var template = '';
+
+        for (agency in agency_filter_icons) {
+            var agency_filter = agency_filter_icons[agency];
+
+            template += '' +
+            '<span id="' + agency_filter.agency + '-filter-' + filter_type +
+                '"' +
+                'class="link-icon agency-filter ' +
+                icon_arrangement_class + '">' +
+                '<img class="agency-filter-icon ptr ' +
+                '{{ agency_filter_icons.' + agency_filter.agency +
+                '.selection_class }}" ' +
+                'src="css/ico/' + agency_filter.icon_filename + '" ' +
+                'ng-click="enableAgencyFilter(\'' + agency_filter.agency +
+                '\'' + ');">' +
+            '</span>';
+        }
+
+        return template;
+
+    };
+
+}]);

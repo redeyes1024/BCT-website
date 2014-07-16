@@ -1,9 +1,6 @@
-<div id="index-page">
+<div id="index-page" ng-class="main_module_styles">
 
-    <!-- Schedule Search Bar -->
-
-    <div id="index-schedule-search-bar" class="schedule-search-area-container"
-        ng-class="main_module_styles">
+    <div class="schedule-search-area-container no-highlight">
 
         <span class="title-header no-highlight"
             ng-show="show_index_title_normal">
@@ -15,44 +12,31 @@
             <i class="fa fa-arrow-circle-left"></i> Back to Index - BCT MyRide
         </span>
 
-        <form id="index-search-form" ng-submit="changeURLHash('#routeschedules', 'schedule_search');">
-            <input type="text" id="index-search-input" class="form-control needsclick"
+        <form id="index-search-form"
+            ng-submit="changeURLHash('#routeschedules', 'schedule_search');">
+
+            <input type="text" id="index-search-input"
+                class="form-control needsclick"
                 placeholder="Search routes, stops or intersections"
                 ng-model="query_data.schedule_search">
             <span id="schedule-search-begin-search-button-top"
             class="schedule-search-top-buttons">
                 <i class="fa fa-search link-icon ptr"
-                ng-click="changeURLHash('#routeschedules', 'schedule_search');"></i>
+                ng-click="changeURLHash('#routeschedules', 'schedule_search');">     
+                </i>
             </span>
             <span id="schedule-search-clear-button-top-index"
                 class="schedule-search-top-buttons">
                     <i class="fa fa-times-circle link-icon ptr"
                     ng-click="clearSearch('schedule_search');"></i>
             </span>
-            <span id="broward-filter"
-                class="link-icon agency-filter schedule-results-icons-inline">
-                <img class="agency-filter-icon ptr
-                    {{ agency_filter_icons.broward }}"
-                    ng-click="enableAgencyFilter('broward');" src="css/ico/broward_100px.png">
-            </span>
-            <span id="miami-dade-filter"
-                class="link-icon agency-filter schedule-results-icons-inline">
-                <img class="agency-filter-icon ptr
-                    {{ agency_filter_icons.miami }}"
-                    ng-click="enableAgencyFilter('miami');" src="css/ico/miami_dade_100px.png">
-            </span>
-            <span id="palm-beach-filter"
-                class="link-icon agency-filter schedule-results-icons-inline">
-                <img class="agency-filter-icon ptr
-                    {{ agency_filter_icons.palm }}"
-                    ng-click="enableAgencyFilter('palm');" src="css/ico/palm_100px.png">
-            </span>
+
+            <inline-filter-icons></inline-filter-icons>
+
         </form>
 
         <div id="schedule-search-area-bottom">
-            <div id="schedule-search-area-options-mobile">
-                <mobile-filter-icons></mobile-filter-icons>
-            </div>
+            <mobile-filter-icons></mobile-filter-icons>
         </div>
 
     </div>

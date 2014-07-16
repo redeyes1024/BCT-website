@@ -1,20 +1,21 @@
 <div id="route-schedules-module" ng-controller="routeSchedulesController"
 ng-class="main_module_styles">
 
-    <div id="schedule-search-area" class="schedule-search-area-container
-    no-highlight">
-        <span class="schedule-results-module-title title-header no-highlight"
+    <div class="schedule-search-area-container no-highlight">
+
+        <span class="title-header no-highlight"
             ng-show="show_schedule_results_module_title_normal">
             Search schedules - BCT MyRide
         </span>
-        <span class="schedule-results-module-title title-header
-            no-highlight ptr text-shadow-hover"
+        <span class="title-header no-highlight ptr text-shadow-hover"
             ng-click="closeMapAndResetTripPlanner();"
             ng-show="show_schedule_results_module_title_with_back_function">
             <i class="fa fa-arrow-circle-left"></i>
             Back to Schedule Search - BCT MyRide
         </span>
+
         <div id="schedule-search-area-top">
+
             <span id="schedule-search-back-button"
                 class="schedule-search-top-buttons">
                 <a href="#bctappindex" class="link-icon">
@@ -30,47 +31,15 @@ ng-class="main_module_styles">
                 <i class="fa fa-times-circle link-icon ptr"
                     ng-click="clearSearch('schedule_search');"></i>
             </span>
-            <span id="broward-filter"
-                class="link-icon agency-filter schedule-results-icons-inline">
-                <img class="agency-filter-icon ptr
-                    {{ agency_filter_icons.broward }}"
-                    ng-click="enableAgencyFilter('broward');" src="css/ico/broward_100px.png">
-            </span>
-            <span id="miami-dade-filter"
-                class="link-icon agency-filter schedule-results-icons-inline">
-                <img class="agency-filter-icon ptr
-                    {{ agency_filter_icons.miami }}"
-                    ng-click="enableAgencyFilter('miami');" src="css/ico/miami_dade_100px.png">
-            </span>
-            <span id="palm-beach-filter"
-                class="link-icon agency-filter schedule-results-icons-inline">
-                <img class="agency-filter-icon ptr
-                    {{ agency_filter_icons.palm }}"
-                    ng-click="enableAgencyFilter('palm');" src="css/ico/palm_100px.png">
-            </span>
+
+            <inline-filter-icons></inline-filter-icons>
+
         </div>
+
         <div id="schedule-search-area-bottom">
-            <div id="schedule-search-area-options-mobile">
-                <span id="broward-filter-mobile"
-                    class="link-icon agency-filter schedule-results-icons-mobile">
-                    <img class="agency-filter-icon ptr
-                        {{ agency_filter_icons.broward }}"
-                        ng-click="enableAgencyFilter('broward');" src="css/ico/broward_100px.png">
-                </span>
-                <span id="miami-dade-filter-mobile"
-                    class="link-icon agency-filter schedule-results-icons-mobile">
-                    <img class="agency-filter-icon ptr
-                        {{ agency_filter_icons.miami }}"
-                        ng-click="enableAgencyFilter('miami');" src="css/ico/miami_dade_100px.png">
-                </span>
-                <span id="palm-beach-filter-mobile"
-                    class="link-icon agency-filter schedule-results-icons-mobile">
-                    <img class="agency-filter-icon ptr
-                        {{ agency_filter_icons.palm }}"
-                        ng-click="enableAgencyFilter('palm');" src="css/ico/palm_100px.png">
-                </span>
-            </div>
+            <mobile-filter-icons></mobile-filter-icons>
         </div>
+
     </div>
 
     <!-- Main Results Container -->

@@ -603,23 +603,7 @@ BCTAppTopController.controller('BCTController', ['$scope',
         $scope.routeFilter.f = "";
     };
 
-    $scope.agency_filter_icons = {
-    broward: {
-        agency: "broward",
-        icon_filename: "broward_100px.png",
-        selection_class: ""
-    },
-    miami: {
-        agency: "miami",
-        icon_filename: "miami_dade_100px.png",
-        selection_class: ""
-    },
-    palm: {
-        agency: "palm",
-        icon_filename: "palm_100px.png",
-        selection_class: ""
-    }
-}
+    $scope.agency_filter_icons = agency_filter_icons;
 
     $scope.enableAgencyFilter = function(agency) {
         var new_class = "";

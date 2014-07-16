@@ -90,6 +90,17 @@ em.hint-text {
         height: calc(100% - 11em);
     }
 }
+.agency-filter,
+.schedule-search-top-buttons {
+    display: table-cell;
+    text-align: center;
+    font-size: 1.5em;
+    border-style: dotted;
+}
+#index-page .agency-filter,
+#index-page, .schedule-search-top-buttons {
+    vertical-align: middle;
+}
 
 /* END Generic Classes */
 
@@ -103,6 +114,10 @@ em.hint-text {
     overflow: auto;
 }
 .schedule-search-area-container {
+    position: fixed;
+    width: 100%;
+    background-color: #FFF;
+    z-index: 1;
     border-bottom: 1px dashed #555;
 }
 #index-schedule-search-bar {
@@ -502,14 +517,6 @@ em.hint-text {
     width: 100%;
     padding: 0.5em 0em;
 }
-.agency-filter,
-.schedule-search-top-buttons {
-    display: table-cell;
-    vertical-align: middle;
-    text-align: center;
-    font-size: 1.5em;
-    border-style: dotted;
-}
 #schedule-search-back-button,
 #schedule-search-clear-button-top,
 #schedule-search-begin-search-button-top,
@@ -525,23 +532,27 @@ em.hint-text {
     padding: 0em 1em 0.5em;
     background-color: #FFF;
 }
-#schedule-search-area-options-mobile {
+.agency-filter {
+    border-width: 0px 0px 0px 1px;
+    width: 4em;
+}
+.agency-filter:first-child {
+    border-width: 0px;
+}
+
+/* Lack of selectors in the following refers to directives */
+mobile-filter-icons {
     display: table;
     width: 100%;
     border-width: 1px 0px 0px;
     border-style: dotted;
     padding: 0.5em 0em 0em;
 }
-.agency-filter {
-    border-width: 0px;
-    width: 4em;
+inline-filter-icons {
+    display: inline-table;
+    width: 100%;
 }
-#miami-dade-filter {
-    border-width: 0px 1px;
-}
-#broward-filter-mobile {
-    border-width: 0px;
-}
+
 .agency-filter-icon {
     height: 1.5em;
 }
@@ -678,9 +689,6 @@ em.hint-text {
     }
     #schedule-search-area-bottom {
         display: block;
-    }
-    .agency-filter {
-        border-width: 0px 0px 0px 1px;
     }
     #accordion {
         top: 9em;

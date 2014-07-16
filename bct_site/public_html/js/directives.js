@@ -157,28 +157,26 @@ BCTApp.directive('nearestStops', [ function() {
 </div>
 */
 
-BCTApp.directive('mobileFilterIcons', [ 'agency_filter_icons',
-function(agency_filter_icons) {
+BCTApp.directive('mobileFilterIcons', [ 'templateGenerators',
+function(templateGenerators) {
 
-    var template = '';
-
-    for (agency in agency_filter_icons) {
-        var agency_filter = agency_filter_icons[agency];
-
-        template += '' +
-        '<span id="' + agency_filter.agency + '-filter-mobile"' +
-            'class="link-icon agency-filter ' +
-            'schedule-results-icons-mobile">' +
-            '<img class="agency-filter-icon ptr ' +
-            '{{ agency_filter_icon.selection_class }}" ' +
-            'src="css/ico/' + agency_filter.icon_filename + '" ' +
-            'ng-click="enableAgencyFilter(' + "'" + agency_filter.agency + "'" +
-            ');">' +
-        '</span>';
-    }
+    var template = templateGenerators.createFilterIconBarTemplate("mobile");
 
     return {
         restrict: 'E',
         template: template
     };
+
+}]);
+
+BCTApp.directive('inlineFilterIcons', [ 'templateGenerators',
+function(templateGenerators) {
+
+    var template = templateGenerators.createFilterIconBarTemplate("inline");
+
+    return {
+        restrict: 'E',
+        template: template
+    };
+
 }]);
