@@ -1,5 +1,4 @@
 #bct-app {
-    border-style: solid;
     border-width: 0px;
     position: relative;
     width: 100%;
@@ -1012,7 +1011,7 @@ DIV.ms-rteElement-Callout4 {
     padding: 2px;
 }
 .ms-rteImage-3 {
-    background-attachment: fixed;
+    background-attachment: relative;
     background-color: #182738;
     background-image: url("/_layouts/images/tabtitlerowbottombg.png");
     background-position: left bottom;
@@ -1310,7 +1309,7 @@ DIV.ms-rteElement-Callout4 {
     width: 100%;
 }
 .sharepointLogin {
-    position: fixed;
+    position: relative;
     right: 50px;
     top: 14px;
     z-index: 1000;
@@ -2135,7 +2134,7 @@ body #s4-workspace {
 body #s4-ribbonrow {
     height: auto !important;
     min-height: 0 !important;
-    position: fixed;
+    position: relative;
     z-index: 1000;
 }
 #s4-ribbonrow, .ms-MenuUIPopupBody, .ms-popoutMenu, .ms-cui-menu[id^="Ribbon."] {

@@ -114,10 +114,9 @@ em.hint-text {
     overflow: auto;
 }
 .schedule-search-area-container {
-    position: fixed;
+    position: relative;
     width: 100%;
     background-color: #FFF;
-    z-index: 1;
     border-bottom: 1px dashed #555;
 }
 #index-schedule-search-bar {
@@ -611,7 +610,6 @@ inline-filter-icons {
 .schedule-results-main-container,
 .index-main-container {
     position: relative;
-    top: 6em;
     height: 32.5em;
     height: calc(100% - 6em);
     overflow: auto;

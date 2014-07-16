@@ -620,10 +620,10 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
 }]).config(function($routeProvider, $locationProvider) {
     $routeProvider.when('/routeschedules', {
-        templateUrl: 'partials/route_schedules.html',
+        templateUrl: 'bct_my_ride/partials/route_schedules.html',
         controller: 'routeSchedulesController'
     }).when('/bctappindex', {
-        templateUrl: 'partials/bct_app_index.html',
+        templateUrl: 'bct_my_ride/partials/bct_app_index.html',
         controller: 'indexController'
     });
 });

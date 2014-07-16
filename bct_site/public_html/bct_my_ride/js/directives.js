@@ -8,35 +8,35 @@ function(googleMapUtilities) {
             googleMapUtilities.mapMaker(myride.dom_q.map.cont);
         },
         restrict: 'E',
-        templateUrl: 'partials/schedule_map.html'
+        templateUrl: 'bct_my_ride/partials/schedule_map.html'
     };
 }]);
 
 BCTApp.directive('scheduleMapOverlay', [ function() {
     return {
         restrict: 'E',
-        templateUrl: 'partials/schedule_map_overlay.html'
+        templateUrl: 'bct_my_ride/partials/schedule_map_overlay.html'
     };
 }]);
 
 BCTApp.directive('tripPlanner', [ function() {
     return {
         restrict: 'E',
-        templateUrl: 'partials/trip_planner.html'
+        templateUrl: 'bct_my_ride/partials/trip_planner.html'
     };
 }]);
 
 BCTApp.directive('subPanelRoutes', [ function() {
     return {
         restrict: 'E',
-        templateUrl: 'partials/sub_panel_routes.html'
+        templateUrl: 'bct_my_ride/partials/sub_panel_routes.html'
     };
 }]);
 
 BCTApp.directive('subPanelStops', [ function() {
     return {
         restrict: 'E',
-        templateUrl: 'partials/sub_panel_stops.html'
+        templateUrl: 'bct_my_ride/partials/sub_panel_stops.html'
     };
 }]);
 
@@ -55,7 +55,7 @@ function(linkFunctions) {
     return {
         link: link,
         restrict: 'E',
-        templateUrl: 'partials/route_result_panel.html'
+        templateUrl: 'bct_my_ride/partials/route_result_panel.html'
     };
 }]);
 
@@ -74,7 +74,7 @@ function(linkFunctions) {
     return {
         link: link,
         restrict: 'E',
-        templateUrl: 'partials/stop_result_panel.html'
+        templateUrl: 'bct_my_ride/partials/stop_result_panel.html'
     };
 
 }]);
@@ -123,39 +123,16 @@ BCTApp.directive('panelTracker', [ function() {
 BCTApp.directive('plannerOptionBar', [ function() {
     return {
         restrict: 'E',
-        templateUrl: 'partials/planner_option_bar.html'
+        templateUrl: 'bct_my_ride/partials/planner_option_bar.html'
     };
 }]);
 
 BCTApp.directive('nearestStops', [ function() {
     return {
         restrict: 'E',
-        templateUrl: 'partials/nearest_stops.html'
+        templateUrl: 'bct_my_ride/partials/nearest_stops.html'
     };
 }]);
-
-/*
-<div id="schedule-search-area-options-mobile">
-    <span id="broward-filter-mobile"
-        class="link-icon agency-filter schedule-results-icons-mobile">
-        <img class="agency-filter-icon ptr
-            {{ agency_filter_icons.broward }}"
-            ng-click="enableAgencyFilter('broward');" src="css/ico/broward_100px.png">
-    </span>
-    <span id="miami-dade-filter-mobile"
-        class="link-icon agency-filter schedule-results-icons-mobile">
-        <img class="agency-filter-icon ptr
-            {{ agency_filter_icons.miami }}"
-            ng-click="enableAgencyFilter('miami');" src="css/ico/miami_dade_100px.png">
-    </span>
-    <span id="palm-beach-filter-mobile"
-        class="link-icon agency-filter schedule-results-icons-mobile">
-        <img class="agency-filter-icon ptr
-            {{ agency_filter_icons.palm }}"
-            ng-click="enableAgencyFilter('palm');" src="css/ico/palm_100px.png">
-    </span>
-</div>
-*/
 
 BCTApp.directive('mobileFilterIcons', [ 'templateGenerators',
 function(templateGenerators) {

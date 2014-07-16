@@ -1488,7 +1488,8 @@ function(agency_filter_icons) {
                 '<img class="agency-filter-icon ptr ' +
                 '{{ agency_filter_icons.' + agency_filter.agency +
                 '.selection_class }}" ' +
-                'src="css/ico/' + agency_filter.icon_filename + '" ' +
+                'src="bct_my_ride/css/ico/' + agency_filter.icon_filename +
+                '" ' +
                 'ng-click="enableAgencyFilter(\'' + agency_filter.agency +
                 '\'' + ');">' +
             '</span>';

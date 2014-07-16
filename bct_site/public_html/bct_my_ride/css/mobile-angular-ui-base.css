@@ -3937,7 +3937,7 @@ input[type="button"].btn-block {
 }
 
 .dropdown-backdrop {
-  position: fixed;
+  position: relative;
   left: 0;
   right: 0;
   bottom: 0;
@@ -4146,7 +4146,7 @@ input[type="button"].btn-block {
 .btn-group-justified {
   display: table;
   width: 100%;
-  table-layout: fixed;
+  table-layout: relative;
   border-collapse: separate;
 }
 
@@ -4570,7 +4570,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 
 .navbar-fixed-top,
 .navbar-fixed-bottom {
-  position: fixed;
+  position: relative;
   right: 0;
   left: 0;
   z-index: 1030;
@@ -5843,7 +5843,7 @@ button.close {
   display: none;
   overflow: auto;
   overflow-y: scroll;
-  position: fixed;
+  position: relative;
   top: 0;
   right: 0;
   bottom: 0;
@@ -5888,7 +5888,7 @@ button.close {
 }
 
 .modal-backdrop {
-  position: fixed;
+  position: relative;
   top: 0;
   right: 0;
   bottom: 0;
@@ -6472,7 +6472,7 @@ button.close {
 }
 
 .affix {
-  position: fixed;
+  position: relative;
 }
 
 @-ms-viewport {
@@ -6493,13 +6493,13 @@ button.close {
 html {
   height: 100%;
   width: 100%;
-  overflow: hidden;
+/*  overflow: hidden; */
 }
 
 body {
   height: 100%;
   width: 100%;
-  overflow: hidden;
+/*  overflow: hidden; */
   font-weight: 200;
 }
 
@@ -6552,13 +6552,13 @@ img {
 html {
   height: 100%;
   width: 100%;
-  overflow: hidden;
+/*  overflow: hidden; */
 }
 
 body {
   height: 100%;
   width: 100%;
-  overflow: hidden;
+/*  overflow: hidden; */
 }
 
 textarea,

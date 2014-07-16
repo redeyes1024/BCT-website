@@ -20,4 +20,26 @@ window.onload = function() {
 
     login_form_request.send();
 
+/*
+    var bct_my_ride_container = document.getElementById("bct-app");
+
+    var bct_my_ride_request = new XMLHttpRequest;
+
+    bct_my_ride_request.open('GET', 'bct_my_ride/bct_app.html', true);
+    bct_my_ride_request.responseType = 'document';
+    bct_my_ride_request.onload = function(e) {
+
+        bct_my_ride_container.innerHTML = "";
+
+        var bct_my_ride_app = e.target.response;
+        window.bct_my_ride_app_html =
+        bct_my_ride_app.getElementsByTagName("html")[0];
+
+        bct_my_ride_container.appendChild(bct_my_ride_app_html);
+
+    };
+
+    bct_my_ride_request.send();
+*/
+
 };

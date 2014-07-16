@@ -27,5 +27,5 @@ window.myride.dom_q = {
 };
 
 angular.element(document).ready(function() {
-    window.location += "#bctappindex";
+    window.location.hash = "#bctappindex";
 });

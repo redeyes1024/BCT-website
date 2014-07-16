@@ -11,6 +11,12 @@
     font-size: 18px;
     border-radius: 0.38em 0.38em 0em 0em;
 }
+.link-hover-underline {
+    text-decoration: none;
+}
+.link-hover-underline:hover {
+    text-decoration: underline;
+}
 
 /* END All Form Properties */
 
@@ -29,7 +35,7 @@
     margin: 0.6em;
 }
 .login-form-icon {
-    text-decoration: underline;
+    text-decoration: inherit;
 }
 #login-main-form {
     margin: 0.6em;
