@@ -12,6 +12,28 @@
     user-select: none;
     cursor: default;
 }
+a.link-icon,
+a.link-icon-rev {
+    opacity: 1 !important;
+    text-decoration: none !important;
+}
+.link-icon,
+.link-icon:focus {
+    color: #333;
+}
+.link-icon:hover,
+.link-icon-active {
+    color: #555;
+}
+.link-icon-rev,
+.link-icon-rev:focus {
+    color: #fff;
+}
+.link-icon-rev:hover,
+.link-icon-rev:active {
+    color: #ddd;
+}
+
 .bct-form-header {
     background-color: #017AC2;
     color: #FFF;
@@ -36,7 +58,7 @@
     display: inline-block;
     vertical-align: middle;
     border-style: solid;
-    border-width: 1px 1px 0px 1px;
+    border-width: 1px;
     background-color: white;
 }
 .bct-day-drop-down {
@@ -45,15 +67,7 @@
 .bct-time-drop-down {
     width: 6em;
 }
-.bct-drop-down-item-holder {
-    width: inherit;
-    background-color: #FFF;
-    position: absolute;
-    overflow: auto;
-    margin-top: -1px;
-}
 .bct-drop-down-item-holder-container {
-    display: block;
     overflow-x: hidden;
     overflow-y: auto;
     position: relative;
@@ -62,6 +76,10 @@
     width: inherit;
     border-width: 1px;
     border-style: solid;
+
+}
+.bct-drop-down:hover {
+    border-width: 1px 1px 0px 1px;
 }
 .bct-drop-down .bct-drop-down-item-holder-container {
     border-width: 1px 0px 0px 0px;
@@ -71,9 +89,17 @@
 }
 .bct-drop-down:hover .bct-drop-down-item-holder-container {
     border-width: 1px;
+    display: block;
 }
 .bct-drop-down:hover .bct-drop-down-item-holder {
     display: table;
+}
+.bct-drop-down-item-holder {
+    width: inherit;
+    background-color: #FFF;
+    position: absolute;
+    overflow: auto;
+    margin-top: -1px;
 }
 .bct-drop-down-item {
     display: table-row;
@@ -141,10 +167,18 @@
 #favorites-container {
     margin: 1em 0em;
 }
+.favorites-add-alert-bar {
+    padding: 0.7em;
+    border-style: solid;
+    border-width: 0px 1px 1px;
+    border-color: #000;
+    font-size: 1.3em;
+}
 .favorites-full-item {
     border-collapse: collapse;
     margin: 1em 0em;
     width: 100%;
+    box-shadow: 2px 4px 6px 0px #BBB;
 }
 .favorites-full-item-route-stop,
 .favorites-full-item-full-date-time {
@@ -155,13 +189,21 @@
     
 }
 .favorites-full-item-full-date-time {
-    margin-top: 0.5em;
+    border-style: solid;
+    border-width: 0px 0px 1px;
+}
+.favorites-full-item-full-date-time:nth-child(3) {
+    border-width: 0px;
+}
+.favorites-full-item-full-date-time:nth-child(n+4) {
+    border-width: 1px 0px 0px;
 }
 .favorites-alert-start-time,
 .favorites-alert-end-time,
 .favorites-alert-day-selection {
     height: 3em;
-    border: 1px solid;
+    border-style: solid;
+    border-width: 0px 1px 0px 0px;
     display: table-cell;
     vertical-align: middle;
     text-align: center;
@@ -176,6 +218,12 @@
 }
 .favorites-sub-item-stop {
     width: 25em;
+}
+.favorites-alert-selector-container {
+    height: 9em;
+    overflow-y: scroll;
+    border-style: solid;
+    border-width: 0px 1px 1px;
 }
 
 /* END Profile Page */

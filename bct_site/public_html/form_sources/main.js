@@ -5,6 +5,215 @@ ISR = {};
 //Stored DOM queries
 ISR.dom = {};
 
+//Container for all base HTML template strings
+ISR.templates = {};
+
+ISR.templates.login_form = {};
+
+ISR.templates.profile_page = {};
+
+ISR.templates.profile_page["bct-drop-down-item"] = '' +
+'<span class="bct-drop-down-item" ' +
+'onclick="ISR.utils.selectDropDownOption(this)">' +
+    '{{ DAY_OR_TIME_LABEL }}' +
+'</span>';
+
+ISR.templates.profile_page["favorites-alert-day-time-selection"] = '' +
+    '<span class="bct-drop-down bct-day-drop-down no-hightlight ptr">' +
+        '<span class="bct-drop-down-selected-item no-highlight ptr">' +
+            '{{ SELECTED_DAY_OR_TIME }}' +
+        '</span>' +
+        '<span class="bct-drop-down-item-holder-container">' +
+            '<span class="bct-drop-down-item-holder no-highlight ptr">' +
+                '{{ DAY_AND_TIME_DROP_DOWN_ITEMS }}' +
+            '</span>' +
+        '</span>' +
+    '</span>';
+
+ISR.templates.profile_page["favorites-full-item-full-date-time"] = '' +
+    '<div class="favorites-full-item-full-date-time">' +
+        '<div class="favorites-alert-day-selection">' +
+            '{{ FAVORITES_ALERT_DAY_SELECTION }}' +
+        '</div>' +
+        '<div class="favorites-alert-start-time">' +
+            '{{ FAVORITES_ALERT_START_TIME }}' +
+        '</div>' +
+        '<div class="favorites-alert-end-time">' +
+            '{{ FAVORITES_ALERT_END_TIME }}' +
+        '</div>' +
+    '</div>';
+
+//Constants associated with templates
+ISR.templates.data = {};
+
+//Associate template data object with each template
+(function() {
+
+    for (template_group_name in ISR.templates) {
+
+        if (template_group_name === "data") { continue; }
+
+        var template_group_data = ISR.templates.data[template_group_name] = {};
+
+        var template_group = ISR.templates[template_group_name];
+
+        for (template_name in template_group) {
+
+            template_group_data[template_name] = {};
+
+        }
+
+    }
+
+}());
+
+ISR.templates.data.
+profile_page["favorites-full-item-full-date-time"].day_list = [
+
+    "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday",
+    "Sunday", "Weekdays", "Weekends"
+
+];
+
+ISR.templates.data.
+profile_page["favorites-full-item-full-date-time"].time_list = [
+
+    "6:00", "7:00", "8:00", "9:00", "10:00", "11:00", "12:00"
+
+];
+
+function generateDropDownItemHTML(day_or_time_label) {
+
+    var drop_down_item_template_base =
+    ISR.templates.profile_page["bct-drop-down-item"];
+
+    var template_placeholders = drop_down_item_template_base.match(/{{.*?}}/g);
+
+    var drop_down_item_template =
+    drop_down_item_template_base.
+    replace(template_placeholders[0],day_or_time_label);
+
+    return drop_down_item_template;
+
+}
+
+function generateMultipleDropDownItemsHTML(label_list) {
+
+    var drop_down_item_list = [];
+
+    for (var i=0;i<label_list.length;i++) {
+        var drop_down_item = generateDropDownItemHTML(label_list[i]);
+
+        drop_down_item_list.push(drop_down_item);
+    }
+
+    return drop_down_item_list.join("");
+
+}
+
+function generateAlertDayTimeSelection(day_or_time_selection_list) {
+
+    var day_time_selection_template_base =
+    ISR.templates.profile_page["favorites-alert-day-time-selection"];
+
+    var day_time_selection_template = day_time_selection_template_base;
+
+    var template_placeholders = day_time_selection_template_base.
+    match(/{{.*?}}/g);
+
+    for (var i=0;i<template_placeholders.length;i++) {
+        switch (template_placeholders[i]) {
+            case "{{ SELECTED_DAY_OR_TIME }}":
+
+                day_time_selection_template =
+                day_time_selection_template.replace(
+                    template_placeholders[i],
+                    day_or_time_selection_list[0]
+                );
+
+                break;
+
+            case "{{ DAY_AND_TIME_DROP_DOWN_ITEMS }}":
+
+                day_time_selection_template =
+                day_time_selection_template.replace(
+                    template_placeholders[i],
+                    generateMultipleDropDownItemsHTML(
+                        day_or_time_selection_list
+                    )
+                );
+
+                break;
+
+        }
+    }
+
+    return day_time_selection_template;
+
+}
+
+function generateAlertFullDateTimeSelector() {
+
+    var full_date_time_selector_template_base =
+    ISR.templates.profile_page["favorites-full-item-full-date-time"];
+
+    var full_date_time_selector_template =
+    full_date_time_selector_template_base;
+
+    var template_placeholders = full_date_time_selector_template_base.
+    match(/{{.*?}}/g);
+
+    for (var i=0;i<template_placeholders.length;i++) {
+        switch (template_placeholders[i]) {
+            case "{{ FAVORITES_ALERT_DAY_SELECTION }}":
+
+                full_date_time_selector_template =
+                full_date_time_selector_template.replace(
+                    template_placeholders[i],
+                    generateAlertDayTimeSelection(
+                        ISR.templates.data.
+                        profile_page["favorites-full-item-full-date-time"].
+                        day_list
+                    )
+                );
+
+                break;
+
+            case "{{ FAVORITES_ALERT_START_TIME }}":
+
+                full_date_time_selector_template =
+                full_date_time_selector_template.replace(
+                    template_placeholders[i],
+                    generateAlertDayTimeSelection(
+                        ISR.templates.data.
+                        profile_page["favorites-full-item-full-date-time"].
+                        time_list
+                    )
+                );
+
+                break;
+
+            case "{{ FAVORITES_ALERT_END_TIME }}":
+
+                full_date_time_selector_template =
+                full_date_time_selector_template.replace(
+                    template_placeholders[i],
+                    generateAlertDayTimeSelection(
+                        ISR.templates.data.
+                        profile_page["favorites-full-item-full-date-time"].
+                        time_list
+                    )
+                );
+
+                break;
+
+        }
+    }
+
+    return full_date_time_selector_template;
+
+}
+
 //Utility functions
 ISR.utils = {};
 
@@ -18,78 +227,21 @@ ISR.utils.selectDropDownOption = function(target) {
 
 };
 
+ISR.utils.generateAlertDateTimeBarHTML = function(target) {
+
+    var date_time_bar_template = generateAlertFullDateTimeSelector();
+
+    target.parentNode.childNodes[5].innerHTML += date_time_bar_template;
+
+};
+
+ISR.utils.addBusRouteStopAlert = function() {
+    ISR.utils.generateAlertDateTimeBarHTML();
+};
+
 window.onload = function() {
 
-    //Namespace for values and functions needed for init operations
-    var inits = {};
-
-    /* START HTML Templating */
-
-    //Templating init module
-    inits.templating = {};
-
-    //Container for all base HTML template strings
-    inits.templating.templates = {};
-
-    //Here, "directive" refers to a collection of top-level 'constants'
-    //that will control the number and contents of each generated template
-    inits.templating.createBaseTemplate = function(
-        name,
-        group,
-        html
-    ) {
-
-        inits.templating.templates[template_group][name] = {
-            html: html_string,
-            directive: {}
-        };
-
-        return inits.templating.templates[template_group][name];
-
-    };
-
-    var login_form_templates =
-    inits.templating.templates.login_form = {};
-
-    var profile_page_templates =
-    inits.templating.templates.profile_page = {};
-
-    //NB: Borrowing {{ }} syntax from AngularJS
-    //With all-caps contents, it represents a regex target in the template
-    //string that will be swapped out with a generated value in a loop
-
-    var bct_drop_down_item_template_html = '' +
-    '<span class="bct-drop-down-item" ' +
-    'onclick="ISR.utils.selectDropDownOption(this)">' +
-        '{{ DAY_OF_THE_WEEK }}' +
-    '</span>';
-
-    var bct_drop_down_item_template = inits.templating.createBaseTemplate(
-        "bct-drop-down-item",
-        "profile_page",
-        bct_drop_down_item_template_html
-    );
-
-    function generateHTMLFromLoginFormTemplates() {
-        return true;
-    }
-
-    function generateHTMLFromProfilePageTemplates() {
-        return true;
-    }
-
-    function generateTemplates(container_id) {
-        switch (container_id) {
-            case "login-form":
-                generateHTMLFromLoginFormTemplates();
-                break;
-            case "bct-profile-page":
-                generateHTMLProfilePageTemplates();
-                break;
-        }
-    }
-
-    /* END HTML Templating */
+    
 
     function getAndAppendModuleHTML(container_id, filename, append_target) {
 
@@ -109,8 +261,6 @@ window.onload = function() {
 
            template_container.appendChild(target_container);
 
-           generateTemplates(container_id);
-
         };
 
         template_request.send();
@@ -128,27 +278,5 @@ window.onload = function() {
         'bct_profile_page.html',
         'profile-container'
     );
-
-/*
-    var bct_my_ride_container = document.getElementById("bct-app");
-
-    var bct_my_ride_request = new XMLHttpRequest;
-
-    bct_my_ride_request.open('GET', 'bct_my_ride/bct_app.html', true);
-    bct_my_ride_request.responseType = 'document';
-    bct_my_ride_request.onload = function(e) {
-
-        bct_my_ride_container.innerHTML = "";
-
-        var bct_my_ride_app = e.target.response;
-        window.bct_my_ride_app_html =
-        bct_my_ride_app.getElementsByTagName("html")[0];
-
-        bct_my_ride_container.appendChild(bct_my_ride_app_html);
-
-    };
-
-    bct_my_ride_request.send();
-*/
 
 };
