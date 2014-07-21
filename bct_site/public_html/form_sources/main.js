@@ -15,11 +15,11 @@ ISR.templates.profile_page = {};
 ISR.templates.profile_page["bct-drop-down-item"] = '' +
 '<span class="bct-drop-down-item" ' +
 'onclick="ISR.utils.selectDropDownOption(this)">' +
-    '{{ DAY_OR_TIME_LABEL }}' +
+    '<span class="bct-drop-down-item-text">{{ DAY_OR_TIME_LABEL }}</span>' +
 '</span>';
 
 ISR.templates.profile_page["favorites-alert-day-time-selection"] = '' +
-    '<span class="bct-drop-down bct-day-drop-down no-hightlight ptr">' +
+    '<span class="bct-drop-down {{ DROP_DOWN_CLASS }} no-hightlight ptr">' +
         '<span class="bct-drop-down-selected-item no-highlight ptr">' +
             '{{ SELECTED_DAY_OR_TIME }}' +
         '</span>' +
@@ -82,138 +82,6 @@ profile_page["favorites-full-item-full-date-time"].time_list = [
 
 ];
 
-function generateDropDownItemHTML(day_or_time_label) {
-
-    var drop_down_item_template_base =
-    ISR.templates.profile_page["bct-drop-down-item"];
-
-    var template_placeholders = drop_down_item_template_base.match(/{{.*?}}/g);
-
-    var drop_down_item_template =
-    drop_down_item_template_base.
-    replace(template_placeholders[0],day_or_time_label);
-
-    return drop_down_item_template;
-
-}
-
-function generateMultipleDropDownItemsHTML(label_list) {
-
-    var drop_down_item_list = [];
-
-    for (var i=0;i<label_list.length;i++) {
-        var drop_down_item = generateDropDownItemHTML(label_list[i]);
-
-        drop_down_item_list.push(drop_down_item);
-    }
-
-    return drop_down_item_list.join("");
-
-}
-
-function generateAlertDayTimeSelection(day_or_time_selection_list) {
-
-    var day_time_selection_template_base =
-    ISR.templates.profile_page["favorites-alert-day-time-selection"];
-
-    var day_time_selection_template = day_time_selection_template_base;
-
-    var template_placeholders = day_time_selection_template_base.
-    match(/{{.*?}}/g);
-
-    for (var i=0;i<template_placeholders.length;i++) {
-        switch (template_placeholders[i]) {
-            case "{{ SELECTED_DAY_OR_TIME }}":
-
-                day_time_selection_template =
-                day_time_selection_template.replace(
-                    template_placeholders[i],
-                    day_or_time_selection_list[0]
-                );
-
-                break;
-
-            case "{{ DAY_AND_TIME_DROP_DOWN_ITEMS }}":
-
-                day_time_selection_template =
-                day_time_selection_template.replace(
-                    template_placeholders[i],
-                    generateMultipleDropDownItemsHTML(
-                        day_or_time_selection_list
-                    )
-                );
-
-                break;
-
-        }
-    }
-
-    return day_time_selection_template;
-
-}
-
-function generateAlertFullDateTimeSelector() {
-
-    var full_date_time_selector_template_base =
-    ISR.templates.profile_page["favorites-full-item-full-date-time"];
-
-    var full_date_time_selector_template =
-    full_date_time_selector_template_base;
-
-    var template_placeholders = full_date_time_selector_template_base.
-    match(/{{.*?}}/g);
-
-    for (var i=0;i<template_placeholders.length;i++) {
-        switch (template_placeholders[i]) {
-            case "{{ FAVORITES_ALERT_DAY_SELECTION }}":
-
-                full_date_time_selector_template =
-                full_date_time_selector_template.replace(
-                    template_placeholders[i],
-                    generateAlertDayTimeSelection(
-                        ISR.templates.data.
-                        profile_page["favorites-full-item-full-date-time"].
-                        day_list
-                    )
-                );
-
-                break;
-
-            case "{{ FAVORITES_ALERT_START_TIME }}":
-
-                full_date_time_selector_template =
-                full_date_time_selector_template.replace(
-                    template_placeholders[i],
-                    generateAlertDayTimeSelection(
-                        ISR.templates.data.
-                        profile_page["favorites-full-item-full-date-time"].
-                        time_list
-                    )
-                );
-
-                break;
-
-            case "{{ FAVORITES_ALERT_END_TIME }}":
-
-                full_date_time_selector_template =
-                full_date_time_selector_template.replace(
-                    template_placeholders[i],
-                    generateAlertDayTimeSelection(
-                        ISR.templates.data.
-                        profile_page["favorites-full-item-full-date-time"].
-                        time_list
-                    )
-                );
-
-                break;
-
-        }
-    }
-
-    return full_date_time_selector_template;
-
-}
-
 //Utility functions
 ISR.utils = {};
 
@@ -229,7 +97,8 @@ ISR.utils.selectDropDownOption = function(target) {
 
 ISR.utils.generateAlertDateTimeBarHTML = function(target) {
 
-    var date_time_bar_template = generateAlertFullDateTimeSelector();
+    var date_time_bar_template =
+    ISR.utils.templating.generateAlertFullDateTimeSelector();
 
     target.parentNode.childNodes[5].innerHTML += date_time_bar_template;
 
@@ -239,9 +108,142 @@ ISR.utils.addBusRouteStopAlert = function() {
     ISR.utils.generateAlertDateTimeBarHTML();
 };
 
-window.onload = function() {
+ISR.utils.templating = {};
 
-    
+/*
+ 
+    N.B. The following closure defines a series of callbacks required for
+    templating. The purpose of this closure is only to keep the global
+    namespace clean, since the garbage collector will not free the memory 
+    allocated to these functions; direct and indirect references to them are
+    stored in the global ISR.utils.templating.placeholderPopulators.
+
+    The callbacks can also be defined directly and anonymously in the
+    placeholderPopulators property, but the current method allows for more
+    cleanly seperated function definitions, and the names (though temporary),
+    if well chosen, should self-document the purpose of each callback.
+ 
+ */
+
+(function() {
+
+    function getDayOrTimeLabel(day_or_time_label) {
+        return day_or_time_label;
+    }
+
+    function generateMultipleDropDownItemsHTML(label_list) {
+
+        var drop_down_item_list = [];
+
+        for (var i=0;i<label_list.length;i++) {
+            var drop_down_item = generateDropDownItemHTML(label_list[i]);
+
+            drop_down_item_list.push(drop_down_item);
+        }
+
+        return drop_down_item_list.join("");
+
+    }
+
+    function selectDropDownClass(day_or_time_selection_list) {
+
+        var drop_down_class = "";
+
+        if (day_or_time_selection_list[0].match(/[0-9]/) ) {
+            drop_down_class = "bct-time-drop-down";
+        } else {
+            drop_down_class = "bct-day-drop-down";
+        }
+
+        return drop_down_class;
+
+    }
+
+    function getFirstDayOrTime(day_or_time_selection_list) {
+        return day_or_time_selection_list[0];
+    }
+
+    function generateAlertDaySelection(full_item_date_time_data) {
+        return generateAlertDayTimeSelection(
+            full_item_date_time_data.day_list
+        );
+    }
+
+    function generateAlertTimeSelection(full_item_date_time_data) {
+        return generateAlertDayTimeSelection(
+            full_item_date_time_data.time_list
+        );
+    }
+
+    function generateDropDownItemHTML(day_or_time_label) {
+        return generateTemplateFromBase(
+            ISR.templates.profile_page["bct-drop-down-item"],
+            day_or_time_label
+        );
+    }
+
+    function generateAlertDayTimeSelection(day_or_time_selection_list) {
+        return generateTemplateFromBase(
+            ISR.templates.profile_page["favorites-alert-day-time-selection"],
+            day_or_time_selection_list
+        );
+    }
+
+    //This function will be globally referenced because it is at the top
+    //level of the template generator and is called directly
+    ISR.utils.templating.generateAlertFullDateTimeSelector = function() {
+
+        return generateTemplateFromBase(
+            ISR.templates.
+            profile_page["favorites-full-item-full-date-time"],
+
+            ISR.templates.data.
+            profile_page["favorites-full-item-full-date-time"]
+        );
+
+    };
+
+    ISR.utils.templating.placeholderPopulators = {
+        "{{ DAY_OR_TIME_LABEL }}": getDayOrTimeLabel,
+        "{{ SELECTED_DAY_OR_TIME }}": getFirstDayOrTime,
+        "{{ DAY_AND_TIME_DROP_DOWN_ITEMS }}": generateMultipleDropDownItemsHTML,
+        "{{ DROP_DOWN_CLASS }}": selectDropDownClass,
+        "{{ FAVORITES_ALERT_DAY_SELECTION }}": generateAlertDaySelection,
+        "{{ FAVORITES_ALERT_START_TIME }}": generateAlertTimeSelection,
+        "{{ FAVORITES_ALERT_END_TIME }}": generateAlertTimeSelection
+    };
+
+    //Main templating function, where the above templating functions are passed
+    //as callbacks. Some above functions' references to it prevent it from
+    //being garbage collected, despite it being defined in this closure.
+    function generateTemplateFromBase(
+            base_template, placeholder_data
+        ) {
+
+        var template = base_template;
+
+        var template_placeholders = base_template.match(/{{.*?}}/g);
+
+        for (var i=0;i<template_placeholders.length;i++) {
+
+            var populator =
+            ISR.utils.templating.
+            placeholderPopulators[template_placeholders[i]];
+
+            template = template.replace(
+                template_placeholders[i],
+                populator(placeholder_data)
+            );
+
+        }
+
+        return template;
+
+    }
+
+}());
+
+window.onload = function() {
 
     function getAndAppendModuleHTML(container_id, filename, append_target) {
 

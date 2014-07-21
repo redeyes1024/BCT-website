@@ -51,6 +51,17 @@ a.link-icon-rev {
 .link-hover-underline:hover {
     text-decoration: underline;
 }
+.title-header {
+    font-family: verdana;
+    background: none repeat scroll 0% 0% #017AC2;
+    color: #FFF;
+    font-weight: 400;
+    width: 100%;
+    display: block;
+    padding: 0.1em 0em 0.1em 0.5em;
+    text-align: left;
+    font-size: 18px;
+}
 .bct-drop-down {
     height: 2em;
     width: 10em;
@@ -62,39 +73,35 @@ a.link-icon-rev {
     background-color: white;
 }
 .bct-day-drop-down {
-    width: 10em;
+    width: 8em;
 }
 .bct-time-drop-down {
-    width: 6em;
+    width: 5em;
 }
 .bct-drop-down-item-holder-container {
     overflow-x: hidden;
     overflow-y: auto;
-    position: relative;
+    position: absolute;
     height: calc(6em - 2px);
     margin: calc(0.5em - 1px) 0px 0px -1px;
     width: inherit;
     border-width: 1px;
     border-style: solid;
-
+    text-align: left;
 }
 .bct-drop-down:hover {
     border-width: 1px 1px 0px 1px;
 }
 .bct-drop-down .bct-drop-down-item-holder-container {
-    border-width: 1px 0px 0px 0px;
-}
-.bct-drop-down .bct-drop-down-item-holder {
+    border-width: 0px;
     display: none;
 }
 .bct-drop-down:hover .bct-drop-down-item-holder-container {
     border-width: 1px;
     display: block;
 }
-.bct-drop-down:hover .bct-drop-down-item-holder {
-    display: table;
-}
 .bct-drop-down-item-holder {
+    display: table;
     width: inherit;
     background-color: #FFF;
     position: absolute;
@@ -111,6 +118,9 @@ a.link-icon-rev {
     background-color: #017AC2;
     color: white;
     border-color: black;
+}
+.bct-drop-down-item-text {
+    margin: 0em 0em 0em 0.5em;
 }
 
 /* END All Form Properties */
@@ -157,15 +167,16 @@ a.link-icon-rev {
     margin-bottom: 1em;
 }
 #profile-container {
-    padding: 0em 1em;
+    
 }
 .profile-page-section-title {
     display: block;
     font-size: 1.2em;
-    margin: 1em 0em;
+    margin: 0em 0em;
+    padding: 0.5em !important;
 }
 #favorites-container {
-    margin: 1em 0em;
+    margin: 1em;
 }
 .favorites-add-alert-bar {
     padding: 0.7em;
@@ -208,6 +219,11 @@ a.link-icon-rev {
     vertical-align: middle;
     text-align: center;
 }
+.favorites-alert-start-time:last-child,
+.favorites-alert-end-time:last-child,
+.favorites-alert-day-selection:last-child {
+    border-width: 0px;
+}
 .favorites-sub-item {
     display: table-cell;
     border: 1px solid;
@@ -220,7 +236,7 @@ a.link-icon-rev {
     width: 25em;
 }
 .favorites-alert-selector-container {
-    height: 9em;
+    height: calc(9em + 1px);
     overflow-y: scroll;
     border-style: solid;
     border-width: 0px 1px 1px;
