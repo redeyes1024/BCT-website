@@ -380,8 +380,11 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
 
                 $scope.top_scope.show_schedule_map_loading_modal = false;
             });
-        }).
-        catch(function() {
+
+        //N.B. "catch" mathod is not used with the dot operator due to
+        //YUI Compressor (Rhino Engine) reserving the word for try/catch statement
+
+        })["catch"](function() {
             console.log("There was an error retrieving the trip plan data.");
 
             $scope.top_scope.show_schedule_map_loading_modal = false;

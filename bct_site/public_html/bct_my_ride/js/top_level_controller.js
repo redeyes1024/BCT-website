@@ -533,19 +533,22 @@ BCTAppTopController.controller('BCTController', ['$scope',
         }
     }
 
+    //N.B. "catch" mathod is not used with the dot operator due to
+    //YUI Compressor (Rhino Engine) reserving the word for try/catch statement
+
     var fullDataDownloadPromise= $q.all([
-        scheduleDownloadAndTransformation.downloadRouteInfo().then(function(res) {
+        scheduleDownloadAndTransformation.downloadRouteInfo().
+        then(function(res) {
             $scope.route_data = res.data;
             transformRoutes();
-        }).
-        catch(function() {
+        })["catch"](function() {
             console.log("There was an error retrieving the transit data.");
         }),
-        scheduleDownloadAndTransformation.downloadStopInfo().then(function(res) {
+        scheduleDownloadAndTransformation.downloadStopInfo().
+        then(function(res) {
             $scope.bstop_data= res.data;
             transformStops();
-        }).
-        catch(function() {
+        })["catch"](function() {
             console.log("There was an error retrieving the transit data.");
         })
     ]);
