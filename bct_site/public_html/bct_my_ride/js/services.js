@@ -645,7 +645,7 @@ BCTAppServices.service('unitConversionAndDataReporting', [ function() {
     };
 
     this.getIconPath = function(leg_data) {
-        var path_prefix = "css/ico/";
+        var path_prefix = window.myride.site_roots.active + "css/ico/";
         var path_suffix = "";
 
         switch (leg_data.modeField) {
@@ -838,14 +838,37 @@ BCTAppServices.service('googleMapUtilities', [
                 }
             });
 
+            var route_swap_button_templates = '';
+
+            var alt_routes = stops[bstops_names[i]].Routes.slice(1);
+
+            if (alt_routes.length === 0) {
+
+                route_swap_button_templates = 'None'
+
+            }
+            else {
+
+                for (var k=0; k<alt_routes.length; k++) {
+
+                    route_swap_button_templates +=
+                    '<a href="#">' + alt_routes[k] + '</a>';
+
+                    if (k < alt_routes.length - 1) {
+                        route_swap_button_templates += ', ';
+                    }
+
+                }
+
+            }
+
             var info_cts = '' +
                 '<div class="marker-info-window">' +
                     '<span> Route: ' + route + '</span>' +
                     '<span> Stop: ' + bstops_names[i] + '</span>' +
                     '<span> Name: ' + stops[bstops_names[i]].Name + '</span>' +
                     '<span> Other Routes: ' +
-                    (stops[bstops_names[i]].Routes.slice(1).join(", ") ||
-                    "None") + 
+                        route_swap_button_templates + 
                     '</span>' +
                     '<span>' +
                         'Next departures: ' +
@@ -1349,8 +1372,8 @@ BCTAppServices.service('tripPlannerService', [ '$http', '$q',
 }]);
 
 BCTAppServices.factory('routeAndStopFilters', [ 'nearestStopsService',
-'locationService', 'latest_location', 
-function(nearestStopsService, locationService, latest_location) {
+'locationService', 'latest_location', 'results_exist',
+function(nearestStopsService, locationService, latest_location, results_exist) {
     return {
 
         RouteAndStopFilterMaker: function(non_id_property, use_minimum_length) {
@@ -1411,6 +1434,8 @@ function(nearestStopsService, locationService, latest_location) {
                     );
 
                 }
+
+                results_exist.check = !!filtered[0];
 
                 return filtered;
             };

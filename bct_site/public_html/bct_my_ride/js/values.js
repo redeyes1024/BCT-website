@@ -2,6 +2,10 @@ var BCTAppValues = angular.module('BCTAppValues', []);
 
 BCTAppValues.value('scheduleWebSocket', new WebSocket("ws://echo.websocket.org"));
 
+BCTAppValues.value('results_exist', {
+    check: false
+});
+
 BCTAppValues.value('latest_location', {
     LatLng: {
         Latitude: 0,

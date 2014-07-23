@@ -1,4 +1,20 @@
+/* START Main Container */
+
+#bct-app {
+    border-width: 0px;
+    position: relative;
+    width: 100%;
+    height: 54em;
+    font-family: helvetica neue;
+}
+
+/* END Main Container */
+
 /* START Generic Classes */
+
+#bct-profile-page {
+    display: none !important;
+}
 
 .ptr {
     cursor: pointer !important;
@@ -72,11 +88,6 @@ em.hint-text {
 .text-shadow-hover:hover {
     text-shadow: 0px 0px 6px;
 }
-.large-header {
-    font-family: verdana;
-    color: white;
-    background-color: #017AC2;
-}
 
 #main-app-space {
     height: calc(100% - 5em);
@@ -84,11 +95,6 @@ em.hint-text {
 #index-page,
 #route-schedules-module {
     height: calc(100% - 1em);
-}
-@media (max-width: 530px) {
-    #main-app-space {
-        height: calc(100% - 11em);
-    }
 }
 .agency-filter,
 .schedule-search-top-buttons {
@@ -195,35 +201,37 @@ em.hint-text {
     text-align: center;
     width: 100%;
     overflow: auto;
-    position: fixed;
-    top: 2em;
-    top: calc(2em + 1px);
+    position: absolute;
+    top: calc(1.5em + 4px);
     left: 0px;
     z-index: 1029;
+    height: calc(100% - 8em - 3px);
+}
+iframe #schedule-map {
+    position: fixed;
+    top: calc(2em + 1px);
     height: calc(100% - 8em);
 }
 .schedule-map-planner-inserted {
     height: calc(100% - 5em + 1px) !important;
 }
-@media (max-width: 530px) {
-    #schedule-map {
-        height: calc(100% - 14em);
-    }
-    .schedule-map-planner-inserted {
-        height: calc(100% - 11em + 1px) !important;
-    }
-}
 #schedule-map-loading-modal {
-    position: fixed;
-    height: 60em;
-    width: 100%;
+    position: absolute;
+    height: 100%;
     width: calc(100% - 2px);
     background-color: rgba(255, 255, 255, 0.6);
     z-index: 1030;
 }
+iframe #schedule-map-loading-modal {
+    position: fixed;
+    height: 60em;
+}
 #schedule-map-loading-modal-spinner {
     font-size: 3em;
     position: relative;
+    top: 7em;
+}
+iframe #schedule-map-loading-modal-spinner {
     top: 6em;
 }
 #schedule-map-top-panel {
@@ -286,12 +294,6 @@ em.hint-text {
 .schedule-map-mini-schedule-button {
     width: 3em;
     font-size: 1.5em;
-}
-@media (max-width: 530px) {
-    .schedule-map-mini-schedule-button {
-        width: 2em;
-        font-size: 1em;
-    }
 }
 #schedule-map-mini-schedule-time-group {
     display: inline-table;
@@ -406,7 +408,7 @@ em.hint-text {
 }
 #schedule-full-result-dialog-info-text {
     position: relative;
-    font-size: 1.7em;
+    font-size: 1.4em;
     overflow: auto;
     max-height: 5em;
     display: inline-block;
@@ -424,14 +426,12 @@ em.hint-text {
     font-weight: 400;
 }
 .schedule-full-result-day .quickdate-popup {
-    bottom: 3.2em;
-    bottom: calc(3em + 3px);
-    z-index: 2;
+    z-index: 3;
     top: auto;
+    margin: 0em 0em 0px -5em;
 }
 #planner-option-date .quickdate-popup {
-    bottom: 2.4em;
-    bottom: calc(2.5em - 2px);
+    margin: 1em 0em 0em -9em;
 }
 .schedule-full-result-row {
     display: table;
@@ -441,27 +441,6 @@ em.hint-text {
     border-collapse: collapse;
     position: relative;
     font-size: 1.2em;
-}
-@media (max-width: 530px) {
-    #schedule-full-result-dialog {
-        height: 38em;
-    }
-    #schedule-full-result-dialog-info-text {
-        font-size: 1em;
-    }
-    .schedule-full-result-dialog-icon {
-        font-size: 2em;
-    }
-    #schedule-full-result-dialog-pdf,
-    #schedule-full-result-dialog-close {
-        width: 3.5em;
-    }
-    #schedule-full-result-dialog-title {
-        height: 4em;
-    }
-    .schedule-full-result-row {
-        font-size: 1em;
-    }
 }
 .schedule-full-result-loading-modal {
     position: absolute;
@@ -570,11 +549,6 @@ inline-filter-icons {
 #schedule-search-clear-button-top-index {
     border-width: 0px 1px 0px 0px;
 }
-@media (max-width: 600px) {
-    #schedule-search-clear-button-top-index {
-        border-width: 0px;
-    }
-}
 #route-stop-search-input {
     display: table-cell;
     width: 94%;
@@ -676,29 +650,8 @@ inline-filter-icons {
     border-color: orangered;
     width: 93%;
     width: calc(100% - 2em);
+    line-height: 1.5em;
     z-index: -1;
-}
-@media (max-width: 600px) {
-    .schedule-results-icons-inline {
-        display: none;
-    }
-    #schedule-search-clear-button-top {
-        border-width: 0px 0px 0px 2px;
-    }
-    #schedule-search-area-bottom {
-        display: block;
-    }
-    #accordion {
-        top: 9em;
-    }
-    .schedule-results-no-results-text {
-        top: 7em;
-    }
-    .schedule-results-main-container,
-    .index-main-container {
-        height: 30em;
-        height: calc(100% - 9em);
-    }
 }
 
 /* END Route Schedules Page + Nearest Stops */
@@ -840,18 +793,21 @@ inline-filter-icons {
     margin: 0em 0em 0em 0.2em;
 }
 #trip-planner-itinerary-selector-modal {
-    position: fixed;
+    position: absolute;
     background-color: #000;
-    height: 47.1em;
     height: calc(100% - 7em + 2px);
     width: 100%;
-    top: 4em;
+    top: 3.5em;
     left: 0px;
     z-index: 1029;
     opacity: 0.3;
 }
-#trip-planner-itinerary-selector {
+iframe #trip-planner-itinerary-selector-modal {
     position: fixed;
+    top: 4em;
+}
+#trip-planner-itinerary-selector {
+    position: absolute;
     top: 8em;
     left: calc(50% - 10em);
     width: 20em;
@@ -859,6 +815,9 @@ inline-filter-icons {
     z-index: 1030;
     border-style: solid;
     border-width: 1px;
+}
+iframe #trip-planner-itinerary-selector {
+    position: fixed;
 }
 .trip-planner-itinerary-selector-pushed {
     top: 6.5em !important;
@@ -882,25 +841,6 @@ inline-filter-icons {
 }
 .trip-planner-itinerary-panel-smaller {
     height: 9em;
-}
-@media (max-width: 530px) {
-    .planner-pref-option,
-    .planner-option-switch {
-        display: inline-block;
-    }
-    #trip-planner-itinerary-selector {
-        top: 7em;
-    }
-    .trip-planner-itinerary-selector-pushed {
-        top: 6em !important;
-    }
-    #trip-planner-itinerary-selector-modal {
-        height: 41.1em;
-        height: calc(100% - 13em + 2px);
-    }
-    .trip-planner-itinerary-panel-smaller {
-        height: 8.5em;
-    }
 }
 .trip-planner-itinerary-labels {
     display: table-cell;
@@ -961,7 +901,104 @@ inline-filter-icons {
 .trip-planner-dialog-centered:after {
     border-style: none;
 }
-@media (max-width: 530px) {
+.trip-planner-dialog-faded-out {
+    opacity: 0;
+}
+.trip-planner-dialog-faded-in {
+    opacity: 1;
+}
+
+/* END Trip Planner */
+
+/* START All Media Queries */
+
+@media (max-width: 600px), (min-width: 900px) and (max-width: 1500px) {
+    #main-app-space {
+        height: calc(100% - 11em);
+    }
+/* } */
+/* @media (max-width: 530px) { */
+    #schedule-map {
+        height: calc(100% - 14em);
+    }
+    .schedule-map-planner-inserted {
+        height: calc(100% - 11em + 1px) !important;
+    }
+/* } */
+/* @media (max-width: 530px) { */
+    .schedule-map-mini-schedule-button {
+        width: 2em;
+        font-size: 1em;
+    }
+/* } */
+/* @media (max-width: 530px) { */
+    #schedule-full-result-dialog {
+        height: 39em;
+    }
+    #schedule-full-result-dialog-info-text {
+        font-size: 1em;
+    }
+    .schedule-full-result-dialog-icon {
+        font-size: 2em;
+    }
+    #schedule-full-result-dialog-pdf,
+    #schedule-full-result-dialog-close {
+        width: 3.5em;
+    }
+    #schedule-full-result-dialog-title {
+        height: 4em;
+    }
+    .schedule-full-result-row {
+        font-size: 1em;
+    }
+/* } */
+/* @media (max-width: 530px) { */
+    #schedule-search-clear-button-top-index {
+        border-width: 0px;
+    }
+/* } */
+/* @media (max-width: 530px) { */
+    .schedule-results-icons-inline {
+        display: none;
+    }
+    #schedule-search-clear-button-top {
+        border-width: 0px 0px 0px 2px;
+    }
+    #schedule-search-area-bottom {
+        display: block;
+    }
+    #accordion {
+        top: 9em;
+    }
+    .schedule-results-no-results-text {
+        top: 7em;
+    }
+    .schedule-results-main-container,
+    .index-main-container {
+        height: 30em;
+        height: calc(100% - 9em);
+    }
+/* } */
+/* @media (max-width: 530px) { */
+    .planner-pref-option,
+    .planner-option-switch {
+        display: inline-block;
+    }
+    #trip-planner-itinerary-selector {
+        top: 7em;
+    }
+    .trip-planner-itinerary-selector-pushed {
+        top: 6em !important;
+    }
+    #trip-planner-itinerary-selector-modal {
+        height: 41.1em;
+        height: calc(100% - 13em + 2px);
+    }
+    .trip-planner-itinerary-panel-smaller {
+        height: 8.5em;
+    }
+/* } */
+/* @media (max-width: 530px) { */
     #planner-top-inputs {
         display: block;
         border-spacing: 0px;
@@ -992,11 +1029,4 @@ inline-filter-icons {
         bottom: 8em;
     }
 }
-.trip-planner-dialog-faded-out {
-    opacity: 0;
-}
-.trip-planner-dialog-faded-in {
-    opacity: 1;
-}
-
-/* END Trip Planner */
+/* END All Media Queries */

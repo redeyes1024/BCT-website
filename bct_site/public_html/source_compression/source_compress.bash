@@ -1,7 +1,12 @@
 #!/bin/bash
 
+#Copy-paste dependencies in order into a text file. Specify its filename and
+#path (relative to the directory containing this script) in the third argument.
+#If source list filename is supplied, it defaults to a local file named
+#all_sources.txt. The user will be notified when any defaults are used.
+
 type=$1
-filename=$2
+output_filename=$2
 sourcelist=$3
 
 if [ -z $type ] || [[ $type != "css" && $type != "js" ]]; then
@@ -69,10 +74,10 @@ echo ""
 printf '%b\n' $full_sources
 
 cat $full_sources | java -jar $yuicompressor_dir/yuicompressor-2.4.8.jar \
---type $type --line-break 4000 > $filename
+--type $type --line-break 4000 > $output_filename
 
 orig_size=`cat $full_sources | wc -c`
-new_size=`cat $filename | wc -c`
+new_size=`cat $output_filename | wc -c`
 
 orig_size_kb=`echo "scale=2; "$orig_size" / 1000" | bc`
 new_size_kb=`echo "scale=2; "$new_size" / 1000" | bc`

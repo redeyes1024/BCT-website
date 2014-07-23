@@ -1,10 +1,16 @@
 var BCTAppControllers = angular.module('BCTAppControllers', []);
 
 BCTAppControllers.controller('routeSchedulesController', ['$scope',
-    '$timeout', function ($scope, $timeout) {
+    '$timeout', '$compile', function ($scope, $timeout, $compile) {
 
     //For ease of testing
     window.rs_scope = $scope;
+
+    $scope.top_scope.rs_scope_loaded = true;
+
+    $scope.$on("destroy", function() {
+        $scope.top_scope.rs_scope_loaded = false;
+    });
 
     $scope.loaded_results = {
         routes: [],

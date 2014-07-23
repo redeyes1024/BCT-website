@@ -64,8 +64,7 @@ ng-class="main_module_styles">
                 ng-repeat="stop in stops_arr |
                 stopFilter:query_data.schedule_search:
                 sort_bstops_by_distance:
-                latest_location"
-                panel-tracker>
+                latest_location">
                 </stop-result-panel>
             </div>
             <div id="route-list" class="no-highlight">
@@ -73,8 +72,8 @@ ng-class="main_module_styles">
                     Route Results
                 </span>
                 <route-result-panel
-                ng-repeat="route in routes_arr | routeFilter:query_data.schedule_search"
-                panel-tracker>
+                ng-repeat="route in routes_arr | routeFilter:
+                query_data.schedule_search">
                 </route-result-panel>
             </div>
         </div>

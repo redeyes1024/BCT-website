@@ -5,11 +5,11 @@ BCTAppTopController.controller('BCTController', ['$scope',
     'scheduleDownloadAndTransformation', 'googleMapUtilities', '$q',
     '$interval', 'unitConversionAndDataReporting', 'miniScheduleService',
     'placeholderService', 'locationService', 'location_icons',
-    'agency_filter_icons',
+    'agency_filter_icons', 'results_exist',
     function ($scope, $timeout, scheduleWebSocket, scheduleSocketService,
     scheduleDownloadAndTransformation, googleMapUtilities, $q, $interval,
     unitConversionAndDataReporting, miniScheduleService, placeholderService,
-    locationService, location_icons, agency_filter_icons) {
+    locationService, location_icons, agency_filter_icons, results_exist) {
 
     //For ease of debugging
     window.main_scope = $scope;
@@ -69,8 +69,8 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
     /* START Overlay Display Controls */
 
-    $scope.show_empty_result_message_search_too_short = true;
-    $scope.show_empty_result_message_no_results = true;
+    $scope.show_empty_result_message_search_too_short = false;
+    $scope.show_empty_result_message_no_results = false;
     $scope.show_schedule_results_result_panels = false;
 
     $scope.show_index_nearest_stops_panels = false;
@@ -111,12 +111,11 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
     /* START Custom Watchers */
 
-    //Display correct hint text when no route/stop results are available
-    //Works with the freshly created/destroyed panelTracker directives
-    //Here the schedule_result_panels_counter reflects the value from the
-    //last $digest
     $scope.$watch("query_data.schedule_search", function(new_val, old_val) {
         if (new_val !== old_val) {
+
+            if (!$scope.rs_scope_loaded) { return true; }
+
             if ($scope.query_data.schedule_search.length < 3) {
                 $scope.show_empty_result_message_search_too_short = true;
                 $scope.show_empty_result_message_no_results = false;
@@ -124,16 +123,21 @@ BCTAppTopController.controller('BCTController', ['$scope',
             }
             else {
                 $scope.show_empty_result_message_search_too_short = false;
-
-                if ($scope.top_scope.schedule_result_panels_counter === 0) {
-                    $scope.top_scope.show_empty_result_message_no_results = true;
-                    $scope.top_scope.show_schedule_results_result_panels = false;
-                }
-                else if ($scope.top_scope.schedule_result_panels_counter > 0) {
-                    $scope.top_scope.show_empty_result_message_no_results = false;
-                    $scope.top_scope.show_schedule_results_result_panels = true;
-                }
             }
+
+        }
+    });
+
+    $scope.results_exist = results_exist;
+
+    $scope.$watch('results_exist.check', function(new_val, old_val) {
+        if (new_val < old_val) {
+            $scope.show_empty_result_message_no_results = true;
+            $scope.show_schedule_results_result_panels = false;
+        }
+        else if (new_val > old_val) {
+            $scope.show_empty_result_message_no_results = false;
+            $scope.show_schedule_results_result_panels = true;
         }
     });
 
@@ -250,6 +254,8 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
     /* END Data Object Templates */
 
+    $scope.rs_scope_loaded = false;
+
     $scope.getIconPath = unitConversionAndDataReporting.getIconPath;
     $scope.getAltOrTitleText = unitConversionAndDataReporting.getAltOrTitleText;
 
@@ -265,8 +271,6 @@ BCTAppTopController.controller('BCTController', ['$scope',
                 break;
         }
     };
-
-    $scope.schedule_result_panels_counter = 0;
 
     $scope.addRouteStopToTripPlanner = function(route, stop) {
         var bstop_coords = $scope.stops[stop].LatLng;
