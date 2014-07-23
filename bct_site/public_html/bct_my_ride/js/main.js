@@ -5,6 +5,16 @@ var BCTApp = angular.module('BCTApp', ['ngRoute', 'mobile-angular-ui',
 //App namespace
 window.myride = {};
 
+//For relative directory structure changes
+window.myride.site_roots = {
+    embedded: 'bct_my_ride/',
+    iframe: '',
+    active: ''
+};
+
+//Select the current directory from the above object
+window.myride.site_roots.active = window.myride.site_roots.iframe;
+
 //Initial DOM queries
 window.myride.dom_q = {
     map: {

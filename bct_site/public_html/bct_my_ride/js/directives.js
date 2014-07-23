@@ -8,35 +8,40 @@ function(googleMapUtilities) {
             googleMapUtilities.mapMaker(myride.dom_q.map.cont);
         },
         restrict: 'E',
-        templateUrl: 'bct_my_ride/partials/schedule_map.html'
+        templateUrl: window.myride.site_roots.active +
+        'partials/schedule_map.html'
     };
 }]);
 
 BCTApp.directive('scheduleMapOverlay', [ function() {
     return {
         restrict: 'E',
-        templateUrl: 'bct_my_ride/partials/schedule_map_overlay.html'
+        templateUrl: window.myride.site_roots.active +
+        'partials/schedule_map_overlay.html'
     };
 }]);
 
 BCTApp.directive('tripPlanner', [ function() {
     return {
         restrict: 'E',
-        templateUrl: 'bct_my_ride/partials/trip_planner.html'
+        templateUrl: window.myride.site_roots.active +
+        'partials/trip_planner.html'
     };
 }]);
 
 BCTApp.directive('subPanelRoutes', [ function() {
     return {
         restrict: 'E',
-        templateUrl: 'bct_my_ride/partials/sub_panel_routes.html'
+        templateUrl: window.myride.site_roots.active +
+        'partials/sub_panel_routes.html'
     };
 }]);
 
 BCTApp.directive('subPanelStops', [ function() {
     return {
         restrict: 'E',
-        templateUrl: 'bct_my_ride/partials/sub_panel_stops.html'
+        templateUrl: window.myride.site_roots.active +
+        'partials/sub_panel_stops.html'
     };
 }]);
 
@@ -55,7 +60,8 @@ function(linkFunctions) {
     return {
         link: link,
         restrict: 'E',
-        templateUrl: 'bct_my_ride/partials/route_result_panel.html'
+        templateUrl: window.myride.site_roots.active +
+        'partials/route_result_panel.html'
     };
 }]);
 
@@ -74,7 +80,8 @@ function(linkFunctions) {
     return {
         link: link,
         restrict: 'E',
-        templateUrl: 'bct_my_ride/partials/stop_result_panel.html'
+        templateUrl: window.myride.site_roots.active +
+        'partials/stop_result_panel.html'
     };
 
 }]);
@@ -123,14 +130,16 @@ BCTApp.directive('panelTracker', [ function() {
 BCTApp.directive('plannerOptionBar', [ function() {
     return {
         restrict: 'E',
-        templateUrl: 'bct_my_ride/partials/planner_option_bar.html'
+        templateUrl: window.myride.site_roots.active +
+        'partials/planner_option_bar.html'
     };
 }]);
 
 BCTApp.directive('nearestStops', [ function() {
     return {
         restrict: 'E',
-        templateUrl: 'bct_my_ride/partials/nearest_stops.html'
+        templateUrl: window.myride.site_roots.active +
+        'partials/nearest_stops.html'
     };
 }]);
 

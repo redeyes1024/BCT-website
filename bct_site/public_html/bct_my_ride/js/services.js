@@ -844,7 +844,8 @@ BCTAppServices.service('googleMapUtilities', [
                     '<span> Stop: ' + bstops_names[i] + '</span>' +
                     '<span> Name: ' + stops[bstops_names[i]].Name + '</span>' +
                     '<span> Other Routes: ' +
-                    stops[bstops_names[i]].Routes.join(", ") + 
+                    (stops[bstops_names[i]].Routes.slice(1).join(", ") ||
+                    "None") + 
                     '</span>' +
                     '<span>' +
                         'Next departures: ' +
@@ -1488,8 +1489,8 @@ function(agency_filter_icons) {
                 '<img class="agency-filter-icon ptr ' +
                 '{{ agency_filter_icons.' + agency_filter.agency +
                 '.selection_class }}" ' +
-                'src="bct_my_ride/css/ico/' + agency_filter.icon_filename +
-                '" ' +
+                'src="' + window.myride.site_roots.active + 'css/ico/' +
+                agency_filter.icon_filename + '" ' +
                 'ng-click="enableAgencyFilter(\'' + agency_filter.agency +
                 '\'' + ');">' +
             '</span>';

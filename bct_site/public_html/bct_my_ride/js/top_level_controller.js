@@ -621,12 +621,18 @@ BCTAppTopController.controller('BCTController', ['$scope',
         $scope.agency_filter_icons[agency].selection_class = new_class;
     };
 
-}]).config(function($routeProvider, $locationProvider) {
+}]).
+    
+config(function($routeProvider) {
+
+    var site_root = window.myride.site_roots.active;
+
     $routeProvider.when('/routeschedules', {
-        templateUrl: 'bct_my_ride/partials/route_schedules.html',
+        templateUrl: site_root + 'partials/route_schedules.html',
         controller: 'routeSchedulesController'
     }).when('/bctappindex', {
-        templateUrl: 'bct_my_ride/partials/bct_app_index.html',
+        templateUrl: site_root + 'partials/bct_app_index.html',
         controller: 'indexController'
     });
+
 });

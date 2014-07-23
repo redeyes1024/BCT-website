@@ -6493,13 +6493,15 @@ button.close {
 html {
   height: 100%;
   width: 100%;
-/*  overflow: hidden; */
+  overflow: hidden;
+/* overflow: hidden; */
 }
 
 body {
   height: 100%;
   width: 100%;
-/*  overflow: hidden; */
+  overflow: hidden;
+/* overflow: hidden; */
   font-weight: 200;
 }
 
@@ -6552,13 +6554,15 @@ img {
 html {
   height: 100%;
   width: 100%;
-/*  overflow: hidden; */
+  overflow: hidden;
+/* overflow: hidden; */
 }
 
 body {
   height: 100%;
   width: 100%;
-/*  overflow: hidden; */
+  overflow: hidden;
+/* overflow: hidden; */
 }
 
 textarea,

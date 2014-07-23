@@ -38,19 +38,19 @@ a.link-icon-rev {
 }
 .link-icon,
 .link-icon:focus {
-    color: #333;
+    color: #333 !important;
 }
 .link-icon:hover,
 .link-icon-active {
-    color: #555;
+    color: #555 !important;
 }
 .link-icon-rev,
 .link-icon-rev:focus {
-    color: #fff;
+    color: #fff !important;
 }
 .link-icon-rev:hover,
 .link-icon-rev:active {
-    color: #ddd;
+    color: #ddd !important;
 }
 img {
     max-width: none !important;
@@ -693,10 +693,6 @@ inline-filter-icons {
     }
     .schedule-results-no-results-text {
         top: 7em;
-    }
-    .schedule-results-main-container,
-    .index-main-container {
-        top: 9em;
     }
     .schedule-results-main-container,
     .index-main-container {
