@@ -256,6 +256,18 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
     /* END Data Object Templates */
 
+    $scope.switchRoutes = function(new_route, bstop_id) {
+        $scope.populateScheduleMap(
+            new_route,
+            bstop_id,
+            [
+                {
+                    bus_stop: "current_stop_id"
+                }
+            ]
+        );
+    };
+
     $scope.displayResultsIfExist = function() {
         if ($scope.results_exist.check) {
             $scope.top_scope.show_empty_result_message_no_results = false;
@@ -273,6 +285,7 @@ BCTAppTopController.controller('BCTController', ['$scope',
     $scope.getAltOrTitleText = unitConversionAndDataReporting.getAltOrTitleText;
 
     $scope.setLocationSpinnerAnimation = function(context, new_state) {
+
         switch (new_state) {
             case "active":
                 $scope[location_icons[context].spinning_icon] = true;
@@ -283,6 +296,7 @@ BCTAppTopController.controller('BCTController', ['$scope',
                 $scope[location_icons[context].regular_icon]= true;
                 break;
         }
+
     };
 
     $scope.addRouteStopToTripPlanner = function(route, stop) {
@@ -354,75 +368,98 @@ BCTAppTopController.controller('BCTController', ['$scope',
         }, 20000);
     };
 
+    $scope.populateScheduleMap = function(route, stop, exclusions) {
+        $scope.map_schedule_info.route = route;
+        $scope.map_schedule_info.stop = stop;
+        $scope.cur_center = $scope.stops[stop].LatLng;
+
+        googleMapUtilities.clearMap(exclusions);
+        googleMapUtilities.setMapPosition($scope.cur_center);
+        googleMapUtilities.displayRoute(route, $scope.routes);
+        googleMapUtilities.displayStops(route, $scope.routes, $scope.stops);
+    };
+
+    $scope.openMapSchedule = function(route, stop) {
+
+        $scope.show_map_overlay_module =  true;
+
+        $scope.enableMapToggleOnTitles();
+
+        $scope.schedule.nearest.times_and_diffs =
+        $scope.mini_schedule_loading_template;
+
+        scheduleDownloadAndTransformation.downloadSchedule(route, stop).
+        then(function(res) {
+            if (!res.data.Today) {
+                console.log("Schedule loading error.")
+                return false;
+            }
+
+            var t_schedule = scheduleDownloadAndTransformation.
+            transformSchedule("nearest", res.data.Today);
+
+            $scope.updateAndPushSchedule(t_schedule);
+        });
+
+        $scope.populateScheduleMap(route, stop);
+
+        $scope.show_schedule_result_top_bar = true;
+        $scope.show_schedule_result_top_info_bar = true;
+        $scope.show_schedule_result_top_alert_bar = true;
+        $scope.show_trip_planner_title = false;
+
+    };
+
+    $scope.openTripPlannerMap = function() {
+
+        $scope.show_map_overlay_module =  true;
+
+        $scope.enableMapToggleOnTitles();
+        
+        googleMapUtilities.setMapPosition(null, 10);
+
+        $scope.show_schedule_result_top_bar = false;
+        $scope.show_trip_planner_title = true;
+
+    };
+
+    $scope.closeMapSchedule = function() {
+
+        $scope.disableMapToggleOnTitles();
+
+        $scope.show_map_overlay_module = false;
+        $scope.show_full_schedule_module = false;
+
+    };
+    
+    $scope.closeTripPlannerMap = function() {
+
+        $scope.closeMapSchedule();
+
+        $scope.trip_inputs.start = "";
+        $scope.trip_inputs.finish = "";
+
+        $scope.trip_planner_styles["trip-planner-module-active"] = false;
+
+    };
+
     $scope.toggleMapSchedule = function(from_trip_planner, route, stop) {
 
-        /* Closing the map module */
-
         if ($scope.show_map_overlay_module) {
-
-            $scope.disableMapToggleOnTitles();
-
             if (from_trip_planner) {
-                //Wait for trip planner's slide animation (1 second in CSS)
-                $timeout(function() {
-                    $scope.map_schedule_toggle = false;
-                    $scope.trip_inputs.start = "";
-                    $scope.trip_inputs.finish = "";
-                }, 1000);
+                $scope.closeTripPlannerMap();
             }
             else {
-                $scope.show_map_overlay_module = false;
-                $scope.show_full_schedule_module = false;
+                $scope.closeMapSchedule();
             }
-
-            $scope.body_styles["hide-scroll"] = false;
-            $scope.trip_planner_styles["trip-planner-module-active"] = false;
         }
 
-        /* Opening the map module */
-
         else {
-            $scope.show_map_overlay_module =  true;
-            $scope.body_styles["hide-scroll"] = true;
-
-            $scope.enableMapToggleOnTitles();
-
-            if (!from_trip_planner) {
-                $scope.schedule.nearest.times_and_diffs =
-                    $scope.mini_schedule_loading_template;
-
-                scheduleDownloadAndTransformation.downloadSchedule(route, stop).
-                then(function(res) {
-                    if (!res.data.Today) {
-                        console.log("Schedule loading error.")
-                        return false;
-                    }
-
-                    var t_schedule = scheduleDownloadAndTransformation.
-                    transformSchedule("nearest", res.data.Today);
-
-                    $scope.updateAndPushSchedule(t_schedule);
-                });
-
-                $scope.map_schedule_info.route = route;
-                $scope.map_schedule_info.stop = stop;
-                $scope.cur_center = $scope.stops[stop].LatLng;
-
-                googleMapUtilities.clearMap();
-                googleMapUtilities.setMapPosition($scope.cur_center);
-                googleMapUtilities.displayRoute(route, $scope.routes);
-                googleMapUtilities.displayStops(route, $scope.routes, $scope.stops);
-
-                $scope.show_schedule_result_top_bar = true;
-                $scope.show_schedule_result_top_info_bar = true;
-                $scope.show_schedule_result_top_alert_bar = true;
-                $scope.show_trip_planner_title = false;
+            if (from_trip_planner) {
+                $scope.openTripPlannerMap(route, stop);
             }
             else {
-                googleMapUtilities.setMapPosition(null, 10);
-
-                $scope.show_schedule_result_top_bar = false;
-                $scope.show_trip_planner_title = true;
+                $scope.openMapSchedule(route, stop);
             }
         }
 
@@ -448,21 +485,25 @@ BCTAppTopController.controller('BCTController', ['$scope',
         /* Closing full schedule overlay */
 
         if ($scope.show_full_schedule_module) {
+
             $scope.show_full_schedule_module = false;
             $scope.schedule_map_styles["hide-scroll"] = false;
             googleMapUtilities.touchMap();
 
             $scope.showMiniScheduleAndAlertBars();
+
         }
 
         /* Opening full schedule module */
 
         else {
+
             $scope.full_schedule_date = new Date;
             $scope.show_full_schedule_module = true;
             $scope.schedule_map_styles["hide-scroll"] = true;
 
             $scope.hideMiniScheduleAndAlertBars();
+
         }
 
     };

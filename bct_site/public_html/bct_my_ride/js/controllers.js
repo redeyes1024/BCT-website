@@ -346,6 +346,7 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
     };
 
     $scope.getTripPlan = function() {
+
         $scope.showMapLoading();
 
         tripPlannerService.getLatLon(
@@ -389,14 +390,16 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
                 $scope.top_scope.show_schedule_map_loading_modal = false;
             });
 
-        //N.B. "catch" mathod is not used with the dot operator due to
-        //YUI Compressor (Rhino Engine) reserving the word for try/catch statement
+        //N.B. "catch" mathod is not used with the dot operator due to the fact
+        //that the YUI Compressor (which uses the Rhino Engine) reserves this
+        //word for try/catch statements
 
         })["catch"](function() {
             console.log("There was an error retrieving the trip plan data.");
 
             $scope.top_scope.show_schedule_map_loading_modal = false;
         });
+
     };
 
     $scope.displayTripPlan = function(selection) {
@@ -431,11 +434,9 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
         $scope.getTripPlan();
 
         $scope.trip_planner_styles["trip-planner-module-active"] = true;
-        //Wait for tripplanner slide animation (1 second long in CSS)
+
         if (!$scope.show_map_overlay_module) {
-            //$timeout(function() {
-                $scope.toggleMapSchedule(true);
-            //}, 1000);
+            $scope.toggleMapSchedule(true);
         }
 
         $scope.top_scope.show_trip_planner_title = true;
@@ -456,7 +457,7 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
     $scope.submitTrip = $scope.submitTripPlannerQueryAndShowMap;
 
     $scope.top_scope.closeMapAndResetTripPlanner = function() {
-        $scope.toggleMapSchedule();
+        $scope.toggleMapSchedule(true);
 
         $scope.top_scope.show_trip_planner_title = false;
 

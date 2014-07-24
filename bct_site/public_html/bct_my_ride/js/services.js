@@ -676,12 +676,14 @@ BCTAppServices.service('unitConversionAndDataReporting', [ function() {
 
 }]);
 
-BCTAppServices.service('googleMapUtilities', [
+BCTAppServices.service('googleMapUtilities', [ '$compile',
     'scheduleDownloadAndTransformation', 'unitConversionAndDataReporting',
-    function(scheduleDownloadAndTransformation,
+    function($compile, scheduleDownloadAndTransformation,
     unitConversionAndDataReporting) {
 
     var self = this;
+
+    var top_self = this;
 
     this.palette = {
         colors: {
@@ -760,7 +762,9 @@ BCTAppServices.service('googleMapUtilities', [
         });
     };
 
-    this.clearMap = function() {
+    this.clearMap = function(exclusions) {
+        //Closing map overlay need to explicitly close open info windows
+        //console.log(exclusions);
         var points = myride.dom_q.map.overlays.points;
         var pline =  myride.dom_q.map.overlays.pline;
         var trip_plines = myride.dom_q.map.overlays.trip_plines;
@@ -769,8 +773,6 @@ BCTAppServices.service('googleMapUtilities', [
         for (var mk=0;mk<trip_points.length;mk++) {
             trip_points[mk].marker.setMap(null);
         }
-
-        trip_markers = myride.dom_q.map.overlays.trip_points = [];
 
         for (var pl=0;pl<trip_plines.length;pl++) {
             trip_plines[pl].setMap(null);
@@ -787,6 +789,7 @@ BCTAppServices.service('googleMapUtilities', [
         if (pline) {
             myride.dom_q.map.overlays.pline.setMap(null);
         }
+
     };
 
     this.displayRoute = function(route, routes) {
@@ -808,6 +811,46 @@ BCTAppServices.service('googleMapUtilities', [
             strokeColor: self.palette.colors.blue,
             strokeWeight: self.palette.weights.lines.mid
         });
+    };
+
+    //Replace items in "other routes" list with clickable
+    //buttons that change the displayed route
+    this.addRouteSwapButtons = function(
+        route_swap_button_holders,
+        open_info_stop
+    ) {
+
+        var scope = 
+        angular.element(document.getElementById("bct-app")).scope();
+
+        var route_swap_button_container =
+        route_swap_button_holders[0].parentNode;
+
+        route_swap_button_container.innerHTML =
+        route_swap_button_container.innerHTML.replace(/,/g, "");
+
+        while (route_swap_button_holders.length > 0) {
+
+            var route_swap_button = angular.element(
+                '<a class="ptr" ng-click="switchRoutes(' +
+                    '\'' + route_swap_button_holders[0].innerHTML + '\', ' +
+                    '\'' + open_info_stop + '\'' +
+                ');">' +
+                    route_swap_button_holders[0].innerHTML +
+                '</a>'
+            );
+
+            angular.element(route_swap_button_container).
+            append($compile(route_swap_button)(scope));
+
+            route_swap_button_holders[0].outerHTML = "";
+
+            if (route_swap_button_holders[0]) {
+                angular.element(route_swap_button_container).append(",&nbsp;");
+            }
+
+        }
+
     };
 
     this.displayStops = function(route, routes, stops) {
@@ -838,21 +881,24 @@ BCTAppServices.service('googleMapUtilities', [
 
             if (alt_routes.length === 0) {
 
-                route_swap_button_templates = 'None'
+                route_swap_button_templates = 'None';
 
             }
             else {
 
                 for (var k=0; k<alt_routes.length; k++) {
 
-                    route_swap_button_templates +=
-                    '<a href="#">' + alt_routes[k] + '</a>';
-
+                    route_swap_button_templates += 
+                    '<span class="route-swap-button-holder">' +
+                        alt_routes[k] +
+                    '</span>';
+                    
                     if (k < alt_routes.length - 1) {
-                        route_swap_button_templates += ', ';
+                        route_swap_button_templates += ", ";
                     }
 
                 }
+
 
             }
 
@@ -880,10 +926,15 @@ BCTAppServices.service('googleMapUtilities', [
 
             myride.dom_q.map.overlays.points[bstops_names[i]].ShowWindow =
             new (function() {
+
                 var self = this;
+
                 this.s_id = bstops_names[i];
+
                 this.pt = myride.dom_q.map.overlays.points[bstops_names[i]];
+
                 this.func = function() {
+
                     var open_info_stop = myride.dom_q.map.overlays.open_info[0].
                         content.match(/Stop: .*?<\/span>/)[0].slice(6,-7);
                     //Do nothing if the target info window is already open
@@ -899,14 +950,17 @@ BCTAppServices.service('googleMapUtilities', [
                     myride.dom_q.map.overlays.open_info.pop();
                     myride.dom_q.map.overlays.open_info.push(self.pt.info);
 
+                    //Request next arrivals for clicked route/stop
                     scheduleDownloadAndTransformation.
                     downloadSchedule(route, self.s_id).then(function(res) {
+
                         var nearest_schedule = scheduleDownloadAndTransformation.
                         transformSchedule("nearest", res.data.Today);
+
                         angular.element(document).ready(function() {
                             try {
                                 document.getElementById(
-                                    "stop-window-times-" +self.s_id
+                                    "stop-window-times-" + self.s_id
                                 ).
                                 innerHTML = nearest_schedule.
                                 nearest.next_times.join(", ");
@@ -914,9 +968,29 @@ BCTAppServices.service('googleMapUtilities', [
                                 console.log("A Google Maps infowindow was " +
                                 "closed before next times were fully loaded.");
                             }
+
                         });
+
                     });
+
+                    angular.element(document).ready(function() {
+
+                        var route_swap_button_holders =
+                        document.getElementsByClassName(
+                            "route-swap-button-holder"
+                        );
+
+                        if (route_swap_button_holders[0]) {
+                            top_self.addRouteSwapButtons(
+                                route_swap_button_holders,
+                                self.s_id
+                            );
+                        }
+
+                    });
+
                 };
+
             });
 
             google.maps.event.addListener(
