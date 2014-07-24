@@ -47,6 +47,8 @@ BCTAppControllers.controller('routeSchedulesController', ['$scope',
         );
     };
 
+    $scope.displayResultsIfExist();
+
 }]);
 
 BCTAppControllers.controller('indexController', ['$scope', '$timeout',

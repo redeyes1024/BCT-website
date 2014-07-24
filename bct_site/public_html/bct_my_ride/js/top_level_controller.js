@@ -110,6 +110,8 @@ BCTAppTopController.controller('BCTController', ['$scope',
     /* END Overlay Display Controls */
 
     /* START Custom Watchers */
+    
+    $scope.results_exist = results_exist;
 
     $scope.$watch("query_data.schedule_search", function(new_val, old_val) {
         if (new_val !== old_val) {
@@ -123,12 +125,12 @@ BCTAppTopController.controller('BCTController', ['$scope',
             }
             else {
                 $scope.show_empty_result_message_search_too_short = false;
+
+                $scope.displayResultsIfExist();
             }
 
         }
     });
-
-    $scope.results_exist = results_exist;
 
     $scope.$watch('results_exist.check', function(new_val, old_val) {
         if (new_val < old_val) {
@@ -253,6 +255,17 @@ BCTAppTopController.controller('BCTController', ['$scope',
     };
 
     /* END Data Object Templates */
+
+    $scope.displayResultsIfExist = function() {
+        if ($scope.results_exist.check) {
+            $scope.top_scope.show_empty_result_message_no_results = false;
+            $scope.top_scope.show_schedule_results_result_panels = true;
+        }
+        else {
+            $scope.top_scope.show_empty_result_message_no_results = true;
+            $scope.top_scope.show_schedule_results_result_panels = false;
+        }
+    };
 
     $scope.rs_scope_loaded = false;
 
