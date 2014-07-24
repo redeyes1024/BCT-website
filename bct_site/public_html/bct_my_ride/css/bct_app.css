@@ -202,7 +202,7 @@ em.hint-text {
     width: 100%;
     overflow: auto;
     position: absolute;
-    top: calc(1.5em + 4px);
+    top: calc(1.5em + 3px);
     left: 0px;
     z-index: 1029;
     height: calc(100% - 8em - 3px);
@@ -247,7 +247,6 @@ iframe #schedule-map-loading-modal-spinner {
     overflow: auto;
     display: table;
     table-layout: fixed;
-    height: 2em;
     border-collapse: collapse;
 }
 .schedule-map-mini-schedule-spacer {
@@ -296,8 +295,7 @@ iframe #schedule-map-loading-modal-spinner {
     font-size: 1.5em;
 }
 #schedule-map-mini-schedule-time-group {
-    display: inline-table;
-    height: 4em;
+
 }
 .schedule-map-mini-schedule-time {
     border-style: dashed;
@@ -313,8 +311,8 @@ iframe #schedule-map-loading-modal-spinner {
 }
 .schedule-map-mini-schedule-time {
     width: 50em;
-    display: table-cell;
     font-weight: 400;
+    padding: 0.5em 0em;
 }
 #schedule-map-alert-area {
     text-align: left;

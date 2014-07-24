@@ -569,10 +569,10 @@ BCTAppServices.service('unitConversionAndDataReporting', [ function() {
             divider = "";
         }
 
-        if (minutes_count === "1") {
+        if (minutes_count === 1) {
             mins_plural = "";
         }
-        if (hours_count === "1") {
+        if (hours_count === 1) {
             hours_plural = "";
         }
 
@@ -608,13 +608,7 @@ BCTAppServices.service('unitConversionAndDataReporting', [ function() {
                 start_text = "in ";
             }
             else if (diff_arr[i] === 0) {
-                time_unit = "";
-                plural_modifier = "";
                 start_text = "about now";
-            }
-
-            if(Math.abs(diff_arr[i]) === 1) {
-                plural_modifier = "";
             }
 
             var time_diff_message = start_text + time_difference + end_text;
