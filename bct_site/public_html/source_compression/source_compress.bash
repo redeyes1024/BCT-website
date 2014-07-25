@@ -6,7 +6,7 @@
 #all_sources.txt. The user will be notified when any defaults are used.
 
 type=$1
-output_filename=$2
+output_filename="bct_my_ride.css" #change to arg with bugfix
 sourcelist=$3
 
 if [ -z $type ] || [[ $type != "css" && $type != "js" ]]; then
@@ -73,8 +73,7 @@ echo ""
 
 printf '%b\n' $full_sources
 
-cat $full_sources | java -jar $yuicompressor_dir/yuicompressor-2.4.8.jar \
---type $type --line-break 4000 > $output_filename
+cat $full_sources > $output_filename
 
 orig_size=`cat $full_sources | wc -c`
 new_size=`cat $output_filename | wc -c`

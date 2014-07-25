@@ -256,6 +256,17 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
     /* END Data Object Templates */
 
+    $scope.SCHEDULE_RESULTS_MESSAGE_TEXT_SEARCH_TOO_SHORT = '' +
+        'Please enter a search term at least 3 characters long. ' +
+        'For example, if you are looking for ' +
+        'BCT route 10, try looking for ' +
+        '"BCT10" instead of just "10"';
+
+    $scope.SCHEDULE_RESULTS_MESSAGE_TEXT_NO_RESULTS = '' +
+        'Sorry, there are no results for your entry. ' +
+        'Check for typos or try broadening your search ' +
+        'by typing in fewer characters.';
+
     $scope.switchRoutes = function(new_route, bstop_id) {
 
         googleMapUtilities.createDummyInfoWindow();

@@ -1,9 +1,11 @@
 <!-- START Sources for forms -->
+
 <link rel="stylesheet" type="text/css" href="form_sources/bct_forms.css"
 media="screen" />
 <link rel="stylesheet" type="text/css"
 href="fa/css/font-awesome.css" media="screen" />
 <script type="text/javascript" src="form_sources/main.js"></script>
+
 <!-- END Sources for forms -->
 
 <!-- START Sources for BCT MyRide -->
@@ -15,6 +17,7 @@ href="fa/css/font-awesome.css" media="screen" />
 <link rel="stylesheet" type="text/css" href="bct_my_ride/css/ngQuickDate/ng-quick-date-plus-default-theme.css" media="screen" />
 <!-- Project Stylesheets -->
 <link rel="stylesheet" type="text/css" href="bct_my_ride/css/bct_app.css" media="screen" />
+<link rel="stylesheet" type="text/css" href="bct_my_ride/css/bct_site_extensions.css" media="screen" />
 <!-- Third-party dependencies -->
 <script type="text/javascript" src="bct_my_ride/js/libraries/angular.min.js"></script>
 <script type="text/javascript" src="bct_my_ride/js/libraries/angular-route.min.js"></script>
@@ -22,7 +25,7 @@ href="fa/css/font-awesome.css" media="screen" />
 <script type="text/javascript" src="bct_my_ride/js/libraries/ng-quick-date.min.js"></script>
 <!-- Third-party APIs -->
 <script type="text/javascript"
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCXxtwuyy3k9Ot5d44hgjHQt4kkg5KZ5Hw&sensor=false">
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCXxtwuyy3k9Ot5d44hgjHQt4kkg5KZ5Hw&sensor=false">
 </script>
 <!-- Project Dependencies -->
 <script type="text/javascript" src="bct_my_ride/js/main.js"></script>
