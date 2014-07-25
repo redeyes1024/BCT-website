@@ -1476,18 +1476,27 @@ function(nearestStopsService, locationService, latest_location, results_exist) {
 
             this.property_name = non_id_property;
 
+            //The two top level search filters use minimum length
             if (use_minimum_length) {
+
                 this.filter_condition = function(input_string_length) {
                     if (input_string_length < 3) {
                         return false;
                     }
                     return true;
                 };
+
+                this.results_exist_flag = "main";
+
             }
             else {
+
                 this.filter_condition = function() {
                     return true;
                 };
+
+                this.results_exist_flag = "sub";
+
             }
 
             this.filter = function(
@@ -1529,7 +1538,7 @@ function(nearestStopsService, locationService, latest_location, results_exist) {
 
                 }
 
-                results_exist.check = !!filtered[0];
+                results_exist[self.results_exist_flag] = !!filtered[0];
 
                 return filtered;
             };

@@ -132,7 +132,7 @@ BCTAppTopController.controller('BCTController', ['$scope',
         }
     });
 
-    $scope.$watch('results_exist.check', function(new_val, old_val) {
+    $scope.$watch('results_exist.main', function(new_val, old_val) {
         if (new_val < old_val) {
             $scope.show_empty_result_message_no_results = true;
             $scope.show_schedule_results_result_panels = false;
@@ -272,7 +272,7 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
     $scope.displayResultsIfExist = function() {
 
-        if ($scope.results_exist.check) {
+        if ($scope.results_exist.main) {
             $scope.top_scope.show_empty_result_message_no_results = false;
             $scope.top_scope.show_schedule_results_result_panels = true;
         }
