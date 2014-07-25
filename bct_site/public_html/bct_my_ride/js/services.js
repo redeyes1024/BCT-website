@@ -127,10 +127,22 @@ function($timeout, latest_location) {
     this.DEFAULT_DEMO_LOCATION_COORDS = {
         LatLng: {
             Latitude: 25.977301,
-            Longitude: -80.12027,
-            lat: 25.977301,
-            lng: -80.12027
+            Longitude: -80.12027
         }
+    };
+
+    this.getDefaultDemoCoords = function(coord_labels) {
+
+        var default_coords = {};
+
+        default_coords[coord_labels[0]] =
+        self.DEFAULT_DEMO_LOCATION_COORDS.LatLng.Latitude;
+
+        default_coords[coord_labels[1]] =
+        self.DEFAULT_DEMO_LOCATION_COORDS.LatLng.Longitude;  
+
+        return default_coords;
+
     };
 
     this.updateLatestLocation = function(location) {
@@ -240,7 +252,9 @@ function($timeout, latest_location) {
             !(bounds.lat.min <= current_lat && current_lat <= bounds.lat.max) ||
             !(bounds.lng.min <= current_lng && current_lng <= bounds.lng.max)
         ) {
-            current_location = self.DEFAULT_DEMO_LOCATION_COORDS;
+            current_location = self.getDefaultDemoCoords(
+                ["Latitude", "Longitude"]
+            );
             console.log(
                 "User outside of local region. Using demonstration coordinates."
             );
@@ -739,7 +753,7 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
             var zoom = 18;
         }
         if (!coords) {
-            var coords = locationService.DEFAULT_DEMO_LOCATION_COORDS;
+            var coords = locationService.getDefaultDemoCoords(["lat", "lng"]);
         }
         else if (coords.Latitude) {
 
@@ -752,8 +766,6 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
             coords.lng = old_lng;
 
         }
-
-        
 
         //Map intance is re-centered before re-showing the map...
         myride.dom_q.map.inst.setZoom(zoom);
