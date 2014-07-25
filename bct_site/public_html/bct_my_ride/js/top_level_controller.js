@@ -146,7 +146,7 @@ BCTAppTopController.controller('BCTController', ['$scope',
     $scope.$watch("show_schedule_result_top_bar", function(new_val, old_val) {
         //If top bar is being closed
         if (new_val < old_val) {
-            $interval.cancel($scope.schedule_update_interval);
+            $timeout.cancel($scope.schedule_update_timer);
         }
     });
 
@@ -257,18 +257,21 @@ BCTAppTopController.controller('BCTController', ['$scope',
     /* END Data Object Templates */
 
     $scope.switchRoutes = function(new_route, bstop_id) {
-        $scope.populateScheduleMap(
-            new_route,
-            bstop_id,
-            [
-                {
-                    bus_stop: "current_stop_id"
-                }
-            ]
-        );
+
+        googleMapUtilities.createDummyInfoWindow();
+
+        $timeout.cancel($scope.schedule_update_timer);
+
+        $scope.populateScheduleMapTimes(new_route, bstop_id);
+
+        $scope.populateScheduleMap(new_route, bstop_id);
+
+        myride.dom_q.map.overlays.points[bstop_id].ShowWindow.func();
+
     };
 
     $scope.displayResultsIfExist = function() {
+
         if ($scope.results_exist.check) {
             $scope.top_scope.show_empty_result_message_no_results = false;
             $scope.top_scope.show_schedule_results_result_panels = true;
@@ -277,6 +280,7 @@ BCTAppTopController.controller('BCTController', ['$scope',
             $scope.top_scope.show_empty_result_message_no_results = true;
             $scope.top_scope.show_schedule_results_result_panels = false;
         }
+
     };
 
     $scope.rs_scope_loaded = false;
@@ -339,6 +343,7 @@ BCTAppTopController.controller('BCTController', ['$scope',
     $scope.schedule.nearest.times_and_diffs = $scope.mini_schedule_loading_template;
 
     $scope.updateAndPushSchedule = function (transformed_schedule) {
+
         reprocessed_schedule = scheduleDownloadAndTransformation.
         transformSchedule("nearest", transformed_schedule.raw);
 
@@ -363,27 +368,24 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
         $scope.schedule.nearest.times_and_diffs = nearest_full.times_and_diffs;
 
-        $scope.schedule_update_interval = $timeout(function() {
+        $scope.schedule_update_timer = $timeout(function() {
             $scope.updateAndPushSchedule(reprocessed_schedule);
         }, 20000);
+
     };
 
-    $scope.populateScheduleMap = function(route, stop, exclusions) {
+    $scope.populateScheduleMap = function(route, stop) {
         $scope.map_schedule_info.route = route;
         $scope.map_schedule_info.stop = stop;
         $scope.cur_center = $scope.stops[stop].LatLng;
 
-        googleMapUtilities.clearMap(exclusions);
+        googleMapUtilities.clearMap();
         googleMapUtilities.setMapPosition($scope.cur_center);
         googleMapUtilities.displayRoute(route, $scope.routes);
         googleMapUtilities.displayStops(route, $scope.routes, $scope.stops);
     };
 
-    $scope.openMapSchedule = function(route, stop) {
-
-        $scope.show_map_overlay_module =  true;
-
-        $scope.enableMapToggleOnTitles();
+    $scope.populateScheduleMapTimes = function(route, stop) {
 
         $scope.schedule.nearest.times_and_diffs =
         $scope.mini_schedule_loading_template;
@@ -400,6 +402,16 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
             $scope.updateAndPushSchedule(t_schedule);
         });
+
+    };
+
+    $scope.openMapSchedule = function(route, stop) {
+
+        $scope.show_map_overlay_module =  true;
+
+        $scope.enableMapToggleOnTitles();
+
+        $scope.populateScheduleMapTimes(route, stop);
 
         $scope.populateScheduleMap(route, stop);
 

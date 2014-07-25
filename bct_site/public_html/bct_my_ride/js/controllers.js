@@ -420,14 +420,17 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
 
     //Check if inputs are empty or contain just spaces; false -> do not submit
     $scope.tripPlannerInputsEmpty = function() {
+
         if ($scope.trip_inputs.start === "" ||
             $scope.trip_inputs.finish === "" ) {
             return false;
         }
         return true;
+
     };
 
     $scope.submitTripPlannerQueryAndShowMap = function() {
+
         if ( !$scope.tripPlannerInputsEmpty() ) { return true; }
 
         googleMapUtilities.clearMap();
@@ -445,22 +448,30 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
         //Do not toggle map the subsequent times this function is called
         //until function is re-defined yet again (when map is closed)
         $scope.submitTrip = $scope.submitTripPlannerQueryWithoutNewMap;
+
     };
 
     $scope.submitTripPlannerQueryWithoutNewMap = function() {
+
         if (!$scope.tripPlannerInputsEmpty()) { return true; }
 
         $scope.getTripPlan();
+
     };
 
     //The first time the trip form is submitted, the map is shown (see above)
     $scope.submitTrip = $scope.submitTripPlannerQueryAndShowMap;
 
     $scope.top_scope.closeMapAndResetTripPlanner = function() {
+
+        googleMapUtilities.createDummyInfoWindow();
+
         $scope.toggleMapSchedule(true);
 
         $scope.top_scope.show_trip_planner_title = false;
+        $scope.top_scope.show_schedule_result_top_bar = false;
 
         $scope.submitTrip = $scope.submitTripPlannerQueryAndShowMap;
+
     };
 }]);

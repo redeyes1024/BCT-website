@@ -127,7 +127,9 @@ function($timeout, latest_location) {
     this.DEFAULT_DEMO_LOCATION_COORDS = {
         LatLng: {
             Latitude: 25.977301,
-            Longitude: -80.12027
+            Longitude: -80.12027,
+            lat: 25.977301,
+            lng: -80.12027
         }
     };
 
@@ -678,8 +680,9 @@ BCTAppServices.service('unitConversionAndDataReporting', [ function() {
 
 BCTAppServices.service('googleMapUtilities', [ '$compile',
     'scheduleDownloadAndTransformation', 'unitConversionAndDataReporting',
+    'locationService',
     function($compile, scheduleDownloadAndTransformation,
-    unitConversionAndDataReporting) {
+    unitConversionAndDataReporting, locationService) {
 
     var self = this;
 
@@ -736,17 +739,21 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
             var zoom = 18;
         }
         if (!coords) {
-            var coords = {
-                lat: 26.103277,
-                lng: -80.399114
-            };
+            var coords = locationService.DEFAULT_DEMO_LOCATION_COORDS;
         }
         else if (coords.Latitude) {
-            coords.lat = coords.Latitude;
-            coords.lng = coords.Longitude;
-            delete coords.Latitude;
-            delete coords.Longitude;
+
+            var old_lat = coords.Latitude;
+            var old_lng = coords.Longitude;
+
+            coords = {};
+
+            coords.lat = old_lat;
+            coords.lng = old_lng;
+
         }
+
+        
 
         //Map intance is re-centered before re-showing the map...
         myride.dom_q.map.inst.setZoom(zoom);
@@ -762,9 +769,8 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
         });
     };
 
-    this.clearMap = function(exclusions) {
-        //Closing map overlay need to explicitly close open info windows
-        //console.log(exclusions);
+    this.clearMap = function() {
+
         var points = myride.dom_q.map.overlays.points;
         var pline =  myride.dom_q.map.overlays.pline;
         var trip_plines = myride.dom_q.map.overlays.trip_plines;
@@ -853,12 +859,21 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
 
     };
 
+    this.createDummyInfoWindow = function() {
+        window.myride.dom_q.map.overlays.open_info = [{
+            close: function() {},
+            content: "<span>Stop: First</span>"
+        }];
+    };
+
     this.displayStops = function(route, routes, stops) {
         var cur_route = routes[route];
         var bstops_names = cur_route.Stops;
 
         for (var i=0;i<bstops_names.length;i++) {
+
             if (!stops[bstops_names[i]].LatLng.Latitude) { continue; }
+
             var lat = stops[bstops_names[i]].LatLng.Latitude;
             var lng = stops[bstops_names[i]].LatLng.Longitude;
 
@@ -877,7 +892,10 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
 
             var route_swap_button_templates = '';
 
-            var alt_routes = stops[bstops_names[i]].Routes.slice(1);
+            var alt_routes = stops[bstops_names[i]].Routes.
+            filter(function(filtered_route) { 
+                if (filtered_route !== route ) { return filtered_route; } 
+            });
 
             if (alt_routes.length === 0) {
 
@@ -994,20 +1012,16 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
             });
 
             google.maps.event.addListener(
-                myride.dom_q.map.overlays.points[bstops_names[i]].info,
+                window.myride.dom_q.map.overlays.points[bstops_names[i]].info,
                 'closeclick',
-                function() {
-                    myride.dom_q.map.overlays.open_info = [{
-                        close: function() {},
-                        content: "<span>Stop: First</span>"
-                    }];
-                }
+                top_self.createDummyInfoWindow
             );
 
             google.maps.event.addListener(
                 myride.dom_q.map.overlays.points[bstops_names[i]].marker,
                 'click',
-                myride.dom_q.map.overlays.points[bstops_names[i]].ShowWindow.func);
+                myride.dom_q.map.overlays.points[bstops_names[i]].ShowWindow.
+                func);
         }
     };
 
