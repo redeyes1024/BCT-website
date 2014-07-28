@@ -1,31 +1,72 @@
 #!/bin/bash
+#
+# This script compresses either CSS or JS files when given an ordered list
+# of <script> or <link rel="stylesheet"> tags. The sources are concatenated
+# and then minified/optimized with YUI Compressor.
+#
+# Instructions:
+#
+# Copy-paste dependencies in order into a text file. Specify its filename and
+# path (relative to the directory containing this script) with the option -s.
+# If source list filename is supplied, it defaults to a local file named
+# all_sources.txt. The user will be notified when any defaults are used.
 
-#Copy-paste dependencies in order into a text file. Specify its filename and
-#path (relative to the directory containing this script) in the third argument.
-#If source list filename is supplied, it defaults to a local file named
-#all_sources.txt. The user will be notified when any defaults are used.
+while getopts ":t:f:s:" opt; do
 
-type=$1
-output_filename="bct_my_ride.css" #change to arg with bugfix
-sourcelist=$3
+    case ${opt} in
 
-if [ -z $type ] || [[ $type != "css" && $type != "js" ]]; then
-    echo "Type missing or invalid. Use either 'css' or 'js'."
+        t)
+
+            type=${OPTARG}
+
+            ;;
+
+        f)
+
+            output_filename=${OPTARG}
+
+            ;;
+
+        s)
+
+            sourcelist=${OPTARG}
+
+            ;;
+
+        *)
+
+            echo "Invalid or missing option: -${OPTARG}" >&2
+
+            exit
+
+            ;;
+
+    esac
+
+done
+
+if [ -z ${type} ] || [[ ${type} != "css" && ${type} != "js" ]]; then
+    echo "Type missing or invalid. Use either '-t css' or '-t js'." >&2
     exit
 fi
 
-root_dir=$HOME'/NetBeansProjects/ISR/BCT-website/bct_site/public_html/'
-yuicompressor_dir=$HOME'/Documents/java_utilities'
+readonly ROOT_DIR=$(
+    printf "%s/NetBeansProjects/ISR/BCT-website/bct_site/public_html/" "${HOME}"
+)
+readonly YUICOMPRESSOR_DIR=$(
+    printf "%s/Documents/java_utilities" "${HOME}"
+)
 
 function useDefaultFilenameIfNoneSpecified {
 
-    if [ -z $output_filename ]; then
+    if [ -z ${output_filename} ]; then
 
-        filename=$1
+        default_output_filename=${1}
 
-        echo ""
-        echo "Using default output filename: "$output_filename
-        echo ""
+        output_filename=${default_output_filename}
+
+        printf "\nUsing default output filename: %s\n" \
+               "${default_output_filename}"
 
     fi
 
@@ -35,9 +76,8 @@ if [ -z $sourcelist ]; then
 
     sourcelist="all_sources.txt"
 
-    echo ""
-    echo "Using default source list file: "$sourcelist
-    echo ""
+    printf "\nUsing default source list file: %s\n" \
+           "${sourcelist}"
 
 fi
 
@@ -47,52 +87,51 @@ case $type in
 
         useDefaultFilenameIfNoneSpecified "compressed_stylesheet.css"
 
-        sources=`cat $sourcelist | grep -Eo "href=\".*?\"" | \
-        sed 's/"//g' | sed 's/href=//'`
+        sources=$(
+            cat ${sourcelist} |
+            grep -Eo "href=\".*?\"" |
+            sed 's/"//g' |
+            sed 's/href=//'
+        )
 
-
-    ;;
+        ;;
 
    "js")
 
         useDefaultFilenameIfNoneSpecified "compressed_javascript.js"
 
-        sources=`cat $sourcelist | grep -Eo "src=\".*\"" | \
-        grep -v "http" | sed 's/"//g' | sed 's/src=//'`
+        sources=$(
+            cat ${sourcelist} |
+            grep -Eo "src=\".*\"" |
+            grep -v "http" |
+            sed 's/"//g' |
+            sed 's/src=//'
+        )
 
-    ;;
+        ;;
 
 esac
 
-full_sources=`printf '%b\n' $sources | awk -v root_dir=$root_dir \
-'{ print root_dir$0 }'`
+full_sources=$(
+    printf '%b\n' "${sources}" |
+    awk -v root_dir="${ROOT_DIR}" '{ print root_dir $0 }'
+)
 
-echo ""
-echo "Compressing the following sources:"
-echo ""
+printf "\nCompressing the following sources: %b\n" "${full_sources}"
 
-printf '%b\n' $full_sources
+cat ${full_sources} > ${output_filename}
 
-cat $full_sources > $output_filename
+orig_size=$(cat $full_sources | wc -c)
+new_size=$(cat $output_filename | wc -c)
 
-orig_size=`cat $full_sources | wc -c`
-new_size=`cat $output_filename | wc -c`
+orig_size_kb=$(echo "scale=2; ${orig_size} / 1000" | bc)
+new_size_kb=$(echo "scale=2; ${new_size} / 1000" | bc)
 
-orig_size_kb=`echo "scale=2; "$orig_size" / 1000" | bc`
-new_size_kb=`echo "scale=2; "$new_size" / 1000" | bc`
+comp_ratio=$(echo "scale=2; 100 - (100 * ${new_size} / ${orig_size})" | bc)
 
-comp_ratio=`echo "scale=2; 100 - (100 * "$new_size" / "$orig_size")" | bc`
+printf "\nOriginal size: %2.2f kb" "${orig_size_kb}"
+printf "\nCompressed size: %2.2f kb" "${new_size_kb}"
+printf "\nCompression ratio: %2.2f%%\n" "${comp_ratio}"
 
-echo ""
-
-echo "Original size: "$orig_size_kb" kb."
-echo "Compressed size: "$new_size_kb" kb."
-
-echo "Compression ratio: "$comp_ratio"%."
-
-echo ""
-
-echo "Please don't forget to change relative URLs from the original source \
-files before deployment."
-
-echo ""
+printf "\n%s\n\n" "Please don't forget to change relative URLs from the \
+original source files before deployment."
