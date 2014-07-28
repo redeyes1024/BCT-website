@@ -138,3 +138,13 @@ function(templateGenerators) {
     };
 
 }]);
+
+BCTApp.directive('tripPlannerNavigationBar', [ function() {
+
+    return {
+        restrict: 'E',
+        templateUrl: window.myride.site_roots.active +
+        'partials/trip_planner_navigation_bar.html'
+    };
+
+}]);

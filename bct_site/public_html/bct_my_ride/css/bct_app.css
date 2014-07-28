@@ -6,15 +6,12 @@
     width: 100%;
     height: 54em;
     font-family: helvetica neue;
+    margin-bottom: 1em;
 }
 
 /* END Main Container */
 
 /* START Generic Classes */
-
-#bct-profile-page {
-    display: none !important;
-}
 
 .ptr {
     cursor: pointer !important;
@@ -106,6 +103,19 @@ em.hint-text {
 #index-page .agency-filter,
 #index-page, .schedule-search-top-buttons {
     vertical-align: middle;
+}
+.navigation-bar-directions {
+    display: table-cell;
+    font-size: 3em;
+    vertical-align: middle;
+    width: 2em;
+    border-style: dotted;
+}
+.navigation-bar-last-item {
+    border-width: 0px 1px 0px 0px;
+}
+.navigation-bar-next-item {
+    border-width: 0px 0px 0px 1px;
 }
 
 /* END Generic Classes */
@@ -910,6 +920,19 @@ iframe .trip-planner-dialog-finish {
 }
 .trip-planner-dialog-faded-in {
     opacity: 1;
+}
+trip-planner-navigation-bar {
+    border-style: solid solid dashed;
+    border-width: 1px 0px;
+    background-color: white;
+    padding: 1em 0em 2em 0em;
+}
+.trip-planner-itinerary-navigation-bar {
+    height: 7em;
+    width: 100%;
+    background: none repeat scroll 0% 0% #FFF;
+    display: table;
+    table-layout: fixed;
 }
 
 /* END Trip Planner */

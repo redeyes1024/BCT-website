@@ -362,11 +362,11 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
             //of the GM Geocoder and needs to be transformed
             if (start_coords[0]) {
                 start_coords = tripPlannerService.
-                    transformGeocodeCoords(start_coords[0].geometry.location);
+                transformGeocodeCoords(start_coords[0].geometry.location);
             }
             if (finish_coords[0]) {
                 finish_coords = tripPlannerService.
-                    transformGeocodeCoords(finish_coords[0].geometry.location);
+                transformGeocodeCoords(finish_coords[0].geometry.location);
             }
 
             tripPlannerService.getTripPlanPromise(
@@ -374,6 +374,7 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
                 start_coords,
                 finish_coords
             ).then(function(res) {
+
                 if (!res.data.planField) {
                     $scope.alertUserToTripPlannerErrors(res.data.errorField);
                     return false;
@@ -384,10 +385,13 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
                 }
 
                 $scope.current_trip_plan_data = $scope.formatRawTripStats(
-                    res.data.planField.itinerariesField);
+                    res.data.planField.itinerariesField
+                );
+
                 $scope.top_scope.show_trip_planner_itinerary_labels = true;
 
                 $scope.top_scope.show_schedule_map_loading_modal = false;
+
             });
 
         //N.B. "catch" mathod is not used with the dot operator due to the fact
@@ -403,10 +407,15 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
     };
 
     $scope.displayTripPlan = function(selection) {
+
         googleMapUtilities.displayTripPath(
             $scope.current_trip_plan_data[selection].legsField
         );
+
         $scope.top_scope.show_trip_planner_itinerary_selector = false;
+
+        $scope.goToMarkerInfoWindow('planner', 'first');
+
     };
 
     $scope.toggleTripOptions = function() {

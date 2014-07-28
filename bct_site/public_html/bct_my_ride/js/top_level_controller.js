@@ -256,6 +256,126 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
     /* END Data Object Templates */
 
+    $scope.current_trip_planner_step = 0;
+    $scope.current_schedule_map_stop = 0;
+
+    $scope.cycleMarkerInfoWindows = function(
+        original_index,
+        counter_name,
+        marker_instances
+    ) {
+
+        var new_index = original_index;
+
+        if ($scope[counter_name] === -1) {
+
+            new_index =
+            $scope[counter_name] =
+            myride.dom_q.map.overlays[marker_instances].length - 1;
+
+        }
+        else if ($scope[counter_name] ===
+            myride.dom_q.map.overlays[marker_instances].length) {
+
+            new_index = $scope[counter_name] = 0;
+
+        }
+
+        return new_index;
+
+    };
+
+    $scope.openMarkerInfoWindow = function(map_type, marker_index) {
+
+        var marker_instances = "";
+        var marker_position = {};
+
+        if (map_type === "planner") {
+
+            marker_instances = "trip_points";
+
+            marker_index = $scope.cycleMarkerInfoWindows(
+                marker_index,
+                "current_trip_planner_step",
+                marker_instances
+            );
+
+        }
+        else if (map_type === "schedule") {
+
+            marker_instances = "points";
+
+            marker_index = $scope.cycleMarkerInfoWindows(
+                marker_index,
+                "current_schedule_map_stop",
+                marker_instances
+            );
+
+        }
+
+        var marker_instance = myride.dom_q.map.
+        overlays[marker_instances][marker_index];
+
+        marker_instance.ShowWindow.func();
+
+        var marker_position = marker_instance.marker.getPosition();
+
+        myride.dom_q.map.inst.setCenter({
+            lat: marker_position.k, lng: marker_position.B
+        });
+
+    };
+
+    $scope.goToNextInfoWindow = function(map_type) {
+
+        if (map_type === "planner") {
+            $scope.openMarkerInfoWindow(
+                map_type, ++$scope.current_trip_planner_step
+            );
+        }
+        else if (map_type === "schedule") {
+            $scope.openMarkerInfoWindow(
+                map_type, ++$scope.current_schedule_map_stop
+            );
+        }
+
+    };
+
+    $scope.goToPrevInfoWindow = function(map_type) {
+
+        if (map_type === "planner") {
+            $scope.current_trip_planner_step--;
+
+            $scope.openMarkerInfoWindow(
+                map_type, $scope.current_trip_planner_step
+            );
+        }
+        else if (map_type === "schedule") {
+            $scope.current_schedule_map_stop--;
+
+            $scope.openMarkerInfoWindow(
+                map_type, $scope.current_schedule_map_stop
+            );
+        }
+
+    };
+
+    $scope.goToMarkerInfoWindow = function(map_type, point_choice) {
+
+        switch (point_choice) {
+            case "next":
+                $scope.goToNextInfoWindow(map_type);
+                break;
+            case "prev":
+                $scope.goToPrevInfoWindow(map_type);
+                break;
+            case "first":
+                $scope.openMarkerInfoWindow(map_type, 0);
+                break;
+        }
+
+    };
+
     $scope.SCHEDULE_RESULTS_MESSAGE_TEXT_SEARCH_TOO_SHORT = '' +
         'Please enter a search term at least 3 characters long. ' +
         'For example, if you are looking for ' +

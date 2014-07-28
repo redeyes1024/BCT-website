@@ -5,11 +5,20 @@
         <title>Welcome to Broward County Transit!</title>
         <meta charset="UTF-8">
 
+        <!-- START Non-Local Sources -->
+
+        <link rel="stylesheet"
+        href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css">
+        <script type="text/javascript"
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCXxtwuyy3k9Ot5d44hgjHQt4kkg5KZ5Hw&sensor=false">
+        </script>
+
+        <!-- END Non-Local Sources -->
+
         <!-- START Sources for forms -->
 
         <link rel="stylesheet" type="text/css" href="form_sources/bct_forms.css"
         media="screen" />
-        <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
         <script type="text/javascript" src="form_sources/main.js"></script>
 
         <!-- END Sources for forms -->
@@ -29,10 +38,6 @@
         <script type="text/javascript" src="bct_my_ride/js/libraries/angular-route.min.js"></script>
         <script type="text/javascript" src="bct_my_ride/js/libraries/mobile-angular.min.js"></script>
         <script type="text/javascript" src="bct_my_ride/js/libraries/ng-quick-date.min.js"></script>
-        <!-- Third-party APIs -->
-        <script type="text/javascript"
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCXxtwuyy3k9Ot5d44hgjHQt4kkg5KZ5Hw&sensor=false">
-        </script>
         <!-- Project Dependencies -->
         <script type="text/javascript" src="bct_my_ride/js/main.js"></script>
         <script type="text/javascript" src="bct_my_ride/js/values.js"></script>
@@ -162,14 +167,6 @@
         <div class="pageContent-two-column">
         <div id="page-content">
 
-        <!-- START Profile Page
-
-        <div id="bct-profile-page">
-            Loading profile page...
-        </div>
-
-        END Profile Page -->
-
         <!-- START BCT MyRide -->
 
         <div id="bct-app" ng-app="BCTApp" ng-controller="BCTController"
@@ -180,6 +177,14 @@
         </div>
 
         <!-- END BCT MyRide-->
+
+        <!-- START Profile Page -->
+
+        <div id="bct-profile-page">
+            Loading profile page...
+        </div>
+
+        <!-- END Profile Page -->
 
         <div id="headlines">
         <span class="ms-bcrteStyle-SectionHeaderBlueBackground">Headlines</span>

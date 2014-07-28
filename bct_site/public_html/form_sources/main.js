@@ -270,12 +270,6 @@ window.onload = function() {
     };
 
     getAndAppendModuleHTML(
-        'login-form',
-        'bct_login_form.html',
-        'login-form-inner-container'
-    );
-
-    getAndAppendModuleHTML(
         'bct-profile-page',
         'bct_profile_page.html',
         'profile-container'
