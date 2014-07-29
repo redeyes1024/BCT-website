@@ -694,9 +694,10 @@ BCTAppServices.service('unitConversionAndDataReporting', [ function() {
 
 BCTAppServices.service('googleMapUtilities', [ '$compile',
     'scheduleDownloadAndTransformation', 'unitConversionAndDataReporting',
-    'locationService',
+    'locationService', 'mapNavigationMarkerNumbers',
     function($compile, scheduleDownloadAndTransformation,
-    unitConversionAndDataReporting, locationService) {
+    unitConversionAndDataReporting, locationService,
+    mapNavigationMarkerNumbers) {
 
     var self = this;
 
@@ -871,14 +872,89 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
 
     };
 
-    this.createDummyInfoWindow = function() {
-        window.myride.dom_q.map.overlays.open_info = [{
+    this.createDummyInfoWindow = function(marker_list_name) {
+
+        var open_info_name = "";
+
+        if (marker_list_name === "trip_points") {
+            open_info_name = "trip_open_info";
+        }
+        else if (marker_list_name === "points") {
+            open_info_name = "open_info";
+        }
+
+        myride.dom_q.map.overlays[open_info_name] = [{
             close: function() {},
             content: "<span>Stop: First</span>"
         }];
+
+    };
+
+    this.showSelectedInfoWindow = function(module, point, e) {
+
+        var open_info_name = "";
+        var id_type_name = "";
+
+        if (module === "planner") {
+            open_info_name = "trip_open_info";
+            id_type_name = "trip_marker_window_id";
+        }
+        else if (module === "schedule") {
+            open_info_name = "open_info";
+            id_type_name = "schedule_marker_window_id";
+        }
+
+        var open_window = myride.dom_q.map.overlays[open_info_name][0];
+
+        if (point.info[id_type_name] === open_window[id_type_name]) { 
+            return true;
+        }
+
+        point.info.open(
+            myride.dom_q.map.inst,
+            point.marker
+        );
+
+        //Store a reference to the latest opened info window
+        //so it can be closed when another is opened
+        myride.dom_q.map.overlays[open_info_name][0].close();
+        myride.dom_q.map.overlays[open_info_name].pop();
+        myride.dom_q.map.overlays[open_info_name].push(point.info);
+
+        if (e) {
+
+            var newly_opened_window = myride.dom_q.map.
+            overlays[open_info_name][0];
+
+            mapNavigationMarkerNumbers[module] =
+            newly_opened_window[id_type_name];
+
+        }
+
+    };
+
+    this.addMarkerClickAndCloseListeners = function(
+        marker_list_name, 
+        marker_id
+    ) {
+
+        google.maps.event.addListener(
+            myride.dom_q.map.overlays[marker_list_name][marker_id].info,
+            'closeclick',
+            function() { self.createDummyInfoWindow(marker_list_name) }
+        );
+
+        google.maps.event.addListener(
+            myride.dom_q.map.overlays[marker_list_name][marker_id].marker,
+            'click',
+            myride.dom_q.map.overlays[marker_list_name][marker_id].ShowWindow.
+            func
+        );
+
     };
 
     this.displayStops = function(route, routes, stops) {
+
         var cur_route = routes[route];
         var bstops_names = cur_route.Stops;
 
@@ -949,6 +1025,8 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
 
             var info_window = new google.maps.InfoWindow({ content: info_cts });
 
+            info_window.set("schedule_marker_window_id", i);
+
             myride.dom_q.map.overlays.points[bstops_names[i]] = {
                 marker: marker,
                 info: info_window
@@ -963,38 +1041,30 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
 
                 this.pt = myride.dom_q.map.overlays.points[bstops_names[i]];
 
-                this.func = function() {
+                this.func = function(e) {
 
-                    var open_info_stop = myride.dom_q.map.overlays.open_info[0].
-                        content.match(/Stop: .*?<\/span>/)[0].slice(6,-7);
-                    //Do nothing if the target info window is already open
-                    //unless a different info window is being triggered
-                    if (self.s_id === open_info_stop) { return true; }
-                    self.pt.info.open(
-                    myride.dom_q.map.inst,
-                    self.pt.marker);
+                    var window_already_open = 
+                    top_self.showSelectedInfoWindow("schedule", self.pt, e);
 
-                    //Store a reference to the latest opened info window
-                    //so it can be closed when another is opened
-                    myride.dom_q.map.overlays.open_info[0].close();
-                    myride.dom_q.map.overlays.open_info.pop();
-                    myride.dom_q.map.overlays.open_info.push(self.pt.info);
+                    if (window_already_open) { return true; }
 
                     //Request next arrivals for clicked route/stop
                     scheduleDownloadAndTransformation.
                     downloadSchedule(route, self.s_id).then(function(res) {
 
-                        var nearest_schedule = scheduleDownloadAndTransformation.
+                        var nearest_schedule =
+                        scheduleDownloadAndTransformation.
                         transformSchedule("nearest", res.data.Today);
 
                         angular.element(document).ready(function() {
+
                             try {
                                 document.getElementById(
                                     "stop-window-times-" + self.s_id
                                 ).
                                 innerHTML = nearest_schedule.
                                 nearest.next_times.join(", ");
-                            } catch(e) { 
+                            } catch(e) {
                                 console.log("A Google Maps infowindow was " +
                                 "closed before next times were fully loaded.");
                             }
@@ -1023,18 +1093,10 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
 
             });
 
-            google.maps.event.addListener(
-                window.myride.dom_q.map.overlays.points[bstops_names[i]].info,
-                'closeclick',
-                top_self.createDummyInfoWindow
-            );
+            top_self.addMarkerClickAndCloseListeners("points", bstops_names[i]);
 
-            google.maps.event.addListener(
-                myride.dom_q.map.overlays.points[bstops_names[i]].marker,
-                'click',
-                myride.dom_q.map.overlays.points[bstops_names[i]].ShowWindow.
-                func);
         }
+
     };
 
     this.formatTransitModeResult = function(mode_field, route_field) {
@@ -1204,6 +1266,7 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
     };
 
     this.displayTripPath = function(line_data) {
+
         self.clearMap();
 
         var legs = line_data;
@@ -1284,7 +1347,10 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
                     "</span>";
                 '</div>';
 
-            var info_window = new google.maps.InfoWindow({ content: info_cts });
+            var info_window = new google.maps.InfoWindow({
+                content: info_cts 
+            });
+
             info_window.set("trip_marker_window_id", i);
             
             var trip_marker_window = {
@@ -1294,33 +1360,25 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
 
             myride.dom_q.map.overlays.trip_points.push(trip_marker_window);
 
-            myride.dom_q.map.overlays.trip_points[i].ShowWindow = new (function() {
+            myride.dom_q.map.overlays.trip_points[i].ShowWindow =
+            new (function(e) {
+
                 var self = this;
+
                 this.pt = myride.dom_q.map.overlays.trip_points[i];
-                this.func = function() {
-                    //Do nothing if the target info window is already open
-                    //unless a different info window is being triggered
-                    var open_window = myride.dom_q.map.overlays.trip_open_info[0];
-                    if (self.pt.info.trip_marker_window_id ===
-                        open_window.trip_marker_window_id)
-                        { return true; }
 
-                    self.pt.info.open(
-                        myride.dom_q.map.inst,
-                        self.pt.marker);
+                this.func = function(e) {
 
-                    //Store a reference to the latest opened info window
-                    //so it can be closed when another is opened
-                    myride.dom_q.map.overlays.trip_open_info[0].close();
-                    myride.dom_q.map.overlays.trip_open_info.pop();
-                    myride.dom_q.map.overlays.trip_open_info.push(self.pt.info);
+                    top_self.showSelectedInfoWindow("planner", self.pt, e)
+
+                    if (window_already_open) { return true; }
+
                 };
+
             });
 
-            google.maps.event.addListener(
-                myride.dom_q.map.overlays.trip_points[i].marker,
-                'click',
-                myride.dom_q.map.overlays.trip_points[i].ShowWindow.func);
+            top_self.addMarkerClickAndCloseListeners("trip_points", i);
+
         }
 
         var best_zoom_and_center = self.
@@ -1328,6 +1386,7 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
 
         myride.dom_q.map.inst.setZoom(best_zoom_and_center.zoom);
         myride.dom_q.map.inst.setCenter(best_zoom_and_center.center);
+
     };
 
     this.decodePath = function(encoded) {

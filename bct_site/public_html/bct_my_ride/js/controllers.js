@@ -416,6 +416,9 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
 
         $scope.goToMarkerInfoWindow('planner', 'first');
 
+        $scope.top_scope.current_trip_plan_data_selection =
+        $scope.current_trip_plan_data[selection];
+
     };
 
     $scope.toggleTripOptions = function() {
@@ -473,14 +476,26 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
 
     $scope.top_scope.closeMapAndResetTripPlanner = function() {
 
-        googleMapUtilities.createDummyInfoWindow();
+        googleMapUtilities.createDummyInfoWindow("trip_points");
 
         $scope.toggleMapSchedule(true);
 
         $scope.top_scope.show_trip_planner_title = false;
+
+        $scope.submitTrip = $scope.submitTripPlannerQueryAndShowMap;
+
+    };
+
+    $scope.top_scope.closeMapAndResetScheduleMap = function() {
+
+        googleMapUtilities.createDummyInfoWindow("points");
+
+        $scope.toggleMapSchedule();
+
         $scope.top_scope.show_schedule_result_top_bar = false;
 
         $scope.submitTrip = $scope.submitTripPlannerQueryAndShowMap;
 
     };
+
 }]);

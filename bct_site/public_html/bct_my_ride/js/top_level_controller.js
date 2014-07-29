@@ -5,11 +5,12 @@ BCTAppTopController.controller('BCTController', ['$scope',
     'scheduleDownloadAndTransformation', 'googleMapUtilities', '$q',
     '$interval', 'unitConversionAndDataReporting', 'miniScheduleService',
     'placeholderService', 'locationService', 'location_icons',
-    'agency_filter_icons', 'results_exist',
+    'agency_filter_icons', 'results_exist', 'mapNavigationMarkerNumbers',
     function ($scope, $timeout, scheduleWebSocket, scheduleSocketService,
     scheduleDownloadAndTransformation, googleMapUtilities, $q, $interval,
     unitConversionAndDataReporting, miniScheduleService, placeholderService,
-    locationService, location_icons, agency_filter_icons, results_exist) {
+    locationService, location_icons, agency_filter_icons, results_exist,
+    mapNavigationMarkerNumbers) {
 
     //For ease of debugging
     window.main_scope = $scope;
@@ -256,9 +257,6 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
     /* END Data Object Templates */
 
-    $scope.current_trip_planner_step = 0;
-    $scope.current_schedule_map_stop = 0;
-
     $scope.cycleMarkerInfoWindows = function(
         original_index,
         counter_name,
@@ -267,17 +265,17 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
         var new_index = original_index;
 
-        if ($scope[counter_name] === -1) {
+        if (mapNavigationMarkerNumbers[counter_name] < 0) {
 
             new_index =
-            $scope[counter_name] =
+            mapNavigationMarkerNumbers[counter_name] =
             myride.dom_q.map.overlays[marker_instances].length - 1;
 
         }
-        else if ($scope[counter_name] ===
+        else if (mapNavigationMarkerNumbers[counter_name] ===
             myride.dom_q.map.overlays[marker_instances].length) {
 
-            new_index = $scope[counter_name] = 0;
+            new_index = mapNavigationMarkerNumbers[counter_name] = 0;
 
         }
 
@@ -296,7 +294,7 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
             marker_index = $scope.cycleMarkerInfoWindows(
                 marker_index,
-                "current_trip_planner_step",
+                "planner",
                 marker_instances
             );
 
@@ -307,7 +305,7 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
             marker_index = $scope.cycleMarkerInfoWindows(
                 marker_index,
-                "current_schedule_map_stop",
+                "schedule",
                 marker_instances
             );
 
@@ -329,13 +327,17 @@ BCTAppTopController.controller('BCTController', ['$scope',
     $scope.goToNextInfoWindow = function(map_type) {
 
         if (map_type === "planner") {
+            mapNavigationMarkerNumbers.planner++;
+
             $scope.openMarkerInfoWindow(
-                map_type, ++$scope.current_trip_planner_step
+                map_type, mapNavigationMarkerNumbers.planner
             );
         }
         else if (map_type === "schedule") {
+            mapNavigationMarkerNumbers.schedule++;
+
             $scope.openMarkerInfoWindow(
-                map_type, ++$scope.current_schedule_map_stop
+                map_type, mapNavigationMarkerNumbers.schedule
             );
         }
 
@@ -344,17 +346,17 @@ BCTAppTopController.controller('BCTController', ['$scope',
     $scope.goToPrevInfoWindow = function(map_type) {
 
         if (map_type === "planner") {
-            $scope.current_trip_planner_step--;
+            mapNavigationMarkerNumbers.planner--;
 
             $scope.openMarkerInfoWindow(
-                map_type, $scope.current_trip_planner_step
+                map_type, mapNavigationMarkerNumbers.planner
             );
         }
         else if (map_type === "schedule") {
-            $scope.current_schedule_map_stop--;
+            mapNavigationMarkerNumbers.schedule--;
 
             $scope.openMarkerInfoWindow(
-                map_type, $scope.current_schedule_map_stop
+                map_type, mapNavigationMarkerNumbers.schedule
             );
         }
 
