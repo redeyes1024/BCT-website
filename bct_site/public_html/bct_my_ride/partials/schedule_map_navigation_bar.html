@@ -1,0 +1,21 @@
+<div class="schedule-map-stop-navigation-bar">
+
+    <span class="navigation-bar-directions navigation-bar-last-item
+    link-icon ptr"
+    ng-click="goToMarkerInfoWindow('schedule', 'prev');">
+        <i class="fa fa-arrow-circle-left"></i>
+    </span>
+
+    <span class="navigation-bar-main-contents no-highlight ptr"
+    ng-click="resetCenter();">
+        {{ map_schedule_info.route }}
+        {{ stops[map_schedule_info.stop].Name }}
+    </span>
+
+    <span class="navigation-bar-directions navigation-bar-next-item
+    link-icon ptr"
+    ng-click="goToMarkerInfoWindow('schedule', 'next');">
+        <i class="fa fa-arrow-circle-right"></i>
+    </span>
+
+</div>

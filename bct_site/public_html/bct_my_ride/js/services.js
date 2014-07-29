@@ -931,6 +931,9 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
 
         }
 
+        //False, i.e., window not already opened (normal execution)
+        return false;
+
     };
 
     this.addMarkerClickAndCloseListeners = function(
@@ -1369,6 +1372,7 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
 
                 this.func = function(e) {
 
+                    var window_already_open =
                     top_self.showSelectedInfoWindow("planner", self.pt, e)
 
                     if (window_already_open) { return true; }

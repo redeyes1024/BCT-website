@@ -9,9 +9,11 @@ ng-class="schedule_map_styles" class="fbox">
     </div>
 
     <div id="schedule-map-top-panel" ng-show="show_schedule_result_top_bar">
-        <div id="schedule-map-info-bar" class="title-header no-highlight ptr"
-        ng-click="resetCenter();">
-            {{ map_schedule_info.route }} {{ stops[map_schedule_info.stop].Name }}
+
+        <div id="schedule-map-info-bar" class="title-header"
+        ng-show="show_schedule_map_info_bar">
+            {{ map_schedule_info.route }}
+            {{ stops[map_schedule_info.stop].Name }}
         </div>
 
         <schedule-map-overlay></schedule-map-overlay>
@@ -46,6 +48,7 @@ ng-class="schedule_map_styles" class="fbox">
                 {{ alerts[0] }}
             </span>
         </div>
+
     </div>
 
     <span class="trip-planner-module-title-map title-header no-highlight"
@@ -55,6 +58,12 @@ ng-class="schedule_map_styles" class="fbox">
 
     <div id="map-canvas"></div>
 
-    <trip-planner-navigation-bar></trip-planner-navigation-bar>
+    <trip-planner-navigation-bar
+    ng-show="show_trip_planner_step_navigation_bar">
+    </trip-planner-navigation-bar>
+
+    <schedule-map-navigation-bar
+    ng-show="show_schedule_map_stop_navigation_bar">
+    </schedule-map-navigation-bar>
 
 </div>

@@ -79,9 +79,11 @@ BCTAppTopController.controller('BCTController', ['$scope',
     $scope.show_map_overlay_module = false;
     $scope.show_schedule_map_loading_modal = false;
 
-    $scope.show_schedule_result_top_bar = true;
+    $scope.show_schedule_result_top_bar = false;
     $scope.show_schedule_result_top_info_bar = true;
     $scope.show_schedule_result_top_alert_bar = true;
+
+    $scope.show_schedule_map_info_bar = false;
 
     $scope.show_full_schedule_module = false;
 
@@ -100,6 +102,10 @@ BCTAppTopController.controller('BCTController', ['$scope',
     $scope.show_schedule_results_module_title_with_back_function = false;
 
     $scope.show_schedule_result_date_pick_row_loading = false;
+
+    $scope.show_trip_planner_step_navigation_bar = false;
+
+    $scope.show_schedule_map_stop_navigation_bar = false;
 
     (function() {
         for (icon in location_icons) {
@@ -145,19 +151,30 @@ BCTAppTopController.controller('BCTController', ['$scope',
     });
 
     $scope.$watch("show_schedule_result_top_bar", function(new_val, old_val) {
-        //If top bar is being closed
-        if (new_val < old_val) {
+
+        if (new_val > old_val) {
+            $scope.show_schedule_map_stop_navigation_bar = true;
+        }
+
+        else if (new_val < old_val) {
+            $scope.show_schedule_map_stop_navigation_bar = false;
+
             $timeout.cancel($scope.schedule_update_timer);
         }
+
     });
 
     $scope.full_schedule_loading_placeholder =
         placeholderService.createLoadingPlaceholder(20, " ");
 
     angular.element(document).ready(function() {
+
         $scope.$watch("full_schedule_date", function(new_val, old_val) {
+
             if (new_val !== old_val) {
-                $scope.schedule.date_pick = $scope.full_schedule_loading_placeholder;
+
+                $scope.schedule.date_pick =
+                $scope.full_schedule_loading_placeholder;
                 $scope.show_schedule_result_date_pick_row_loading = true;
 
                 scheduleDownloadAndTransformation.downloadSchedule(
@@ -170,15 +187,30 @@ BCTAppTopController.controller('BCTController', ['$scope',
                     transformSchedule("datepick", res.data.Today);
                     $scope.schedule.date_pick = t_schedule.date_pick;
                 });
+
             }
+
         });
+
     });
 
     //Itinerary selector's initial appearance and hiding associated with planner
     $scope.$watch("show_trip_planner_title", function(new_val, old_val) {
-        if (new_val < old_val) {
+
+        //If trip planner is activating
+        if (new_val > old_val) {
+            $scope.schedule_map_styles["schedule-map-planner-inserted"] = true;
+            $scope.show_trip_planner_step_navigation_bar = true;
+        }
+
+        //If trip planner is deactivating
+        else if (new_val < old_val) {
+            $scope.schedule_map_styles["schedule-map-planner-inserted"] = false;
+            $scope.show_trip_planner_step_navigation_bar = false;
+
             $scope.show_trip_planner_itinerary_selector = false;
         }
+
     });
 
     //Trip planner option menu pushes and compresses itinerary selector
@@ -195,17 +227,12 @@ BCTAppTopController.controller('BCTController', ['$scope',
         }
     });
 
-    $scope.$watch("trip_planner_styles['trip-planner-module-active']",
-    function(new_val, old_val) {
-        //If trip planner is activating
+    $scope.$watch("show_full_schedule_module", function(new_val, old_val) {
         if (new_val > old_val) {
-            $scope.
-            schedule_map_styles["schedule-map-planner-inserted"] = true;
+            $scope.show_schedule_map_info_bar = true;
         }
-        //If trip planner is deactivating
         else if (new_val < old_val) {
-            $scope.
-            schedule_map_styles["schedule-map-planner-inserted"] = false;
+            $scope.show_schedule_map_info_bar = false;
         }
     });
 
@@ -508,14 +535,20 @@ BCTAppTopController.controller('BCTController', ['$scope',
     };
 
     $scope.populateScheduleMap = function(route, stop) {
+
         $scope.map_schedule_info.route = route;
         $scope.map_schedule_info.stop = stop;
-        $scope.cur_center = $scope.stops[stop].LatLng;
+
+        $scope.cur_center = {
+            lat: $scope.stops[stop].LatLng.Latitude,
+            lng: $scope.stops[stop].LatLng.Longitude
+        };
 
         googleMapUtilities.clearMap();
         googleMapUtilities.setMapPosition($scope.cur_center);
         googleMapUtilities.displayRoute(route, $scope.routes);
         googleMapUtilities.displayStops(route, $scope.routes, $scope.stops);
+
     };
 
     $scope.populateScheduleMapTimes = function(route, stop) {
