@@ -921,7 +921,8 @@ iframe #trip-planner-itinerary-selector {
 .trip-planer-itinerary-navigation-step:last-child {
     color: white;
 }
-.trip-planer-itinerary-navigation-step img:hover{
+.trip-planer-itinerary-navigation-step img:hover,
+trip-planner-itinerary-step-highlighted {
     box-shadow: 0px 0px 1px 2px yellow;
 }
 trip-planner-navigation-bar {
@@ -931,7 +932,7 @@ trip-planner-navigation-bar {
     padding: 1em 0em 2em 0em;
 }
 .trip-planner-itinerary-navigation-bar {
-    height: calc(5em - 2px);
+    height: 4em;
     width: 100%;
     background: none repeat scroll 0% 0% #FFF;
     display: table;

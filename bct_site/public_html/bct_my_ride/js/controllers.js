@@ -321,6 +321,7 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
     $scope.formatRawTripStats = function(all_itineraries) {
 
         for (var i=0;i<all_itineraries.length;i++) {
+
             all_itineraries[i].durationField = unitConversionAndDataReporting.
                 formatReportedDuration(all_itineraries[i].durationField);
 
@@ -328,6 +329,14 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
                 formatReportedDate(all_itineraries[i].startTimeField);
             all_itineraries[i].endTimeField = unitConversionAndDataReporting.
                 formatReportedDate(all_itineraries[i].endTimeField);
+
+            all_itineraries[i].legsField[0].styles =
+            "trip-planner-itinerary-step-highlighted";
+
+            for (var j=1;j<all_itineraries[i].legsField.length;j++) {
+                all_itineraries[i].legsField[j].styles = "";
+            }
+
         }
 
         return all_itineraries;

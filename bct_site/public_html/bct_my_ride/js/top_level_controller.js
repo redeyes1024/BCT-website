@@ -473,6 +473,11 @@ BCTAppTopController.controller('BCTController', ['$scope',
             $scope.openMarkerInfoWindow(
                 map_type, map_navigation_marker_indices.planner
             );
+
+            $scope.current_trip_plan_data_selection.
+            legsField[map_navigation_marker_indices.planner].styles =
+            "trip-planner-itinerary-step-highlighted";
+
         }
         else if (map_type === "schedule") {
             if (!$scope.checkIfScheduleMapNavigatorLoaded) { return false; }
@@ -494,6 +499,11 @@ BCTAppTopController.controller('BCTController', ['$scope',
             $scope.openMarkerInfoWindow(
                 map_type, map_navigation_marker_indices.planner
             );
+
+            $scope.current_trip_plan_data_selection.
+            legsField[map_navigation_marker_indices.planner].styles =
+            "trip-planner-itinerary-step-highlighted"; $scope.$apply();
+
         }
         else if (map_type === "schedule") {
             if (!$scope.checkIfScheduleMapNavigatorLoaded) { return false; }
