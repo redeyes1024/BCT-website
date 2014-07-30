@@ -491,7 +491,30 @@ BCTAppServices.service('scheduleDownloadAndTransformation', ['$http', '$q',
             }
         });
     };
-    
+
+    this.downloadStopsForRoute = function(route) {
+
+        var date = new Date;
+
+        var iso_date = date.toISOString().slice(0,10).replace(/-/g,"");
+
+        return $http({
+            method: 'POST',
+            url: 'http://174.94.153.48:7777/TransitApi/BusStop/',
+            data: { 
+                "AgencyId": "BCT",
+                "RouteId": route,
+		"Direction": "0",
+		"Date": iso_date
+
+            },
+            transformResponse: function(res) {
+                return JSON.parse(res);
+            }
+        });
+
+    };
+
     this.transformSchedule = function(output_type, s_times) {
         var date_time = new Date;
         var now = date_time.toTimeString().slice(0,5);
@@ -694,10 +717,10 @@ BCTAppServices.service('unitConversionAndDataReporting', [ function() {
 
 BCTAppServices.service('googleMapUtilities', [ '$compile',
     'scheduleDownloadAndTransformation', 'unitConversionAndDataReporting',
-    'locationService', 'mapNavigationMarkerNumbers',
+    'locationService', 'map_navigation_marker_indices',
     function($compile, scheduleDownloadAndTransformation,
     unitConversionAndDataReporting, locationService,
-    mapNavigationMarkerNumbers) {
+    map_navigation_marker_indices) {
 
     var self = this;
 
@@ -926,7 +949,7 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
             var newly_opened_window = myride.dom_q.map.
             overlays[open_info_name][0];
 
-            mapNavigationMarkerNumbers[module] =
+            map_navigation_marker_indices[module] =
             newly_opened_window[id_type_name];
 
         }
@@ -953,6 +976,30 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
             myride.dom_q.map.overlays[marker_list_name][marker_id].ShowWindow.
             func
         );
+
+    };
+
+    this.getOrderedStopListForCurrentRoute = function(route) {
+
+        var ordered_stop_name_list_for_current_route = [];
+
+        var promise = scheduleDownloadAndTransformation.
+        downloadStopsForRoute(route).then(function(res) {
+
+            for (var i=0;i<res.data.Stops.length;i++) {
+                ordered_stop_name_list_for_current_route.
+                push(res.data.Stops[i].Id);
+            }
+
+            map_navigation_marker_indices.schedule =
+            ordered_stop_name_list_for_current_route.
+            indexOf(map_navigation_marker_indices.schedule_named);
+
+            return ordered_stop_name_list_for_current_route;
+
+        });
+
+        return promise;
 
     };
 

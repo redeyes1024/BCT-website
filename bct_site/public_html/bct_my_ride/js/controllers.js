@@ -1,7 +1,7 @@
 var BCTAppControllers = angular.module('BCTAppControllers', []);
 
 BCTAppControllers.controller('routeSchedulesController', ['$scope',
-    '$timeout', '$compile', function ($scope, $timeout, $compile) {
+    '$timeout', function ($scope, $timeout) {
 
     //For ease of testing
     window.rs_scope = $scope;

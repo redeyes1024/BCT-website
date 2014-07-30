@@ -37,7 +37,7 @@ ng-class="schedule_map_styles" class="fbox">
                 no-highlight ptr"
                 ng-click="toggleFullSchedule();">
                 <span class="schedule-map-mini-schedule-time-text">
-                    <i class="fa fa-list-alt fa-lg ptr"></i>
+                    <i class="fa fa-calendar fa-lg ptr"></i>
                 </span>
             </div>
         </div>
@@ -52,7 +52,7 @@ ng-class="schedule_map_styles" class="fbox">
     </div>
 
     <span class="trip-planner-module-title-map title-header no-highlight"
-        ng-show="show_trip_planner_title">
+    ng-show="show_trip_planner_title">
         Trip Planner
     </span>
 
@@ -63,7 +63,8 @@ ng-class="schedule_map_styles" class="fbox">
     </trip-planner-navigation-bar>
 
     <schedule-map-navigation-bar
-    ng-show="show_schedule_map_stop_navigation_bar">
+    ng-show="show_schedule_map_stop_navigation_bar"
+    ng-class="schedule_map_navigation_bar_styles">
     </schedule-map-navigation-bar>
 
 </div>

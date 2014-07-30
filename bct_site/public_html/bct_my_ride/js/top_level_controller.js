@@ -5,12 +5,12 @@ BCTAppTopController.controller('BCTController', ['$scope',
     'scheduleDownloadAndTransformation', 'googleMapUtilities', '$q',
     '$interval', 'unitConversionAndDataReporting', 'miniScheduleService',
     'placeholderService', 'locationService', 'location_icons',
-    'agency_filter_icons', 'results_exist', 'mapNavigationMarkerNumbers',
+    'agency_filter_icons', 'results_exist', 'map_navigation_marker_indices',
     function ($scope, $timeout, scheduleWebSocket, scheduleSocketService,
     scheduleDownloadAndTransformation, googleMapUtilities, $q, $interval,
     unitConversionAndDataReporting, miniScheduleService, placeholderService,
     locationService, location_icons, agency_filter_icons, results_exist,
-    mapNavigationMarkerNumbers) {
+    map_navigation_marker_indices) {
 
     //For ease of debugging
     window.main_scope = $scope;
@@ -66,6 +66,10 @@ BCTAppTopController.controller('BCTController', ['$scope',
         "page-planner-inserted": false
     };
 
+    $scope.schedule_map_navigation_bar_styles = {
+        "schedule-map-navigation-bar-small": true
+    };
+
     /* END CSS class expressions to be used to ng-class, with defaults */
 
     /* START Overlay Display Controls */
@@ -105,6 +109,9 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
     $scope.show_trip_planner_step_navigation_bar = false;
 
+    $scope.show_schedule_map_navigation_bar_activation_button = true;
+    $scope.show_schedule_map_navigation_bar_loading = false;
+    $scope.show_schedule_map_stop_navigation_bar_contents = false;
     $scope.show_schedule_map_stop_navigation_bar = false;
 
     (function() {
@@ -139,7 +146,7 @@ BCTAppTopController.controller('BCTController', ['$scope',
         }
     });
 
-    $scope.$watch('results_exist.main', function(new_val, old_val) {
+    $scope.$watch("results_exist.main", function(new_val, old_val) {
         if (new_val < old_val) {
             $scope.show_empty_result_message_no_results = true;
             $scope.show_schedule_results_result_panels = false;
@@ -157,9 +164,11 @@ BCTAppTopController.controller('BCTController', ['$scope',
         }
 
         else if (new_val < old_val) {
-            $scope.show_schedule_map_stop_navigation_bar = false;
+            $scope.resetScheduleMapNavigationBar();
 
             $timeout.cancel($scope.schedule_update_timer);
+
+            $scope.schedule_map_navigation_bar_same_stop_open = false;
         }
 
     });
@@ -240,7 +249,11 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
     /* START Data Object Templates */
 
-    $scope.cur_center = {};
+    $scope.initial_schedule_map_data = {
+        coords: {},
+        route_id: "",
+        bstop_id: ""
+    };
 
     $scope.alerts = [
       "Bus route will change to include Data Ave. starting in January"
@@ -282,27 +295,111 @@ BCTAppTopController.controller('BCTController', ['$scope',
         finish: "12400 Pembroke Rd"
     };
 
+    $scope.schedule_map_navigation_bar_activation_messages = {
+        inactive: "Activate Stop Seeker",
+        activating: "Activating Stop Seeker..."
+    };
+
     /* END Data Object Templates */
+
+    $scope.schedule_map_navigation_bar_loading_in_progress = false;
+
+    $scope.current_schedule_map_navigation_bar_activation_message =
+    $scope.schedule_map_navigation_bar_activation_messages.inactive; 
+
+    $scope.resetScheduleMapNavigationBar = function() {
+
+        $scope.show_schedule_map_navigation_bar_loading = false;
+        $scope.show_schedule_map_stop_navigation_bar_contents = false;
+        $scope.show_schedule_map_stop_navigation_bar = false;
+
+        $scope.show_schedule_map_navigation_bar_activation_button = true;
+
+        var sched_nav_small = "schedule-map-navigation-bar-small";
+        $scope.schedule_map_navigation_bar_styles[sched_nav_small] = true;
+
+        $scope.current_schedule_map_navigation_bar_activation_message =
+        $scope.schedule_map_navigation_bar_activation_messages.inactive;
+
+    };
+
+    $scope.activateScheduleMapStopNavigation = function() {
+
+        $scope.schedule_map_navigation_bar_same_stop_open = true;
+
+        $scope.show_schedule_map_navigation_bar_loading = true;
+        $scope.show_schedule_map_stop_navigation_bar_contents = false;
+
+        $scope.current_schedule_map_navigation_bar_activation_message =
+        $scope.schedule_map_navigation_bar_activation_messages.activating; 
+
+        var cur_route = $scope.initial_schedule_map_data.route_id;
+
+        googleMapUtilities.getOrderedStopListForCurrentRoute(cur_route).
+        then(function(stop_list) {
+
+            if (!$scope.schedule_map_navigation_bar_same_stop_open) {
+                return true;
+            }
+
+            $scope.schedule_map_navigation_bar_same_stop_open = false;
+
+            myride.dom_q.map.overlays.ordered_stop_list = stop_list;
+
+            $scope.show_schedule_map_navigation_bar_activation_button = false;
+
+            var sched_nav_small = "schedule-map-navigation-bar-small";
+
+            $scope.schedule_map_navigation_bar_styles[sched_nav_small] = false;
+
+            $scope.show_schedule_map_navigation_bar_loading = false;
+            $scope.show_schedule_map_stop_navigation_bar_contents = true;
+
+        });
+
+    };
+
+    $scope.returnToInitialBusStop = function() {
+
+        $scope.resetCenter();
+
+        var bstop_id =
+        map_navigation_marker_indices.schedule_named =
+        $scope.initial_schedule_map_data.bstop_id;
+
+        map_navigation_marker_indices.schedule = 
+        myride.dom_q.map.overlays.ordered_stop_list.indexOf(bstop_id);
+
+    };
 
     $scope.cycleMarkerInfoWindows = function(
         original_index,
-        counter_name,
-        marker_instances
+        counter_name
     ) {
 
         var new_index = original_index;
 
-        if (mapNavigationMarkerNumbers[counter_name] < 0) {
+        var marker_list_length = 0;
+
+        if (counter_name === "planner") {
+            marker_list_length = myride.dom_q.map.overlays.trip_points.length;
+        }
+        else if (counter_name === "schedule") {
+            marker_list_length =
+            myride.dom_q.map.overlays.ordered_stop_list.length;
+        }
+
+        if (map_navigation_marker_indices[counter_name] < 0) {
 
             new_index =
-            mapNavigationMarkerNumbers[counter_name] =
-            myride.dom_q.map.overlays[marker_instances].length - 1;
+            map_navigation_marker_indices[counter_name] =
+            marker_list_length - 1;
 
         }
-        else if (mapNavigationMarkerNumbers[counter_name] ===
-            myride.dom_q.map.overlays[marker_instances].length) {
+        else if (map_navigation_marker_indices[counter_name] ===
+        marker_list_length) {
 
-            new_index = mapNavigationMarkerNumbers[counter_name] = 0;
+            new_index = map_navigation_marker_indices[counter_name] = 0;
 
         }
 
@@ -319,10 +416,10 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
             marker_instances = "trip_points";
 
+            //Wrap around available trip planner steps if needed
             marker_index = $scope.cycleMarkerInfoWindows(
                 marker_index,
-                "planner",
-                marker_instances
+                "planner"
             );
 
         }
@@ -330,11 +427,15 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
             marker_instances = "points";
 
+            //Wrap around available schedule stops if needed
             marker_index = $scope.cycleMarkerInfoWindows(
                 marker_index,
-                "schedule",
-                marker_instances
+                "schedule"
             );
+
+            //Get named index (needed for stop markers) from numeric index
+            marker_index = myride.dom_q.map.overlays.
+            ordered_stop_list[marker_index];
 
         }
 
@@ -351,20 +452,35 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
     };
 
+
+    //The navigator should be unreachable in the UI until it is loaded
+    //Thus the following error handling function is just a precaution
+    $scope.checkIfScheduleMapNavigatorLoaded = function() {
+
+        if (!myride.dom_q.map.overlays.ordered_stop_list[0]) {
+            console.log("Schedule stop navigator not yet loaded.");
+
+            return false;
+        }
+
+    };
+
     $scope.goToNextInfoWindow = function(map_type) {
 
         if (map_type === "planner") {
-            mapNavigationMarkerNumbers.planner++;
+            map_navigation_marker_indices.planner++;
 
             $scope.openMarkerInfoWindow(
-                map_type, mapNavigationMarkerNumbers.planner
+                map_type, map_navigation_marker_indices.planner
             );
         }
         else if (map_type === "schedule") {
-            mapNavigationMarkerNumbers.schedule++;
+            if (!$scope.checkIfScheduleMapNavigatorLoaded) { return false; }
+
+            map_navigation_marker_indices.schedule++;
 
             $scope.openMarkerInfoWindow(
-                map_type, mapNavigationMarkerNumbers.schedule
+                map_type, map_navigation_marker_indices.schedule
             );
         }
 
@@ -373,17 +489,19 @@ BCTAppTopController.controller('BCTController', ['$scope',
     $scope.goToPrevInfoWindow = function(map_type) {
 
         if (map_type === "planner") {
-            mapNavigationMarkerNumbers.planner--;
+            map_navigation_marker_indices.planner--;
 
             $scope.openMarkerInfoWindow(
-                map_type, mapNavigationMarkerNumbers.planner
+                map_type, map_navigation_marker_indices.planner
             );
         }
         else if (map_type === "schedule") {
-            mapNavigationMarkerNumbers.schedule--;
+            if (!$scope.checkIfScheduleMapNavigatorLoaded) { return false; }
+
+            map_navigation_marker_indices.schedule--;
 
             $scope.openMarkerInfoWindow(
-                map_type, mapNavigationMarkerNumbers.schedule
+                map_type, map_navigation_marker_indices.schedule
             );
         }
 
@@ -399,6 +517,7 @@ BCTAppTopController.controller('BCTController', ['$scope',
                 $scope.goToPrevInfoWindow(map_type);
                 break;
             case "first":
+                //Trip planner only; not currently useful for schedule map stops
                 $scope.openMarkerInfoWindow(map_type, 0);
                 break;
         }
@@ -417,6 +536,13 @@ BCTAppTopController.controller('BCTController', ['$scope',
         'by typing in fewer characters.';
 
     $scope.switchRoutes = function(new_route, bstop_id) {
+
+        map_navigation_marker_indices.schedule_named = bstop_id;
+
+        $scope.schedule_map_navigation_bar_same_stop_open = false;
+
+        $scope.resetScheduleMapNavigationBar();
+        $scope.show_schedule_map_stop_navigation_bar = true;
 
         googleMapUtilities.createDummyInfoWindow();
 
@@ -539,13 +665,17 @@ BCTAppTopController.controller('BCTController', ['$scope',
         $scope.map_schedule_info.route = route;
         $scope.map_schedule_info.stop = stop;
 
-        $scope.cur_center = {
+        var cur_center =
+        $scope.initial_schedule_map_data.coords = {
             lat: $scope.stops[stop].LatLng.Latitude,
             lng: $scope.stops[stop].LatLng.Longitude
         };
 
+        $scope.initial_schedule_map_data.route_id = route;
+        $scope.initial_schedule_map_data.bstop_id = stop;
+
         googleMapUtilities.clearMap();
-        googleMapUtilities.setMapPosition($scope.cur_center);
+        googleMapUtilities.setMapPosition(cur_center);
         googleMapUtilities.displayRoute(route, $scope.routes);
         googleMapUtilities.displayStops(route, $scope.routes, $scope.stops);
 
@@ -572,6 +702,8 @@ BCTAppTopController.controller('BCTController', ['$scope',
     };
 
     $scope.openMapSchedule = function(route, stop) {
+
+        map_navigation_marker_indices.schedule_named = stop;
 
         $scope.show_map_overlay_module =  true;
 
@@ -644,8 +776,12 @@ BCTAppTopController.controller('BCTController', ['$scope',
     };
 
     $scope.resetCenter = function() {
+
+        var cur_center = $scope.initial_schedule_map_data.coords;
+        
         myride.dom_q.map.inst.setZoom(18);
-        myride.dom_q.map.inst.setCenter($scope.cur_center);
+        myride.dom_q.map.inst.setCenter(cur_center);
+
     };
 
     $scope.hideMiniScheduleAndAlertBars = function() {
