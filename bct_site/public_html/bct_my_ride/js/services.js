@@ -1420,9 +1420,13 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
                 this.func = function(e) {
 
                     var window_already_open =
-                    top_self.showSelectedInfoWindow("planner", self.pt, e)
+                    top_self.showSelectedInfoWindow("planner", self.pt, e);
 
                     if (window_already_open) { return true; }
+
+                    setTimeout(function() {
+                        angular.element(document.getElementById("schedule-map-top-panel")).scope().$apply()
+                    }, 100);
 
                 };
 

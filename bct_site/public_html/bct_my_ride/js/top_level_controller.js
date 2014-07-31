@@ -245,9 +245,38 @@ BCTAppTopController.controller('BCTController', ['$scope',
         }
     });
 
+    $scope.$watch("map_navigation_marker_indices.planner",
+    function(new_val, old_val) {
+
+        if (new_val !== old_val) {
+
+            //$scope.resetTripStepIconHighlighting();
+
+            $scope.current_trip_plan_data_selection.legsField[new_val].styles =
+            "trip-planner-itinerary-step-highlighted";
+
+            $scope.current_trip_plan_data_selection.legsField[old_val].styles =
+            "";
+
+        }
+
+    });
+
     /* END Custom Watchers */
 
     /* START Data Object Templates */
+
+    $scope.map_navigation_marker_indices = map_navigation_marker_indices;
+
+    $scope.resetTripStepIconHighlighting = function() {
+
+        var itinerary_steps = $scope.current_trip_plan_data_selection.legsField;
+
+        for (var j=0;j<itinerary_steps.length;j++) {
+            itinerary_steps[j].styles = "";
+        }
+
+    };
 
     $scope.initial_schedule_map_data = {
         coords: {},
@@ -449,7 +478,6 @@ BCTAppTopController.controller('BCTController', ['$scope',
         myride.dom_q.map.inst.setCenter({
             lat: marker_position.k, lng: marker_position.B
         });
-
     };
 
 
@@ -474,10 +502,6 @@ BCTAppTopController.controller('BCTController', ['$scope',
                 map_type, map_navigation_marker_indices.planner
             );
 
-            $scope.current_trip_plan_data_selection.
-            legsField[map_navigation_marker_indices.planner].styles =
-            "trip-planner-itinerary-step-highlighted";
-
         }
         else if (map_type === "schedule") {
             if (!$scope.checkIfScheduleMapNavigatorLoaded) { return false; }
@@ -500,10 +524,6 @@ BCTAppTopController.controller('BCTController', ['$scope',
                 map_type, map_navigation_marker_indices.planner
             );
 
-            $scope.current_trip_plan_data_selection.
-            legsField[map_navigation_marker_indices.planner].styles =
-            "trip-planner-itinerary-step-highlighted"; $scope.$apply();
-
         }
         else if (map_type === "schedule") {
             if (!$scope.checkIfScheduleMapNavigatorLoaded) { return false; }
@@ -517,7 +537,7 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
     };
 
-    $scope.goToMarkerInfoWindow = function(map_type, point_choice) {
+    $scope.goToMarkerInfoWindow = function(map_type, point_choice, new_index) {
 
         switch (point_choice) {
             case "next":
@@ -526,10 +546,19 @@ BCTAppTopController.controller('BCTController', ['$scope',
             case "prev":
                 $scope.goToPrevInfoWindow(map_type);
                 break;
+
+            //Last two cases:
+            //Trip planner only; not currently useful for schedule map stops
             case "first":
-                //Trip planner only; not currently useful for schedule map stops
                 $scope.openMarkerInfoWindow(map_type, 0);
                 break;
+            case "planner_step":
+                map_navigation_marker_indices.planner = new_index;
+
+                $scope.openMarkerInfoWindow(
+                    map_type,
+                    new_index
+                );
         }
 
     };

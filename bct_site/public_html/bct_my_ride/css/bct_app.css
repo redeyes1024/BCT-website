@@ -8,6 +8,9 @@
     font-family: helvetica neue;
     margin-bottom: 1em;
 }
+#bct-profile-page {
+    display: none;
+}
 
 /* END Main Container */
 
@@ -922,7 +925,7 @@ iframe #trip-planner-itinerary-selector {
     color: white;
 }
 .trip-planer-itinerary-navigation-step img:hover,
-trip-planner-itinerary-step-highlighted {
+.trip-planner-itinerary-step-highlighted {
     box-shadow: 0px 0px 1px 2px yellow;
 }
 trip-planner-navigation-bar {
