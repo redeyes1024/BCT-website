@@ -15,6 +15,17 @@
 
         <!-- END Non-Local Sources -->
 
+        <!-- START Compressed Sources Testing
+
+        <link rel="stylesheet" type="text/css"
+        href="source_compression/compressed_stylesheet.css"
+        media="screen" />
+
+        <script type="text/javascript"
+        src="source_compression/compressed_javascript.js"></script>
+
+        <!-- END Compressed Sources Testing -->
+
         <!-- START Sources for forms -->
 
         <link rel="stylesheet" type="text/css" href="form_sources/bct_forms.css"
@@ -28,7 +39,6 @@
         <!-- Third-party Stylesheets -->
         <link rel="stylesheet" type="text/css" href="bct_my_ride/css/mobile-angular-ui-desktop.css" media="screen" />
         <link rel="stylesheet" type="text/css" href="bct_my_ride/css/mobile-angular-ui-base.css" media="screen" />
-        <link rel="stylesheet" type="text/css" href="fa/css/font-awesome.css" media="screen" />
         <link rel="stylesheet" type="text/css" href="bct_my_ride/css/ngQuickDate/ng-quick-date-plus-default-theme.css" media="screen" />
         <!-- Project Stylesheets -->
         <link rel="stylesheet" type="text/css" href="bct_my_ride/css/bct_app.css" media="screen" />
@@ -169,8 +179,7 @@
 
         <!-- START BCT MyRide -->
 
-        <div id="bct-app" ng-app="BCTApp" ng-controller="BCTController"
-        ng-class="body_styles">
+        <div id="bct-app" ng-app="BCTApp" ng-controller="BCTController">
             <div id="main-app-space" ng-view></div>
             <schedule-map ng-class="schedule_map_canvas_styles"></schedule-map>
             <trip-planner></trip-planner>

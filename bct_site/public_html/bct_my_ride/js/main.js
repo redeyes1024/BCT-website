@@ -9,7 +9,13 @@ window.myride = {};
 window.myride.site_roots = {
     embedded: 'bct_my_ride/',
     iframe: '',
+    remote: 'http://www.isrtransit.com/files/bct/webapp/',
     active: ''
+};
+
+//RegExp whitelists for external sources
+window.myride.site_roots.whitelist_regexps = {
+    ISR_main: new RegExp('http:\/\/www.isrtransit.com((\/)?.*?\/)*')
 };
 
 //Select the current directory from the above object
@@ -19,7 +25,7 @@ window.myride.site_roots.active = window.myride.site_roots.embedded;
 window.myride.dom_q = {
     map: {
         overlays: {
-            trip_plines: [],
+            trip_pline: [],
             trip_points: [],
             //Dummy properties for first-time function calls
             trip_open_info: [{

@@ -715,12 +715,36 @@ BCTAppServices.service('unitConversionAndDataReporting', [ function() {
 
 }]);
 
+BCTAppServices.service('generalServiceUtilities', [ function() {
+
+    var self = this;
+
+    /* START Force Digest Workaround */
+
+    //Used only when absolutely necessary, i.e., for when Angular
+    //fails to 'detect' a change to certain values from a function
+    //defined in a service method
+    angular.element(document).ready(function() {
+        self.top_level_scope = angular.element(
+            document.getElementById("bct-app")
+        ).scope();
+
+        self.forceDigest = function() {
+            self.top_level_scope.$apply();
+        };
+    });
+
+    /* END Force Digest Workaround */
+
+}]);
+
 BCTAppServices.service('googleMapUtilities', [ '$compile',
     'scheduleDownloadAndTransformation', 'unitConversionAndDataReporting',
     'locationService', 'map_navigation_marker_indices',
+    'generalServiceUtilities',
     function($compile, scheduleDownloadAndTransformation,
     unitConversionAndDataReporting, locationService,
-    map_navigation_marker_indices) {
+    map_navigation_marker_indices, generalServiceUtilities) {
 
     var self = this;
 
@@ -809,28 +833,32 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
 
         var points = myride.dom_q.map.overlays.points;
         var pline =  myride.dom_q.map.overlays.pline;
-        var trip_plines = myride.dom_q.map.overlays.trip_plines;
         var trip_points = myride.dom_q.map.overlays.trip_points;
+        var trip_pline = myride.dom_q.map.overlays.trip_pline;
 
         for (var mk=0;mk<trip_points.length;mk++) {
             trip_points[mk].marker.setMap(null);
         }
 
-        for (var pl=0;pl<trip_plines.length;pl++) {
-            trip_plines[pl].setMap(null);
+        myride.dom_q.map.overlays.trip_points = [];
+
+        for (var pl=0;pl<trip_pline.length;pl++) {
+            trip_pline[pl].setMap(null);
         }
 
-        myride.dom_q.map.overlays.plines = [];
+        myride.dom_q.map.overlays.trip_pline = [];
 
         for (p in points) {
             points[p].marker.setMap(null);
         }
 
-        myride.dom_q.map.overlays.points = {};
+        myride.dom_q.map.overlays.plines = [];
 
         if (pline) {
             myride.dom_q.map.overlays.pline.setMap(null);
         }
+
+        myride.dom_q.map.overlays.points = {};
 
     };
 
@@ -913,7 +941,7 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
 
     };
 
-    this.showSelectedInfoWindow = function(module, point, e) {
+    this.showSelectedInfoWindow = function(module, point, e, point_name) {
 
         var open_info_name = "";
         var id_type_name = "";
@@ -946,11 +974,23 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
 
         if (e) {
 
-            var newly_opened_window = myride.dom_q.map.
-            overlays[open_info_name][0];
+            var ordered_stops = myride.dom_q.map.overlays.ordered_stop_list;
 
-            map_navigation_marker_indices[module] =
-            newly_opened_window[id_type_name];
+            if (ordered_stops && module === "schedule") {
+
+                map_navigation_marker_indices.schedule =
+                ordered_stops.indexOf(point_name);
+
+            }
+            else if (module === "planner") {
+
+                var newly_opened_window = myride.dom_q.map.
+                overlays[open_info_name][0];
+
+                map_navigation_marker_indices.planner =
+                newly_opened_window[id_type_name];
+
+            }
 
         }
 
@@ -1089,12 +1129,16 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
 
                 this.s_id = bstops_names[i];
 
-                this.pt = myride.dom_q.map.overlays.points[bstops_names[i]];
+                this.pt_name = bstops_names[i];
+
+                this.pt = myride.dom_q.map.overlays.points[self.pt_name];
 
                 this.func = function(e) {
 
                     var window_already_open = 
-                    top_self.showSelectedInfoWindow("schedule", self.pt, e);
+                    top_self.showSelectedInfoWindow(
+                        "schedule", self.pt, e, self.pt_name
+                    );
 
                     if (window_already_open) { return true; }
 
@@ -1355,7 +1399,7 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
                 strokeWeight: self.palette.weights.lines.mid
             });
 
-            myride.dom_q.map.overlays.trip_plines.push(leg_pline);
+            myride.dom_q.map.overlays.trip_pline.push(leg_pline);
 
             var marker_coords = {
                 lat: legs[i].fromField.latField,
@@ -1411,7 +1455,7 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
             myride.dom_q.map.overlays.trip_points.push(trip_marker_window);
 
             myride.dom_q.map.overlays.trip_points[i].ShowWindow =
-            new (function(e) {
+            new (function() {
 
                 var self = this;
 
@@ -1424,9 +1468,10 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
 
                     if (window_already_open) { return true; }
 
-                    setTimeout(function() {
-                        angular.element(document.getElementById("schedule-map-top-panel")).scope().$apply()
-                    }, 100);
+                    if (e) {
+                        //Digest not being called despite planner index changing
+                        generalServiceUtilities.forceDigest();
+                    }
 
                 };
 

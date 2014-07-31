@@ -224,7 +224,9 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
             return false;
         }
 
-        $scope.geocoder_error_dialog_text = $scope.TRIP_PLANNER_ERROR_TEXT_NO_PLAN_FOUND;
+        $scope.geocoder_error_dialog_text =
+        $scope.TRIP_PLANNER_ERROR_TEXT_NO_PLAN_FOUND;
+
         dialog_styles["trip-planner-dialog-centered"] = true;
 
         dialog_styles["trip-planner-dialog-finish"] = false;
@@ -423,10 +425,12 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
 
         $scope.top_scope.show_trip_planner_itinerary_selector = false;
 
-        $scope.goToMarkerInfoWindow('planner', 'first');
+        $scope.goToMarkerInfoWindow('planner', 'planner_step', 0);
 
         $scope.top_scope.current_trip_plan_data_selection =
         $scope.current_trip_plan_data[selection];
+
+        $scope.top_scope.show_trip_planner_step_navigation_bar = true;
 
     };
 

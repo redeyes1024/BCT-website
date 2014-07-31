@@ -249,6 +249,10 @@ window.onload = function() {
 
         var template_container = document.getElementById(container_id);
 
+        if (!template_container) {
+            return true;
+        }
+
         var template_request = new XMLHttpRequest;
 
         template_request.open('GET', 'form_sources/' + filename, true);
