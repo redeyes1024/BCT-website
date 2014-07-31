@@ -1,6 +1,10 @@
 var BCTApp = angular.module('BCTApp', ['ngRoute', 'mobile-angular-ui',
     'BCTAppServices', 'BCTAppControllers', 'BCTAppDirectives', 'ngQuickDate',
-    'BCTAppFilters', 'BCTAppTopController', 'BCTAppValues']);
+    'BCTAppFilters', 'BCTAppTopController', 'BCTAppValues'])
+        
+.config(function($sceProvider) {
+    $sceProvider.enabled(false);
+});
 
 //App namespace
 window.myride = {};
@@ -19,7 +23,7 @@ window.myride.site_roots.whitelist_regexps = {
 };
 
 //Select the current directory from the above object
-window.myride.site_roots.active = window.myride.site_roots.embedded;
+window.myride.site_roots.active = window.myride.site_roots.remote;
 
 //Initial DOM queries
 window.myride.dom_q = {

@@ -117,9 +117,23 @@ full_sources=$(
     awk -v root_dir="${ROOT_DIR}" '{ print root_dir $0 }'
 )
 
-printf "\nCompressing the following sources: %b\n" "${full_sources}"
+printf "\nCompressing the following sources: \n\n%b\n" "${full_sources}"
 
-cat ${full_sources} > ${output_filename}
+# YUI Compressor breaking CSS, especially calc() values (bug already reported)
+# TODO: Find new CSS compression engine
+# In the meanwhile, just concatenate the CSS
+
+if [[ "${type}" == "css" ]]; then
+
+    gawk 'FNR==1 {print ""}1' ${full_sources} > ${output_filename}
+
+elif [[ "${type}" == "js" ]]; then
+
+    gawk 'FNR==1 {print ""}1' ${full_sources} |
+    java -jar "${YUICOMPRESSOR_DIR}/yuicompressor-2.4.8.jar" --type ${type} \
+    --line-break 4000 --nomunge > ${output_filename}
+
+fi
 
 orig_size=$(cat $full_sources | wc -c)
 new_size=$(cat $output_filename | wc -c)
