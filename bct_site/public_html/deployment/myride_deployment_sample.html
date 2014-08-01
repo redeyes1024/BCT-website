@@ -1,0 +1,46 @@
+<html>
+    <head>
+
+        <title>BCT MyRide Deployment Sample Page</title>
+
+        <!-- START Google & CDN Sources -->
+        <link rel="stylesheet"
+        href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css">
+        <script type="text/javascript"
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCXxtwuyy3k9Ot5d44hgjHQt4kkg5KZ5Hw&sensor=false">
+        </script>
+        <!-- END Google & CDN Sources -->
+
+        <!-- START BCT MyRide Sources -->
+        <link rel="stylesheet" type="text/css"
+        href="compressed_stylesheet.css"
+        media="screen" />
+
+        <script type="text/javascript"
+        src="compressed_javascript.js"></script>
+        <!-- END BCT MyRide Sources -->
+
+    </head>
+
+    <body>
+
+        <!-- START BCT MyRide -->
+
+        <div id="bct-app" ng-app="BCTApp" ng-controller="BCTController">
+            <div id="main-app-space" ng-view></div>
+            <schedule-map ng-class="schedule_map_canvas_styles"></schedule-map>
+            <trip-planner></trip-planner>
+        </div>
+
+        <!-- END BCT MyRide-->
+
+        <!-- START Profile Page Template
+
+        <div id="bct-profile-page">
+            Loading profile page...
+        </div>
+
+        END Profile Page Template --> 
+
+    </body>
+</html>

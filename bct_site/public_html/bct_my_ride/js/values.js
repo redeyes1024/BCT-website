@@ -2,6 +2,11 @@ var BCTAppValues = angular.module('BCTAppValues', []);
 
 BCTAppValues.value('scheduleWebSocket', new WebSocket("ws://echo.websocket.org"));
 
+BCTAppValues.value('filter_buffer_data', {
+    search_string_buffer: [],
+    results_exist_counter: 0
+});
+
 BCTAppValues.value('map_navigation_marker_indices', {
     planner: 0,
     schedule: 0,

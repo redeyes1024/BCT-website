@@ -626,13 +626,13 @@ inline-filter-icons {
     border-width: 0px 2px 0px 0px;
 }
 #schedule-search-clear-button-top {
-    border-width: 0px 1px 0px 2px;
+    border-width: 0px 2px 0px 1px;
 }
 #schedule-search-begin-search-button-top {
-    border-width: 0px 1px 0px 2px;
+    border-width: 0px 0px 0px 2px;
 }
 #schedule-search-clear-button-top-index {
-    border-width: 0px 1px 0px 0px;
+    border-width: 0px 2px 0px 1px;
 }
 #route-stop-search-input {
     display: table-cell;
@@ -1076,13 +1076,13 @@ iframe .trip-planner-dialog-finish {
         font-size: 1em;
     }
     #schedule-search-clear-button-top-index {
-        border-width: 0px;
+        border-width: 0px 0px 0px 1px;
     }
     .schedule-results-icons-inline {
         display: none;
     }
     #schedule-search-clear-button-top {
-        border-width: 0px 0px 0px 2px;
+        border-width: 0px 0px 0px 1px;
     }
     #schedule-search-area-bottom {
         display: block;

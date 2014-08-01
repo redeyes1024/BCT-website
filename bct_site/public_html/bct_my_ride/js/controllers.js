@@ -6,6 +6,9 @@ BCTAppControllers.controller('routeSchedulesController', ['$scope',
     //For ease of testing
     window.rs_scope = $scope;
 
+    myride.dom_q.inputs.rs_search_input =
+    document.getElementById("route-stop-search-input");
+
     $scope.top_scope.rs_scope_loaded = true;
 
     $scope.$on("destroy", function() {
@@ -48,6 +51,14 @@ BCTAppControllers.controller('routeSchedulesController', ['$scope',
     };
 
     $scope.displayResultsIfExist();
+
+    $scope.submitRouteStopSearch = function() {
+
+        var new_search_query = myride.dom_q.inputs.rs_search_input.value;
+
+        $scope.top_scope.query_data.schedule_search = new_search_query;
+
+    };
 
 }]);
 

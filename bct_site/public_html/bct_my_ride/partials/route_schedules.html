@@ -22,10 +22,17 @@ ng-class="main_module_styles">
                     <i class="fa fa-arrow-circle-left ptr"></i>
                 </a>
             </span>
-            <input id="route-stop-search-input" type="text"
-                class="form-control needsclick"
-                placeholder="Search routes, stops or intersections"
-                ng-model="query_data.schedule_search">
+            <form ng-submit="submitRouteStopSearch();">
+                <input id="route-stop-search-input" type="text"
+                    class="form-control needsclick"
+                    placeholder="Search routes, stops or intersections">
+            </form>
+            <span id="schedule-search-begin-search-button-top"
+            class="schedule-search-top-buttons">
+                <i class="fa fa-search link-icon ptr"
+                ng-click="submitRouteStopSearch();">     
+                </i>
+            </span>
             <span id="schedule-search-clear-button-top"
                 class="schedule-search-top-buttons">
                 <i class="fa fa-times-circle link-icon ptr"

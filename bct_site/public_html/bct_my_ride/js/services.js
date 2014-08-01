@@ -1631,9 +1631,42 @@ BCTAppServices.service('tripPlannerService', [ '$http', '$q',
     };
 }]);
 
+BCTAppServices.service('filterHelpers', [ 'results_exist', 'filter_buffer_data',
+function(results_exist, filter_buffer_data) {
+
+    this.bufferResultsExistTruthiness = function(
+        results_exist_flag,
+        current_results_exist,
+        search_input
+    ) {
+
+        results_exist[results_exist_flag] = false;
+
+        filter_buffer_data.results_exist_counter +=
+        current_results_exist;
+
+        filter_buffer_data.search_string_buffer.push(search_input);
+
+        if (filter_buffer_data.search_string_buffer[0] !== 
+        search_input) {
+
+            filter_buffer_data.search_string_buffer =
+            [search_input];
+
+            filter_buffer_data.results_exist_counter =
+            current_results_exist;
+
+        }
+
+        results_exist[results_exist_flag] =
+        Boolean(filter_buffer_data.results_exist_counter);
+    };
+ 
+}]);
+
 BCTAppServices.factory('routeAndStopFilters', [ 'nearestStopsService',
-'locationService', 'latest_location', 'results_exist',
-function(nearestStopsService, locationService, latest_location, results_exist) {
+'locationService', 'latest_location', 'filterHelpers',
+function(nearestStopsService, locationService, latest_location, filterHelpers) {
     return {
 
         RouteAndStopFilterMaker: function(non_id_property, use_minimum_length) {
@@ -1704,9 +1737,14 @@ function(nearestStopsService, locationService, latest_location, results_exist) {
 
                 }
 
-                results_exist[self.results_exist_flag] = !!filtered[0];
+                var current_results_exist = !!filtered[0];
+
+                filterHelpers.bufferResultsExistTruthiness(
+                    self.results_exist_flag, current_results_exist, input_lower
+                );
 
                 return filtered;
+
             };
         }
 
