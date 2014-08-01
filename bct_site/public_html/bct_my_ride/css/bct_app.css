@@ -121,6 +121,49 @@ em.hint-text {
 .navigation-bar-next-item {
     border-width: 0px 0px 0px 1px;
 }
+#map-canvas {
+    height: 100%;
+    -webkit-flex: 0 1 auto;
+    flex: 0 1 auto;
+}
+.map-panel-button {
+    font-size: 1.3em;
+    font-weight: 400;
+}
+.map-canvas-full-screen {
+    position: fixed !important;
+    width: calc(100% - 6em) !important;
+    height: calc(100% - 8.5em) !important;
+    left: 3em;
+    top: 3em;
+    z-index: 1031;
+}
+.map-full-screen-button,
+.map-full-screen-return-button {
+    border-style: dotted;
+    border-width: 1px 0px 0px;
+    padding: 0.5em 1em calc(0.5em + 3px);
+    background-color: #FFF;
+}
+.map-full-screen-button {
+    position: relative;
+}
+.map-full-screen-return-button {
+    position: fixed;
+    width: calc(100% - 4.6em);
+    bottom: 1.9em;
+    left: 2.3em;
+    z-index: 1031;
+}
+.map-full-screen-modal {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    left: 0em;
+    top: 0em;
+    z-index: 1030;
+}
 
 /* END Generic Classes */
 
@@ -142,7 +185,6 @@ em.hint-text {
 #index-schedule-search-bar {
     position: fixed;
     width: 100%;
-    /* width: calc(100% - 2px); */
     background-color: #FFF;
     z-index: 1;
 }
@@ -340,11 +382,6 @@ iframe #schedule-map-loading-modal-spinner {
 #schedule-map-alert-area-text {
     position: relative;
 }
-#map-canvas {
-    height: 100%;
-    -webkit-flex: 0 1 auto;
-    flex: 0 1 auto;
-}
 .marker-info-window {
     height: 12em;
     font-weight: bold;
@@ -379,8 +416,7 @@ schedule-map-navigation-bar {
     padding: 0.5em 0em 0.8em;
 }
 .schedule-map-navigation-bar-activation-button {
-    font-size: 1.3em;
-    font-weight: 400;
+    
 }
 .schedule-map-navigation-bar-loading {
     

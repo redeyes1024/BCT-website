@@ -65,6 +65,9 @@ BCTAppTopController.controller('BCTController', ['$scope',
     $scope.schedule_map_navigation_bar_styles = {
         "schedule-map-navigation-bar-small": true
     };
+    $scope.map_canvas_styles = {
+        "map-canvas-full-screen": false
+    };
 
     /* END CSS class expressions to be used to ng-class, with defaults */
 
@@ -110,6 +113,11 @@ BCTAppTopController.controller('BCTController', ['$scope',
     $scope.show_schedule_map_stop_navigation_bar_contents = false;
     $scope.show_schedule_map_stop_navigation_bar = false;
 
+    $scope.show_map_full_screen_button = true;
+    $scope.show_map_full_screen_return_button = false;
+    $scope.show_map_full_screen_modal = false;
+    $scope.show_trip_planner_step_navigation_bar = false;
+
     (function() {
         for (icon in location_icons) {
             $scope[location_icons[icon].regular_icon] = true;
@@ -120,7 +128,7 @@ BCTAppTopController.controller('BCTController', ['$scope',
     /* END Overlay Display Controls */
 
     /* START Custom Watchers */
-    
+
     $scope.results_exist = results_exist;
 
     $scope.$watch("query_data.schedule_search", function(new_val, old_val) {
@@ -157,6 +165,9 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
         if (new_val > old_val) {
             $scope.show_schedule_map_stop_navigation_bar = true;
+
+            $scope.map_full_screen_return_button_message =
+            $scope.map_full_screen_return_button_messages.schedule;
         }
 
         else if (new_val < old_val) {
@@ -205,6 +216,9 @@ BCTAppTopController.controller('BCTController', ['$scope',
         //If trip planner is activating
         if (new_val > old_val) {
             $scope.schedule_map_styles["schedule-map-planner-inserted"] = true;
+
+            $scope.map_full_screen_return_button_message =
+            $scope.map_full_screen_return_button_messages.planner;
         }
 
         //If trip planner is deactivating
@@ -259,18 +273,6 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
     /* START Data Object Templates */
 
-    $scope.map_navigation_marker_indices = map_navigation_marker_indices;
-
-    $scope.resetTripStepIconHighlighting = function() {
-
-        var itinerary_steps = $scope.current_trip_plan_data_selection.legsField;
-
-        for (var j=0;j<itinerary_steps.length;j++) {
-            itinerary_steps[j].styles = "";
-        }
-
-    };
-
     $scope.initial_schedule_map_data = {
         coords: {},
         route_id: "",
@@ -322,7 +324,80 @@ BCTAppTopController.controller('BCTController', ['$scope',
         activating: "Activating Stop Seeker..."
     };
 
+    $scope.map_full_screen_return_button_messages = {
+        planner: "Return to Trip Planner",
+        schedule: "Return to Schedule Map"
+    };
+
     /* END Data Object Templates */
+
+    $scope.map_full_screen_return_button_message = "";
+
+    $scope.goToFirstStep = function(map_type) {
+
+        var point = {};
+
+        if (map_type === "planner") {
+            point = myride.dom_q.map.overlays.trip_points[0];
+        }
+        else if (map_type === "schedule") {
+            point = myride.dom_q.map.overlays.
+            points[$scope.initial_schedule_map_data.bstop_id];
+        }
+
+        var point_coords = point.marker.getPosition();
+
+        myride.dom_q.map.inst.setCenter({
+            lat: point_coords.k,
+            lng: point_coords.B
+        });
+
+        point.ShowWindow.func(true);
+
+    };
+
+    $scope.toggleMapFullScreen = function() {
+
+        var full_screen_on =
+        $scope.map_canvas_styles["map-canvas-full-screen"];
+
+        $scope.map_canvas_styles["map-canvas-full-screen"] = !full_screen_on;
+
+        $scope.show_map_full_screen_button = full_screen_on;
+        $scope.show_map_full_screen_return_button = !full_screen_on;
+        $scope.show_map_full_screen_modal = !full_screen_on;
+
+        $scope.show_trip_planner_step_navigation_bar =
+        full_screen_on && $scope.show_trip_planner_title;
+
+        googleMapUtilities.touchMap();
+
+        var map_type = "";
+
+        if ($scope.show_trip_planner_title) {
+            map_type = "planner";
+        }
+        else if ($scope.show_schedule_result_top_bar) {
+            map_type = "schedule";
+        }
+
+        angular.element(document).ready(function() {
+            $scope.goToFirstStep(map_type);
+        });
+
+    };
+
+    $scope.map_navigation_marker_indices = map_navigation_marker_indices;
+
+    $scope.resetTripStepIconHighlighting = function() {
+
+        var itinerary_steps = $scope.current_trip_plan_data_selection.legsField;
+
+        for (var j=0;j<itinerary_steps.length;j++) {
+            itinerary_steps[j].styles = "";
+        }
+
+    };
 
     $scope.returnToInitialBusStop = function() {
 
@@ -808,7 +883,14 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
     $scope.resetCenter = function() {
 
-        var cur_center = $scope.initial_schedule_map_data.coords;
+        var cur_center = {};
+
+//        if (module === "schedule") {
+            cur_center = $scope.initial_schedule_map_data.coords;
+//        }
+//        else if (module === "planner") {
+//            cur_center = $scope.initial_schedule_map_data.coords;
+//        }
         
         myride.dom_q.map.inst.setZoom(18);
         myride.dom_q.map.inst.setCenter(cur_center);

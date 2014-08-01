@@ -972,6 +972,13 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
         myride.dom_q.map.overlays[open_info_name].pop();
         myride.dom_q.map.overlays[open_info_name].push(point.info);
 
+        var point_coords = point.marker.getPosition();
+
+        myride.dom_q.map.inst.setCenter({
+            lat: point_coords.k,
+            lng: point_coords.B
+        });
+
         if (e) {
 
             var ordered_stops = myride.dom_q.map.overlays.ordered_stop_list;

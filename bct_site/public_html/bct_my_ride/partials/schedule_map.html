@@ -56,7 +56,26 @@ ng-class="schedule_map_styles" class="fbox">
         Trip Planner
     </span>
 
-    <div id="map-canvas"></div>
+    <div id="map-canvas" ng-class="map_canvas_styles"></div>
+
+    <div class="map-full-screen-button no-highlight ptr link-icon
+    map-panel-button"
+    ng-click="toggleMapFullScreen();"
+    ng-show="show_map_full_screen_button">
+        <i class="fa fa-expand"></i>
+        Full Screen Mode
+    </div>
+
+    <div class="map-full-screen-return-button no-highlight ptr link-icon
+    map-panel-button"
+    ng-show="show_map_full_screen_return_button"
+    ng-click="toggleMapFullScreen();">
+        <i class="fa fa-compress"></i>
+        {{ map_full_screen_return_button_message }}
+    </div>
+
+    <div class="map-full-screen-modal"
+    ng-show="show_map_full_screen_modal"></div>
 
     <trip-planner-navigation-bar
     ng-show="show_trip_planner_step_navigation_bar">

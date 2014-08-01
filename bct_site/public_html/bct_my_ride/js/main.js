@@ -23,7 +23,7 @@ window.myride.site_roots.whitelist_regexps = {
 };
 
 //Select the current directory from the above object
-window.myride.site_roots.active = window.myride.site_roots.remote;
+window.myride.site_roots.active = window.myride.site_roots.embedded;
 
 //Initial DOM queries
 window.myride.dom_q = {
