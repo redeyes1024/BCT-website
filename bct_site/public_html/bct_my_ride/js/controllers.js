@@ -403,7 +403,10 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
                 }
 
                 if ($scope.top_scope.show_trip_planner_title) {
-                    $scope.top_scope.show_trip_planner_itinerary_selector = true;
+
+                    $scope.top_scope.
+                    show_trip_planner_itinerary_selector = true;
+
                 }
 
                 $scope.current_trip_plan_data = $scope.formatRawTripStats(
@@ -517,6 +520,8 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
         $scope.toggleMapSchedule();
 
         $scope.top_scope.show_schedule_result_top_bar = false;
+
+        $scope.top_scope.show_trip_planner_title = false;
 
         $scope.submitTrip = $scope.submitTripPlannerQueryAndShowMap;
 

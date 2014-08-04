@@ -2,6 +2,7 @@
 
 <link rel="stylesheet" type="text/css" href="form_sources/bct_forms.css"
 media="screen" />
+<script type="text/javascript" src="form_sources/templating.js"></script>
 <script type="text/javascript" src="form_sources/main.js"></script>
 
 <!-- END Sources for forms -->
@@ -27,3 +28,5 @@ media="screen" />
 <script type="text/javascript" src="bct_my_ride/js/services.js"></script>
 <script type="text/javascript" src="bct_my_ride/js/directives.js"></script>
 <script type="text/javascript" src="bct_my_ride/js/filters.js"></script>
+
+<link rel="stylesheet" type="text/css" href="bct_site.css" media="screen" />

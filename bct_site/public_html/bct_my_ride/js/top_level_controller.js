@@ -726,7 +726,13 @@ BCTAppTopController.controller('BCTController', ['$scope',
     };
 
     $scope.clearSearch = function(model) {
+
         $scope.query_data[model] = "";
+
+        if (myride.dom_q.inputs.rs_search_input) {
+            myride.dom_q.inputs.rs_search_input.value = "";
+        }
+
     };
 
     $scope.mini_schedule_loading_template = miniScheduleService.

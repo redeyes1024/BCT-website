@@ -3,31 +3,47 @@
     <div class="schedule-search-area-container no-highlight">
 
         <span class="title-header no-highlight"
-            ng-show="show_index_title_normal">
+        ng-show="show_index_title_normal">
+
             Welcome to BCT MyRide
+
+            <span class="info-corner-icon text-shadow-hover-icon ptr">
+                <i class="fa fa-info-circle"></i>
+            </span>
+
         </span>
-        <span class="title-header no-highlight ptr text-shadow-hover" 
-            ng-show="show_index_title_with_back_function"
-            ng-click="closeMapAndResetTripPlanner();">
-            <i class="fa fa-arrow-circle-left"></i> Back to Index - BCT MyRide
+        <span class="title-header no-highlight" 
+        ng-show="show_index_title_with_back_function">
+
+            <span ng-click="closeMapAndResetTripPlanner();"
+            class="ptr text-shadow-hover">
+                <i class="fa fa-arrow-circle-left"></i>
+                Back to Index - BCT MyRide
+            </span>
+
+            <span class="info-corner-icon text-shadow-hover-icon ptr">
+                <i class="fa fa-info-circle"></i>
+            </span>
+
         </span>
 
-        <form id="index-search-form"
-            ng-submit="changeURLHash('#routeschedules', 'schedule_search');">
+        <form class="search-area-contents"
+        ng-submit="changeURLHash('#routeschedules', 'schedule_search');">
 
             <input type="text" id="index-search-input"
-                class="form-control needsclick"
-                placeholder="Search routes, stops or intersections"
-                ng-model="query_data.schedule_search">
-            <span id="schedule-search-begin-search-button-top"
-            class="schedule-search-top-buttons">
-                <i class="fa fa-search link-icon ptr"
+            class="search-input-field form-control needsclick"
+            placeholder="Search routes, stops or intersections"
+            ng-model="query_data.schedule_search">
+
+            <span class="search-submit-button search-top-buttons">
+                <i class="fa fa-search search-bar-icon-lower-1 link-icon ptr"
                 ng-click="changeURLHash('#routeschedules', 'schedule_search');">     
                 </i>
             </span>
-            <span id="schedule-search-clear-button-top-index"
-                class="schedule-search-top-buttons">
-                    <i class="fa fa-times-circle link-icon ptr"
+
+            <span class="search-clear-button search-top-buttons">
+                    <i class="fa fa-times-circle search-bar-icon-lower-1
+                    link-icon ptr"
                     ng-click="clearSearch('schedule_search');"></i>
             </span>
 
