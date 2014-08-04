@@ -24,6 +24,11 @@
     border-width: 1px;
     position: relative;
 }
+.app-area-modal {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
 .panel-group,
 .panel-title {
     line-height: 1.5em !important;
@@ -88,9 +93,22 @@ em.hint-text {
 .text-shadow-hover-icon:hover {
     text-shadow: 0px 0px 0px;
 }
-
 #main-app-space {
     height: calc(100% - 5em);
+}
+.icon-legend-modal {
+    z-index: 1;
+    background-color: rgba(0, 0, 0, 0.7);
+    top: 0em;
+    left: 0em;
+}
+.icon-legend-contents {
+    position: relative;
+    background-color: #FFF;
+    height: 10em;
+    width: 10em;
+    left: calc(50%);
+    top: calc(50%);
 }
 #index-page,
 #route-schedules-module {
@@ -158,7 +176,7 @@ em.hint-text {
     position: fixed;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.7);
     left: 0em;
     top: 0em;
     z-index: 1030;
@@ -289,10 +307,7 @@ iframe #schedule-map {
     height: calc(100% - 5em + 1px) !important;
 }
 #schedule-map-loading-modal {
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    background-color: rgba(255, 255, 255, 0.6);
+    background-color: rgba(255, 255, 255, 0.7);
     z-index: 1030;
 }
 iframe #schedule-map-loading-modal {
@@ -466,7 +481,7 @@ schedule-map-navigation-bar {
 /* START Schedule Full Result Dialog */
 
 #schedule-full-result {
-    background: none repeat scroll 0% 0% rgba(0, 0, 0, 0.5);
+    background: none repeat scroll 0% 0% rgba(0, 0, 0, 0.7);
     position: relative;
 }
 #schedule-full-result-dialog {

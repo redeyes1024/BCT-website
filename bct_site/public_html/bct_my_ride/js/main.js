@@ -48,5 +48,7 @@ window.myride.dom_q = {
 };
 
 angular.element(document).ready(function() {
-    window.location.hash = "#bctappindex";
+    if (window.location.toString().match(/\/index.html/)[0]) {
+        window.location.hash = "#bctappindex";
+    }
 });

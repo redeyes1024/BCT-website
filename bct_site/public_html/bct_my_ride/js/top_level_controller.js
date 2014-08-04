@@ -73,6 +73,8 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
     /* START Overlay Display Controls */
 
+    $scope.show_icon_legend_overlay = false;
+
     $scope.show_empty_result_message_search_too_short = false;
     $scope.show_empty_result_message_no_results = false;
     $scope.show_schedule_results_result_panels = false;
@@ -330,6 +332,18 @@ BCTAppTopController.controller('BCTController', ['$scope',
     };
 
     /* END Data Object Templates */
+
+    $scope.toggleIconLegendOverlay = function() {
+
+        if ($scope.show_icon_legend_overlay) {
+            $scope.show_icon_legend_overlay = false;
+        }
+
+        else {
+            $scope.show_icon_legend_overlay = true;
+        }
+
+    };
 
     $scope.map_full_screen_return_button_message = "";
 

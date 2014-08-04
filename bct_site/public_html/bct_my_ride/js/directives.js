@@ -1,5 +1,21 @@
 var BCTAppDirectives = angular.module('BCTAppDirectives', []);
 
+BCTApp.directive('iconLegendOverlay', [ function() {
+    return {
+        restrict: 'E',
+        templateUrl: window.myride.site_roots.active +
+        'partials/icon_legend.html'
+    };
+}]);
+
+BCTApp.directive('bctMyRideTopLevelOverlays', [ function() {
+    return {
+        restrict: 'E',
+        templateUrl: window.myride.site_roots.active +
+        'partials/main.html'
+    };
+}]);
+
 BCTApp.directive('scheduleMap', [ 'googleMapUtilities',
 function(googleMapUtilities) {
     return {
