@@ -67,6 +67,9 @@
 .centered {
     text-align: center;
 }
+.link-item {
+    padding: 0px 0px 0px 1em !important;
+}
 .link-item, .link-item a, .link-item a:link {
     color: #003399;
     font-family: tahoma;
@@ -120,17 +123,6 @@
 .image-fixed-width {
     border: 0 none;
     width: 90px;
-}
-.bullet {
-    background-image: url("/_layouts/images/lstbulet.gif");
-    background-position: left center;
-    background-repeat: no-repeat;
-    border-color: inherit;
-    border-style: none;
-    border-width: 0;
-    padding-left: 10px;
-    padding-right: 0;
-    vertical-align: top;
 }
 .groupheader {
     clear: both;
@@ -1842,14 +1834,6 @@ h3.ms-WPTitle nobr {
 .item, .level-item-pos, .level-header {
     margin: 0 0 0.5em;
     padding: 0;
-}
-.bullet, .level-bullet {
-    background: url("/Style%20Library/BCImages/lstbulet-big.gif") no-repeat scroll 0 0 rgba(0, 0, 0, 0) !important;
-    line-height: 1.2em !important;
-    padding: 4px 0 0 15px;
-}
-.bullet:hover, .level-bullet:hover {
-    background: url("/Style%20Library/BCImages/lstbulet-big-mouseover.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0) !important;
 }
 .level-description-padding {
     padding: 0;

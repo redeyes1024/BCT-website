@@ -1,55 +1,37 @@
 <!DOCTYPE html>
+
 <html>
     <head>
 
-        <title>Welcome to Broward County Transit!</title>
-        <meta charset="UTF-8">
+        <title>Broward County Transit - My BCT</title>
 
-        <!-- START Google & CDN Sources -->
+        <meta charset="UTF-8">
 
         <link rel="stylesheet"
         href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css">
-        <script type="text/javascript"
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCXxtwuyy3k9Ot5d44hgjHQt4kkg5KZ5Hw&sensor=false">
-        </script>
 
-        <!-- END Google & CDN Sources -->
+        <!-- START Compressed Sources Testing
+            <link rel="stylesheet" type="text/css"
+            href="deployment/compressed_stylesheet.css"
+            media="screen" />
+            
+            <script type="text/javascript"
+            src="deployment/compressed_javascript.js"></script>
+            
+            <!-- END Compressed Sources Testing -->
 
-         <!-- START Compressed Sources Testing
+        <!-- START Sources for forms -->
 
-        <link rel="stylesheet" type="text/css"
-        href="deployment/compressed_stylesheet.css"
+        <link rel="stylesheet" type="text/css" href="form_sources/bct_forms.css"
         media="screen" />
 
-        <script type="text/javascript"
-        src="deployment/compressed_javascript.js"></script>
+        <script type="text/javascript" src="form_sources/templating.js">
+        </script>
 
-        <!-- END Compressed Sources Testing -->
+        <script type="text/javascript" src="form_sources/main.js">
+        </script>
 
-        <!-- START Sources for BCT MyRide -->
-
-        <!-- Third-party Stylesheets -->
-        <link rel="stylesheet" type="text/css" href="bct_my_ride/css/mobile-angular-ui-desktop.css" media="screen" />
-        <link rel="stylesheet" type="text/css" href="bct_my_ride/css/mobile-angular-ui-base.css" media="screen" />
-        <link rel="stylesheet" type="text/css" href="bct_my_ride/css/ngQuickDate/ng-quick-date-plus-default-theme.css" media="screen" />
-        <!-- Project Stylesheets -->
-        <link rel="stylesheet" type="text/css" href="bct_my_ride/css/bct_app.css" media="screen" />
-        <link rel="stylesheet" type="text/css" href="bct_my_ride/css/bct_site_extensions.css" media="screen" />
-        <!-- Third-party dependencies -->
-        <script type="text/javascript" src="bct_my_ride/js/libraries/angular.min.js"></script>
-        <script type="text/javascript" src="bct_my_ride/js/libraries/angular-route.min.js"></script>
-        <script type="text/javascript" src="bct_my_ride/js/libraries/mobile-angular.min.js"></script>
-        <script type="text/javascript" src="bct_my_ride/js/libraries/ng-quick-date.min.js"></script>
-        <!-- Project Dependencies -->
-        <script type="text/javascript" src="bct_my_ride/js/main.js"></script>
-        <script type="text/javascript" src="bct_my_ride/js/values.js"></script>
-        <script type="text/javascript" src="bct_my_ride/js/top_level_controller.js"></script>
-        <script type="text/javascript" src="bct_my_ride/js/controllers.js"></script>
-        <script type="text/javascript" src="bct_my_ride/js/services.js"></script>
-        <script type="text/javascript" src="bct_my_ride/js/directives.js"></script>
-        <script type="text/javascript" src="bct_my_ride/js/filters.js"></script>
-
-        <!-- END Sources for BCT MyRide -->
+        <!-- END Sources for forms -->
 
         <link rel="stylesheet" type="text/css" href="bct_site.css" media="screen" />
 
@@ -169,17 +151,11 @@
                                     <!-- Main Content -->
                                     <div class="pageContent-two-column">
                                         <div id="page-content">
-
-                                            <!-- START BCT MyRide -->
-
-                                            <div id="bct-app" ng-app="BCTApp" ng-controller="BCTController">
-                                                <div id="main-app-space" ng-view></div>
-                                                <schedule-map ng-class="schedule_map_canvas_styles"></schedule-map>
-                                                <trip-planner></trip-planner>
+                                            <!-- START Profile Page -->
+                                            <div id="bct-profile-page">
+                                                Loading profile page...
                                             </div>
-
-                                            <!-- END BCT MyRide-->
-
+                                            <!-- END Profile Page -->
                                             <div id="headlines">
                                                 <span class="ms-bcrteStyle-SectionHeaderBlueBackground">Headlines</span>
                                                 <ul id="headline-links">
