@@ -12,6 +12,51 @@ ISR.templates.login_form = {};
 
 ISR.templates.profile_page = {};
 
+ISR.templates.profile_page["favorite-route-stop-panel"] = '' +
+
+    '<div class="favorite-route-stop-panel">' +
+
+        '<div class="favorite-route-stop-panel-property-container">' +
+
+                '<span class="favorite-route-stop-panel-property' +
+                'favorite-route-stop-panel-route">' +
+
+                '<span class="favorite-route-stop-panel-property-name">' +
+                    'Route:' +
+                '</span>' +
+
+                '<span class="favorite-route-stop-panel-property-content">' +
+                    '{{ ROUTE_STOP_PANEL_ROUTE }}' +
+                '</span>' +
+
+            '</span>' +
+
+            '<span class="favorite-route-stop-panel-property' +
+            'favorite-route-stop-panel-stop">' +
+
+                '<span class="favorite-route-stop-panel-property-name">' +
+                    'Stop:' +
+                '</span>' +
+
+                '<span class="favorite-route-stop-panel-property-content">' +
+                    '{{ ROUTE_STOP_PANEL_STOP }}' +
+                '</span>' +
+
+            '</span>' +
+
+        '</div>' +
+
+        '<span class="favorite-route-stop-panel-property' +
+        'favorite-route-stop-panel-myride-link">' +
+
+            '<a href="" onclick="">' +
+                'View in BCT MyRide' +
+            '</a>' +
+
+        '</span>' +
+
+'</div>';
+
 ISR.templates.profile_page["bct-drop-down-item"] = '' +
 '<span class="bct-drop-down-item" ' +
 'onclick="ISR.utils.selectDropDownOption(this)">' +
@@ -67,6 +112,40 @@ ISR.templates.data = {};
 
 }());
 
+/*
+
+    Favorite route/stop combinations should be added to this array
+    It currently contains three demo favorites.
+
+    The format for addition of new favorites is as follows:
+
+    {
+        route: "<route_number> <route_name>",
+        stop: "<stop_number> <stop_name>"
+    }
+
+    In this version, the property strings must be concatenated beforehand.
+
+*/
+
+ISR.templates.data.
+profile_page["favorite-route-stop-panel"].favorites_list = [
+
+    {
+        route: "BCT101 US1 Breeze",
+        stop: "17 US1/DANIA BEACH B"
+    },
+    {
+        route: "BCT01",
+        stop: "100 US1/THOMAS ST"
+    },
+    {
+        route: "BCT02",
+        stop: "135 UNIVERSITY D/FRENCH VILLA"
+    }
+
+];
+
 ISR.templates.data.
 profile_page["favorites-full-item-full-date-time"].day_list = [
 
@@ -108,6 +187,33 @@ ISR.utils.addBusRouteStopAlert = function() {
     ISR.utils.generateAlertDateTimeBarHTML();
 };
 
+ISR.utils.addFavoriteRouteStopPanel = function(target) {
+
+    var template_data = ISR.templates.data.
+    profile_page["favorite-route-stop-panel"].favorites_list
+
+    for (var i=0;i<template_data.length;i++) {
+
+        var date_time_bar_template =
+        ISR.utils.templating.generateFavoriteRouteStopPanel(template_data[i]);
+
+        target.parentNode.childNodes[3].innerHTML += date_time_bar_template;
+
+    }
+};
+
+//Utility functions run successively after module is loaded
+ISR.utils.init = {};
+
+ISR.utils.init.addFavoriteRouteStopPanelsToContainer = function() {
+
+    var favorites_container = document.getElementById("favorites-container");
+
+    ISR.utils.addFavoriteRouteStopPanel(favorites_container);
+
+};
+
+//Template component generation
 ISR.utils.templating = {};
 
 /*
@@ -126,6 +232,18 @@ ISR.utils.templating = {};
  */
 
 (function() {
+
+    /* START Favorite Route Panel */
+
+    function getRouteStopPanelRoute(route_stop_panel_data) {
+        return route_stop_panel_data.route;
+    }
+
+    function getRouteStopPanelStop(route_stop_panel_data) {
+        return route_stop_panel_data.stop;
+    }
+
+    /* END Favorite Route Panel */
 
     function getDayOrTimeLabel(day_or_time_label) {
         return day_or_time_label;
@@ -189,8 +307,8 @@ ISR.utils.templating = {};
         );
     }
 
-    //This function will be globally referenced because it is at the top
-    //level of the template generator and is called directly
+    //These functions will be globally referenced because they are at the top
+    //level of the template generator, and thus are called directly
     ISR.utils.templating.generateAlertFullDateTimeSelector = function() {
 
         return generateTemplateFromBase(
@@ -203,7 +321,25 @@ ISR.utils.templating = {};
 
     };
 
+    ISR.utils.templating.generateFavoriteRouteStopPanel = function(
+        current_panel_data
+    ) {
+
+        return generateTemplateFromBase(
+            ISR.templates.
+            profile_page["favorite-route-stop-panel"],
+
+            current_panel_data
+
+        );
+
+    };
+
     ISR.utils.templating.placeholderPopulators = {
+
+        "{{ ROUTE_STOP_PANEL_ROUTE }}": getRouteStopPanelRoute,
+        "{{ ROUTE_STOP_PANEL_STOP }}": getRouteStopPanelStop,
+
         "{{ DAY_OR_TIME_LABEL }}": getDayOrTimeLabel,
         "{{ SELECTED_DAY_OR_TIME }}": getFirstDayOrTime,
         "{{ DAY_AND_TIME_DROP_DOWN_ITEMS }}": generateMultipleDropDownItemsHTML,
@@ -211,6 +347,7 @@ ISR.utils.templating = {};
         "{{ FAVORITES_ALERT_DAY_SELECTION }}": generateAlertDaySelection,
         "{{ FAVORITES_ALERT_START_TIME }}": generateAlertTimeSelection,
         "{{ FAVORITES_ALERT_END_TIME }}": generateAlertTimeSelection
+
     };
 
     //Main templating function, where the above templating functions are passed

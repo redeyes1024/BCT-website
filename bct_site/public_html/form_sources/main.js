@@ -1,5 +1,16 @@
 window.onload = function() {
 
+    function runModuleContentTemplateGenerators() {
+
+        var init_functions = ISR.utils.init;
+
+        for (func in init_functions) {
+            init_functions[func]();
+        }
+
+    }
+
+    //Module Importer
     function getAndAppendModuleHTML(container_id, filename, append_target) {
 
         var template_container = document.getElementById(container_id);
@@ -21,6 +32,8 @@ window.onload = function() {
             template.getElementById(append_target);
 
            template_container.appendChild(target_container);
+
+           runModuleContentTemplateGenerators();
 
         };
 

@@ -162,109 +162,45 @@ a.link-icon-rev {
 
 /* START Profile Page */
 
-#bct-profile-page {
-    border: 1px solid;
-    margin-bottom: 1em;
-}
-#profile-container {
-    
+.profile-page-section-container {
+    height: 42em;
+    background-color: #FFF;
 }
 .profile-page-section-title {
-    display: block;
-    font-size: 1.2em;
-    margin: 0em;
-}
-.profile-page-section-title-main {
-    padding: 0.5em !important;
-    width: calc(100% - 1em);
+    
 }
 .profile-page-section-title-sub {
-    padding: 0.2em 0em;
-    border-style: dotted;
-    border-width: 0px 0px 1px 0px;
-    margin: 1em 0em;
-}
-.profile-page-section-container {
-    margin: 1em;
-}
-.profile-page-section-container-contents {
-    box-shadow: 2px 2px 1px 1px #AAA;
-}
-#favorites-container {
     
 }
-.favorites-add-alert-bar {
-    padding: 0.7em;
-    border-style: solid;
-    border-width: 1px;
-    border-color: #000;
-    font-size: 1.3em;
-}
-.favorites-full-item {
-    margin: 1em 0em;
-    width: 100%;
-    box-shadow: 2px 4px 6px 0px #BBB;
-}
-.favorites-full-item-route-stop,
-.favorites-full-item-full-date-time {
-    display: table;
-    width: 100%;
-    table-layout: fixed;
-}
-.favorites-full-item-route-stop {
+.favorite-route-stop-panel {
+    line-height: 2em;
     border-style: solid;
     border-width: 1px 0px 0px 0px;
-    border-collapse: collapse;
 }
-.favorites-full-item-route-stop:last-child {
+.favorite-route-stop-panel:last-child {
     border-width: 1px 0px 1px 0px;
 }
-.favorites-full-item-full-date-time {
-    border-style: solid;
-    border-width: 0px 0px 1px;
+favorite-route-stop-panel-property-container {
+    display: table;
 }
-.favorites-full-item-full-date-time:nth-child(3) {
-    border-width: 0px;
+.favorite-route-stop-panel-property {
+    display: table-row;
 }
-.favorites-full-item-full-date-time:nth-child(n+4) {
-    border-width: 1px 0px 0px;
-}
-.favorites-alert-start-time,
-.favorites-alert-end-time,
-.favorites-alert-day-selection {
-    height: 3em;
-    border-style: solid;
-    border-width: 0px 1px 0px 0px;
+.favorite-route-stop-panel-property-name {
     display: table-cell;
-    vertical-align: middle;
-    text-align: center;
+    width: 5em;
 }
-.favorites-alert-start-time:last-child,
-.favorites-alert-end-time:last-child,
-.favorites-alert-day-selection:last-child {
-    border-width: 0px 1px 0px 0px;
-}
-.favorites-alert-start-time,
-.favorites-alert-end-time {
-    width: 28%;
-}
-.favorites-sub-item {
+.favorite-route-stop-panel-property-content {
     display: table-cell;
-    padding: 1em;
-    border-style: solid;
-    border-width: 0px 1px 0px 1px;
 }
-.favorites-sub-item-route {
-    width: 20%;
-}
-.favorites-sub-item-stop {
+.favorite-route-stop-panel-route {
     
 }
-.favorites-alert-selector-container {
-    height: calc(9em + 1px);
-    overflow-y: scroll;
-    border-style: solid;
-    border-width: 0px 1px 1px;
+.favorite-route-stop-panel-stop {
+    
+}
+.favorite-route-stop-panel-myride-link {
+    
 }
 
 /* END Profile Page */
