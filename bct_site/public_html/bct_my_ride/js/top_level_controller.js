@@ -88,7 +88,7 @@ BCTAppTopController.controller('BCTController', ['$scope',
     $scope.show_schedule_result_top_info_bar = true;
     $scope.show_schedule_result_top_alert_bar = true;
 
-    $scope.show_schedule_map_info_bar = false;
+    $scope.show_schedule_map_info_bar = true;
 
     $scope.show_full_schedule_module = false;
 
@@ -244,15 +244,6 @@ BCTAppTopController.controller('BCTController', ['$scope',
             $scope.itinerary_selector_modal_styles["trip-planner-itinerary-selector-modal-smaller"] = false;
             $scope.itinerary_selector_styles["trip-planner-itinerary-selector-pushed"] = false;
             $scope.itinerary_selector_panel_styles["trip-planner-itinerary-panel-smaller"] = false;
-        }
-    });
-
-    $scope.$watch("show_full_schedule_module", function(new_val, old_val) {
-        if (new_val > old_val) {
-            $scope.show_schedule_map_info_bar = true;
-        }
-        else if (new_val < old_val) {
-            $scope.show_schedule_map_info_bar = false;
         }
     });
 

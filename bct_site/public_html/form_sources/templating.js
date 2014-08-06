@@ -18,7 +18,7 @@ ISR.templates.profile_page["favorite-route-stop-panel"] = '' +
 
         '<div class="favorite-route-stop-panel-property-container">' +
 
-                '<span class="favorite-route-stop-panel-property' +
+                '<span class="favorite-route-stop-panel-property ' +
                 'favorite-route-stop-panel-route">' +
 
                 '<span class="favorite-route-stop-panel-property-name">' +
@@ -31,7 +31,7 @@ ISR.templates.profile_page["favorite-route-stop-panel"] = '' +
 
             '</span>' +
 
-            '<span class="favorite-route-stop-panel-property' +
+            '<span class="favorite-route-stop-panel-property ' +
             'favorite-route-stop-panel-stop">' +
 
                 '<span class="favorite-route-stop-panel-property-name">' +
@@ -46,7 +46,7 @@ ISR.templates.profile_page["favorite-route-stop-panel"] = '' +
 
         '</div>' +
 
-        '<span class="favorite-route-stop-panel-property' +
+        '<span class="favorite-route-stop-panel-property ' +
         'favorite-route-stop-panel-myride-link">' +
 
             '<a href="" onclick="">' +
@@ -197,7 +197,7 @@ ISR.utils.addFavoriteRouteStopPanel = function(target) {
         var date_time_bar_template =
         ISR.utils.templating.generateFavoriteRouteStopPanel(template_data[i]);
 
-        target.parentNode.childNodes[3].innerHTML += date_time_bar_template;
+        target.innerHTML += date_time_bar_template;
 
     }
 };

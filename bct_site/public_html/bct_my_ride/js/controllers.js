@@ -108,12 +108,12 @@ function ($scope, $timeout, nearestStopsService) {
     $scope.recently_viewed = {
         trips: [
             {
-                start: "Picard Blvd. / Riker St.",
-                finish: "1701 Enterprise Pl."
+                start: "Coming soon",
+                finish: "BCT - My Ride"
             },
             {
-                start: "Picard Blvd. / Riker St.",
-                finish: "Beverley Crusher Community Center"
+                start: "Coming soon",
+                finish: "BCT - My Ride"
             }
         ],
         stops: [
@@ -121,13 +121,13 @@ function ($scope, $timeout, nearestStopsService) {
                 stop_id: "123ABC",
                 route_id: "ABC123",
                 route_info: {
-                    number: "101",
-                    name: "Picard Blvd.",
-                    direction: "east"
+                    number: "Coming",
+                    name: "soon",
+                    direction: "to"
                 },
                 bstop_info: {
-                    stop_id: "11717",
-                    inter: "Picard Blvd. / Giordi Rd."
+                    stop_id: "BCT",
+                    inter: "- My Ride"
                 }
             }
         ]

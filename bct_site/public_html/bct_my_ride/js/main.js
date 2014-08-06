@@ -48,7 +48,21 @@ window.myride.dom_q = {
 };
 
 angular.element(document).ready(function() {
-    if (window.location.toString().match(/\/index.html/)[0]) {
+
+    function checkLocationHash() {
+        var on_main_page = (
+            window.location.toString().match(/\/index.html/) ||
+            window.location.toString().match(/\/default.aspx/)
+        );
+        
+        var hash_is_empty = (window.location.hash === "")
+
+        var hash_is_correct = (on_main_page && hash_is_empty);
+
+        return hash_is_correct;
+    }
+
+    if (checkLocationHash()) {
         window.location.hash = "#bctappindex";
     }
 });

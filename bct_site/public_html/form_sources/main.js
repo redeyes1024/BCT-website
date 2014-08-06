@@ -21,7 +21,9 @@ window.onload = function() {
 
         var template_request = new XMLHttpRequest;
 
-        template_request.open('GET', 'form_sources/' + filename, true);
+        var url = 'form_sources/' + filename;
+
+        template_request.open('GET', url, true);
         template_request.responseType = 'document';
         template_request.onload = function(e) {
 
@@ -43,7 +45,7 @@ window.onload = function() {
 
     getAndAppendModuleHTML(
         'bct-profile-page',
-        'bct_profile_page.html',
+        'bct_profile_page_template.html',
         'profile-container'
     );
 
