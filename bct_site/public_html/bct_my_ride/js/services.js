@@ -695,22 +695,12 @@ BCTAppServices.service('unitConversionAndDataReporting', [ function() {
         return full_path;
     };
 
-    this.getAltOrTitleText = function(leg_data, step_no) {
-        var text_prefix = "Step " + (step_no + 1) + ": ";
-        var text_suffix = "";
+    this.getAltOrTitleText = function(leg_data) {
 
-        switch (leg_data.modeField) {
-            case "WALK":
-                text_suffix = "Walk";
-                break;
-            case "BUS":
-                text_suffix = "Take bus " + leg_data.routeField;
-                break;
-        }
-
-        var full_text = text_prefix + text_suffix;
+        
 
         return full_text;
+
     };
 
 }]);

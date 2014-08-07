@@ -58,16 +58,15 @@ ng-class="schedule_map_styles" class="fbox">
 
     <div id="map-canvas" ng-class="map_canvas_styles"></div>
 
-    <div class="map-full-screen-button no-highlight ptr link-icon
-    map-panel-button"
+    <div class="single-button-bar map-panel-button no-highlight ptr link-icon"
     ng-click="toggleMapFullScreen();"
     ng-show="show_map_full_screen_button">
         <i class="fa fa-expand"></i>
         Full Screen Mode
     </div>
 
-    <div class="map-full-screen-return-button no-highlight ptr link-icon
-    map-panel-button"
+    <div class="map-full-screen-return-button single-button-bar
+    no-highlight ptr link-icon"
     ng-show="show_map_full_screen_return_button"
     ng-click="toggleMapFullScreen();">
         <i class="fa fa-compress"></i>

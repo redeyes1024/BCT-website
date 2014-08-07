@@ -3,7 +3,7 @@ var BCTAppControllers = angular.module('BCTAppControllers', []);
 BCTAppControllers.controller('routeSchedulesController', ['$scope',
     '$timeout', function ($scope, $timeout) {
 
-    //For ease of testing
+    //For ease of debugging (development only)
     window.rs_scope = $scope;
 
     myride.dom_q.inputs.rs_search_input =
@@ -52,25 +52,13 @@ BCTAppControllers.controller('routeSchedulesController', ['$scope',
 
     $scope.displayResultsIfExist();
 
-    $scope.top_scope.submitRouteStopSearch = function(event_type) {
-
-        var new_search_query = myride.dom_q.inputs.rs_search_input.value;
-
-        $scope.top_scope.query_data.schedule_search = new_search_query;
-
-        if (event_type === 'enter') {
-            $scope.$apply();
-        }
-
-    };
-
 }]);
 
 BCTAppControllers.controller('indexController', ['$scope', '$timeout',
 'nearestStopsService',
 function ($scope, $timeout, nearestStopsService) {
 
-    //For ease of testing
+    //For ease of debugging (development only)
     window.index_scope = $scope;
 
     $scope.nearest_bstops = $scope.nearest_bstops_loading;
@@ -177,8 +165,11 @@ BCTAppControllers.controller('tripPlannerController', ['$scope',
 function ($scope, googleMapUtilities, $timeout, tripPlannerService,
         unitConversionAndDataReporting) {
 
-    //For ease of debugging
+    //For ease of debugging (development only)
     window.trip_scope = $scope;
+
+    //Top-level reference used only for the enter key press workaround callbacks
+    $scope.top_scope.trip_scope = $scope;
 
     $scope.geocoder_error_dialog_text = "Default dialog text";
 
@@ -364,9 +355,10 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
         $scope.showMapLoading();
 
         tripPlannerService.getLatLon(
-            $scope.$parent.trip_inputs.start,
-            $scope.$parent.trip_inputs.finish
+            $scope.top_scope.trip_inputs.start,
+            $scope.top_scope.trip_inputs.finish
         ).then(function(coords) {
+
             if (!$scope.checkForGeocoderErrors(coords)) { return false; }
 
             var start_coords = coords[0];
@@ -478,7 +470,7 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
 
         //Do not toggle map the subsequent times this function is called
         //until function is re-defined yet again (when map is closed)
-        $scope.top_scope.submitTrip =
+        $scope.submitTrip =
         $scope.submitTripPlannerQueryWithoutNewMap;
 
     };
@@ -492,7 +484,7 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
     };
 
     //The first time the trip form is submitted, the map is shown (see above)
-    $scope.top_scope.submitTrip = $scope.submitTripPlannerQueryAndShowMap;
+    $scope.submitTrip = $scope.submitTripPlannerQueryAndShowMap;
 
     $scope.top_scope.closeMapAndResetTripPlanner = function() {
 
@@ -502,7 +494,7 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
 
         $scope.top_scope.show_trip_planner_title = false;
 
-        $scope.top_scope.submitTrip = $scope.submitTripPlannerQueryAndShowMap;
+        $scope.submitTrip = $scope.submitTripPlannerQueryAndShowMap;
 
     };
 
@@ -516,7 +508,7 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
 
         $scope.top_scope.show_trip_planner_title = false;
 
-        $scope.top_scope.submitTrip = $scope.submitTripPlannerQueryAndShowMap;
+        $scope.submitTrip = $scope.submitTripPlannerQueryAndShowMap;
 
     };
 

@@ -34,10 +34,6 @@ BCTAppTopController.controller('BCTController', ['$scope',
         "trip-planner-module-active": false
     };
 
-    $scope.planner_prefs_styles = {
-        "planner-pref-pushed": false
-    };
-
     $scope.planner_dialog_styles = {
         "trip-planner-dialog-start": false,
         "trip-planner-dialog-finish": false,
@@ -119,6 +115,9 @@ BCTAppTopController.controller('BCTController', ['$scope',
     $scope.show_map_full_screen_return_button = false;
     $scope.show_map_full_screen_modal = false;
     $scope.show_trip_planner_step_navigation_bar = false;
+
+    $scope.show_trip_planner_itinerary_transit_type_icon_selectable = false;
+    $scope.show_trip_planner_itinerary_transit_type_icon_non_selectable = false;
 
     (function() {
         for (icon in location_icons) {
@@ -262,6 +261,35 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
     });
 
+    $scope.$watch("show_trip_planner_itinerary_selector",
+    function(new_val, old_val) {
+
+        if (new_val > old_val) {
+
+            $scope.
+            show_trip_planner_itinerary_transit_type_icon_selectable =
+            false;
+
+            $scope.
+            show_trip_planner_itinerary_transit_type_icon_non_selectable =
+            true;
+
+        }
+
+        else if (new_val < old_val) {
+
+            $scope.
+            show_trip_planner_itinerary_transit_type_icon_selectable =
+            true;
+
+            $scope.
+            show_trip_planner_itinerary_transit_type_icon_non_selectable =
+            false;
+
+        }
+
+    });
+
     /* END Custom Watchers */
 
     /* START Data Object Templates */
@@ -322,7 +350,39 @@ BCTAppTopController.controller('BCTController', ['$scope',
         schedule: "Return to Schedule Map"
     };
 
+    $scope.schedule_date_range = {
+        start: "2014/06/08",
+        end: "2014/09/13"
+    };
+
     /* END Data Object Templates */
+
+    $scope.uncoverSelectedStopOrStep = function(module, cur_index) {
+
+        var uncover_this_step_or_stop = false;
+
+        if (module === "planner") {
+
+            if ($scope.map_navigation_marker_indices.planner === cur_index) {
+
+                uncover_this_step_or_stop = true;
+
+            }
+
+        }
+        else if (module === "schedule") {
+
+            if ($scope.map_navigation_marker_indices.schedule === cur_index) {
+
+                uncover_this_step_or_stop = true;
+
+            }
+
+        }
+
+        return uncover_this_step_or_stop;
+
+    };
 
     $scope.toggleIconLegendOverlay = function() {
 
@@ -683,7 +743,6 @@ BCTAppTopController.controller('BCTController', ['$scope',
     $scope.rs_scope_loaded = false;
 
     $scope.getIconPath = unitConversionAndDataReporting.getIconPath;
-    $scope.getAltOrTitleText = unitConversionAndDataReporting.getAltOrTitleText;
 
     $scope.setLocationSpinnerAnimation = function(context, new_state) {
 
@@ -1176,7 +1235,9 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
         function tripPlannerStartEnter() {
 
-            $scope.submitTrip();
+            $scope.trip_scope.submitTrip();
+
+            $scope.$apply();
 
             return true;
 
@@ -1184,7 +1245,9 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
         function tripPlannerFinishEnter() {
 
-            $scope.submitTrip();
+            $scope.trip_scope.submitTrip();
+
+            $scope.$apply();
 
             return true;
 

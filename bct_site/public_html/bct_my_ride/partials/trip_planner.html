@@ -12,6 +12,7 @@
             <!-- Mobile Option Bar -->
 
             <div id="planner-mobile-controls" class="no-highlight">
+
                 <span id="planner-mobile-gps" class="planner-mobile-option">
                     <i class="fa fa-crosshairs link-icon ptr"
                     ng-click="getCurrentLocationAndDisplayData(
@@ -30,10 +31,7 @@
                     <i class="fa fa-cog link-icon ptr"
                     ng-click="toggleTripOptions();"></i>
                 </span>
-                <span id="planner-mobile-enter" class="planner-mobile-option">
-                    <i class="fa fa-location-arrow link-icon ptr"
-                    ng-click="submitTrip();"></i>
-                </span>
+
             </div>
 
             <!-- Search Inputs and Embedded Options -->
@@ -65,20 +63,24 @@
                     class="planner-input" ng-model="trip_inputs.finish">
                 </span>
 
-                <span id="planner-embed-prefs" class="planner-embed-option"
-                ng-class="planner_prefs_styles">
+                <span id="planner-embed-prefs" class="planner-embed-option">
                     <i class="fa fa-cog link-icon ptr"
                     ng-click="toggleTripOptions();"></i>
-                </span>
-
-                <span id="planner-embed-enter" class="planner-embed-option">
-                    <i class="fa fa-location-arrow link-icon ptr"
-                    ng-click="submitTrip();"></i>
                 </span>
 
                 <input type="submit" id="submit-trip">
 
             </div>
+
+        </div>
+
+        <div id="planner-submit-button" class="single-button-bar
+        no-highlight link-icon ptr"
+        ng-click="submitTrip();">
+
+            Send to Trip Planner
+
+            <i class="fa fa-arrow-circle-right icon-lower-1"></i>
 
         </div>
 
@@ -118,14 +120,7 @@
                         <span class="trip-planer-itinerary-step"
                         ng-repeat="leg in itinerary.legsField">
 
-                            <img src="{{getIconPath(leg)}}"
-                            class="trip-planner-itinerary-transit-type-icon"
-                            alt="{{getAltOrTitleText(leg, $index)}}"
-                            title="{{getAltOrTitleText(leg, $index)}}">
-
-                            <span ng-show="!$last">
-                                <i class="fa fa-angle-right"></i>
-                            </span>
+                            <trip-planner-step></trip-planner-step>
 
                         </span>
 

@@ -10,15 +10,9 @@
 
         <span class="trip-planer-itinerary-navigation-step no-highlight"
         ng-repeat="leg in current_trip_plan_data_selection.legsField">
-            <img src="{{getIconPath(leg)}}"
-            class="trip-planner-itinerary-transit-type-icon ptr
-            {{ leg.styles }}"
-            alt="{{getAltOrTitleText(leg, $index)}}"
-            title="{{getAltOrTitleText(leg, $index)}}"
-            ng-click="goToMarkerInfoWindow('planner', 'planner_step', $index);">
-            <span>
-                <i class="fa fa-angle-right trip-planner-itinerary-arrow"></i>
-            </span>
+
+            <trip-planner-step></trip-planner-step>
+
         </span>
 
     </span>

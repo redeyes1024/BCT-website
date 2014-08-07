@@ -174,3 +174,13 @@ BCTApp.directive('scheduleMapNavigationBar', [ function() {
     };
 
 }]);
+
+BCTApp.directive('tripPlannerStep', [ function() {
+
+    return {
+        restrict: 'E',
+        templateUrl: window.myride.site_roots.active +
+        'partials/trip_planner_step.html'
+    };
+
+}]);
