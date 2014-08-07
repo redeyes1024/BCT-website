@@ -52,11 +52,15 @@ BCTAppControllers.controller('routeSchedulesController', ['$scope',
 
     $scope.displayResultsIfExist();
 
-    $scope.submitRouteStopSearch = function() {
+    $scope.top_scope.submitRouteStopSearch = function(event_type) {
 
         var new_search_query = myride.dom_q.inputs.rs_search_input.value;
 
         $scope.top_scope.query_data.schedule_search = new_search_query;
+
+        if (event_type === 'enter') {
+            $scope.$apply();
+        }
 
     };
 
@@ -165,18 +169,6 @@ function ($scope, $timeout, nearestStopsService) {
         });
     }
 
-    $scope.changeURLHash = function(new_hash, model) {
-        if (model) {
-            var input_str = $scope.query_data[model];
-            if (!input_str || input_str.trim() === "") {
-                if (input_str !== "") {
-                    $scope.query_data[model] = "";
-                }
-                return true;
-            }
-        }
-        window.location.hash = new_hash;
-    };
 }]);
 
 BCTAppControllers.controller('tripPlannerController', ['$scope',
@@ -486,7 +478,8 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
 
         //Do not toggle map the subsequent times this function is called
         //until function is re-defined yet again (when map is closed)
-        $scope.submitTrip = $scope.submitTripPlannerQueryWithoutNewMap;
+        $scope.top_scope.submitTrip =
+        $scope.submitTripPlannerQueryWithoutNewMap;
 
     };
 
@@ -499,7 +492,7 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
     };
 
     //The first time the trip form is submitted, the map is shown (see above)
-    $scope.submitTrip = $scope.submitTripPlannerQueryAndShowMap;
+    $scope.top_scope.submitTrip = $scope.submitTripPlannerQueryAndShowMap;
 
     $scope.top_scope.closeMapAndResetTripPlanner = function() {
 
@@ -509,7 +502,7 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
 
         $scope.top_scope.show_trip_planner_title = false;
 
-        $scope.submitTrip = $scope.submitTripPlannerQueryAndShowMap;
+        $scope.top_scope.submitTrip = $scope.submitTripPlannerQueryAndShowMap;
 
     };
 
@@ -523,7 +516,7 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
 
         $scope.top_scope.show_trip_planner_title = false;
 
-        $scope.submitTrip = $scope.submitTripPlannerQueryAndShowMap;
+        $scope.top_scope.submitTrip = $scope.submitTripPlannerQueryAndShowMap;
 
     };
 

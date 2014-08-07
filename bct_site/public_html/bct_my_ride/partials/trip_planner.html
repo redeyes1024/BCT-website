@@ -38,7 +38,8 @@
 
             <!-- Search Inputs and Embedded Options -->
 
-            <form id="planner-top-inputs" ng-submit="submitTrip();" class="no-highlight">
+            <div id="planner-top-inputs" class="no-highlight">
+
                 <span id="planner-embed-gps" class="planner-embed-option">
                     <i class="fa fa-crosshairs link-icon ptr"
                     ng-click="getLocationAndAddToPlannerStart();"
@@ -46,31 +47,38 @@
                     <i class="fa fa-crosshairs link-icon-active fa-spin"
                     ng-show="show_planner_location_icon_with_spin"></i>
                 </span>
+
                 <span id="start-input">
                     <span class="input-title">Start</span>
-                    <input type="text" class="planner-input"
-                    ng-model="trip_inputs.start">
+                    <input type="text" id="trip-planner-start"
+                    class="planner-input" ng-model="trip_inputs.start">
                 </span>
+
                 <span id="planner-embed-swap" class="planner-embed-option">
                     <i class="fa fa-exchange link-icon ptr"
                     ng-click="swapTripInputs();"></i>
                 </span>
+
                 <span id="finish-input">
                     <span class="input-title">Finish</span>
-                    <input type="text" class="planner-input"
-                    ng-model="trip_inputs.finish">
+                    <input type="text" id="trip-planner-finish"
+                    class="planner-input" ng-model="trip_inputs.finish">
                 </span>
+
                 <span id="planner-embed-prefs" class="planner-embed-option"
                 ng-class="planner_prefs_styles">
                     <i class="fa fa-cog link-icon ptr"
                     ng-click="toggleTripOptions();"></i>
                 </span>
+
                 <span id="planner-embed-enter" class="planner-embed-option">
-                <i class="fa fa-location-arrow link-icon ptr"
-                ng-click="submitTrip();"></i>
+                    <i class="fa fa-location-arrow link-icon ptr"
+                    ng-click="submitTrip();"></i>
                 </span>
+
                 <input type="submit" id="submit-trip">
-            </form>
+
+            </div>
 
         </div>
 

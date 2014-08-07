@@ -44,22 +44,26 @@ window.myride.dom_q = {
             points: {}
         }
     },
-    inputs: {}
+    inputs: {
+        input_labels: []
+    }
 };
 
 angular.element(document).ready(function() {
 
     function checkLocationHash() {
+
         var on_main_page = (
             window.location.toString().match(/\/index.html/) ||
             window.location.toString().match(/\/default.aspx/)
         );
         
-        var hash_is_empty = (window.location.hash === "")
+        var hash_is_empty = (window.location.hash === "");
 
         var hash_is_correct = (on_main_page && hash_is_empty);
 
         return hash_is_correct;
+
     }
 
     if (checkLocationHash()) {

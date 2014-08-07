@@ -29,8 +29,7 @@
 
         </span>
 
-        <form class="search-area-contents"
-        ng-submit="changeURLHash('#routeschedules', 'schedule_search');">
+        <div class="search-area-contents">
 
             <input type="text" id="index-search-input"
             class="search-input-field form-control needsclick"
@@ -51,7 +50,7 @@
 
             <inline-filter-icons></inline-filter-icons>
 
-        </form>
+        </div>
 
         <div id="schedule-search-area-bottom">
             <mobile-filter-icons></mobile-filter-icons>
@@ -77,8 +76,9 @@
                     exclusion-group="accordion1"
                     class="panel-collapse collapse">
                     <div class="panel-body">
-                        <input type="text" class="result-filter" ng-model="recentStopFilter"
-                            placeholder="Filter stops...">
+                        <input type="text" id="recent-stop-filter"
+                        class="result-filter" ng-model="recentStopFilter"
+                        placeholder="Filter stops...">
                         <div class="list-group scrollable-content stops-list no-highlight">
                             <div class="list-group-item list-group-item-responsive"
                                 ng-repeat="recent_stop in recently_viewed.stops
@@ -113,8 +113,9 @@
                     exclusion-group="accordion1"
                     class="panel-collapse collapse">
                     <div class="panel-body">
-                        <input type="text" class="result-filter" ng-model="recentTripFilter"
-                            placeholder="Filter trips...">
+                        <input type="text" id="recent-trip-filter"
+                        class="result-filter" ng-model="recentTripFilter"
+                        placeholder="Filter trips...">
                         <div class="list-group scrollable-content stops-list no-highlight">
                             <div class="list-group-item list-group-item-responsive"
                                 ng-repeat="recent_trip in recently_viewed.trips | filter:{name:recentTripFilter}">

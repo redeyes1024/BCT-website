@@ -40,15 +40,17 @@ ng-class="main_module_styles">
                 </a>
             </span>
 
-            <form ng-submit="submitRouteStopSearch();">
+            <div>
+
                 <input id="route-stop-search-input" type="text"
                 class="search-input-field form-control needsclick"
                 placeholder="Search routes, stops or intersections">
-            </form>
+
+            </div>
 
             <span class="search-submit-button search-top-buttons">
                 <i class="fa fa-search link-icon search-bar-icon-lower-1 ptr"
-                ng-click="submitRouteStopSearch();">     
+                ng-click="submitRouteStopSearch('click');">     
                 </i>
             </span>
 

@@ -1117,6 +1117,137 @@ BCTAppTopController.controller('BCTController', ['$scope',
         $scope.agency_filter_icons[agency].selection_class = new_class;
     };
 
+    $scope.changeURLHash = function(new_hash, model) {
+        if (model) {
+            var input_str = $scope.query_data[model];
+            if (!input_str || input_str.trim() === "") {
+                if (input_str !== "") {
+                    $scope.query_data[model] = "";
+                }
+                return true;
+            }
+        }
+        window.location.hash = new_hash;
+    };
+
+    /*
+
+    The following is a workaround for the third-party containing site using a
+    site-wide form element that is intercepting all "return" key events and
+    causing them to refresh the page.
+
+    */
+
+    (function() {
+
+        //The following are return key press handlers for each input.
+        //The names are not used directly and are for descriptive purposes only
+        function indexSearchInputEnter() {
+
+            $scope.changeURLHash('#routeschedules', 'schedule_search');
+
+            return true;
+
+        }
+
+        function recentStopFilterEnter() {
+            return true;
+        }
+
+        function recentTripFilterEnter() {
+            return true;
+        }
+
+        function subBusStopFilterEnter() {
+            return true;
+        }
+
+        function routeStopSearchInputEnter() {
+
+            $scope.submitRouteStopSearch('enter');
+
+            return true;
+
+        }
+
+        function subRouteFilterEnter() {
+            return true;
+        }
+
+        function tripPlannerStartEnter() {
+
+            $scope.submitTrip();
+
+            return true;
+
+        }
+
+        function tripPlannerFinishEnter() {
+
+            $scope.submitTrip();
+
+            return true;
+
+        }
+
+        window.myride.dom_q.inputs.input_labels = {
+            "index-search-input": indexSearchInputEnter,
+            "recent-stop-filter": recentStopFilterEnter,
+            "recent-trip-filter": recentTripFilterEnter,
+            "sub-bus-stop-filter": subBusStopFilterEnter,
+            "sub-route-filter": subRouteFilterEnter,
+            "route-stop-search-input": routeStopSearchInputEnter,
+            "trip-planner-start": tripPlannerStartEnter,
+            "trip-planner-finish": tripPlannerFinishEnter
+        };
+
+        function handleAppTextInputs(event) {
+
+            var input_handled_by_app = false;
+
+            var current_input_name = event.target.getAttribute("id");
+
+            var input_names = window.myride.dom_q.inputs.input_labels;
+
+            for (name in input_names) {
+
+                if (name === current_input_name) {
+
+                    input_handled_by_app = true;
+
+                    //Allow this function to continue if there is an error with
+                    //one of the callbacks, preventing page change and
+                    //allowing the callbacks to be debugged more easily
+                    try {
+                        input_names[name]();
+                    }
+                    catch(e) {
+                        console.error(e);
+                    }
+
+                }
+
+            }
+
+            return input_handled_by_app;
+
+        }
+
+        function captureEnterKey(event) {
+
+            if ((event.keyCode === 13) && handleAppTextInputs(event)) {
+
+                //Input is on embedded app and is handled appropriately, so
+                //prevent site-wide form from submitting
+                return false;
+
+            }
+        }
+
+        document.onkeypress = captureEnterKey;
+
+    }());
+
 }]).
     
 config(function($routeProvider) {
