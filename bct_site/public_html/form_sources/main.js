@@ -21,7 +21,8 @@ window.onload = function() {
 
         var template_request = new XMLHttpRequest;
 
-        var url = 'form_sources/' + filename;
+        var url = 'http://www.isrtransit.com/files/bct/webapp/' + 
+        'form_sources/' + filename;
 
         template_request.open('GET', url, true);
         template_request.responseType = 'document';

@@ -3,7 +3,8 @@ var BCTAppDirectives = angular.module('BCTAppDirectives', []);
 BCTApp.directive('iconLegendOverlay', [ function() {
     return {
         restrict: 'E',
-        templateUrl: window.myride.site_roots.active +
+        templateUrl: window.myride.directories.site_roots.active +
+        window.myride.directories.paths.active +
         'partials/icon_legend.html'
     };
 }]);
@@ -11,7 +12,8 @@ BCTApp.directive('iconLegendOverlay', [ function() {
 BCTApp.directive('bctMyRideTopLevelOverlays', [ function() {
     return {
         restrict: 'E',
-        templateUrl: window.myride.site_roots.active +
+        templateUrl: window.myride.directories.site_roots.active +
+        window.myride.directories.paths.active +
         'partials/main.html'
     };
 }]);
@@ -24,7 +26,8 @@ function(googleMapUtilities) {
             googleMapUtilities.mapMaker(myride.dom_q.map.cont);
         },
         restrict: 'E',
-        templateUrl: window.myride.site_roots.active +
+        templateUrl: window.myride.directories.site_roots.active +
+        window.myride.directories.paths.active +
         'partials/schedule_map.html'
     };
 }]);
@@ -32,7 +35,8 @@ function(googleMapUtilities) {
 BCTApp.directive('scheduleMapOverlay', [ function() {
     return {
         restrict: 'E',
-        templateUrl: window.myride.site_roots.active +
+        templateUrl: window.myride.directories.site_roots.active +
+        window.myride.directories.paths.active +
         'partials/schedule_map_overlay.html'
     };
 }]);
@@ -40,7 +44,8 @@ BCTApp.directive('scheduleMapOverlay', [ function() {
 BCTApp.directive('tripPlanner', [ function() {
     return {
         restrict: 'E',
-        templateUrl: window.myride.site_roots.active +
+        templateUrl: window.myride.directories.site_roots.active +
+        window.myride.directories.paths.active +
         'partials/trip_planner.html'
     };
 }]);
@@ -48,7 +53,8 @@ BCTApp.directive('tripPlanner', [ function() {
 BCTApp.directive('subPanelRoutes', [ function() {
     return {
         restrict: 'E',
-        templateUrl: window.myride.site_roots.active +
+        templateUrl: window.myride.directories.site_roots.active +
+        window.myride.directories.paths.active +
         'partials/sub_panel_routes.html'
     };
 }]);
@@ -56,7 +62,8 @@ BCTApp.directive('subPanelRoutes', [ function() {
 BCTApp.directive('subPanelStops', [ function() {
     return {
         restrict: 'E',
-        templateUrl: window.myride.site_roots.active +
+        templateUrl: window.myride.directories.site_roots.active +
+        window.myride.directories.paths.active +
         'partials/sub_panel_stops.html'
     };
 }]);
@@ -76,7 +83,8 @@ function(linkFunctions) {
     return {
         link: link,
         restrict: 'E',
-        templateUrl: window.myride.site_roots.active +
+        templateUrl: window.myride.directories.site_roots.active +
+        window.myride.directories.paths.active +
         'partials/route_result_panel.html'
     };
 }]);
@@ -96,7 +104,8 @@ function(linkFunctions) {
     return {
         link: link,
         restrict: 'E',
-        templateUrl: window.myride.site_roots.active +
+        templateUrl: window.myride.directories.site_roots.active +
+        window.myride.directories.paths.active +
         'partials/stop_result_panel.html'
     };
 
@@ -118,7 +127,8 @@ BCTApp.directive('tripPlannerDialog', [ function() {
 BCTApp.directive('plannerOptionBar', [ function() {
     return {
         restrict: 'E',
-        templateUrl: window.myride.site_roots.active +
+        templateUrl: window.myride.directories.site_roots.active +
+        window.myride.directories.paths.active +
         'partials/planner_option_bar.html'
     };
 }]);
@@ -126,7 +136,8 @@ BCTApp.directive('plannerOptionBar', [ function() {
 BCTApp.directive('nearestStops', [ function() {
     return {
         restrict: 'E',
-        templateUrl: window.myride.site_roots.active +
+        templateUrl: window.myride.directories.site_roots.active +
+        window.myride.directories.paths.active +
         'partials/nearest_stops.html'
     };
 }]);
@@ -159,7 +170,8 @@ BCTApp.directive('tripPlannerNavigationBar', [ function() {
 
     return {
         restrict: 'E',
-        templateUrl: window.myride.site_roots.active +
+        templateUrl: window.myride.directories.site_roots.active +
+        window.myride.directories.paths.active +
         'partials/trip_planner_navigation_bar.html'
     };
 
@@ -169,7 +181,8 @@ BCTApp.directive('scheduleMapNavigationBar', [ function() {
 
     return {
         restrict: 'E',
-        templateUrl: window.myride.site_roots.active +
+        templateUrl: window.myride.directories.site_roots.active +
+        window.myride.directories.paths.active +
         'partials/schedule_map_navigation_bar.html'
     };
 
@@ -179,7 +192,8 @@ BCTApp.directive('tripPlannerStep', [ function() {
 
     return {
         restrict: 'E',
-        templateUrl: window.myride.site_roots.active +
+        templateUrl: window.myride.directories.site_roots.active +
+        window.myride.directories.paths.active +
         'partials/trip_planner_step.html'
     };
 

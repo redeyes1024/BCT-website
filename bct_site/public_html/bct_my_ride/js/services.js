@@ -678,7 +678,12 @@ BCTAppServices.service('unitConversionAndDataReporting', [ function() {
     };
 
     this.getIconPath = function(leg_data) {
-        var path_prefix = window.myride.site_roots.active + "css/ico/";
+
+        var path_prefix =
+        window.myride.directories.site_roots.active +
+        window.myride.directories.paths.active +
+        "css/ico/";
+
         var path_suffix = "";
 
         switch (leg_data.modeField) {
@@ -693,6 +698,7 @@ BCTAppServices.service('unitConversionAndDataReporting', [ function() {
         var full_path = path_prefix + path_suffix;
 
         return full_path;
+
     };
 
     this.getAltOrTitleText = function(leg_data) {
@@ -1811,7 +1817,10 @@ function(agency_filter_icons) {
                 '<img class="agency-filter-icon ptr ' +
                 '{{ agency_filter_icons.' + agency_filter.agency +
                 '.selection_class }}" ' +
-                'src="' + window.myride.site_roots.active + 'css/ico/' +
+                'src="' +
+                window.myride.directories.site_roots.active +
+                window.myride.directories.paths.active +
+                'css/ico/' +
                 agency_filter.icon_filename + '" ' +
                 'ng-click="enableAgencyFilter(\'' + agency_filter.agency +
                 '\'' + ');">' +

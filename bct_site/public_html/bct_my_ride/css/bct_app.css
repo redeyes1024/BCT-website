@@ -152,6 +152,9 @@ em.hint-text {
     top: 0em;
     z-index: 1030;
 }
+.map-panel-button {
+    
+}
 .info-corner-icon {
     display: inline-block;
     float: right;
@@ -180,7 +183,7 @@ em.hint-text {
     font-weight: 400;
     border-style: dotted;
     border-width: 1px 0px 0px;
-    padding: 0.5em 1em calc(0.5em + 3px);
+    padding: 0.5em 0em 0.8em;
     background-color: #FFF;
     text-align: center;
 }
@@ -276,15 +279,12 @@ em.hint-text {
     top: calc(1.5em + 3px);
     left: 0px;
     z-index: 1029;
-    height: calc(100% - 8em - 3px);
+    height: calc(100% - 5em);
 }
 iframe #schedule-map {
     position: fixed;
     top: calc(2em + 1px);
     height: calc(100% - 8em);
-}
-.schedule-map-planner-inserted {
-    height: calc(100% - 5em + 1px) !important;
 }
 #schedule-map-loading-modal {
     position: absolute;
@@ -422,13 +422,9 @@ iframe #schedule-map-loading-modal-spinner {
     left: 0px;
 }
 schedule-map-navigation-bar {
-    border-style: dotted solid dashed;
-    border-width: 1px 0px;
-    background-color: white;
-    padding: 1em 0em 1.5em;
-}
-.schedule-map-navigation-bar-small {
-    padding: 0.5em 0em 0.8em;
+    border-width: 1px 0px !important;
+    padding-left: 0em !important;
+    padding-right: 0em !important;
 }
 .schedule-map-navigation-bar-activation-button {
     
@@ -448,15 +444,24 @@ schedule-map-navigation-bar {
     background: none repeat scroll 0% 0% #FFF;
     display: table;
     table-layout: fixed;
+    margin: 0em 0em 1em 0em;
+    font-size: 0.7em;
 }
 .schedule-map-navigation-bar-contents {
+    display: block;
+    position: relative;
     font-size: 1.5em;
+    height: 2.1em;
+    overflow: auto;
 }
 .schedule-map-navigation-bar-contents-description {
     display: block;
     font-size: 0.8em;
-    margin: -0.3em 0em 0.3em 0em;
+    margin: -0.3em 0em 0.2em 0em;
     font-weight: 400;
+}
+.schedule-map-navigation-bar-contents-info {
+    
 }
 
 /* END Schedule Map */
@@ -471,7 +476,7 @@ schedule-map-navigation-bar {
     position: relative;
     width: 100%;
     background: white;
-    height: 45em;
+    height: 46em;
     overflow: auto;
 }
 #schedule-full-result-dialog-title {
@@ -1076,10 +1081,7 @@ iframe .trip-planner-dialog-finish {
 
     /* Schedule Map */
     #schedule-map {
-        height: calc(100% - 14em);
-    }
-    .schedule-map-planner-inserted {
-        height: calc(100% - 11em + 1px) !important;
+        height: calc(100% - 10.5em);
     }
     .schedule-map-mini-schedule-button {
         width: 2em;
@@ -1090,11 +1092,18 @@ iframe .trip-planner-dialog-finish {
     }
     .schedule-map-navigation-bar-contents {
         font-size: 1.1em;
+        height: 2.5em;
+    }
+    .schedule-map-stop-navigation-bar {
+        margin: 0em 0em 1.5em;
+    }
+    .schedule-map-navigation-bar-contents-description {
+        margin-bottom: -0.2em;
     }
 
     /* Schedule Results */
     #schedule-full-result-dialog {
-        height: 39em;
+        height: 40em;
     }
     #schedule-full-result-dialog-info-text {
         font-size: 1em;

@@ -10,11 +10,16 @@ ng-show="show_schedule_map_stop_navigation_bar_contents">
     <span class="navigation-bar-main-contents
     schedule-map-navigation-bar-contents no-highlight ptr"
     ng-click="returnToInitialBusStop();">
+
         <span class="schedule-map-navigation-bar-contents-description">
             Return to
         </span>
-        {{ map_schedule_info.route }}
-        {{ stops[map_schedule_info.stop].Name }}
+
+        <span class="schedule-map-navigation-bar-contents-info">
+            {{ map_schedule_info.route }}
+            {{ stops[map_schedule_info.stop].Name }}
+        </span>
+
     </span>
 
     <span class="navigation-bar-directions navigation-bar-next-item

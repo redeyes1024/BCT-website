@@ -10,20 +10,29 @@ var BCTApp = angular.module('BCTApp', ['ngRoute', 'mobile-angular-ui',
 window.myride = {};
 
 //For relative directory structure changes
-window.myride.site_roots = {
-    embedded: 'bct_my_ride/',
-    iframe: '',
-    remote: 'http://www.isrtransit.com/files/bct/webapp/',
-    active: ''
-};
-
-//RegExp whitelists for external sources
-window.myride.site_roots.whitelist_regexps = {
-    ISR_main: new RegExp('http:\/\/www.isrtransit.com((\/)?.*?\/)*')
+window.myride.directories = {
+    site_roots: {
+        local: '',
+        remote: 'http://www.isrtransit.com/files/bct/webapp/',
+        active: ''
+    },
+    paths: {
+        my_ride: 'bct_my_ride/',
+        active: ''
+    }
 };
 
 //Select the current directory from the above object
-window.myride.site_roots.active = window.myride.site_roots.embedded;
+window.myride.directories.site_roots.active =
+window.myride.directories.site_roots.local;
+
+window.myride.directories.paths.active =
+window.myride.directories.paths.my_ride;
+
+//RegExp whitelists for external sources
+window.myride.directories.site_roots.whitelist_regexps = {
+    ISR_main: new RegExp('http:\/\/www.isrtransit.com((\/)?.*?\/)*')
+};
 
 //Initial DOM queries
 window.myride.dom_q = {

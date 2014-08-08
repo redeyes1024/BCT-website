@@ -27,7 +27,6 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
     $scope.schedule_map_styles = {
         "hide-scroll": true,
-        "schedule-map-planner-inserted": false
     };
 
     $scope.trip_planner_styles = {
@@ -58,9 +57,6 @@ BCTAppTopController.controller('BCTController', ['$scope',
         "page-planner-inserted": false
     };
 
-    $scope.schedule_map_navigation_bar_styles = {
-        "schedule-map-navigation-bar-small": true
-    };
     $scope.map_canvas_styles = {
         "map-canvas-full-screen": false
     };
@@ -216,18 +212,19 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
         //If trip planner is activating
         if (new_val > old_val) {
-            $scope.schedule_map_styles["schedule-map-planner-inserted"] = true;
 
             $scope.map_full_screen_return_button_message =
             $scope.map_full_screen_return_button_messages.planner;
+
         }
 
         //If trip planner is deactivating
         else if (new_val < old_val) {
-            $scope.schedule_map_styles["schedule-map-planner-inserted"] = false;
+
             $scope.show_trip_planner_step_navigation_bar = false;
 
             $scope.show_trip_planner_itinerary_selector = false;
+
         }
 
     });
@@ -288,6 +285,18 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
         }
 
+    });
+
+    $scope.$watch("show_schedule_map_stop_navigation_bar_contents",
+    function(new_val, old_val) {
+
+        if (new_val > old_val) {
+            $scope.show_schedule_map_info_bar = false;
+        }
+
+        else if (new_val < old_val) {
+            $scope.show_schedule_map_info_bar = true;
+        }
     });
 
     /* END Custom Watchers */
@@ -357,30 +366,17 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
     /* END Data Object Templates */
 
-    $scope.uncoverSelectedStopOrStep = function(module, cur_index) {
+    $scope.uncoverSelectedStepIcon = function(step_index) {
 
-        var uncover_this_step_or_stop = false;
+        var uncover_this_step = false;
 
-        if (module === "planner") {
+        if ($scope.map_navigation_marker_indices.planner === step_index) {
 
-            if ($scope.map_navigation_marker_indices.planner === cur_index) {
-
-                uncover_this_step_or_stop = true;
-
-            }
-
-        }
-        else if (module === "schedule") {
-
-            if ($scope.map_navigation_marker_indices.schedule === cur_index) {
-
-                uncover_this_step_or_stop = true;
-
-            }
+            uncover_this_step = true;
 
         }
 
-        return uncover_this_step_or_stop;
+        return uncover_this_step;
 
     };
 
@@ -492,9 +488,6 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
         $scope.show_schedule_map_navigation_bar_activation_button = true;
 
-        var sched_nav_small = "schedule-map-navigation-bar-small";
-        $scope.schedule_map_navigation_bar_styles[sched_nav_small] = true;
-
         $scope.current_schedule_map_navigation_bar_activation_message =
         $scope.schedule_map_navigation_bar_activation_messages.inactive;
 
@@ -526,10 +519,6 @@ BCTAppTopController.controller('BCTController', ['$scope',
             $scope.returnToInitialBusStop();
 
             $scope.show_schedule_map_navigation_bar_activation_button = false;
-
-            var sched_nav_small = "schedule-map-navigation-bar-small";
-
-            $scope.schedule_map_navigation_bar_styles[sched_nav_small] = false;
 
             $scope.show_schedule_map_navigation_bar_loading = false;
             $scope.show_schedule_map_stop_navigation_bar_contents = true;
@@ -1315,13 +1304,14 @@ BCTAppTopController.controller('BCTController', ['$scope',
     
 config(function($routeProvider) {
 
-    var site_root = window.myride.site_roots.active;
+    var site_root = window.myride.directories.site_roots.active;
+    var cur_path = window.myride.directories.paths.active;
 
     $routeProvider.when('/routeschedules', {
-        templateUrl: site_root + 'partials/route_schedules.html',
+        templateUrl: site_root + cur_path + 'partials/route_schedules.html',
         controller: 'routeSchedulesController'
     }).when('/bctappindex', {
-        templateUrl: site_root + 'partials/bct_app_index.html',
+        templateUrl: site_root + cur_path + 'partials/bct_app_index.html',
         controller: 'indexController'
     });
 
