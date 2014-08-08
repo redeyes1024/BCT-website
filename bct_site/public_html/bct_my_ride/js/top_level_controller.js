@@ -6,11 +6,12 @@ BCTAppTopController.controller('BCTController', ['$scope',
     '$interval', 'unitConversionAndDataReporting', 'miniScheduleService',
     'placeholderService', 'locationService', 'location_icons',
     'agency_filter_icons', 'results_exist', 'map_navigation_marker_indices',
+    'legend_icon_list',
     function ($scope, $timeout, scheduleWebSocket, scheduleSocketService,
     scheduleDownloadAndTransformation, googleMapUtilities, $q, $interval,
     unitConversionAndDataReporting, miniScheduleService, placeholderService,
     locationService, location_icons, agency_filter_icons, results_exist,
-    map_navigation_marker_indices) {
+    map_navigation_marker_indices, legend_icon_list) {
 
     //For ease of debugging
     window.main_scope = $scope;
@@ -365,6 +366,8 @@ BCTAppTopController.controller('BCTController', ['$scope',
     };
 
     /* END Data Object Templates */
+
+    $scope.legend_icon_list = legend_icon_list;
 
     $scope.uncoverSelectedStepIcon = function(step_index) {
 

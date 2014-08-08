@@ -2,6 +2,36 @@ var BCTAppValues = angular.module('BCTAppValues', []);
 
 BCTAppValues.value('scheduleWebSocket', new WebSocket("ws://echo.websocket.org"));
 
+BCTAppValues.value('legend_icon_list', [
+
+    {
+        fa_name: "fa-crosshairs",
+        filename: "",
+        legend: {
+            module: "Variable",
+            desc: "Retrieve current location and use with associated " +
+            "module."
+        }
+    },
+    {
+        fa_name: "fa-exchange",
+        filename: "",
+        legend: {
+            module: "Trip Planner",
+            desc: "Swap trip planner start and finish entries."
+        }
+    },
+    {
+        fa_name: "fa-cog",
+        filename: "",
+        legend: {
+            module: "Trip Planner",
+            desc: "Display trip planner options."
+        }
+    }
+
+]);
+
 BCTAppValues.value('filter_buffer_data', {
     search_string_buffer: [],
     results_exist_counter: 0

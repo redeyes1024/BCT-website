@@ -1,7 +1,43 @@
 <div ng-show="show_icon_legend_overlay"
-class="app-area-modal icon-legend-modal">
+class="icon-legend-modal">
 
     <div class="icon-legend-contents">
+
+        <span class="title-header icon-legend-title-bar no-highlight">
+            Icon Legend
+
+            <span class="icon-legend-title-bar-close ptr no-highlight"
+            ng-click="toggleIconLegendOverlay();">
+
+                <i class="fa fa-times-circle text-shadow-hover-icon"></i>
+
+            </span>
+
+        </span>
+
+        <div class="icon-legend-contents-main-container">
+
+            <div class="icon-legend-item" ng-repeat="icon in legend_icon_list">
+
+                <span class="icon-legend-module-name-and-icon no-highlight">
+
+                    <span class="icon-legend-module-name">
+                        {{ icon.legend.module }}
+                    </span>
+
+                    <span class="icon-legend-fa-icon">
+                        <i class="fa {{ icon.fa_name }}"></i>
+                    </span>
+
+                </span>
+
+                <span class="icon-legend-description">
+                    {{ icon.legend.desc }}
+                </span>
+
+            </div>
+
+        </div>
 
     </div>
 

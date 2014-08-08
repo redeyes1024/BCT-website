@@ -5,7 +5,7 @@
     position: relative;
     width: 100%;
     height: 54em;
-    font-family: helvetica neue !important;
+    font-family: verdana !important;
     margin-bottom: 5em;
 }
 
@@ -100,12 +100,12 @@ em.hint-text {
 .search-top-buttons {
     display: table-cell;
     text-align: center;
-    font-size: 1.5em;
+    font-size: 1.5em !important;
     border-style: dotted;
 }
 .navigation-bar-main-contents {
-    display: table-cell;
-    vertical-align: middle;
+    display: block;
+    overflow: auto;
 }
 .navigation-bar-directions {
     display: table-cell;
@@ -186,6 +186,73 @@ em.hint-text {
     padding: 0.5em 0em 0.8em;
     background-color: #FFF;
     text-align: center;
+}
+.icon-legend-modal {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.7);
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+    left: 0em;
+    top: 0em;
+}
+.icon-legend-title-bar {
+    
+}
+.icon-legend-title-bar-close {
+    float: right;
+    margin: 0em 0.2em 0em 0em;
+}
+.icon-legend-contents {
+    position: relative;
+    background-color: #FFF;
+    width: 80%;
+    height: 40em;
+    margin: -20em 0% 0% 10%;
+    top: 50%;
+}
+.icon-legend-contents-main-container {
+    margin: 1em;
+}
+.icon-legend-item {
+    position: relative;
+    border-style: solid;
+    border-width: 1px;
+    height: 5em;
+    margin: 0em 0em 1em 0em;
+    box-shadow: 2px 2px 5px -1px;
+}
+.icon-legend-module-name-and-icon {
+    display: inline-block;
+    height: 100%;
+    width: 8em;
+    text-align: center;
+    border-style: solid;
+    border-width: 0px 1px 0px 0px;
+}
+.icon-legend-module-name {
+    display: block;
+    height: 1.5em;
+    font-weight: 400;
+    border-style: solid;
+    border-width: 1px 0px;
+}
+.icon-legend-module-name:first-child {
+    border-width: 0px 0px 1px;
+}
+.icon-legend-fa-icon {
+    display: block;
+    font-size: 2em;
+    height: calc(100% - 0.7em);
+    padding: 0.3em 0em 0em 0em;
+}
+.icon-legend-description {
+    display: inline-block;
+    position: absolute;
+    overflow: auto;
+    height: 100%;
+    width: calc(100% - 5em);
+    padding: 0em 0em 0em 0.5em;
 }
 
 /* END Generic Classes */
@@ -448,11 +515,9 @@ schedule-map-navigation-bar {
     font-size: 0.7em;
 }
 .schedule-map-navigation-bar-contents {
-    display: block;
     position: relative;
     font-size: 1.5em;
     height: 2.1em;
-    overflow: auto;
 }
 .schedule-map-navigation-bar-contents-description {
     display: block;
@@ -803,7 +868,7 @@ inline-filter-icons {
     margin: 0% 2%;
 }
 #planner-embed-prefs {
-    margin-left: calc(20% - 3.6em);
+    margin-left: calc(20% - 3.8em);
 }
 #planner-submit-button {
     border-width: 1px 0px;
@@ -1016,6 +1081,9 @@ trip-planner-navigation-bar {
     display: table;
     table-layout: fixed;
 }
+.trip-planner-navigation-bar-main-contents {
+    height: 4em;
+}
 #trip-planner-dialog {
     background-color: #F2CD00;
     position: absolute;
@@ -1088,7 +1156,7 @@ iframe .trip-planner-dialog-finish {
         font-size: 1em;
     }
     schedule-map-navigation-bar {
-        padding: 1em 0em 2em;
+        padding: 1em 0em 1.7em;
     }
     .schedule-map-navigation-bar-contents {
         font-size: 1.1em;

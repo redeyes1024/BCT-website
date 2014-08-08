@@ -24,7 +24,7 @@ window.myride.directories = {
 
 //Select the current directory from the above object
 window.myride.directories.site_roots.active =
-window.myride.directories.site_roots.local;
+window.myride.directories.site_roots.remote;
 
 window.myride.directories.paths.active =
 window.myride.directories.paths.my_ride;
