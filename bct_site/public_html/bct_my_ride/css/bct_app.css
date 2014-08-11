@@ -5,8 +5,8 @@
     position: relative;
     width: 100%;
     height: 54em;
+    font-size: 14px !important;
     font-family: verdana !important;
-    margin-bottom: 5em;
 }
 
 /* END Main Container */
@@ -43,11 +43,6 @@
 }
 .hide-scroll {
     overflow: hidden !important;
-}
-a.link-icon,
-a.link-icon-rev {
-    opacity: 1 !important;
-    text-decoration: none !important;
 }
 .link-icon,
 .link-icon:focus {
@@ -90,7 +85,7 @@ em.hint-text {
 }
 
 #main-app-space {
-    height: calc(100% - 5em);
+    height: calc(100% - 8em + 2px);
 }
 #index-page,
 #route-schedules-module {
@@ -135,6 +130,9 @@ em.hint-text {
 }
 .map-full-screen-button {
     position: relative;
+}
+.map-full-screen-activate-button {
+    
 }
 .map-full-screen-return-button {
     position: fixed;
@@ -190,14 +188,14 @@ em.hint-text {
 .icon-legend-modal {
     position: absolute;
     background-color: rgba(0, 0, 0, 0.7);
-    height: 100%;
+    height: calc(100% + 0.3em);
     width: 100%;
-    z-index: 1;
+    z-index: 1035;
     left: 0em;
     top: 0em;
 }
 .icon-legend-title-bar {
-    
+
 }
 .icon-legend-title-bar-close {
     float: right;
@@ -212,7 +210,9 @@ em.hint-text {
     top: 50%;
 }
 .icon-legend-contents-main-container {
-    margin: 1em;
+    padding: 1em;
+    height: calc(100% - 1.7em);
+    overflow: auto;
 }
 .icon-legend-item {
     position: relative;
@@ -232,27 +232,37 @@ em.hint-text {
 }
 .icon-legend-module-name {
     display: block;
-    height: 1.5em;
+    height: 1.7em;
     font-weight: 400;
     border-style: solid;
     border-width: 1px 0px;
+    background-color: #017AC2;
+    color: white;
 }
 .icon-legend-module-name:first-child {
     border-width: 0px 0px 1px;
 }
-.icon-legend-fa-icon {
+.icon-legend-icon {
     display: block;
     font-size: 2em;
-    height: calc(100% - 0.7em);
-    padding: 0.3em 0em 0em 0em;
+}
+.icon-legend-icon-fa {
+    padding: 0.25em 0em 0em;
+}
+.icon-legend-icon-image {
+    padding: 0.15em 0.75em 0em;
+}
+.icon-legend-image-contents {
+    height: 1.3em;
 }
 .icon-legend-description {
     display: inline-block;
     position: absolute;
-    overflow: auto;
     height: 100%;
-    width: calc(100% - 5em);
+    width: calc(100% - 8em);
     padding: 0em 0em 0em 0.5em;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 /* END Generic Classes */
@@ -280,7 +290,6 @@ em.hint-text {
 }
 #index-search-input {
     width: calc(100% - 0.5em);
-    margin-left: -0.5em;
 }
 #recent-accordion {
     padding: 0px !important;
@@ -346,7 +355,7 @@ em.hint-text {
     top: calc(1.5em + 3px);
     left: 0px;
     z-index: 1029;
-    height: calc(100% - 5em);
+    height: calc(100% - 8em + 2px);
 }
 iframe #schedule-map {
     position: fixed;
@@ -715,6 +724,7 @@ inline-filter-icons {
 }
 #schedule-search-back-button {
     border-width: 0px 2px 0px 0px;
+    padding: 0em 0.3em;
 }
 #schedule-search-clear-button-top {
     border-width: 0px 2px 0px 1px;
@@ -1142,14 +1152,20 @@ iframe .trip-planner-dialog-finish {
 
 /* START All Media Queries */
 
+@media (max-width: 600px) {
+    .map-full-screen-activate-button {
+        display: none;
+    }
+}
+
 @media (max-width: 600px), (min-width: 900px) and (max-width: 1500px) {
     #main-app-space {
-        height: calc(100% - 11em);
+        height: calc(100% - 15em);
     }
 
     /* Schedule Map */
     #schedule-map {
-        height: calc(100% - 10.5em);
+        height: calc(100% - 15em);
     }
     .schedule-map-mini-schedule-button {
         width: 2em;

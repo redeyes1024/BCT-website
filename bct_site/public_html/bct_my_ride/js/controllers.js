@@ -9,6 +9,10 @@ BCTAppControllers.controller('routeSchedulesController', ['$scope',
     myride.dom_q.inputs.elements.rs_search_input =
     document.getElementById("route-stop-search-input");
 
+    
+    myride.dom_q.inputs.elements.rs_search_input.value =
+    $scope.query_data.schedule_search;
+
     $scope.top_scope.rs_scope_loaded = true;
 
     $scope.$on("destroy", function() {

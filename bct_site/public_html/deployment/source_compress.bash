@@ -11,7 +11,7 @@
 # If source list filename is supplied, it defaults to a local file named
 # all_sources.txt. The user will be notified when any defaults are used.
 
-while getopts ":t:f:s:" opt; do
+while getopts ":t:f:s:m:" opt; do
 
     case ${opt} in
 
@@ -30,6 +30,12 @@ while getopts ":t:f:s:" opt; do
         s)
 
             sourcelist=${OPTARG}
+
+            ;;
+
+        m)
+
+            compression_mode=${OPTARG}
 
             ;;
 
@@ -72,7 +78,7 @@ function useDefaultFilenameIfNoneSpecified {
 
 }
 
-if [ -z $sourcelist ]; then
+if [ -z ${sourcelist} ]; then
 
     sourcelist="all_sources.txt"
 
@@ -129,9 +135,17 @@ if [[ "${type}" == "css" ]]; then
 
 elif [[ "${type}" == "js" ]]; then
 
-    gawk 'FNR==1 {print ""}1' ${full_sources} |
-    java -jar "${YUICOMPRESSOR_DIR}/yuicompressor-2.4.8.jar" --type ${type} \
-    --line-break 4000 --nomunge > ${output_filename}
+    if [[ -z ${compression_mode} ]]; then
+
+        gawk 'FNR==1 {print ""}1' ${full_sources} |
+        java -jar "${YUICOMPRESSOR_DIR}/yuicompressor-2.4.8.jar" \
+        --type ${type} --line-break 4000 --nomunge > ${output_filename}
+
+    elif [[ "${compression_mode}" == "concat" ]]; then
+
+        gawk 'FNR==1 {print ""}1' ${full_sources} > ${output_filename}
+
+    fi
 
 fi
 

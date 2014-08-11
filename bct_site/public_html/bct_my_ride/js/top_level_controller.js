@@ -367,6 +367,10 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
     /* END Data Object Templates */
 
+    $scope.base_myride_url =
+    window.myride.directories.site_roots.active +
+    window.myride.directories.paths.active;
+
     $scope.submitRouteStopSearch = function(e) {
 
         $scope.query_data.schedule_search =
@@ -907,7 +911,7 @@ BCTAppTopController.controller('BCTController', ['$scope',
         $scope.show_map_overlay_module =  true;
 
         $scope.enableMapToggleOnTitles();
-        
+
         googleMapUtilities.setMapPosition(null, 10);
 
         $scope.show_schedule_result_top_bar = false;
@@ -1153,7 +1157,9 @@ BCTAppTopController.controller('BCTController', ['$scope',
     };
 
     $scope.changeURLHash = function(new_hash, model) {
+
         if (model) {
+
             var input_str = $scope.query_data[model];
             if (!input_str || input_str.trim() === "") {
                 if (input_str !== "") {
@@ -1162,7 +1168,9 @@ BCTAppTopController.controller('BCTController', ['$scope',
                 return true;
             }
         }
+
         window.location.hash = new_hash;
+
     };
 
     /*

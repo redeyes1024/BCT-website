@@ -28,5 +28,3 @@ media="screen" />
 <script type="text/javascript" src="bct_my_ride/js/services.js"></script>
 <script type="text/javascript" src="bct_my_ride/js/directives.js"></script>
 <script type="text/javascript" src="bct_my_ride/js/filters.js"></script>
-
-<link rel="stylesheet" type="text/css" href="bct_site.css" media="screen" />

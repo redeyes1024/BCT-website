@@ -25,8 +25,17 @@ class="icon-legend-modal">
                         {{ icon.legend.module }}
                     </span>
 
-                    <span class="icon-legend-fa-icon">
+                    <span class="icon-legend-icon icon-legend-icon-fa"
+                    ng-show="icon.fa_name">
                         <i class="fa {{ icon.fa_name }}"></i>
+                    </span>
+
+                    <span class="icon-legend-icon icon-legend-icon-image"
+                    ng-show="icon.filename">
+
+                        <img class="icon-legend-image-contents"
+                        src="{{ base_myride_url }}css/ico/{{ icon.filename }}">
+
                     </span>
 
                 </span>

@@ -608,10 +608,10 @@ BCTAppServices.service('unitConversionAndDataReporting', [ function() {
             divider = "";
         }
 
-        if (minutes_count === 1) {
+        if (minutes_count === "1") {
             mins_plural = "";
         }
-        if (hours_count === 1) {
+        if (hours_count === "1") {
             hours_plural = "";
         }
 
@@ -828,15 +828,24 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
         //Map intance is re-centered before re-showing the map...
         myride.dom_q.map.inst.setZoom(zoom);
         myride.dom_q.map.inst.setCenter(coords);
+
         self.touchMap();
-        angular.element(document).ready(function() {
+
+        google.maps.event.addListenerOnce(
+            myride.dom_q.map.inst,
+            'idle',
+            function() {
+
             //...but it must be re-centered once more in case a resize
             //occured since the map instance was last hidden.
             //N.B. the event.trigger method does not have a callback arg
             //triggered upon resize, so second re-centering is always attempted
             myride.dom_q.map.inst.setZoom(zoom);
             myride.dom_q.map.inst.setCenter(coords);
-        });
+
+            }
+        );
+
     };
 
     this.clearMap = function() {
