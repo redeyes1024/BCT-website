@@ -785,11 +785,25 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
     };
 
     this.touchMap = function() {
+        
+        google.maps.event.addListenerOnce(
+            myride.dom_q.map.inst,
+            'idle',
+            function() {
+                google.maps.event.trigger(
+                    myride.dom_q.map.inst, "resize"
+                );
+            }
+        );
+
         angular.element(document).ready(function() {
+
             google.maps.event.trigger(
                 myride.dom_q.map.inst, "resize"
             );
+
         });
+
     };
 
     this.setMapPosition = function(coords, zoom) {

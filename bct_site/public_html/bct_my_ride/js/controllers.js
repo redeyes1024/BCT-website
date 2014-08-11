@@ -1,12 +1,12 @@
 var BCTAppControllers = angular.module('BCTAppControllers', []);
 
 BCTAppControllers.controller('routeSchedulesController', ['$scope',
-    '$timeout', function ($scope, $timeout) {
+'$timeout', function ($scope, $timeout) {
 
     //For ease of debugging (development only)
     window.rs_scope = $scope;
 
-    myride.dom_q.inputs.rs_search_input =
+    myride.dom_q.inputs.elements.rs_search_input =
     document.getElementById("route-stop-search-input");
 
     $scope.top_scope.rs_scope_loaded = true;
@@ -61,6 +61,9 @@ function ($scope, $timeout, nearestStopsService) {
     //For ease of debugging (development only)
     window.index_scope = $scope;
 
+    myride.dom_q.inputs.elements.index_search_input =
+    document.getElementById("index-search-input");
+
     $scope.nearest_bstops = $scope.nearest_bstops_loading;
 
     $scope.calculateAndShowNearestBusStops = function(location) {
@@ -95,8 +98,6 @@ function ($scope, $timeout, nearestStopsService) {
         );
     };
 
-
-    myride.dom_q.inputs["index-schedule-search"] = document.getElementById("index-schedule-search");
     $scope.recently_viewed = {
         trips: [
             {

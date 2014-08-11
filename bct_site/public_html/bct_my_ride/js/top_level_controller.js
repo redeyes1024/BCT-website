@@ -367,6 +367,18 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
     /* END Data Object Templates */
 
+    $scope.submitRouteStopSearch = function(e) {
+
+        $scope.query_data.schedule_search =
+        myride.dom_q.inputs.elements.rs_search_input.value;
+
+        //Only the 'click' event calls the $apply automatically (from ng-click)
+        if (e === 'enter') {
+            $scope.$apply();
+        }
+
+    };
+
     $scope.legend_icon_list = legend_icon_list;
 
     $scope.uncoverSelectedStepIcon = function(step_index) {
@@ -785,8 +797,10 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
         $scope.query_data[model] = "";
 
-        if (myride.dom_q.inputs.rs_search_input) {
-            myride.dom_q.inputs.rs_search_input.value = "";
+        if (myride.dom_q.inputs.elements.rs_search_input) {
+
+            myride.dom_q.inputs.elements.rs_search_input.value = "";
+
         }
 
     };
@@ -1006,6 +1020,7 @@ BCTAppTopController.controller('BCTController', ['$scope',
     getCurrentLocationAndDisplayData;
 
     $scope.foldOptions = function(event) {
+
         var c_buttons = document.getElementsByClassName("collapse-button");
 
         var targ_cl = event.target.children[0].children[0].classList;
@@ -1024,39 +1039,8 @@ BCTAppTopController.controller('BCTController', ['$scope',
             targ_cl.add("fa-plus-circle");
         }
         $scope.clearFilters();
+
     };
-
-    function splitRouteDirections() {
-        var directions = cur_route.DirectionHeadSign;
-        var dir_name = "";
-
-        for (var d_i=0;d_i<directions.length;d_i++) {
-            var cur_dir = directions[d_i];
-            var dir_abbr = cur_dir[cur_dir.length-1];
-
-            switch (dir_abbr) {
-                case "N":
-                    dir_name = "North";
-                    break;
-                case "S":
-                    dir_name = "South";
-                    break;
-                case "E":
-                    dir_name = "East";
-                    break;
-                case "W":
-                    dir_name = "West";
-                    break;
-                case "O":
-                    dir_name = "West";
-                    break;
-            }
-            var full_id = cur_route.RouteId + dir_name;
-            var new_route = routes[full_id] = JSON.parse(JSON.stringify(cur_route));
-            new_route.Direction = dir_name;
-            new_route.full_id = full_id;
-        }
-    }
 
     function transformRoutes() {
         var routes = $scope.routes = {};
