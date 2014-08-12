@@ -994,8 +994,8 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
         var point_coords = point.marker.getPosition();
 
         myride.dom_q.map.inst.setCenter({
-            lat: point_coords.k,
-            lng: point_coords.B
+            lat: point_coords.lat(),
+            lng: point_coords.lng()
         });
 
         if (e) {

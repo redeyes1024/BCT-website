@@ -127,6 +127,7 @@ em.hint-text {
     left: 3em;
     top: 3em;
     z-index: 1031;
+    -webkit-transform: none !important;
 }
 .map-full-screen-button {
     position: relative;
@@ -137,7 +138,7 @@ em.hint-text {
 .map-full-screen-return-button {
     position: fixed;
     width: calc(100% - 4.6em);
-    bottom: 1.9em;
+    bottom: 1.7em;
     left: 2.3em;
     z-index: 1031;
 }
@@ -356,6 +357,10 @@ em.hint-text {
     left: 0px;
     z-index: 1029;
     height: calc(100% - 8em + 2px);
+}
+.schedule-map-full-screen {
+    position: fixed !important;
+    height: 100% !important;
 }
 iframe #schedule-map {
     position: fixed;

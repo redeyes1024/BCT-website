@@ -62,6 +62,10 @@ BCTAppTopController.controller('BCTController', ['$scope',
         "map-canvas-full-screen": false
     };
 
+    $scope.schedule_map_styles = {
+        "schedule-map-full-screen": false
+    };
+
     /* END CSS class expressions to be used to ng-class, with defaults */
 
     /* START Overlay Display Controls */
@@ -300,6 +304,18 @@ BCTAppTopController.controller('BCTController', ['$scope',
         }
     });
 
+    $scope.$watch("show_map_full_screen_modal",
+    function(new_val, old_val) {
+
+        if (new_val > old_val) {
+            $scope.schedule_map_styles["schedule-map-full-screen"] = true;
+        }
+
+        else if (new_val < old_val) {
+            $scope.schedule_map_styles["schedule-map-full-screen"] = false;
+        }
+    });
+
     /* END Custom Watchers */
 
     /* START Data Object Templates */
@@ -428,8 +444,8 @@ BCTAppTopController.controller('BCTController', ['$scope',
         var point_coords = point.marker.getPosition();
 
         myride.dom_q.map.inst.setCenter({
-            lat: point_coords.k,
-            lng: point_coords.B
+            lat: point_coords.lat(),
+            lng: point_coords.lng()
         });
 
         point.ShowWindow.func(true);
@@ -621,7 +637,8 @@ BCTAppTopController.controller('BCTController', ['$scope',
         var marker_position = marker_instance.marker.getPosition();
 
         myride.dom_q.map.inst.setCenter({
-            lat: marker_position.k, lng: marker_position.B
+            lat: marker_position.lat(),
+            lng: marker_position.lng()
         });
     };
 
