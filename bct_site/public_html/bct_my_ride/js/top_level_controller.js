@@ -66,6 +66,15 @@ BCTAppTopController.controller('BCTController', ['$scope',
         "schedule-map-full-screen": false
     };
 
+    $scope.global_alerts_message_styles_1 = {
+        "global-alerts-header-message-hidden-left": false,
+        "global-alerts-header-message-hidden-right": false
+    };
+
+    $scope.global_alerts_message_styles_2 = {
+        "global-alerts-header-message-hidden": false
+    };
+
     /* END CSS class expressions to be used to ng-class, with defaults */
 
     /* START Overlay Display Controls */
@@ -121,10 +130,12 @@ BCTAppTopController.controller('BCTController', ['$scope',
     $scope.show_trip_planner_itinerary_transit_type_icon_non_selectable = false;
 
     (function() {
+
         for (icon in location_icons) {
             $scope[location_icons[icon].regular_icon] = true;
             $scope[location_icons[icon].spinning_icon] = false;
         }
+
     }());
 
     /* END Overlay Display Controls */
@@ -326,6 +337,14 @@ BCTAppTopController.controller('BCTController', ['$scope',
         bstop_id: ""
     };
 
+    $scope.global_alerts = [
+        "The first lorem ipsum dolor sit amet",
+        "The second lorem ipsum dolor sit amet",
+        "The third lorem ipsum dolor sit amet",
+        "The fourth lorem ipsum dolor sit amet",
+        "The fifth lorem ipsum dolor sit amet"
+    ];
+
     $scope.alerts = [
       "Bus route will change to include Data Ave. starting in January"
     ];
@@ -382,6 +401,111 @@ BCTAppTopController.controller('BCTController', ['$scope',
     };
 
     /* END Data Object Templates */
+
+    $scope.global_alerts_index = {
+        "1": -2,
+        "2": -1
+    };
+
+    $scope.cycleThroughAlerts = function(index) {
+
+        var alerts_count = $scope.global_alerts.length;
+
+        if (index === alerts_count) {
+
+            index = 0;
+
+        }
+
+        else if (index === alerts_count + 1) {
+
+            index = 1;
+
+        }
+
+        return index;
+
+    };
+
+    $scope.alert_scroll_counter = 0;
+
+    $scope.goThroughAlerts = function(message_number) {
+
+        $scope.alert_scroll_counter++;
+
+        var hidden_left = "global-alerts-header-message-hidden-left";
+        var hidden_right = "global-alerts-header-message-hidden-right";
+
+        var cur_style;
+
+        if (message_number === 1) {
+
+            cur_style = $scope.global_alerts_message_styles_1;
+
+        }
+
+        else if (message_number === 2) {
+
+            cur_style = $scope.global_alerts_message_styles_2;
+
+        }
+
+        $scope.global_alerts_index[String(message_number)] += 2;
+
+        $scope.global_alerts_index[String(message_number)] =
+        $scope.cycleThroughAlerts(
+            $scope.global_alerts_index[String(message_number)]
+        );
+
+        cur_style[hidden_right] = true;
+        cur_style[hidden_left] = false;
+
+        var time_to_display = 4000;
+
+        if ($scope.alert_scroll_counter === 4) {
+
+            time_to_display = 3500;
+
+            $scope.alert_scroll_counter = 0;
+
+        }
+
+        $timeout(function() {
+
+            cur_style[hidden_right] = false;
+            cur_style[hidden_left] = false;
+
+            $timeout(function() {
+
+                cur_style[hidden_left] = true;
+
+            }, time_to_display);
+
+        }, 4000);
+
+    };
+
+    $scope.global_alerts_message_styles_2["global-alerts-header-message-hidden-right"] = true;
+
+    $scope.goThroughAlerts(1);
+
+    $interval(function() {
+
+        $scope.goThroughAlerts(1);
+
+    }, 8500);
+
+    $timeout(function() {
+
+        $scope.goThroughAlerts(2);
+
+        $interval(function() {
+
+            $scope.goThroughAlerts(2);
+
+        }, 8500);
+
+    }, 4000);
 
     $scope.base_myride_url =
     window.myride.directories.site_roots.active +

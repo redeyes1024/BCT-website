@@ -423,6 +423,7 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
     $scope.displayTripPlan = function(selection) {
 
         googleMapUtilities.displayTripPath(
+            $scope.routes,
             $scope.current_trip_plan_data[selection].legsField
         );
 

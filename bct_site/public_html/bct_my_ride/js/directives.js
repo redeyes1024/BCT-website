@@ -198,3 +198,14 @@ BCTApp.directive('tripPlannerStep', [ function() {
     };
 
 }]);
+
+BCTApp.directive('globalAlertsHeader', [ function() {
+
+    return {
+        restrict: 'E',
+        templateUrl: window.myride.directories.site_roots.active +
+        window.myride.directories.paths.active +
+        'partials/global_alerts_header.html'
+    };
+
+}]);

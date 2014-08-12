@@ -894,10 +894,12 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
             route_coords_cor.push(coords_obj);
         }
 
+        var route_color = "#" + routes[route].Color;
+
         myride.dom_q.map.overlays.pline = new google.maps.Polyline({
             map: myride.dom_q.map.inst,
             path: route_coords_cor,
-            strokeColor: self.palette.colors.blue,
+            strokeColor: route_color,
             strokeWeight: self.palette.weights.lines.mid
         });
     };
@@ -1219,13 +1221,19 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
 
     };
 
-    this.formatTransitModeResult = function(mode_field, route_field) {
+    //TODO: Request API modification to return GTFS route colors directly
+    this.formatTransitModeResult = function(
+        all_routes,
+        mode_field,
+        route_field
+    ) {
+
         var leg_color = "";
         var route_text = "";
 
         switch (mode_field) {
             case "BUS":
-                leg_color = self.palette.colors.blue;
+                leg_color = "#" + all_routes["BCT" + route_field].Color;
                 route_text = "BCT" + route_field;
                 label = "Bus route";
                 break;
@@ -1248,6 +1256,7 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
             leg_color: leg_color,
             route_text: route_text
         };
+
     };
 
     this.getCoordsMidsAndSpans = function(all_path_coords_divided) {
@@ -1385,7 +1394,7 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
         };
     };
 
-    this.displayTripPath = function(line_data) {
+    this.displayTripPath = function(all_routes, line_data) {
 
         self.clearMap();
 
@@ -1396,6 +1405,7 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
         };
 
         for (var i=0;i<legs.length;i++) {
+
             var path_coords_raw = self.decodePath(
                 legs[i].legGeometryField.pointsField
             );
@@ -1414,7 +1424,11 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
             }
 
             var formattedModeResult = self.formatTransitModeResult(
-                    legs[i].modeField, legs[i].routeField);
+                all_routes,
+                legs[i].modeField,
+                legs[i].routeField
+            );
+
             var leg_color = formattedModeResult.leg_color;
             var route_text = formattedModeResult.route_text;
 
