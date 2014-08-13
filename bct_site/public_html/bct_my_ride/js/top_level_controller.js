@@ -403,8 +403,8 @@ BCTAppTopController.controller('BCTController', ['$scope',
     /* END Data Object Templates */
 
     $scope.global_alerts_index = {
-        "1": -2,
-        "2": -1
+        "1": 0,
+        "2": 1
     };
 
     $scope.cycleThroughAlerts = function(index) {
@@ -427,11 +427,75 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
     };
 
-    $scope.alert_scroll_counter = 0;
+    $scope.changeToNextAlert = function(message_number) {
+
+        $scope.global_alerts_index[String(message_number)] += 2;
+
+        $scope.global_alerts_index[String(message_number)] =
+        $scope.cycleThroughAlerts(
+            $scope.global_alerts_index[String(message_number)]
+        );
+
+    };
+
+    $scope.TIME_ALERT_MESSAGES_DISPLAYED = 4000;
+
+    $scope.TIME_FOR_ALERT_SWEEP_LEFT = 500;
+
+    $scope.showAlertInMiddleAndRestartCycle = function(
+        style_prefs, message_number
+    ) {
+
+        style_prefs.cur_style[style_prefs.hidden_right] = false;
+        style_prefs.cur_style[style_prefs.hidden_left] = false;
+
+        $timeout(
+            function() {
+                $scope.hideAlertOnLeft(style_prefs, message_number);
+            },
+            $scope.TIME_ALERT_MESSAGES_DISPLAYED
+        );
+
+    };
+
+    $scope.hideAlertOnLeft = function(
+        style_prefs, message_number
+    ) {
+
+        style_prefs.cur_style[style_prefs.hidden_right] = false;
+        style_prefs.cur_style[style_prefs.hidden_left] = true;
+
+        $timeout(
+            function() {
+                $scope.hideAlertOnRight(style_prefs, message_number);
+            },
+            $scope.TIME_FOR_ALERT_SWEEP_LEFT
+        );
+
+    };
+
+    $scope.hideAlertOnRight = function(
+        style_prefs, message_number
+    ) {
+
+        $scope.changeToNextAlert(message_number);
+
+        style_prefs.cur_style[style_prefs.hidden_right] = true;
+        style_prefs.cur_style[style_prefs.hidden_left] = false;
+
+        $timeout(
+            function() {
+                $scope.showAlertInMiddleAndRestartCycle(
+                    style_prefs, message_number
+                );
+            },
+            $scope.TIME_ALERT_MESSAGES_DISPLAYED -
+            $scope.TIME_FOR_ALERT_SWEEP_LEFT
+        );
+
+    };
 
     $scope.goThroughAlerts = function(message_number) {
-
-        $scope.alert_scroll_counter++;
 
         var hidden_left = "global-alerts-header-message-hidden-left";
         var hidden_right = "global-alerts-header-message-hidden-right";
@@ -450,62 +514,35 @@ BCTAppTopController.controller('BCTController', ['$scope',
 
         }
 
-        $scope.global_alerts_index[String(message_number)] += 2;
+        var style_prefs = {
+            hidden_left: hidden_left,
+            hidden_right: hidden_right,
+            cur_style: cur_style
+        };
 
-        $scope.global_alerts_index[String(message_number)] =
-        $scope.cycleThroughAlerts(
-            $scope.global_alerts_index[String(message_number)]
-        );
-
-        cur_style[hidden_right] = true;
-        cur_style[hidden_left] = false;
-
-        var time_to_display = 4000;
-
-        if ($scope.alert_scroll_counter === 4) {
-
-            time_to_display = 3500;
-
-            $scope.alert_scroll_counter = 0;
-
-        }
-
-        $timeout(function() {
-
-            cur_style[hidden_right] = false;
-            cur_style[hidden_left] = false;
-
-            $timeout(function() {
-
-                cur_style[hidden_left] = true;
-
-            }, time_to_display);
-
-        }, 4000);
+        $scope.showAlertInMiddleAndRestartCycle(style_prefs, message_number);
 
     };
 
-    $scope.global_alerts_message_styles_2["global-alerts-header-message-hidden-right"] = true;
+    $scope.beginAlertScrolling = function(type) {
 
-    $scope.goThroughAlerts(1);
+        if (type === "global") {
 
-    $interval(function() {
+            $scope.goThroughAlerts(1);
 
-        $scope.goThroughAlerts(1);
+            $scope.
+            global_alerts_message_styles_2
+            ["global-alerts-header-message-hidden-right"] = true;
 
-    }, 8500);
+            $timeout(function() {
+                $scope.goThroughAlerts(2);
+            }, 4000);
 
-    $timeout(function() {
+        }
 
-        $scope.goThroughAlerts(2);
+    };
 
-        $interval(function() {
-
-            $scope.goThroughAlerts(2);
-
-        }, 8500);
-
-    }, 4000);
+    $scope.beginAlertScrolling("global");
 
     $scope.base_myride_url =
     window.myride.directories.site_roots.active +

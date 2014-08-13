@@ -275,18 +275,21 @@ em.hint-text {
     height: 1.9em;
     border-style: solid;
     border-width: 1px;
-    overflow: hiddenn;
+    overflow: hidden;
 }
 .global-alerts-header-message {
     position: absolute;
     left: 0.5em;
-    transition: left 1s;
+    opacity: 1;
+    transition: left 1s, opacity 1s;
 }
 .global-alerts-header-message-hidden-right {
+    opacity: 0;
     left: 100%;
     transition: none;
 }
 .global-alerts-header-message-hidden-left {
+    opacity: 0;
     left: -100%;
 }
 
