@@ -4,6 +4,37 @@ var BCTAppValues = angular.module('BCTAppValues', []);
 BCTAppValues.value('scheduleWebSocket',
 new WebSocket("ws://echo.websocket.org"));
 
+BCTAppValues.value('all_alerts_indices', {
+
+    global: {
+        "1": 0,
+        "2": 1
+    },
+
+    schedule_map: {
+        "1": 0,
+        "2": 1
+    }
+
+});
+
+BCTAppValues.value('all_alerts', {
+    
+    global: [
+        "The first alert",
+        "The second alert",
+        "The third alert",
+        "The fourth alert"
+    ],
+
+    schedule_map: [
+        "The first route alert",
+        "The second route alert",
+    ]
+
+});
+
+
 BCTAppValues.value('legend_icon_list', [
 
     {

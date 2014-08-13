@@ -209,3 +209,14 @@ BCTApp.directive('globalAlertsHeader', [ function() {
     };
 
 }]);
+
+BCTApp.directive('scheduleMapAlertsHeader', [ function() {
+
+    return {
+        restrict: 'E',
+        templateUrl: window.myride.directories.site_roots.active +
+        window.myride.directories.paths.active +
+        'partials/schedule_map_alerts_header.html'
+    };
+
+}]);

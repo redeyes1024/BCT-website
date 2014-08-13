@@ -269,26 +269,38 @@ em.hint-text {
 .global-alerts-header-contents {
     position: absolute;
     top: -2.5em;
-    width: 100%;
-    background-color: #FFF;
-    z-index: 1;
-    height: 1.9em;
     border-style: solid;
     border-width: 1px;
-    overflow: hidden;
 }
-.global-alerts-header-message {
+.alerts-header-contents {
+    height: 1.8em;
+    width: 100%;
+    text-align: left;
+    overflow: hidden;
+    background-color: #FFF;
+    box-shadow: 2px 2px 4px -1px #555;
+    z-index: 1;
+}
+.alert-area-icon {
+    position: relative;
+    font-size: 1.4em;
+    top: 0.05em;
+    padding-left: 0.2em;
+    background-color: #FFF;
+    z-index: 1;
+}
+.alert-header-message {
     position: absolute;
-    left: 0.5em;
+    left: 1.8em;
     opacity: 1;
     transition: left 1s, opacity 1s;
 }
-.global-alerts-header-message-hidden-right {
+.alert-header-message-hidden-right {
     opacity: 0;
     left: 100%;
     transition: none;
 }
-.global-alerts-header-message-hidden-left {
+.alert-header-message-hidden-left {
     opacity: 0;
     left: -100%;
 }
@@ -447,27 +459,10 @@ iframe #schedule-map-loading-modal-spinner {
     overflow: hidden;
     border-width: 0px;
 }
-#schedule-map-hide {
-    
-}
-#schedule-map-next {
-    
-}
-#schedule-map-prev {
-    
-}
-#schedule-map-view-full {
-    
-}
-#schedule-map-alert-area {
+.schedule-map-alerts-header-contents {
+    position: relative;
     border-style: solid;
-}
-#schedule-map-info-bar {
-    
-}
-#schedule-map-alert-area {
-    background-color: white;
-    border-width: 1px 0px 1px 0px;
+    border-width: 1px 0px;
 }
 .schedule-map-mini-schedule-button {
     width: 3em;
@@ -492,18 +487,6 @@ iframe #schedule-map-loading-modal-spinner {
     width: 50em;
     font-weight: 400;
     padding: 0.5em 0em;
-}
-#schedule-map-alert-area {
-    text-align: left;
-    padding: 0.25em 0.5em;
-}
-#schedule-map-alert-area-icon {
-    font-size: 1.4em;
-    position: relative;
-    bottom: .245em;
-}
-#schedule-map-alert-area-text {
-    position: relative;
 }
 .marker-info-window {
     height: 12em;

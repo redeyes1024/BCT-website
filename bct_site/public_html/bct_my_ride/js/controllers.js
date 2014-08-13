@@ -9,7 +9,6 @@ BCTAppControllers.controller('routeSchedulesController', ['$scope',
     myride.dom_q.inputs.elements.rs_search_input =
     document.getElementById("route-stop-search-input");
 
-    
     myride.dom_q.inputs.elements.rs_search_input.value =
     $scope.query_data.schedule_search;
 
