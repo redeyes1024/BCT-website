@@ -38,7 +38,8 @@ ng-class="schedule_map_styles" class="fbox" ng-class="schedule_map_styles">
 
                             {{ time.time }} <br>
 
-                            <span ng-show="time.diff">
+                            <span class="schedule-map-mini-schedule-time-eta"
+                            ng-show="time.diff">
                                 ({{ time.diff }})
                             </span>
 

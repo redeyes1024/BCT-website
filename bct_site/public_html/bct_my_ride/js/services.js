@@ -541,24 +541,29 @@ BCTAppServices.service('scheduleDownloadAndTransformation', ['$http', '$q',
     };
     
     this.calculateTimeDifference = function(times_arr) {
+
         var diff_arr = [];
 
         var t2 = (new Date).toTimeString().slice(0,5);
-        var t2_h = Number(t2.split(":")[0]);
-        var t2_m = Number(t2.split(":")[1]);
+        var t2_h = parseInt(t2.split(":")[0]);
+        var t2_m = parseInt(t2.split(":")[1]);
         var min_t2 = t2_h * 60 + t2_m;
 
         for (var i=0;i<times_arr.length;i++) {
+
             var t1 = times_arr[i];
-            var t1_h = Number(t1.split(":")[0]);
-            var t1_m = Number(t1.split(":")[1]);
+            var t1_h = parseInt(t1.split(":")[0]);
+            var t1_m = parseInt(t1.split(":")[1]);
             var min_t1 = t1_h * 60 + t1_m;
 
             var diff = min_t1 - min_t2;
             diff_arr.push(diff);
+
         }
         return diff_arr;
+
     };
+
 }]);
 
 BCTAppServices.service('unitConversionAndDataReporting', [ function() {
@@ -597,7 +602,7 @@ BCTAppServices.service('unitConversionAndDataReporting', [ function() {
 
         var divider = ", ";
 
-        if (Number(minutes_count) > 59) {
+        if (parseInt(minutes_count) > 59) {
             hours_count = String(parseInt(minutes_count / 60));
             minutes_count = String(minutes_count % 60);
 
@@ -608,10 +613,10 @@ BCTAppServices.service('unitConversionAndDataReporting', [ function() {
             divider = "";
         }
 
-        if (minutes_count === "1") {
+        if (parseInt(minutes_count) === 1) {
             mins_plural = "";
         }
-        if (hours_count === "1") {
+        if (parseInt(hours_count) === 1) {
             hours_plural = "";
         }
 
@@ -1367,8 +1372,8 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
 
         var map_width = myride.dom_q.map.cont.clientWidth;
         var map_width_calibration_ratio = Number(
-            map_width / ZOOM_14_SPAN_0_5_MAP_WIDTH).
-            toFixed(1);
+                map_width / ZOOM_14_SPAN_0_5_MAP_WIDTH
+            ).toFixed(1);
 
         for (var j=0;j<span_breakpoints.length;j++) {
             var old_breakpoint = span_breakpoints[j].calculated_breakpoint;
