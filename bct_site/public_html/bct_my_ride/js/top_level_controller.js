@@ -1358,38 +1358,69 @@ function (
     //Creates a partial link between the routes and stops data objects
     //in the form of a numerically indexed array
     fullDataDownloadPromise.then(function() {
+
         var all_stops = $scope.stops;
         var all_routes = $scope.routes;
+
         var all_stops_arr = [];
         var all_routes_arr = [];
 
         for (var route in all_routes) {
+
             all_routes[route].bstop_refs = [];
+
             var bstops = all_routes[route].Stops;
+
             for (var bstop in bstops) {
+
                 var s_res = {};
+
                 for (var i=0;i<bstop_props.length;i++) {
-                    s_res[bstop_props[i]] = all_stops[bstops[bstop]][bstop_props[i]];
+
+                    s_res[bstop_props[i]] =
+                    all_stops[bstops[bstop]][bstop_props[i]];
+
                 }
+
                 all_routes[route].bstop_refs.push(s_res);
+
             }
+
             all_routes_arr.push(all_routes[route]);
+
         }
+
         for (var bstop in all_stops) {
+
+            //Temporary placeholder bus stop-specific alert messages
+            all_stops[bstop].alert = ["Sample alert for stop " + bstop + "."];
+
             all_stops[bstop].route_refs = [];
+
             var routes = all_stops[bstop].Routes;
+
             for (var route in routes) {
+
                 var r_res = {};
+
                 for (var i=0;i<route_props.length;i++) {
-                    r_res[route_props[i]] = all_routes[routes[route]][route_props[i]];
+
+                    r_res[route_props[i]] =
+                    all_routes[routes[route]][route_props[i]];
+
                 }
+
                 all_stops[bstop].route_refs.push(r_res);
+
             }
+
             all_stops_arr.push(all_stops[bstop]);
+
         }
 
         $scope.routes_arr = all_routes_arr;
         $scope.stops_arr = all_stops_arr;
+
     });
 
     $scope.swapTripInputs = function() {

@@ -29,7 +29,7 @@ BCTAppValues.value('all_alerts', {
 
     schedule_map: [
         "The first route alert",
-        "The second route alert",
+        "The second route alert"
     ]
 
 });

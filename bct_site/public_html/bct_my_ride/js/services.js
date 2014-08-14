@@ -1128,16 +1128,33 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
 
             var info_cts = '' +
                 '<div class="marker-info-window">' +
-                    '<span> Route: ' + route + '</span>' +
-                    '<span> Stop: ' + bstops_names[i] + '</span>' +
-                    '<span> Name: ' + stops[bstops_names[i]].Name + '</span>' +
-                    '<span> Other Routes: ' +
+                    '<span>' + 
+                        '<em class="maker-info-window-title">Route: </em>' +
+                        route +
+                    '</span>' +
+                    '<span>' +
+                        '<em class="maker-info-window-title">Stop: </em>' +
+                        bstops_names[i] + " - " +
+                        stops[bstops_names[i]].Name +
+                    '</span>' +
+                    '<span>' +
+                        '<em class="maker-info-window-title">' +
+                            'Other Routes: '+
+                        '</em>' +
                         route_swap_button_templates + 
                     '</span>' +
                     '<span>' +
-                        'Next departures: ' +
-                        '<span id="stop-window-times-' + bstops_names[i] + '">' +
-                        'Loading...</span>' +
+                        '<em class="maker-info-window-title">Alerts: </em>' +
+                        stops[bstops_names[i]].alert +
+                    '</span>' +
+                    '<span>' +
+                        '<em class="maker-info-window-title">' +
+                            'Next departures: ' +
+                        '</em>' +
+                        '<span id="stop-window-times-' + bstops_names[i] +
+                        '">' +
+                            'Loading...' + 
+                        '</span>' +
                     '</span>' +
                 '</div>';
 

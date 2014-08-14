@@ -490,14 +490,18 @@ iframe #schedule-map-loading-modal-spinner {
 }
 .marker-info-window {
     height: 12em;
-    font-weight: bold;
     padding: 0.5em;
     width: 16em;
     text-align: left;
     display: table;
     font-size: 1.1em;
 }
+em.maker-info-window-title {
+    font-weight: 700;
+    font-style: normal;
+}
 .marker-info-window span {
+    font-weight: 400;
     display: table-row;
 }
 .marker-info-window span span {
