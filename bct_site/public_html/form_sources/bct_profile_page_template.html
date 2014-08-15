@@ -9,27 +9,116 @@
 
         <div id="profile-page-section-selector-bar" class="no-highlight">
 
-            <div class="profile-page-section-title-sub-container link-icon ptr">
+            <div class="profile-page-section-title-sub-container link-icon ptr"
+            onclick="ISR.utils.changePage('favorites');">
+
                 <span class="profile-page-section-title
                 profile-page-section-title-sub">
                     Favorites
                 </span>
+
             </div>
 
-            <div class="profile-page-section-title-sub-container link-icon ptr">
+            <div class="profile-page-section-title-sub-container link-icon ptr"
+            onclick="ISR.utils.changePage('alerts');">
+
                 <span class="profile-page-section-title
                 profile-page-section-title-sub">
                     Alerts
                 </span>
+
             </div>
 
         </div>
 
         <div id="favorites-container"
         class="profile-page-section-container"></div>
-    <!--
-        <div id="alerts-container" class="profile-page-section-container">
 
+        <div id="alerts-container"
+        class="profile-page-section-container">
+
+            <div class="alerts-container-main-contents">
+
+                <div class="alerts-container-row">
+
+                    <div class="alerts-container-radio-button">
+
+                        <input type="radio">
+
+                    </div>
+
+                    <div class="alerts-container-all-times">
+
+                        Turn on alerts for all times
+
+                    </div>
+
+                </div>
+
+                <div class="alerts-container-row alerts-container-time-range">
+
+                    <div class="alerts-container-radio-button">
+
+                        <input type="radio">
+
+                    </div>
+
+                    <div class="alerts-container-time-range-content
+                    alerts-container-time-range-label">
+
+                        {{ ALERT_DAYS_OF_WEEK }}
+
+                    </div>
+
+                    <div class="alerts-container-time-range-content
+                    alerts-container-time-range-start">
+
+                        <span class="alerts-container-time-range-label">
+
+                            Time 1
+
+                        </span>
+
+                        <span class="alerts-container-time-range-times">
+
+                            5:00 - 6:00
+
+                        </span>
+
+                    </div>
+
+                    <div class="alerts-container-time-range-content
+                    alerts-container-time-range-end">
+
+                        Time 2
+
+                        5:00 - 6:00
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <span class="alerts-container-row alerts-container-sub-header">
+
+                Subscribe to Alerts
+
+            </span>
+
+            <div class="alerts-container-row alerts-container-subscription">
+
+                <input type="checkbox">
+
+                Email
+                
+                <input type="checkbox">
+
+                Text Message
+
+            </div>
+
+<!--
             <div class="profile-page-section-container-contents">
 
                 <div class="favorites-add-alert-bar link-icon no-highlight ptr"
@@ -41,9 +130,9 @@
                 <div class="favorites-alert-selector-container"></div>
 
             </div>
+-->
 
         </div>
-    -->
 
     </div>
 

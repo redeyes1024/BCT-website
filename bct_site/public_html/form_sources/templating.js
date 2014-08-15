@@ -1,10 +1,3 @@
-//Namespace for additional behavior
-//Company name
-ISR = {};
-
-//Stored DOM queries
-ISR.dom = {};
-
 //Container for all base HTML template strings
 ISR.templates = {};
 
@@ -12,14 +5,29 @@ ISR.templates.login_form = {};
 
 ISR.templates.profile_page = {};
 
+/* Day-of-Week and Time Selection Templates */
+
 ISR.templates.profile_page["favorite-route-stop-panel"] = '' +
 
     '<div class="favorite-route-stop-panel">' +
 
         '<div class="favorite-route-stop-panel-property-container">' +
 
-                '<span class="favorite-route-stop-panel-property ' +
-                'favorite-route-stop-panel-route">' +
+            '<span class="favorite-route-stop-panel-property ' +
+            'favorite-route-stop-panel-agency">' +
+
+                '<span class="favorite-route-stop-panel-property-name">' +
+                    'Agency:' +
+                '</span>' +
+
+                '<span class="favorite-route-stop-panel-property-content">' +
+                    '{{ ROUTE_STOP_PANEL_AGENCY }}' +
+                '</span>' +
+
+            '</span>' +
+
+            '<span class="favorite-route-stop-panel-property ' +
+            'favorite-route-stop-panel-route">' +
 
                 '<span class="favorite-route-stop-panel-property-name">' +
                     'Route:' +
@@ -55,11 +63,20 @@ ISR.templates.profile_page["favorite-route-stop-panel"] = '' +
 
         '</span>' +
 
-'</div>';
+        '<span class="favorite-route-stop-panel-delete-button ' +
+        'link-icon no-highlight ptr">' + 
+
+            '<i class="fa fa-times-circle"></i>' +
+
+        '</span>' +
+
+    '</div>';
+
+/* Day-of-Week and Time Selection Templates */
 
 ISR.templates.profile_page["bct-drop-down-item"] = '' +
 '<span class="bct-drop-down-item" ' +
-'onclick="ISR.utils.selectDropDownOption(this)">' +
+'onclick="ISR.utils.selectDropDownOption(this);">' +
     '<span class="bct-drop-down-item-text">{{ DAY_OR_TIME_LABEL }}</span>' +
 '</span>';
 
@@ -132,14 +149,17 @@ ISR.templates.data.
 profile_page["favorite-route-stop-panel"].favorites_list = [
 
     {
+        agency: "BCT",
         route: "BCT101 US1 Breeze",
         stop: "17 US1/DANIA BEACH B"
     },
     {
+        agency: "BCT",
         route: "BCT01",
         stop: "100 US1/THOMAS ST"
     },
     {
+        agency: "BCT",
         route: "BCT02",
         stop: "135 UNIVERSITY D/FRENCH VILLA"
     }
@@ -161,19 +181,6 @@ profile_page["favorites-full-item-full-date-time"].time_list = [
 
 ];
 
-//Utility functions
-ISR.utils = {};
-
-ISR.utils.selectDropDownOption = function(target) {
-
-    var target_text = target.textContent.trim();
-
-    var selection_holder = target.parentNode.parentNode.parentNode.children[0];
-
-    selection_holder.textContent = target_text;
-
-};
-
 ISR.utils.generateAlertDateTimeBarHTML = function(target) {
 
     var date_time_bar_template =
@@ -190,7 +197,7 @@ ISR.utils.addBusRouteStopAlert = function() {
 ISR.utils.addFavoriteRouteStopPanel = function(target) {
 
     var template_data = ISR.templates.data.
-    profile_page["favorite-route-stop-panel"].favorites_list
+    profile_page["favorite-route-stop-panel"].favorites_list;
 
     for (var i=0;i<template_data.length;i++) {
 
@@ -200,17 +207,6 @@ ISR.utils.addFavoriteRouteStopPanel = function(target) {
         target.innerHTML += date_time_bar_template;
 
     }
-};
-
-//Utility functions run successively after module is loaded
-ISR.utils.init = {};
-
-ISR.utils.init.addFavoriteRouteStopPanelsToContainer = function() {
-
-    var favorites_container = document.getElementById("favorites-container");
-
-    ISR.utils.addFavoriteRouteStopPanel(favorites_container);
-
 };
 
 //Template component generation
@@ -234,6 +230,10 @@ ISR.utils.templating = {};
 (function() {
 
     /* START Favorite Route Panel */
+
+    function getRouteStopPanelAgency(route_stop_panel_data) {
+        return route_stop_panel_data.agency;
+    }
 
     function getRouteStopPanelRoute(route_stop_panel_data) {
         return route_stop_panel_data.route;
@@ -337,6 +337,7 @@ ISR.utils.templating = {};
 
     ISR.utils.templating.placeholderPopulators = {
 
+        "{{ ROUTE_STOP_PANEL_AGENCY }}": getRouteStopPanelAgency,
         "{{ ROUTE_STOP_PANEL_ROUTE }}": getRouteStopPanelRoute,
         "{{ ROUTE_STOP_PANEL_STOP }}": getRouteStopPanelStop,
 
@@ -379,3 +380,14 @@ ISR.utils.templating = {};
     }
 
 }());
+
+//Initial templating operations
+ISR.utils.init.templating = {};
+
+ISR.utils.init.templating.addFavoriteRouteStopPanelsToContainer = function() {
+
+    var favorites_container = document.getElementById("favorites-container");
+
+    ISR.utils.addFavoriteRouteStopPanel(favorites_container);
+
+};

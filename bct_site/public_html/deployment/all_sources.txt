@@ -2,8 +2,8 @@
 
 <link rel="stylesheet" type="text/css" href="form_sources/bct_forms.css"
 media="screen" />
-<script type="text/javascript" src="form_sources/templating.js"></script>
 <script type="text/javascript" src="form_sources/main.js"></script>
+<script type="text/javascript" src="form_sources/templating.js"></script>
 
 <!-- END Sources for forms -->
 

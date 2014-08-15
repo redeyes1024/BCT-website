@@ -1,11 +1,191 @@
+//Namespace for additional behavior
+//Company name
+ISR = {};
+
+//Stored DOM queries
+ISR.dom = {};
+
+ISR.directories = {
+
+    site_roots: {
+        local: '',
+        remote: 'http://www.isrtransit.com/files/bct/webapp/',
+        active: ''
+    },
+    paths: {
+        none: '',
+        form_sources: 'form_sources/',
+        active: ''
+    }
+
+};
+
+ISR.directories.site_roots.active =
+ISR.directories.site_roots.local;
+
+ISR.directories.paths.active =
+ISR.directories.paths.form_sources;
+
+//Utility functions
+ISR.utils = {};
+
+ISR.utils.changePage = function(selected_page) {
+
+    var selected_panel_name = "";
+    var selected_module_name = "";
+
+    switch (selected_page) {
+
+        case "favorites":
+
+            selected_panel_name = "favorites_page_button";
+            selected_module_name = "favorites_module";
+
+            break;
+
+        case "alerts":
+
+            selected_panel_name = "alerts_page_button";
+            selected_module_name = "alerts_module";
+
+            break;
+
+    }
+
+    ISR.utils.styling.highlightHeaderPanel(selected_panel_name);
+    ISR.utils.styling.switchModule(selected_module_name);
+
+};
+
+ISR.utils.selectDropDownOption = function(target) {
+
+    var target_text = target.textContent.trim();
+
+    var selection_holder = target.parentNode.parentNode.parentNode.children[0];
+
+    selection_holder.textContent = target_text;
+
+};
+
+//Utility functions run successively after module is loaded
+ISR.utils.init = {};
+
+//General init functions
+ISR.utils.init.general = {};
+
+ISR.utils.init.general.startingDomQueries = function() {
+
+    /* Modules */
+
+    ISR.dom.modules = {};
+
+    ISR.dom.modules.favorites_module =
+    document.getElementById("favorites-container");
+
+    ISR.dom.modules.alerts_module =
+    document.getElementById("alerts-container");
+
+    /* Header Panels */
+
+    ISR.dom.header_panels = {};
+
+    var header_panels =
+    document.getElementsByClassName("profile-page-section-title-sub-container");
+
+    ISR.dom.header_panels.favorites_page_button = header_panels[0];
+    
+    ISR.dom.header_panels.alerts_page_button = header_panels[1];
+
+};
+
+ISR.utils.init.general.addDefaultDynamicStyles = function() {
+
+    ISR.utils.changePage("favorites");
+};
+
+//Dynamic CSS class manipulation
+ISR.utils.styling = {};
+
+//Dynamic styling functions
+ISR.utils.styling.functions = {};
+
+//Dynamic styling configutation
+ISR.utils.styling.config = {};
+
+ISR.utils.styling.config.header_deactivated_styles = {
+
+    favorites_page_button: 
+    "profile-page-section-title-sub-container-deactivated-left",
+
+    alerts_page_button: 
+    "profile-page-section-title-sub-container-deactivated-right"
+
+};
+
+ISR.utils.styling.highlightHeaderPanel = function(selected_panel_name) {
+
+    for (var cur_panel_name in ISR.dom.header_panels) {
+
+        var current_panel = ISR.dom.header_panels[cur_panel_name];
+
+        var panel_deactivated_style = ISR.utils.styling.config.
+        header_deactivated_styles[cur_panel_name];
+
+        if (cur_panel_name === selected_panel_name) {
+
+            current_panel.classList.remove(panel_deactivated_style);
+
+        }
+
+        else {
+
+            current_panel.classList.add(panel_deactivated_style);
+
+        }
+
+    }
+
+
+};
+
+ISR.utils.styling.switchModule = function(selected_module_name) {
+
+    for (var cur_module_name in ISR.dom.modules) {
+
+        var cur_module = ISR.dom.modules[cur_module_name];
+
+        if (cur_module_name === selected_module_name) {
+
+            cur_module.classList.remove("module-hidden");
+
+        }
+        
+        else {
+
+            cur_module.classList.add("module-hidden");
+
+        }
+
+    }
+
+};
+
 window.onload = function() {
 
-    function runModuleContentTemplateGenerators() {
+    function callInitFunctions() {
 
-        var init_functions = ISR.utils.init;
+        var init_func_groups = ISR.utils.init;
 
-        for (func in init_functions) {
-            init_functions[func]();
+        for (var func_group in init_func_groups) {
+
+            var init_func_group = init_func_groups[func_group];
+
+            for (var func in init_func_group) {
+
+                init_func_group[func]();
+
+            }
+
         }
 
     }
@@ -21,8 +201,8 @@ window.onload = function() {
 
         var template_request = new XMLHttpRequest;
 
-        var url = 'http://www.isrtransit.com/files/bct/webapp/' + 
-        'form_sources/' + filename;
+        var url = ISR.directories.site_roots.active + 
+        ISR.directories.paths.active + filename;
 
         template_request.open('GET', url, true);
         template_request.responseType = 'document';
@@ -36,7 +216,7 @@ window.onload = function() {
 
            template_container.appendChild(target_container);
 
-           runModuleContentTemplateGenerators();
+           callInitFunctions();
 
         };
 

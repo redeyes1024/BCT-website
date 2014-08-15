@@ -1,3 +1,11 @@
+/* START Main Container Properties */
+
+#profile-container {
+    font-size: 14px !important;
+}
+
+/* END Main Container Properties */
+
 /* START All Form Properties */
 
 .ptr {
@@ -32,6 +40,10 @@ a.link-icon-rev {
 .link-icon-rev:hover,
 .link-icon-rev:active {
     color: #ddd;
+}
+
+.module-hidden {
+    display: none !important;
 }
 
 .bct-form-header {
@@ -190,9 +202,18 @@ a.link-icon-rev {
     position: relative;
     left: 5px;
 }
-.profile-page-section-title-sub-container-deactivated,
-.profile-page-section-title-sub-container:last-child {
+.profile-page-section-title-sub-container-deactivated-left,
+.profile-page-section-title-sub-container-deactivated-middle,
+.profile-page-section-title-sub-container-deactivated-right {
     background-color: #DDD;
+}
+.profile-page-section-title-sub-container-deactivated-left {
+    border-radius: 0.7em 0em 0em 0em;
+    box-shadow: -4px 0px 2px -2px #000 inset;
+}
+.profile-page-section-title-sub-container-deactivated-middle {
+}
+.profile-page-section-title-sub-container-deactivated-right {
     border-radius: 0em 0.7em 0em 0em;
     box-shadow: inset 4px 0px 2px -2px #000;
 }
@@ -200,6 +221,7 @@ a.link-icon-rev {
 
 }
 .favorite-route-stop-panel {
+    position: relative;
     line-height: 2em;
     border-style: solid;
     border-width: 0px 0px 1px;
@@ -218,6 +240,9 @@ favorite-route-stop-panel-property-container {
 .favorite-route-stop-panel-property-content {
     display: table-cell;
 }
+.favorite-route-stop-panel-agency {
+    
+}
 .favorite-route-stop-panel-route {
     
 }
@@ -225,6 +250,55 @@ favorite-route-stop-panel-property-container {
     
 }
 .favorite-route-stop-panel-myride-link {
+    
+}
+.favorite-route-stop-panel-delete-button {
+    display: block;
+    position: absolute;
+    font-size: 1.5em;
+    top: 50%;
+    right: 0em;
+    margin: -0.6em 0.5em 0em 0em;
+}
+
+#alerts-container {
+    
+}
+.alerts-container-main-contents {
+    display: table;
+    width: 100%;
+}
+.alerts-container-row {
+    display: table-row;
+}
+.alerts-container-radio-button {
+    display: table-cell;
+}
+.alerts-container-all-times {
+    display: table-cell;
+}
+.alerts-container-time-range {
+    
+}
+.alerts-container-time-range-content {
+    display: table-cell;
+}
+.alerts-container-time-range-label {
+    
+}
+.alert-container-time-range-times {
+    
+}
+.alerts-container-time-range-start {
+    
+}
+.alerts-container-time-range-end {
+    
+}
+.alerts-container-sub-header {
+    
+}
+.alerts-container-subscription {
     
 }
 
