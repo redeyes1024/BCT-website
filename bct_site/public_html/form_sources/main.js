@@ -210,13 +210,31 @@ window.onload = function() {
 
             template_container.innerHTML = "";
 
-            var template = e.target.response;
-            var target_container =
-            template.getElementById(append_target);
+            var template;
 
-           template_container.appendChild(target_container);
+            var target_container;
 
-           callInitFunctions();
+            if (e.target.response) {
+
+                template = e.target.response;
+
+                target_container =
+                template.getElementById(append_target);
+
+            }
+
+            //IE 9 Compatibility
+            else {
+
+                target_container = document.createElement("div");
+
+                target_container.innerHTML += e.target.responseText;
+
+            }
+
+            template_container.appendChild(target_container);
+
+            callInitFunctions();
 
         };
 

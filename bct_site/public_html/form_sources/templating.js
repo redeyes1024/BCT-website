@@ -5,8 +5,6 @@ ISR.templates.login_form = {};
 
 ISR.templates.profile_page = {};
 
-/* Day-of-Week and Time Selection Templates */
-
 ISR.templates.profile_page["favorite-route-stop-panel"] = '' +
 
     '<div class="favorite-route-stop-panel">' +
@@ -72,37 +70,106 @@ ISR.templates.profile_page["favorite-route-stop-panel"] = '' +
 
     '</div>';
 
-/* Day-of-Week and Time Selection Templates */
+ISR.templates.profile_page["alerts-container-all-date-ranges"] = '' +
+
+    '<div class="alerts-container-row alerts-container-time-range">' +
+
+        '<div class="alerts-container-radio-button">' +
+
+            '<input type="radio" name="alerts_time_range_type">' +
+
+        '</div>' +
+
+        '<div class="alerts-container-time-range-content ' +
+        'alerts-container-time-range-type-label">' +
+
+            '{{ ALERT_DAY_OF_WEEK }}' +
+
+        '</div>' +
+
+        '<div class="alerts-container-time-range-content ' +
+        'alerts-container-time-range-start">' +
+
+            '<span class="alerts-container-time-range-label">' +
+
+                'Time 1' +
+
+            '</span>' +
+
+            '<span class="alerts-container-time-range-times">' +
+
+                '{{ ALERT_START_TIME_RANGE }}' +
+
+            '</span>' +
+
+        '</div>' +
+
+        '<div class="alerts-container-time-range-content ' +
+        'alerts-container-time-range-end">' +
+
+            '<span class="alerts-container-time-range-label">' +
+
+                'Time 2' +
+
+            '</span>' +
+
+            '<span class="alerts-container-time-range-times">' +
+
+                '{{ ALERT_END_TIME_RANGE }}' +
+
+            '</span>' +
+
+        '</div>' +
+
+    '</div>';
 
 ISR.templates.profile_page["bct-drop-down-item"] = '' +
-'<span class="bct-drop-down-item" ' +
-'onclick="ISR.utils.selectDropDownOption(this);">' +
-    '<span class="bct-drop-down-item-text">{{ DAY_OR_TIME_LABEL }}</span>' +
-'</span>';
 
-ISR.templates.profile_page["favorites-alert-day-time-selection"] = '' +
+    '<span class="bct-drop-down-item" ' +
+    'onclick="ISR.utils.selectDropDownOption(this);">' +
+
+        '<span class="bct-drop-down-item-text">{{ TIME_LABEL }}</span>' +
+
+    '</span>';
+
+ISR.templates.profile_page["alert-time-selection"] = '' +
+
     '<span class="bct-drop-down {{ DROP_DOWN_CLASS }} no-hightlight ptr">' +
+
         '<span class="bct-drop-down-selected-item no-highlight ptr">' +
-            '{{ SELECTED_DAY_OR_TIME }}' +
+
+            '{{ SELECTED_TIME }}' +
+
         '</span>' +
+
         '<span class="bct-drop-down-item-holder-container">' +
+
             '<span class="bct-drop-down-item-holder no-highlight ptr">' +
-                '{{ DAY_AND_TIME_DROP_DOWN_ITEMS }}' +
+
+                '{{ TIME_DROP_DOWN_ITEMS }}' +
+
             '</span>' +
+
         '</span>' +
+
     '</span>';
 
 ISR.templates.profile_page["favorites-full-item-full-date-time"] = '' +
+
     '<div class="favorites-full-item-full-date-time">' +
-        '<div class="favorites-alert-day-selection">' +
-            '{{ FAVORITES_ALERT_DAY_SELECTION }}' +
-        '</div>' +
+
         '<div class="favorites-alert-start-time">' +
+
             '{{ FAVORITES_ALERT_START_TIME }}' +
+
         '</div>' +
+
         '<div class="favorites-alert-end-time">' +
+
             '{{ FAVORITES_ALERT_END_TIME }}' +
+
         '</div>' +
+
     '</div>';
 
 //Constants associated with templates
@@ -137,6 +204,7 @@ ISR.templates.data = {};
     The format for addition of new favorites is as follows:
 
     {
+        agency: "<agency_name>",
         route: "<route_number> <route_name>",
         stop: "<stop_number> <stop_name>"
     }
@@ -166,8 +234,10 @@ profile_page["favorite-route-stop-panel"].favorites_list = [
 
 ];
 
+//TODO: Combine days and times into one data structure
+//Each day should contain a reference to the time array
 ISR.templates.data.
-profile_page["favorites-full-item-full-date-time"].day_list = [
+profile_page["alerts-container-all-date-ranges"].day_list = [
 
     "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday",
     "Sunday", "Weekdays", "Weekends"
@@ -175,9 +245,9 @@ profile_page["favorites-full-item-full-date-time"].day_list = [
 ];
 
 ISR.templates.data.
-profile_page["favorites-full-item-full-date-time"].time_list = [
+profile_page["alerts-container-all-date-ranges"].time_list = [
 
-    "6:00", "7:00", "8:00", "9:00", "10:00", "11:00", "12:00"
+    "5:00", "6:00", "7:00", "8:00", "9:00", "10:00", "11:00", "12:00"
 
 ];
 
@@ -207,6 +277,23 @@ ISR.utils.addFavoriteRouteStopPanel = function(target) {
         target.innerHTML += date_time_bar_template;
 
     }
+
+};
+
+ISR.utils.addAlertDateRangeSelector = function(target) {
+
+    var template_data = ISR.templates.data.
+    profile_page["alerts-container-all-date-ranges"].day_list;
+
+    for (var i=0;i<template_data.length;i++) {
+
+        var date_time_bar_template =
+        ISR.utils.templating.generateAlertDateRangeRow(template_data[i]);
+
+        target.innerHTML += date_time_bar_template;
+
+    }
+
 };
 
 //Template component generation
@@ -245,18 +332,23 @@ ISR.utils.templating = {};
 
     /* END Favorite Route Panel */
 
-    function getDayOrTimeLabel(day_or_time_label) {
-        return day_or_time_label;
+    function getTimeLabel(time_label) {
+        return time_label;
     }
 
-    function generateMultipleDropDownItemsHTML(label_list) {
+    function generateDropDownTimes() {
 
         var drop_down_item_list = [];
 
+        var label_list = ISR.templates.data.
+        profile_page["alerts-container-all-date-ranges"].time_list;
+
         for (var i=0;i<label_list.length;i++) {
-            var drop_down_item = generateDropDownItemHTML(label_list[i]);
+
+            var drop_down_item = generateDropDownTimeItem(label_list[i]);
 
             drop_down_item_list.push(drop_down_item);
+
         }
 
         return drop_down_item_list.join("");
@@ -277,35 +369,28 @@ ISR.utils.templating = {};
 
     }
 
-    function getFirstDayOrTime(day_or_time_selection_list) {
-        return day_or_time_selection_list[0];
+    function getFirstTime(time_selection_list) {
+        return ISR.templates.data.
+        profile_page["alerts-container-all-date-ranges"].time_list[0];
     }
 
-    function generateAlertDaySelection(full_item_date_time_data) {
-        return generateAlertDayTimeSelection(
-            full_item_date_time_data.day_list
-        );
-    }
-
-    function generateAlertTimeSelection(full_item_date_time_data) {
-        return generateAlertDayTimeSelection(
-            full_item_date_time_data.time_list
-        );
-    }
-
-    function generateDropDownItemHTML(day_or_time_label) {
+    function generateDropDownTimeItem(time_label) {
         return generateTemplateFromBase(
             ISR.templates.profile_page["bct-drop-down-item"],
-            day_or_time_label
+            time_label
         );
     }
 
-    function generateAlertDayTimeSelection(day_or_time_selection_list) {
+    function generateAlertTimeSelection(time_selection_list) {
         return generateTemplateFromBase(
-            ISR.templates.profile_page["favorites-alert-day-time-selection"],
-            day_or_time_selection_list
+            ISR.templates.profile_page["alert-time-selection"],
+            time_selection_list
         );
     }
+
+    function getAlertDay(alert_day_of_week) {
+        return alert_day_of_week;
+    };
 
     //These functions will be globally referenced because they are at the top
     //level of the template generator, and thus are called directly
@@ -326,10 +411,26 @@ ISR.utils.templating = {};
     ) {
 
         return generateTemplateFromBase(
+
             ISR.templates.
             profile_page["favorite-route-stop-panel"],
 
             current_panel_data
+
+        );
+
+    };
+
+    ISR.utils.templating.generateAlertDateRangeRow = function(
+        current_row_data
+    ) {
+
+        return generateTemplateFromBase(
+
+            ISR.templates.
+            profile_page["alerts-container-all-date-ranges"],
+
+            current_row_data
 
         );
 
@@ -341,13 +442,13 @@ ISR.utils.templating = {};
         "{{ ROUTE_STOP_PANEL_ROUTE }}": getRouteStopPanelRoute,
         "{{ ROUTE_STOP_PANEL_STOP }}": getRouteStopPanelStop,
 
-        "{{ DAY_OR_TIME_LABEL }}": getDayOrTimeLabel,
-        "{{ SELECTED_DAY_OR_TIME }}": getFirstDayOrTime,
-        "{{ DAY_AND_TIME_DROP_DOWN_ITEMS }}": generateMultipleDropDownItemsHTML,
-        "{{ DROP_DOWN_CLASS }}": selectDropDownClass,
-        "{{ FAVORITES_ALERT_DAY_SELECTION }}": generateAlertDaySelection,
-        "{{ FAVORITES_ALERT_START_TIME }}": generateAlertTimeSelection,
-        "{{ FAVORITES_ALERT_END_TIME }}": generateAlertTimeSelection
+        "{{ ALERT_DAY_OF_WEEK }}": getAlertDay,
+        "{{ ALERT_START_TIME_RANGE }}": generateAlertTimeSelection,
+        "{{ ALERT_END_TIME_RANGE }}": generateAlertTimeSelection,
+        "{{ TIME_LABEL }}": getTimeLabel,
+        "{{ SELECTED_TIME }}": getFirstTime,
+        "{{ TIME_DROP_DOWN_ITEMS }}": generateDropDownTimes,
+        "{{ DROP_DOWN_CLASS }}": selectDropDownClass
 
     };
 
@@ -361,17 +462,21 @@ ISR.utils.templating = {};
         var template = base_template;
 
         var template_placeholders = base_template.match(/{{.*?}}/g);
+        
+        if (template_placeholders) {
 
-        for (var i=0;i<template_placeholders.length;i++) {
+            for (var i=0;i<template_placeholders.length;i++) {
 
-            var populator =
-            ISR.utils.templating.
-            placeholderPopulators[template_placeholders[i]];
+                var populator =
+                ISR.utils.templating.
+                placeholderPopulators[template_placeholders[i]];
 
-            template = template.replace(
-                template_placeholders[i],
-                populator(placeholder_data)
-            );
+                template = template.replace(
+                    template_placeholders[i],
+                    populator(placeholder_data)
+                );
+
+            }
 
         }
 
@@ -389,5 +494,14 @@ ISR.utils.init.templating.addFavoriteRouteStopPanelsToContainer = function() {
     var favorites_container = document.getElementById("favorites-container");
 
     ISR.utils.addFavoriteRouteStopPanel(favorites_container);
+
+};
+
+ISR.utils.init.templating.addAlertDayLabelsAndTimeRanges = function() {
+
+    var alert_time_ranges_container =
+    document.getElementById("alerts-container-all-date-ranges");
+
+    ISR.utils.addAlertDateRangeSelector(alert_time_ranges_container);
 
 };

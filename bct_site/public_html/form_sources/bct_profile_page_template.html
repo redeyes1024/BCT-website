@@ -37,82 +37,39 @@
         <div id="alerts-container"
         class="profile-page-section-container">
 
-            <div class="alerts-container-main-contents">
+            <div class="alerts-container-sub-table">
 
-                <div class="alerts-container-row">
+                <div class="alerts-container-radio-button
+                alerts-container-top-radio-button">
 
-                    <div class="alerts-container-radio-button">
-
-                        <input type="radio">
-
-                    </div>
-
-                    <div class="alerts-container-all-times">
-
-                        Turn on alerts for all times
-
-                    </div>
+                    <input type="radio" name="alerts_time_range_type" />
 
                 </div>
 
-                <div class="alerts-container-row alerts-container-time-range">
+                <div class="alerts-container-all-times">
 
-                    <div class="alerts-container-radio-button">
-
-                        <input type="radio">
-
-                    </div>
-
-                    <div class="alerts-container-time-range-content
-                    alerts-container-time-range-label">
-
-                        {{ ALERT_DAYS_OF_WEEK }}
-
-                    </div>
-
-                    <div class="alerts-container-time-range-content
-                    alerts-container-time-range-start">
-
-                        <span class="alerts-container-time-range-label">
-
-                            Time 1
-
-                        </span>
-
-                        <span class="alerts-container-time-range-times">
-
-                            5:00 - 6:00
-
-                        </span>
-
-                    </div>
-
-                    <div class="alerts-container-time-range-content
-                    alerts-container-time-range-end">
-
-                        Time 2
-
-                        5:00 - 6:00
-
-                    </div>
+                    Turn on alerts for all times
 
                 </div>
 
             </div>
 
-            <span class="alerts-container-row alerts-container-sub-header">
+            <div id="alerts-container-all-date-ranges"
+            class="alerts-container-main-contents"></div>
+
+            <span class="alerts-container-sub-header">
 
                 Subscribe to Alerts
 
             </span>
 
-            <div class="alerts-container-row alerts-container-subscription">
+            <div class="alerts-container-subscription">
 
-                <input type="checkbox">
+                <input type="checkbox" />
 
                 Email
-                
-                <input type="checkbox">
+
+                <input type="checkbox" />
 
                 Text Message
 

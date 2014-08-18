@@ -267,24 +267,42 @@ favorite-route-stop-panel-property-container {
 .alerts-container-main-contents {
     display: table;
     width: 100%;
+    text-align: center;
+}
+.alerts-container-sub-table {
+    display: table;
+    width: 100%;
+    height: 2em;
 }
 .alerts-container-row {
     display: table-row;
 }
 .alerts-container-radio-button {
     display: table-cell;
+    width: 2em;
+    vertical-align: middle;
+    padding: 0em 0.5em 0em 0em;
+}
+.alerts-container-top-radio-button {
+    padding-left: 0.3em;
 }
 .alerts-container-all-times {
     display: table-cell;
+    vertical-align: middle;
 }
 .alerts-container-time-range {
     
 }
 .alerts-container-time-range-content {
     display: table-cell;
+    vertical-align: middle;
+}
+.alerts-container-time-range-type-label {
+    width: 20em;
+    text-align: left;
 }
 .alerts-container-time-range-label {
-    
+    display: block;
 }
 .alert-container-time-range-times {
     
