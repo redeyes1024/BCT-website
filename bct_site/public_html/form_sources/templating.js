@@ -213,26 +213,46 @@ ISR.templates.data = {};
 
 */
 
-ISR.templates.data.
-profile_page["favorite-route-stop-panel"].favorites_list = [
+(function() {
 
-    {
-        agency: "BCT",
-        route: "BCT101 US1 Breeze",
-        stop: "17 US1/DANIA BEACH B"
-    },
-    {
-        agency: "BCT",
-        route: "BCT01",
-        stop: "100 US1/THOMAS ST"
-    },
-    {
-        agency: "BCT",
-        route: "BCT02",
-        stop: "135 UNIVERSITY D/FRENCH VILLA"
+    try {
+        var favorites_list = JSON.parse(localStorage.my_bct_fav);
     }
 
-];
+    catch(e) {
+
+        ISR.templates.data.
+        profile_page["favorite-route-stop-panel"].favorites_list = [];
+
+        return true;
+
+    }
+
+    var formatted_favorites_list = [];
+
+    for (var i=0;i<favorites_list.length;i++) {
+
+        var agency = favorites_list[i].agency;
+        var route_id = favorites_list[i].fav_route.Id;
+        var stop_id = favorites_list[i].fav_stop.Id;
+
+        var formatted_favorite_item = {
+
+            agency: agency,
+            route: route_id,
+            stop: stop_id
+
+        };
+
+        formatted_favorites_list.push(formatted_favorite_item);
+
+    }
+
+    ISR.templates.data.
+    profile_page["favorite-route-stop-panel"].favorites_list =
+    formatted_favorites_list;
+
+}());
 
 //TODO: Combine days and times into one data structure
 //Each day should contain a reference to the time array

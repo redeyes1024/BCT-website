@@ -1,7 +1,14 @@
 <div class="list-group-item list-group-item-responsive"
 ng-repeat="route in cur_stop.route_refs | routeFilterSub:routeFilter.f">
 
-    <div class="result-icon-container link-icon ptr">
+    <div class="result-icon-container link-icon ptr"
+    ng-show="checkIfRouteStopFavorited(route.Id, stop.Id);">
+        <i class="fa fa-star fa-lg favorite-route-icon"></i>
+    </div>
+
+    <div class="result-icon-container link-icon ptr"
+    ng-click="addRouteStopToFavorites(route.Id, stop.Id)"
+    ng-hide="checkIfRouteStopFavorited(route.Id, stop.Id);">
         <i class="fa fa-star-o fa-lg favorite-route-icon"></i>
     </div>
 

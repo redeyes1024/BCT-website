@@ -8,6 +8,7 @@ BCTAppTopController.controller('BCTController', [
     'placeholderService', 'locationService', 'location_icons',
     'agency_filter_icons', 'results_exist', 'map_navigation_marker_indices',
     'legend_icon_list', 'all_alerts', 'all_alerts_indices',
+    'profilePageService',
 
 function (
 
@@ -16,7 +17,7 @@ function (
     unitConversionAndDataReporting, miniScheduleService, placeholderService,
     locationService, location_icons, agency_filter_icons, results_exist,
     map_navigation_marker_indices, legend_icon_list, all_alerts,
-    all_alerts_indices
+    all_alerts_indices, profilePageService
 
 ) {
 
@@ -1031,6 +1032,14 @@ function (
 
     };
 
+    $scope.addRouteStopToFavorites = function(route, stop) {
+
+        profilePageService.addRouteStopToFavorites(
+            $scope.routes, $scope.stops, route, stop
+        );
+
+    };
+
     $scope.addRouteStopToTripPlanner = function(stop) {
 
         var bstop_coords = $scope.stops[stop].LatLng;
@@ -1102,9 +1111,12 @@ function (
         var nearest_full = {
             times_and_diffs: []
         };
+
         var nearest_times = reprocessed_schedule.nearest.all;
+
         var diffs = scheduleDownloadAndTransformation.
         calculateTimeDifference(nearest_times);
+
         var diff_msgs = unitConversionAndDataReporting.
         addTimeDiffMessages(diffs);
 

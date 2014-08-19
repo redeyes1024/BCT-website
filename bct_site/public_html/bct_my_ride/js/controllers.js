@@ -1,7 +1,8 @@
 var BCTAppControllers = angular.module('BCTAppControllers', []);
 
 BCTAppControllers.controller('routeSchedulesController', ['$scope',
-'$timeout', function ($scope, $timeout) {
+'$timeout', 'profilePageService',
+function ($scope, $timeout, profilePageService) {
 
     //For ease of debugging (development only)
     window.rs_scope = $scope;
@@ -54,6 +55,12 @@ BCTAppControllers.controller('routeSchedulesController', ['$scope',
     };
 
     $scope.displayResultsIfExist();
+
+    $scope.checkIfRouteStopFavorited = function(route, stop) {
+
+        return profilePageService.checkIfRouteStopFavorited(route, stop);
+
+    };
 
 }]);
 

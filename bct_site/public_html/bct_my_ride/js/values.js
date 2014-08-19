@@ -81,6 +81,15 @@ BCTAppValues.value('legend_icon_list', [
         }
     },
     {
+        fa_name: "fa-list-alt",
+        filename: "",
+        legend: {
+            module: "Sched. Search",
+            desc: "Displays all routes on the Schedule Results page. You " +
+            "can also submit the phrase 'all routes' from the search bar."
+        }
+    },
+    {
         fa_name: "fa-times-circle",
         filename: "",
         legend: {
