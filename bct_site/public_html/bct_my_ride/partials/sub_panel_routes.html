@@ -1,17 +1,22 @@
 <div class="list-group-item list-group-item-responsive"
-    ng-repeat="stop in cur_route.bstop_refs | stopFilterSub:bstopFilter.f">
-    <div class="result-icon-container">
+ng-repeat="stop in cur_route.bstop_refs | stopFilterSub:bstopFilter.f">
+
+    <div class="result-icon-container link-icon ptr">
         <i class="fa fa-star-o fa-lg favorite-route-icon"></i>
     </div>
+
     <div class="result-list-text">
         {{ stop.Id }} {{ stop.Name }}
     </div>
+
     <div class="result-icon-container result-icon-container-right link-icon ptr"
-        ng-click="addRouteStopToTripPlanner(route.Id, stop.Id);">
+        ng-click="addRouteStopToTripPlanner(stop.Id);">
         <i class="fa fa-lg fa-map-marker ptr"></i>
     </div>
+
     <div class="result-icon-container result-icon-container-right link-icon ptr"
         ng-click="toggleMapSchedule(false, route.Id, stop.Id);">
         <i class="fa fa-chevron-right fa-lg arrow-right-icon ptr"></i>
     </div>
+
 </div>

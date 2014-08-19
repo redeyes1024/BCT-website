@@ -1770,14 +1770,32 @@ function(nearestStopsService, locationService, latest_location, filterHelpers) {
                     return items;
                 };
 
-                for (var i=0;i<items.length;i++) {
-                    var search_str_cased = items[i].Id + " " +
-                    items[i][self.property_name];
-                    var search_str = search_str_cased.toLowerCase();
+                if (input_lower === "all routes") {
 
-                    if (search_str.match(input_lower)) {
-                        filtered.push(items[i]);
+                    for (var j=0;j<items.length;j++) {
+
+                        if (items[j].Stops) {
+                            filtered.push(items[j]);
+                        }
+
                     }
+
+                }
+
+                else {
+
+                    for (var i=0;i<items.length;i++) {
+
+                        var search_str_cased = items[i].Id + " " +
+                        items[i][self.property_name];
+                        var search_str = search_str_cased.toLowerCase();
+
+                        if (search_str.match(input_lower)) {
+                            filtered.push(items[i]);
+                        }
+
+                    }
+
                 }
 
                 if (sort_bstops_by_distance) {
@@ -1795,7 +1813,9 @@ function(nearestStopsService, locationService, latest_location, filterHelpers) {
                 var current_results_exist = !!filtered[0];
 
                 filterHelpers.bufferResultsExistTruthiness(
-                    self.results_exist_flag, current_results_exist, input_lower
+                    self.results_exist_flag,
+                    current_results_exist,
+                    input_lower
                 );
 
                 return filtered;

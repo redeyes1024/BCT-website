@@ -165,9 +165,15 @@ em.hint-text {
     float: right;
     margin: 0em 0.2em 0em 0em;
 }
+.all-routes-button,
 .search-clear-button {
     width: 1.6em;
-    border-width: 0px 2px 0px 1px;
+}
+.all-routes-button {
+    border-width: 0px 1px 0px 1px;
+}
+.search-clear-button {
+    border-width: 0px 2px 0px 0px;
 }
 .search-submit-button {
     background-color: #fff;
@@ -1249,7 +1255,7 @@ iframe .trip-planner-dialog-finish {
         font-size: 1em;
     }
     .search-clear-button {
-        border-width: 0px 0px 0px 1px;
+        border-width: 0px;
     }
     .schedule-results-icons-inline {
         display: none;

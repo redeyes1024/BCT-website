@@ -1031,7 +1031,8 @@ function (
 
     };
 
-    $scope.addRouteStopToTripPlanner = function(route, stop) {
+    $scope.addRouteStopToTripPlanner = function(stop) {
+
         var bstop_coords = $scope.stops[stop].LatLng;
         var bstop_coords_str = "";
 
@@ -1039,6 +1040,7 @@ function (
         bstop_coords_str += bstop_coords.Longitude;
 
         $scope.trip_inputs.start = bstop_coords_str;
+
     };
 
     $scope.schedule.weekdays = $scope.full_schedule_loading_placeholder;
@@ -1059,6 +1061,18 @@ function (
 
         $scope.show_index_title_with_back_function = true;
         $scope.show_schedule_results_module_title_with_back_function = true;
+    };
+
+    $scope.showAllRoutes = function(starting_page) {
+
+        $scope.query_data["schedule_search"] = "all routes";
+
+        if (starting_page === "index") {
+
+            $scope.changeURLHash('#routeschedules', 'schedule_search');
+
+        }
+
     };
 
     $scope.clearSearch = function(model) {

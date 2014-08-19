@@ -1,19 +1,31 @@
 <div id="{{ route.Id }}" class="panel panel-default">
+
     <h2 class="panel-heading panel-title route-title ptr" toggle
-        target="{{ route.Id }}-collapse" ng-click="foldOptions($event);">
+    target="{{ route.Id }}-collapse" ng-click="foldOptions($event);">
+
         <span class="collapse-button">
             <i class="fa fa-plus-circle collapse-icon"></i>
         </span>
+
         {{ route.Id }} {{ route.LName }}
+
     </h2>
+
     <div id="{{ route.Id }}-collapse" toggleable active-class="in"
-        exclusion-group="accordion1"
-        class="panel-collapse collapse">
+    exclusion-group="accordion1"
+    class="panel-collapse collapse">
+
         <div class="panel-body">
+
             <input type="text" id="sub-bus-stop-filter"
             class="result-filter" ng-model="bstopFilter.f"
             placeholder="Filter stops...">
-            <div class="list-group scrollable-content stops-list no-highlight"></div>
+
+            <div class="list-group scrollable-content stops-list no-highlight">
+            </div>
+
         </div>
+
     </div>
+
 </div>

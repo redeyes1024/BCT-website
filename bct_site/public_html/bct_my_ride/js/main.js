@@ -65,7 +65,8 @@ angular.element(document).ready(function() {
 
         var on_main_page = (
             window.location.toString().match(/\/index.html/) ||
-            window.location.toString().match(/\/default.aspx/)
+            window.location.toString().match(/\/default.aspx/) ||
+            window.location.toString().match(/\/myride_deployment_sample.html/)
         );
         
         var hash_is_empty = (window.location.hash === "");
