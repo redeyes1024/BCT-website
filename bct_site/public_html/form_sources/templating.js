@@ -62,7 +62,12 @@ ISR.templates.profile_page["favorite-route-stop-panel"] = '' +
         '</span>' +
 
         '<span class="favorite-route-stop-panel-delete-button ' +
-        'link-icon no-highlight ptr">' + 
+        'link-icon no-highlight ptr"' + 
+        'onclick="ISR.utils.deleteFavoriteRouteStop(' +
+            '\'{{ ROUTE_STOP_PANEL_ROUTE }}\', ' + 
+            '\'{{ ROUTE_STOP_PANEL_STOP }}\', ' +
+            'this' +
+        ')">' + 
 
             '<i class="fa fa-times-circle"></i>' +
 
@@ -76,7 +81,8 @@ ISR.templates.profile_page["alerts-container-all-date-ranges"] = '' +
 
         '<div class="alerts-container-radio-button">' +
 
-            '<input type="radio" name="alerts_time_range_type">' +
+            '<input type="radio" name="alerts_time_range_type"' + 
+            'onchange="ISR.utils.colorSelectedTimeRange(this);">' +
 
         '</div>' +
 
@@ -102,6 +108,14 @@ ISR.templates.profile_page["alerts-container-all-date-ranges"] = '' +
 
             '</span>' +
 
+            '-' +
+
+            '<span class="alerts-container-time-range-times">' +
+
+                '{{ ALERT_END_TIME_RANGE }}' +
+
+            '</span>' +
+
         '</div>' +
 
         '<div class="alerts-container-time-range-content ' +
@@ -112,6 +126,14 @@ ISR.templates.profile_page["alerts-container-all-date-ranges"] = '' +
                 'Time 2' +
 
             '</span>' +
+
+            '<span class="alerts-container-time-range-times">' +
+
+                '{{ ALERT_START_TIME_RANGE }}' +
+
+            '</span>' +
+
+            '-' +
 
             '<span class="alerts-container-time-range-times">' +
 
@@ -134,7 +156,7 @@ ISR.templates.profile_page["bct-drop-down-item"] = '' +
 
 ISR.templates.profile_page["alert-time-selection"] = '' +
 
-    '<span class="bct-drop-down {{ DROP_DOWN_CLASS }} no-hightlight ptr">' +
+    '<span class="bct-drop-down bct-time-drop-down no-hightlight ptr">' +
 
         '<span class="bct-drop-down-selected-item no-highlight ptr">' +
 
@@ -375,20 +397,6 @@ ISR.utils.templating = {};
 
     }
 
-    function selectDropDownClass(day_or_time_selection_list) {
-
-        var drop_down_class = "";
-
-        if (day_or_time_selection_list[0].match(/[0-9]/) ) {
-            drop_down_class = "bct-time-drop-down";
-        } else {
-            drop_down_class = "bct-day-drop-down";
-        }
-
-        return drop_down_class;
-
-    }
-
     function getFirstTime(time_selection_list) {
         return ISR.templates.data.
         profile_page["alerts-container-all-date-ranges"].time_list[0];
@@ -467,8 +475,7 @@ ISR.utils.templating = {};
         "{{ ALERT_END_TIME_RANGE }}": generateAlertTimeSelection,
         "{{ TIME_LABEL }}": getTimeLabel,
         "{{ SELECTED_TIME }}": getFirstTime,
-        "{{ TIME_DROP_DOWN_ITEMS }}": generateDropDownTimes,
-        "{{ DROP_DOWN_CLASS }}": selectDropDownClass
+        "{{ TIME_DROP_DOWN_ITEMS }}": generateDropDownTimes
 
     };
 
@@ -509,6 +516,8 @@ ISR.utils.templating = {};
 //Initial templating operations
 ISR.utils.init.templating = {};
 
+ISR.dom.post_templating = {};
+
 ISR.utils.init.templating.addFavoriteRouteStopPanelsToContainer = function() {
 
     var favorites_container = document.getElementById("favorites-container");
@@ -523,5 +532,24 @@ ISR.utils.init.templating.addAlertDayLabelsAndTimeRanges = function() {
     document.getElementById("alerts-container-all-date-ranges");
 
     ISR.utils.addAlertDateRangeSelector(alert_time_ranges_container);
+
+    ISR.utils.selectFirstTimeRange();
+
+};
+
+ISR.utils.selectFirstTimeRange = function() {
+
+    ISR.dom.post_templating["alerts-container-time-range"] = 
+    document.getElementsByClassName("alerts-container-time-range");
+
+    var first_time_range =
+    ISR.dom.post_templating["alerts-container-time-range"][0];
+
+    var first_time_range_input =
+    first_time_range.getElementsByTagName("input")[0];
+
+    first_time_range_input.checked = true;
+
+    ISR.utils.colorSelectedTimeRange(first_time_range_input);
 
 };

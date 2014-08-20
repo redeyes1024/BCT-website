@@ -21,7 +21,7 @@ ISR.directories = {
 };
 
 ISR.directories.site_roots.active =
-ISR.directories.site_roots.remote;
+ISR.directories.site_roots.local;
 
 ISR.directories.paths.active =
 ISR.directories.paths.form_sources;
@@ -64,6 +64,47 @@ ISR.utils.selectDropDownOption = function(target) {
     var selection_holder = target.parentNode.parentNode.parentNode.children[0];
 
     selection_holder.textContent = target_text;
+
+};
+
+ISR.utils.deleteFavoriteRouteStop = function(route, stop, element) {
+
+    element.parentNode.parentNode.removeChild(element.parentNode);
+
+    var old_favorites = JSON.parse(localStorage.my_bct_fav);
+
+    for (var i=0;i<old_favorites.length;i++) {
+
+        if (old_favorites[i].fav_route.Id === route &&
+            old_favorites[i].fav_stop.Id === stop) {
+
+            old_favorites.splice(i, 1);
+
+            break;
+
+        }
+
+    }
+
+    var new_favorites_stringified = JSON.stringify(old_favorites);
+
+    localStorage.setItem('my_bct_fav', new_favorites_stringified);
+
+};
+
+ISR.utils.colorSelectedTimeRange = function(element) {
+
+    var panel_darkened = "alerts-container-time-range-selected";
+
+    var time_ranges = ISR.dom.post_templating["alerts-container-time-range"];
+
+    for (var i=0;i<time_ranges.length;i++) {
+
+        time_ranges[i].classList.add(panel_darkened);
+
+    }
+
+    element.parentNode.parentNode.classList.remove(panel_darkened);
 
 };
 

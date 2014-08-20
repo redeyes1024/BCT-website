@@ -37,12 +37,13 @@
         <div id="alerts-container"
         class="profile-page-section-container">
 
-            <div class="alerts-container-sub-table">
+            <div class="alerts-container-sub-table alerts-container-time-range">
 
                 <div class="alerts-container-radio-button
                 alerts-container-top-radio-button">
 
-                    <input type="radio" name="alerts_time_range_type" />
+                    <input type="radio" name="alerts_time_range_type" 
+                    onchange="ISR.utils.colorSelectedTimeRange(this);"/>
 
                 </div>
 
@@ -74,20 +75,6 @@
                 Text Message
 
             </div>
-
-<!--
-            <div class="profile-page-section-container-contents">
-
-                <div class="favorites-add-alert-bar link-icon no-highlight ptr"
-                    onclick="ISR.utils.generateAlertDateTimeBarHTML(this)">
-                    <i class="fa fa-plus-circle"></i>
-                    Add alert
-                </div>
-
-                <div class="favorites-alert-selector-container"></div>
-
-            </div>
--->
 
         </div>
 

@@ -479,6 +479,8 @@ function (
 
     };
 
+    //TO FIX: Animation starting and stopping at unexpected times
+
     $scope.TIME_ALERT_MESSAGES_DISPLAYED = 8000;
 
     $scope.TIME_FOR_ALERT_SWEEP_LEFT = 500;
