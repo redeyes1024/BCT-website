@@ -77,12 +77,13 @@ ISR.templates.profile_page["favorite-route-stop-panel"] = '' +
 
 ISR.templates.profile_page["alerts-container-all-date-ranges"] = '' +
 
-    '<div class="alerts-container-row alerts-container-time-range">' +
+    '<div class="alerts-container-row alerts-container-time-range ' +
+    'alerts-container-time-range-deselected">' +
 
         '<div class="alerts-container-radio-button">' +
 
             '<input type="radio" name="alerts_time_range_type"' + 
-            'onchange="ISR.utils.colorSelectedTimeRange(this);">' +
+            'onchange="ISR.utils.highlightselectedtimerange(this);">' +
 
         '</div>' +
 
@@ -550,6 +551,6 @@ ISR.utils.selectFirstTimeRange = function() {
 
     first_time_range_input.checked = true;
 
-    ISR.utils.colorSelectedTimeRange(first_time_range_input);
+    ISR.utils.highlightselectedtimerange(first_time_range_input);
 
 };

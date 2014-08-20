@@ -92,19 +92,34 @@ ISR.utils.deleteFavoriteRouteStop = function(route, stop, element) {
 
 };
 
-ISR.utils.colorSelectedTimeRange = function(element) {
+ISR.utils.highlightselectedtimerange = function(element) {
 
-    var panel_darkened = "alerts-container-time-range-selected";
+    var panel_selected = "alerts-container-time-range-selected";
 
     var time_ranges = ISR.dom.post_templating["alerts-container-time-range"];
 
     for (var i=0;i<time_ranges.length;i++) {
 
-        time_ranges[i].classList.add(panel_darkened);
+        if (time_ranges[i].classList.contains("alerts-container-sub-table")) {
+
+            time_ranges[i].classList.
+            remove("alerts-container-sub-table-selected");
+
+        }
+
+        time_ranges[i].classList.remove(panel_selected);
 
     }
 
-    element.parentNode.parentNode.classList.remove(panel_darkened);
+    if (element.parentNode.parentNode.classList.
+        contains("alerts-container-sub-table")) {
+
+        element.parentNode.parentNode.classList.
+        add("alerts-container-sub-table-selected");
+
+    }
+
+    element.parentNode.parentNode.classList.add(panel_selected);
 
 };
 

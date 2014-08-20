@@ -37,30 +37,37 @@
         <div id="alerts-container"
         class="profile-page-section-container">
 
-            <div class="alerts-container-sub-table alerts-container-time-range">
+            <div class="alerts-container-all-alerts">
 
-                <div class="alerts-container-radio-button
-                alerts-container-top-radio-button">
+                <div class="alerts-container-sub-table
+                alerts-container-time-range
+                alerts-container-time-range-deselected">
 
-                    <input type="radio" name="alerts_time_range_type" 
-                    onchange="ISR.utils.colorSelectedTimeRange(this);"/>
+                    <div class="alerts-container-radio-button
+                    alerts-container-top-radio-button">
+
+                        <input type="radio" name="alerts_time_range_type" 
+                        onchange="ISR.utils.highlightselectedtimerange(this);"/>
+
+                    </div>
+
+                    <div class="alerts-container-all-times">
+
+                        Turn on alerts for all times
+
+                    </div>
 
                 </div>
 
-                <div class="alerts-container-all-times">
-
-                    Turn on alerts for all times
-
-                </div>
+                <div id="alerts-container-all-date-ranges"
+                class="alerts-container-main-contents"></div>
 
             </div>
 
-            <div id="alerts-container-all-date-ranges"
-            class="alerts-container-main-contents"></div>
 
-            <span class="alerts-container-sub-header">
+            <span class="title-header alerts-container-sub-header">
 
-                Subscribe to Alerts
+                    Subscribe to Alerts
 
             </span>
 
@@ -77,7 +84,7 @@
             </div>
 
         </div>
-
+            
     </div>
 
 </div>
