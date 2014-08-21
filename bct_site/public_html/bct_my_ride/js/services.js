@@ -1890,7 +1890,11 @@ function(nearestStopsService, locationService, latest_location, filterHelpers) {
             ) {
 
                 var filtered = [];
+
                 var input_lower = search_string.toLowerCase();
+
+                var input_simplified =
+                input_lower.replace("\(", "\\(").replace("\)", "\\)")
 
                 if (!self.filter_condition(search_string.length)) { 
                     return true; 
@@ -1900,7 +1904,7 @@ function(nearestStopsService, locationService, latest_location, filterHelpers) {
                     return items;
                 };
 
-                if (input_lower === "all routes") {
+                if (input_simplified === "all routes") {
 
                     for (var j=0;j<items.length;j++) {
 
@@ -1916,11 +1920,13 @@ function(nearestStopsService, locationService, latest_location, filterHelpers) {
 
                     for (var i=0;i<items.length;i++) {
 
-                        var search_str_cased = items[i].Id + " " +
+                        var item_search_string_cased = items[i].Id + " " +
                         items[i][self.property_name];
-                        var search_str = search_str_cased.toLowerCase();
 
-                        if (search_str.match(input_lower)) {
+                        var item_search_string =
+                        item_search_string_cased.toLowerCase();
+
+                        if (item_search_string.match(input_simplified)) {
                             filtered.push(items[i]);
                         }
 
@@ -1945,7 +1951,7 @@ function(nearestStopsService, locationService, latest_location, filterHelpers) {
                 filterHelpers.bufferResultsExistTruthiness(
                     self.results_exist_flag,
                     current_results_exist,
-                    input_lower
+                    input_simplified
                 );
 
                 return filtered;

@@ -55,8 +55,11 @@ ISR.templates.profile_page["favorite-route-stop-panel"] = '' +
         '<span class="favorite-route-stop-panel-property ' +
         'favorite-route-stop-panel-myride-link">' +
 
-            '<a href="" onclick="">' +
-                'View in BCT MyRide' +
+            '<a href="#" onclick="ISR.utils.goToMyRideSchedule(' +
+                '\'{{ ROUTE_STOP_PANEL_ROUTE }}\', ' + 
+                '\'{{ ROUTE_STOP_PANEL_STOP }}\'' +
+            ');">' + 
+                'Search for stop in My Ride' +
             '</a>' +
 
         '</span>' +
@@ -67,7 +70,7 @@ ISR.templates.profile_page["favorite-route-stop-panel"] = '' +
             '\'{{ ROUTE_STOP_PANEL_ROUTE }}\', ' + 
             '\'{{ ROUTE_STOP_PANEL_STOP }}\', ' +
             'this' +
-        ')">' + 
+        ');">' + 
 
             '<i class="fa fa-times-circle"></i>' +
 

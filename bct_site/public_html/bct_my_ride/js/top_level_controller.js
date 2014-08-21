@@ -1383,6 +1383,37 @@ function (
     var route_props = ["Id", "LName"];
     var bstop_props = ["Id", "Name"];
 
+    $scope.goToScheduleFromProfilePage = function() {
+
+        var url = window.location.toString();
+
+        var params = url.match('\\?.*');
+
+        if (!params) { return true; }
+
+        var params_list = params[0].slice(1).split("&");
+
+        for (var i=0;i<params_list.length;i++) {
+
+            if (params_list[i].match('route')) {
+
+                var route = params_list[i].slice(6);
+
+            }
+
+            else if (params_list[i].match('stop')) {
+
+                var stop = params_list[i].slice(5);
+
+            }
+
+        }
+
+        $scope.query_data.schedule_search =
+        stop + " " + $scope.stops[stop].Name;
+
+    };
+
     //Creates a partial link between the routes and stops data objects
     //in the form of a numerically indexed array
     fullDataDownloadPromise.then(function() {
@@ -1448,6 +1479,8 @@ function (
 
         $scope.routes_arr = all_routes_arr;
         $scope.stops_arr = all_stops_arr;
+
+        $scope.goToScheduleFromProfilePage();
 
     });
 

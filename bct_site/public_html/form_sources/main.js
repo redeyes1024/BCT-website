@@ -123,6 +123,13 @@ ISR.utils.highlightselectedtimerange = function(element) {
 
 };
 
+ISR.utils.goToMyRideSchedule = function(route, stop) {
+
+    window.location = "index.html#routeschedules?route=" + route + "&" +
+    "stop=" + stop;
+
+};
+
 //Utility functions run successively after module is loaded
 ISR.utils.init = {};
 
