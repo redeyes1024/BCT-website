@@ -419,219 +419,211 @@ function (
     $scope.global_alerts_index = all_alerts_indices.global;
     $scope.schedule_map_alerts_index = all_alerts_indices.schedule_map;
 
-    $scope.cycleThroughAlerts = function(type, index) {
+    (function() {
 
-        var alerts_count = 0;
+        /* START Animation settings */
 
-        if (type === "global") {
+        var MESSAGE_DISPLAY_TIME = 4000;
+        var MESSAGE_TRANSITION_OUT_TIME = 500;
 
-            alerts_count = $scope.global_alerts.length;
+        var message_hidden_time =
+        MESSAGE_DISPLAY_TIME - MESSAGE_TRANSITION_OUT_TIME;
 
-        }
+        var keyframes = {
 
-        else if (type === "schedule_map") {
+            hidden_left: "alert-header-message-hidden-left",
+            hidden_right: "alert-header-message-hidden-right"
 
-            alerts_count = $scope.schedule_map_alerts.length;
-
-        }
-
-        if (index === alerts_count) {
-
-            index = 0;
-
-        }
-
-        else if (index === alerts_count + 1) {
-
-            index = 1;
-
-        }
-
-        return index;
-
-    };
-
-    $scope.changeToNextAlert = function(type, message_number) {
-
-        var index_property;
-
-        if (type === "global") {
-
-            index_property =
-            $scope.global_alerts_index;
-
-        }
-
-        else if (type === "schedule_map") {
-
-            index_property =
-            $scope.schedule_map_alerts_index;
-
-        }
-
-        index_property[String(message_number)] += 2;
-
-        index_property[String(message_number)] =
-        $scope.cycleThroughAlerts(
-            type,
-            index_property[String(message_number)]
-        );
-
-    };
-
-    //TO FIX: Animation starting and stopping at unexpected times
-
-    $scope.TIME_ALERT_MESSAGES_DISPLAYED = 8000;
-
-    $scope.TIME_FOR_ALERT_SWEEP_LEFT = 500;
-
-    $scope.useNextKeyframeStyle = function(
-        type,
-        keyframe_label,
-        style_prefs,
-        message_number
-    ) {
-
-        var next_keyframe = "";
-
-        var time_to_next_keyframe = 0;
-
-        switch (keyframe_label) {
-
-            case "displayed_in_middle":
-
-                style_prefs.cur_style[style_prefs.hidden_right] = false;
-                style_prefs.cur_style[style_prefs.hidden_left] = false;
-
-                next_keyframe = "hidden_on_left";
-
-                time_to_next_keyframe =
-                $scope.TIME_ALERT_MESSAGES_DISPLAYED;
-
-            break;
-
-            case "hidden_on_left":
-
-                style_prefs.cur_style[style_prefs.hidden_right] = false;
-                style_prefs.cur_style[style_prefs.hidden_left] = true;
-
-                next_keyframe = "hidden_on_right";
-
-                time_to_next_keyframe =
-                $scope.TIME_FOR_ALERT_SWEEP_LEFT;
-
-            break;
-
-            case "hidden_on_right":
-
-                style_prefs.cur_style[style_prefs.hidden_right] = true;
-                style_prefs.cur_style[style_prefs.hidden_left] = false;
-
-                next_keyframe = "displayed_in_middle";
-
-                time_to_next_keyframe =
-                $scope.TIME_ALERT_MESSAGES_DISPLAYED -
-                $scope.TIME_FOR_ALERT_SWEEP_LEFT;
-
-                $scope.changeToNextAlert(type, message_number);
-
-            break;
-
-        }
-
-        $timeout(
-            function() {
-                $scope.useNextKeyframeStyle(
-                    type, next_keyframe, style_prefs, message_number
-                );
-            },
-            time_to_next_keyframe
-        );
-
-    };
-
-    $scope.goThroughAlerts = function(type, message_number) {
-
-        var hidden_left = "alert-header-message-hidden-left";
-        var hidden_right = "alert-header-message-hidden-right";
-
-        var cur_style;
-
-        if (message_number === 1) {
-
-            if (type === "global") {
-
-                cur_style = $scope.global_alert_message_styles_1;
-
-            }
-
-            else if (type === "schedule_map") {
-
-                cur_style = $scope.schedule_map_alert_message_styles_1;
-
-            }
-
-        }
-
-        else if (message_number === 2) {
-
-            if (type === "global") {
-
-                cur_style = $scope.global_alert_message_styles_2;
-
-            }
-
-            else if (type === "schedule_map") {
-
-                cur_style = $scope.schedule_map_alert_message_styles_2;
-
-            }
-
-        }
-
-        var style_prefs = {
-            hidden_left: hidden_left,
-            hidden_right: hidden_right,
-            cur_style: cur_style
         };
 
-        $scope.useNextKeyframeStyle(
-            type,
-            "displayed_in_middle",
-            style_prefs,
-            message_number
-        );
+        var keyframe_setups = {
 
-    };
+            displayed_in_middle: {
 
-    $scope.beginAlertScrolling = function(type) {
+                hidden_right: false,
+                hidden_left: false
 
-        $scope.goThroughAlerts(type, 1);
+            },
 
-        if (type === "global") {
+            hidden_on_left: {
 
-            $scope.
-            global_alert_message_styles_2
-            ["alert-header-message-hidden-right"] = true;
+                hidden_right: false,
+                hidden_left: true
+
+            },
+
+            hidden_on_right: {
+
+                hidden_right: true,
+                hidden_left: false
+
+            }
+
+        };
+
+        //Frame counts are calculated and set below
+        var animation_config = [
+
+            {
+
+                keyframe_setup_name: "displayed_in_middle",
+                duration: MESSAGE_DISPLAY_TIME,
+                number_of_frames: 0
+
+            },
+
+            {
+
+                keyframe_setup_name: "hidden_on_left",
+                duration: MESSAGE_TRANSITION_OUT_TIME,
+                number_of_frames: 0
+
+            },
+
+            {
+
+                keyframe_setup_name: "hidden_on_right",
+                duration: message_hidden_time,
+                number_of_frames: 0
+
+            }
+
+        ];
+
+        /* END Animation Settings */
+
+        function cycleThroughAlerts(old_index) {
+
+            var new_index = old_index;
+
+            if (old_index > number_of_steps - 1) {
+
+                new_index = 0;
+
+            }
+
+            return new_index;
 
         }
 
-        else if (type === "schedule_map") {
+        function setKeyframeStyle(current_styling, keyframe_setup) {
 
-            $scope.
-            schedule_map_alert_message_styles_2
-            ["alert-header-message-hidden-right"] = true;
+            var cur_keyframe_setup = keyframe_setups[keyframe_setup];
+
+            for (var setting in cur_keyframe_setup) {
+
+                var new_style_setting = cur_keyframe_setup[setting];
+
+                var style_name = keyframes[setting];
+
+                current_styling[style_name] = new_style_setting;
+
+            }
 
         }
 
-        $timeout(function() {
-            $scope.goThroughAlerts(type, 2);
-        }, $scope.TIME_ALERT_MESSAGES_DISPLAYED);
+        function ScrollingMessage(type) {
 
-    };
+            var self = this;
 
-    $scope.beginAlertScrolling("global");
-    $scope.beginAlertScrolling("schedule_map");
+            this.type = type;
+
+            if (type === "leader") {
+
+                this.step = 0;
+
+                this.current_styling = $scope.global_alert_message_styles_1;
+
+            }
+
+            else if (type === "follower") {
+
+                this.step = 8;
+
+                this.current_styling = $scope.global_alert_message_styles_2;
+
+            }
+
+            this.goToNextStep = function() {
+
+                setKeyframeStyle(
+                    self.current_styling,
+                    steps_list[self.step].keyframe_setup
+                );
+
+                self.step++;
+
+                self.step = cycleThroughAlerts(self.step);
+
+                if (self.type === "leader") {
+
+                    //General case: called on an array of followers in sequence
+                    follower_message.goToNextStep();
+
+                }
+
+            };
+
+        }
+
+        var leader_message = new ScrollingMessage("leader");
+        var follower_message = new ScrollingMessage("follower");
+
+        //General case: the minimum in an array of animation times
+        var shortest_animation_time = MESSAGE_TRANSITION_OUT_TIME;
+
+        for (var i=0;i<animation_config.length;i++) {
+
+            var number_of_frames =
+            animation_config[i].duration / shortest_animation_time;
+
+            animation_config[i].number_of_frames = number_of_frames;
+
+        }
+
+        //General case: the sum of all animation steps
+        var number_of_steps =
+        (MESSAGE_DISPLAY_TIME * 2) / shortest_animation_time;
+
+        var steps_list = new Array(number_of_steps);
+
+        var steps_counter = 0;
+
+        for (var j=0;j<animation_config.length;j++) {
+
+            var cur_length = animation_config[j].number_of_frames;
+
+            for (var k=0;k<cur_length;k++) {
+
+                var cur_step = {
+
+                    keyframe_setup: animation_config[j].keyframe_setup_name
+
+                };
+
+                steps_list[steps_counter] = cur_step;
+
+                steps_counter++;
+
+            }
+
+        }
+
+        function runMessageScrollingAnimations() {
+        
+            $timeout(function() {
+
+                leader_message.goToNextStep();
+
+                runMessageScrollingAnimations();
+
+            }, shortest_animation_time);
+
+        }
+
+        runMessageScrollingAnimations();
+
+    }());
 
     $scope.base_myride_url =
     window.myride.directories.site_roots.active +
