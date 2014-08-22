@@ -1,22 +1,8 @@
 var BCTAppValues = angular.module('BCTAppValues', []);
 
 //For later use with real-time data
-BCTAppValues.value('scheduleWebSocket',
-new WebSocket("ws://echo.websocket.org"));
-
-BCTAppValues.value('all_alerts_indices', {
-
-    global: {
-        "1": 0,
-        "2": 1
-    },
-
-    schedule_map: {
-        "1": 0,
-        "2": 1
-    }
-
-});
+//BCTAppValues.value('scheduleWebSocket',
+//new WebSocket("ws://echo.websocket.org"));
 
 BCTAppValues.value('all_alerts', {
     

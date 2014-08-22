@@ -2,22 +2,22 @@ var BCTAppTopController = angular.module('BCTAppTopController', []);
 
 BCTAppTopController.controller('BCTController', [
 
-    '$scope', '$timeout', 'scheduleWebSocket', 'scheduleSocketService',
+    '$scope', '$timeout', //'scheduleWebSocket', 'scheduleSocketService',
     'scheduleDownloadAndTransformation', 'googleMapUtilities', '$q',
     '$interval', 'unitConversionAndDataReporting', 'miniScheduleService',
     'placeholderService', 'locationService', 'location_icons',
     'agency_filter_icons', 'results_exist', 'map_navigation_marker_indices',
-    'legend_icon_list', 'all_alerts', 'all_alerts_indices',
+    'legend_icon_list', 'all_alerts',
     'profilePageService',
 
 function (
 
-    $scope, $timeout, scheduleWebSocket, scheduleSocketService,
+    $scope, $timeout, //scheduleWebSocket, scheduleSocketService,
     scheduleDownloadAndTransformation, googleMapUtilities, $q, $interval,
     unitConversionAndDataReporting, miniScheduleService, placeholderService,
     locationService, location_icons, agency_filter_icons, results_exist,
     map_navigation_marker_indices, legend_icon_list, all_alerts,
-    all_alerts_indices, profilePageService
+    profilePageService
 
 ) {
 
@@ -416,9 +416,6 @@ function (
     $scope.global_alerts = all_alerts.global;
     $scope.schedule_map_alerts = all_alerts.schedule_map;
 
-    $scope.global_alerts_index = all_alerts_indices.global;
-    $scope.schedule_map_alerts_index = all_alerts_indices.schedule_map;
-
     (function() {
 
         /* START Animation settings */
@@ -492,7 +489,21 @@ function (
 
         /* END Animation Settings */
 
-        function cycleThroughAlerts(old_index) {
+        var alert_message_indices = {
+
+            global: {
+                "leader": 0,
+                "follower": -1
+            },
+
+            schedule_map: {
+                "leader": 0,
+                "follower": -1
+            }
+
+        };
+
+        function cycleThroughAlertFrames(old_index) {
 
             var new_index = old_index;
 
@@ -506,7 +517,63 @@ function (
 
         }
 
-        function setKeyframeStyle(current_styling, keyframe_setup) {
+        function cycleThroughAlertMessages(module, old_index) {
+
+            var new_index = old_index;
+
+            var number_of_messages = all_alerts[module].length;
+
+            if (old_index > number_of_messages) {
+
+                new_index = 1;
+
+            }
+
+            else if (old_index > number_of_messages - 1) {
+
+                new_index = 0;
+
+            }
+
+            return new_index;
+
+        }
+
+        $scope.global_alerts_index = alert_message_indices.global;
+        $scope.schedule_map_alerts_index = alert_message_indices.schedule_map;
+
+        function changeAlertMessage(module, message) {
+
+            var cur_indices = alert_message_indices[module];
+
+            cur_indices[message] += 2;
+
+            cur_indices[message] =
+            cycleThroughAlertMessages(module, cur_indices[message]);
+
+        }
+
+        var prev_stylings = {
+
+            global: {
+
+                "leader": "",
+                "follower": ""
+
+            },
+
+            schedule_map: {
+
+                "leader": "",
+                "follower": ""
+
+            }
+
+        };
+
+        function setKeyframeStyle(
+            module, message, current_styling, keyframe_setup
+        ) {
 
             var cur_keyframe_setup = keyframe_setups[keyframe_setup];
 
@@ -520,45 +587,90 @@ function (
 
             }
 
+            if (prev_stylings[module][message] === "hidden_on_left" &&
+                keyframe_setup === "hidden_on_right") {
+
+                changeAlertMessage(module, message);
+
+            }
+
+            prev_stylings[module][message] = keyframe_setup;
+
         }
 
-        function ScrollingMessage(type) {
+        function ScrollingMessage(module, type) {
 
             var self = this;
 
             this.type = type;
 
-            if (type === "leader") {
+            this.module = module;
+
+            if (self.type === "leader") {
 
                 this.step = 0;
 
-                this.current_styling = $scope.global_alert_message_styles_1;
+                this.message_index = 0;
+
+                if (self.module === "global") {
+
+                    this.current_styling =
+                    $scope.global_alert_message_styles_1;
+
+                    this.follower_message = global_follower_message;
+
+                }
+
+                if (self.module === "schedule_map") {
+
+                    this.current_styling =
+                    $scope.schedule_map_alert_message_styles_1;
+
+                    this.follower_message = schedule_map_follower_message;
+
+                }
 
             }
 
-            else if (type === "follower") {
+            else if (self.type === "follower") {
 
                 this.step = 8;
 
-                this.current_styling = $scope.global_alert_message_styles_2;
+                this.message_index = 0;
+
+                if (self.module === "global") {
+
+                    this.current_styling =
+                    $scope.global_alert_message_styles_2;
+
+                }
+
+                if (self.module === "schedule_map") {
+
+                    this.current_styling =
+                    $scope.schedule_map_alert_message_styles_2;
+
+                }
 
             }
 
             this.goToNextStep = function() {
 
                 setKeyframeStyle(
+                    self.module,
+                    type,
                     self.current_styling,
                     steps_list[self.step].keyframe_setup
                 );
 
                 self.step++;
 
-                self.step = cycleThroughAlerts(self.step);
+                self.step = cycleThroughAlertFrames(self.step);
 
-                if (self.type === "leader") {
+                if (self.follower_message) {
 
                     //General case: called on an array of followers in sequence
-                    follower_message.goToNextStep();
+                    self.follower_message.goToNextStep();
 
                 }
 
@@ -566,8 +678,17 @@ function (
 
         }
 
-        var leader_message = new ScrollingMessage("leader");
-        var follower_message = new ScrollingMessage("follower");
+        var global_follower_message =
+        new ScrollingMessage("global", "follower");
+
+        var global_leader_message =
+        new ScrollingMessage("global", "leader");
+
+        var schedule_map_follower_message =
+        new ScrollingMessage("schedule_map", "follower");
+
+        var schedule_map_leader_message =
+        new ScrollingMessage("schedule_map", "leader");
 
         //General case: the minimum in an array of animation times
         var shortest_animation_time = MESSAGE_TRANSITION_OUT_TIME;
@@ -613,7 +734,9 @@ function (
         
             $timeout(function() {
 
-                leader_message.goToNextStep();
+                global_leader_message.goToNextStep();
+
+                schedule_map_leader_message.goToNextStep();
 
                 runMessageScrollingAnimations();
 
