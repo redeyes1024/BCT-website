@@ -153,7 +153,7 @@ BCTAppValues.value('legend_icon_list', [
         legend: {
             module: "Full Schedule",
             desc: "Closes the full schedule view and returns to the Map " +
-            "schedule"
+            "schedule."
         }
     },
     {
@@ -171,8 +171,7 @@ BCTAppValues.value('legend_icon_list', [
         filename: "",
         legend: {
             module: "Variable",
-            desc: "Indicates that a page or module is currently loading. " +
-            "This icon rotates in all loading cases."
+            desc: "Indicates that a page or module is currently loading."
         }
     }
 

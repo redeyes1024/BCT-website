@@ -146,6 +146,8 @@ function (
     $scope.show_trip_planner_itinerary_transit_type_icon_selectable = false;
     $scope.show_trip_planner_itinerary_transit_type_icon_non_selectable = false;
 
+    $scope.show_map_canvas = true;
+
     (function() {
 
         for (icon in location_icons) {
@@ -210,6 +212,24 @@ function (
 
     });
 
+    $scope.$watch("show_full_schedule_module", function(new_val, old_val) {
+
+        if (new_val > old_val) {
+
+            $scope.show_map_canvas = false;
+            $scope.show_schedule_map_stop_navigation_bar = false;
+
+        }
+
+        else if (new_val < old_val) {
+
+            $scope.show_map_canvas = true;
+            $scope.show_schedule_map_stop_navigation_bar = true;
+
+        }
+
+    });
+
     $scope.full_schedule_loading_placeholder =
         placeholderService.createLoadingPlaceholder(20, " ");
 
@@ -221,17 +241,25 @@ function (
 
                 $scope.schedule.date_pick =
                 $scope.full_schedule_loading_placeholder;
+
                 $scope.show_schedule_result_date_pick_row_loading = true;
 
                 scheduleDownloadAndTransformation.downloadSchedule(
+
                     $scope.map_schedule_info.route,
                     $scope.map_schedule_info.stop,
-                    $scope.full_schedule_date).
+                    $scope.full_schedule_date
+
+                ).
                 then(function(res) {
+
                     $scope.show_schedule_result_date_pick_row_loading = false;
+
                     var t_schedule = scheduleDownloadAndTransformation.
                     transformSchedule("datepick", res.data.Today);
+
                     $scope.schedule.date_pick = t_schedule.date_pick;
+
                 });
 
             }
@@ -249,6 +277,8 @@ function (
             $scope.map_full_screen_return_button_message =
             $scope.map_full_screen_return_button_messages.planner;
 
+            $scope.show_full_schedule_module = false;
+
         }
 
         //If trip planner is deactivating
@@ -264,16 +294,23 @@ function (
 
     //Trip planner option menu pushes and compresses itinerary selector
     $scope.$watch("show_trip_planner_options", function(new_val, old_val) {
+
         if (new_val > old_val) {
+
             $scope.itinerary_selector_modal_styles["trip-planner-itinerary-selector-modal-smaller"] = true;
             $scope.itinerary_selector_styles["trip-planner-itinerary-selector-pushed"] = true;
             $scope.itinerary_selector_panel_styles["trip-planner-itinerary-panel-smaller"] = true;
+
         }
+
         else if (new_val < old_val) {
+
             $scope.itinerary_selector_modal_styles["trip-planner-itinerary-selector-modal-smaller"] = false;
             $scope.itinerary_selector_styles["trip-planner-itinerary-selector-pushed"] = false;
             $scope.itinerary_selector_panel_styles["trip-planner-itinerary-panel-smaller"] = false;
+
         }
+
     });
 
     $scope.$watch("map_navigation_marker_indices.planner",
@@ -1268,9 +1305,11 @@ function (
         $scope.initial_schedule_map_data.bstop_id = stop;
 
         googleMapUtilities.clearMap();
-        googleMapUtilities.setMapPosition(cur_center);
+        googleMapUtilities.setMapPosition("centered_by_window");
         googleMapUtilities.displayRoute(route, $scope.routes);
         googleMapUtilities.displayStops(route, $scope.routes, $scope.stops);
+
+        myride.dom_q.map.overlays.points[stop].ShowWindow.func();
 
     };
 

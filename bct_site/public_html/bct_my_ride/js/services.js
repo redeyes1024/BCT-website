@@ -815,6 +815,7 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
     };
 
     this.setMapPosition = function(coords, zoom) {
+
         if (!zoom) {
             var zoom = 18;
         }
@@ -835,23 +836,32 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
 
         //Map intance is re-centered before re-showing the map...
         myride.dom_q.map.inst.setZoom(zoom);
-        myride.dom_q.map.inst.setCenter(coords);
+
+        if (coords !== "centered_by_window") {
+            myride.dom_q.map.inst.setCenter(coords);
+        }
 
         self.touchMap();
 
         google.maps.event.addListenerOnce(
+
             myride.dom_q.map.inst,
             'idle',
             function() {
 
-            //...but it must be re-centered once more in case a resize
-            //occured since the map instance was last hidden.
-            //N.B. the event.trigger method does not have a callback arg
-            //triggered upon resize, so second re-centering is always attempted
-            myride.dom_q.map.inst.setZoom(zoom);
-            myride.dom_q.map.inst.setCenter(coords);
+                //...but it must be re-centered once more in case a resize
+                //occured since the map instance was last hidden.
+                //N.B. the event.trigger method does not have a callback arg
+                //triggered upon resize, so second re-centering is always
+                //attempted
+                myride.dom_q.map.inst.setZoom(zoom);
+
+                if (coords !== "centered_by_window") {
+                    myride.dom_q.map.inst.setCenter(coords);
+                }
 
             }
+
         );
 
     };
@@ -1124,7 +1134,7 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
                     '<span class="route-swap-button-holder">' +
                         alt_routes[k] +
                     '</span>';
-                    
+
                     if (k < alt_routes.length - 1) {
                         route_swap_button_templates += ", ";
                     }
@@ -1134,8 +1144,8 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
 
             }
 
-            var info_cts = '' +
-                '<div class="marker-info-window">' +
+            var schedule_map_info_box_contents = '' +
+                '<div class="myride-info-box-contents">' +
                     '<span>' + 
                         '<em class="maker-info-window-title">Route: </em>' +
                         route +
@@ -1166,7 +1176,25 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
                     '</span>' +
                 '</div>';
 
-            var info_window = new google.maps.InfoWindow({ content: info_cts });
+            var info_window =
+            new InfoBox({
+
+                content: schedule_map_info_box_contents,
+                boxClass: "schedule-map-info-box",
+                pixelOffset: {
+
+                    width: -100,
+                    height: -155
+
+                },
+                infoBoxClearance: {
+
+                    width: 0,
+                    height: 50
+
+                }
+
+            });
 
             info_window.set("schedule_marker_window_id", i);
 
@@ -1489,7 +1517,7 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
             var reported_distance_unit = formattedDistance.
             reported_distance_unit;
 
-            var info_cts = '' +
+            var trip_planner_info_box_contents = '' +
                 '<div class="trip-marker-info-window">' +
                     "<span>" +
                         "<em>" + (i+1) + ". </em> " +
@@ -1506,8 +1534,24 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
                     "</span>";
                 '</div>';
 
-            var info_window = new google.maps.InfoWindow({
-                content: info_cts 
+            var info_window =
+            new InfoBox({
+
+                content: trip_planner_info_box_contents,
+                boxClass: "trip-planner-info-box",
+                pixelOffset: {
+
+                    width: -100,
+                    height: -80
+
+                },
+                infoBoxClearance: {
+
+                    width: 0,
+                    height: 50
+
+                }
+
             });
 
             info_window.set("trip_marker_window_id", i);
