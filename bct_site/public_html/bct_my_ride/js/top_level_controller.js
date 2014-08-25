@@ -868,7 +868,7 @@ function (
         $scope.show_trip_planner_step_navigation_bar =
         full_screen_on && $scope.show_trip_planner_title;
 
-        googleMapUtilities.touchMap();
+        var map_ready_promise = googleMapUtilities.touchMap();
 
         var map_type = "";
 
@@ -879,7 +879,7 @@ function (
             map_type = "schedule";
         }
 
-        angular.element(document).ready(function() {
+        map_ready_promise.then(function() {
             $scope.goToFirstStep(map_type);
         });
 
@@ -1257,7 +1257,7 @@ function (
 
     $scope.updateAndPushSchedule = function (transformed_schedule) {
 
-        reprocessed_schedule = scheduleDownloadAndTransformation.
+        var reprocessed_schedule = scheduleDownloadAndTransformation.
         transformSchedule("nearest", transformed_schedule.raw);
 
         $scope.schedule.nearest = reprocessed_schedule.nearest;
@@ -1295,21 +1295,13 @@ function (
         $scope.map_schedule_info.route = route;
         $scope.map_schedule_info.stop = stop;
 
-        var cur_center =
-        $scope.initial_schedule_map_data.coords = {
-            lat: $scope.stops[stop].LatLng.Latitude,
-            lng: $scope.stops[stop].LatLng.Longitude
-        };
-
         $scope.initial_schedule_map_data.route_id = route;
         $scope.initial_schedule_map_data.bstop_id = stop;
 
         googleMapUtilities.clearMap();
-        googleMapUtilities.setMapPosition("centered_by_window");
+        googleMapUtilities.setMapPosition(stop);
         googleMapUtilities.displayRoute(route, $scope.routes);
         googleMapUtilities.displayStops(route, $scope.routes, $scope.stops);
-
-        myride.dom_q.map.overlays.points[stop].ShowWindow.func();
 
     };
 
@@ -1321,7 +1313,7 @@ function (
         scheduleDownloadAndTransformation.downloadSchedule(route, stop).
         then(function(res) {
             if (!res.data.Today) {
-                console.log("Schedule loading error.")
+                console.log("Schedule loading error.");
                 return false;
             }
 

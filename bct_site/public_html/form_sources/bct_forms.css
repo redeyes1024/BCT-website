@@ -221,7 +221,14 @@ a.link-icon-rev {
 }
 
 #favorites-container {
+    
+}
+.favorites-container-header {
+    width: calc(100% - 0.5em);
+}
+#favorites-container-main-panels {
     overflow-y: scroll;
+    height: calc(100% - 1.8em);
 }
 .favorite-route-stop-panel {
     position: relative;
@@ -273,8 +280,11 @@ favorite-route-stop-panel-property-container {
 #alerts-container {
     
 }
+.alerts-container-header {
+    width: calc(100% - 0.5em);
+}
 .alerts-container-all-alerts {
-    height: calc(100% - 4.5em - 3px);
+    height: calc(100% - 6em - 3px);
     overflow-y: auto;
 }
 .alerts-container-main-contents {
@@ -372,6 +382,9 @@ favorite-route-stop-panel-property-container {
     
 }
 .alerts-container-time-range-end {
+    
+}
+.alerts-subscription-options {
     
 }
 .alerts-container-sub-header {

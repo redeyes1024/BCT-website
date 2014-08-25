@@ -285,8 +285,7 @@ ISR.templates.data = {};
 ISR.templates.data.
 profile_page["alerts-container-all-date-ranges"].day_list = [
 
-    "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday",
-    "Sunday", "Weekdays", "Weekends"
+    "Full week", "Weekdays", "Weekends"
 
 ];
 
@@ -524,7 +523,8 @@ ISR.dom.post_templating = {};
 
 ISR.utils.init.templating.addFavoriteRouteStopPanelsToContainer = function() {
 
-    var favorites_container = document.getElementById("favorites-container");
+    var favorites_container =
+    document.getElementById("favorites-container-main-panels");
 
     ISR.utils.addFavoriteRouteStopPanel(favorites_container);
 

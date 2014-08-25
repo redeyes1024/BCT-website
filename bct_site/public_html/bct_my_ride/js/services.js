@@ -109,7 +109,8 @@ BCTAppServices.service('miniScheduleService', [ function() {
 }]);
 
 BCTAppServices.service('locationService', [ '$timeout', 'latest_location',
-function($timeout, latest_location) {
+'default_demo_coords',
+function($timeout, latest_location, default_demo_coords) {
 
     var self = this;
 
@@ -124,22 +125,13 @@ function($timeout, latest_location) {
         }
     };
 
-    this.DEFAULT_DEMO_LOCATION_COORDS = {
-        LatLng: {
-            Latitude: 25.977301,
-            Longitude: -80.12027
-        }
-    };
-
     this.getDefaultDemoCoords = function(coord_labels) {
 
         var default_coords = {};
 
-        default_coords[coord_labels[0]] =
-        self.DEFAULT_DEMO_LOCATION_COORDS.LatLng.Latitude;
+        default_coords[coord_labels[0]] = default_demo_coords.LatLng.Latitude;
 
-        default_coords[coord_labels[1]] =
-        self.DEFAULT_DEMO_LOCATION_COORDS.LatLng.Longitude;  
+        default_coords[coord_labels[1]] = default_demo_coords.LatLng.Longitude;  
 
         return default_coords;
 
@@ -742,13 +734,14 @@ BCTAppServices.service('generalServiceUtilities', [ function() {
 
 }]);
 
-BCTAppServices.service('googleMapUtilities', [ '$compile',
+BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
     'scheduleDownloadAndTransformation', 'unitConversionAndDataReporting',
     'locationService', 'map_navigation_marker_indices',
-    'generalServiceUtilities',
-    function($compile, scheduleDownloadAndTransformation,
+    'generalServiceUtilities', 'default_demo_coords',
+    function($compile, $q, scheduleDownloadAndTransformation,
     unitConversionAndDataReporting, locationService,
-    map_navigation_marker_indices, generalServiceUtilities) {
+    map_navigation_marker_indices, generalServiceUtilities,
+    default_demo_coords) {
 
     var self = this;
 
@@ -793,24 +786,26 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
     };
 
     this.touchMap = function() {
-        
+
+        var deferred = $q.defer();
+
         google.maps.event.addListenerOnce(
+
             myride.dom_q.map.inst,
             'idle',
             function() {
+
                 google.maps.event.trigger(
                     myride.dom_q.map.inst, "resize"
                 );
+
+                deferred.resolve();
+
             }
+
         );
 
-        angular.element(document).ready(function() {
-
-            google.maps.event.trigger(
-                myride.dom_q.map.inst, "resize"
-            );
-
-        });
+        return deferred.promise;
 
     };
 
@@ -834,35 +829,25 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
 
         }
 
-        //Map intance is re-centered before re-showing the map...
+        myride.dom_q.map.inst.setCenter({
+            lat: default_demo_coords.LatLng.Latitude,
+            lng: default_demo_coords.LatLng.Longitude
+        });
+
         myride.dom_q.map.inst.setZoom(zoom);
 
-        if (coords !== "centered_by_window") {
-            myride.dom_q.map.inst.setCenter(coords);
-        }
+        var map_ready_promise = self.touchMap();
 
-        self.touchMap();
+        map_ready_promise.then(function() {
 
-        google.maps.event.addListenerOnce(
-
-            myride.dom_q.map.inst,
-            'idle',
-            function() {
-
-                //...but it must be re-centered once more in case a resize
-                //occured since the map instance was last hidden.
-                //N.B. the event.trigger method does not have a callback arg
-                //triggered upon resize, so second re-centering is always
-                //attempted
-                myride.dom_q.map.inst.setZoom(zoom);
-
-                if (coords !== "centered_by_window") {
-                    myride.dom_q.map.inst.setCenter(coords);
-                }
-
+            if (typeof coords !== "string") {
+                myride.dom_q.map.inst.setCenter(coords);
+            }
+            else {
+                myride.dom_q.map.overlays.points[coords].ShowWindow.func();
             }
 
-        );
+        });
 
     };
 
@@ -877,6 +862,12 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
             trip_points[mk].marker.setMap(null);
         }
 
+        for (var mk=0;mk<trip_points.length;mk++) {
+
+            trip_points[mk].info.close();
+
+        }
+
         myride.dom_q.map.overlays.trip_points = [];
 
         for (var pl=0;pl<trip_pline.length;pl++) {
@@ -887,6 +878,12 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
 
         for (p in points) {
             points[p].marker.setMap(null);
+        }
+
+        for (p in points) {
+
+            points[p].info.close();
+
         }
 
         myride.dom_q.map.overlays.plines = [];
@@ -1190,7 +1187,7 @@ BCTAppServices.service('googleMapUtilities', [ '$compile',
                 infoBoxClearance: {
 
                     width: 0,
-                    height: 50
+                    height: 20
 
                 }
 

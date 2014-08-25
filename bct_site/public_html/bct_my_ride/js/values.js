@@ -4,6 +4,13 @@ var BCTAppValues = angular.module('BCTAppValues', []);
 //BCTAppValues.value('scheduleWebSocket',
 //new WebSocket("ws://echo.websocket.org"));
 
+BCTAppValues.value('default_demo_coords', {
+    LatLng: {
+        Latitude: 25.977301,
+        Longitude: -80.12027
+    }
+});
+
 BCTAppValues.value('all_alerts', {
     
     global: [
