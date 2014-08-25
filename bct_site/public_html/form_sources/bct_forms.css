@@ -76,15 +76,20 @@ a.link-icon-rev {
 }
 .bct-drop-down {
     position: relative;
-    height: 2em;
+    height: 1.5em;
     width: 10em;
-    border: 1px solid;
-    display: inline-block;
-    vertical-align: middle;
     border-style: solid;
     border-width: 1px;
-    background-color: white;
-    margin: 0.2em;
+    display: inline-block;
+    vertical-align: middle;
+    background-color: #FFF;
+    margin: 0em 0.3em;
+    border-radius: 0.5em;
+    line-height: 1em;
+}
+.bct-drop-down:hover {
+    border-radius: 0.5em 0.5em 0em 0em;
+
 }
 .bct-time-drop-down {
     width: 5em;
@@ -94,45 +99,44 @@ a.link-icon-rev {
 }
 .bct-drop-down-item-holder-container {
     position: absolute;
-    height: calc(6em - 4px);
+    height: calc(4.5em + 2px);
     margin: 4px 0px 0px -1px;
+    border-style: solid;
+    border-width: 1px;
     overflow-x: hidden;
     overflow-y: auto;
     width: inherit;
-    text-align: left;
-    border-width: 1px;
-    border-style: solid;
     z-index: 1;
 }
 .bct-drop-down .bct-drop-down-item-holder-container {
-    border-width: 0px;
     display: none;
 }
 .bct-drop-down:hover .bct-drop-down-item-holder-container {
-    border-width: 1px;
     display: block;
 }
 .bct-drop-down-item-holder {
-    display: table;
-    width: inherit;
     background-color: #FFF;
-    position: absolute;
+    position: relative;
     overflow: auto;
-    margin-top: -1px;
 }
 .bct-drop-down-item {
-    display: table-row;
-    height: calc(2em - 1px);
+    display: block;
+    height: 1.5em;
+    width: 100%;
     border-style: solid;
-    border-width: 1px 0px 0px 0px;
+    border-width: 1px 0px 0px;
+    line-height: 1.5em;
+    background-color: #FFF;
+}
+.bct-drop-down-item:first-child{
+    border-width: 0px;
 }
 .bct-drop-down-item:hover {
     background-color: #017AC2;
     color: white;
-    border-color: black;
 }
 .bct-drop-down-item-text {
-    margin: 0em 0em 0em 0.5em;
+    
 }
 
 /* END All Form Properties */
@@ -217,7 +221,7 @@ a.link-icon-rev {
     box-shadow: inset 4px 0px 2px -2px #000;
 }
 .profile-page-section-title-sub {
-
+    
 }
 
 #favorites-container {
@@ -289,9 +293,12 @@ favorite-route-stop-panel-property-container {
 }
 .alerts-container-main-contents {
     display: table;
+    table-layout: fixed;
     width: 100%;
-    text-align: center;
+    min-width: 23em;
     border-collapse: collapse;
+    text-align: center;
+    overflow-x: auto;
 }
 .alerts-container-sub-table {
     display: table;
@@ -306,6 +313,8 @@ favorite-route-stop-panel-property-container {
 }
 .bct-drop-down,
 .bct-drop-down-item-holder-container,
+.bct-drop-down-item,
+.bct-drop-down-item:hover,
 .alerts-container-time-range,
 .alerts-container-radio-button,
 .alerts-container-time-range-content {
@@ -316,11 +325,11 @@ favorite-route-stop-panel-property-container {
     width: 2em;
     vertical-align: middle;
     padding: 0em 0.5em 0em 0em;
-    border-style: solid;
-    border-width: 1px 1px 0px 0px;
+    border-style: dotted;
+    border-width: 0px;
 }
 .alerts-container-top-radio-button {
-    border-width: 0px 1px 0px 0px;
+    border-width: 0px 2px 0px 0px;
 }
 .alerts-container-radio-button {
     text-align: center;
@@ -333,7 +342,7 @@ favorite-route-stop-panel-property-container {
     border-top: 1px;
 }
 .alerts-container-radio-button:nth-child(-n+7) {
-    border-width: 0px 1px 0px 0px;
+    border-width: 0px 2px 0px 0px;
 }
 .alerts-container-all-times {
     display: table-cell;
@@ -363,20 +372,24 @@ favorite-route-stop-panel-property-container {
 .alerts-container-time-range-content {
     display: table-cell;
     vertical-align: middle;
-    border-style: solid;
-    border-width: 0px 0px 0px 1px;
-    padding: 0.3em;
+    border-style: dotted;
+    border-width: 0px 0px 0px 2px;
+    padding: 0.5em 0em;
+    
+}
+.alerts-container-time-range-divider {
+    display: inline-block;
 }
 .alerts-container-time-range-type-label {
     width: 5em;
     text-align: left;
-    padding: 0em 0.2em;
+    padding: 0em 0.5em;
 }
 .alerts-container-time-range-label {
     display: block;
 }
-.alert-container-time-range-times {
-    
+.alerts-container-time-range-times {
+    display: inline-block;
 }
 .alerts-container-time-range-start {
     

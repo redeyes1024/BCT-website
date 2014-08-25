@@ -102,7 +102,7 @@ ISR.templates.profile_page["alerts-container-all-date-ranges"] = '' +
 
             '<span class="alerts-container-time-range-label">' +
 
-                'Time 1' +
+                //'Time 1' +
 
             '</span>' +
 
@@ -112,7 +112,7 @@ ISR.templates.profile_page["alerts-container-all-date-ranges"] = '' +
 
             '</span>' +
 
-            '-' +
+            '<span class="alerts-container-time-range-divider">to</span>' +
 
             '<span class="alerts-container-time-range-times">' +
 
@@ -127,7 +127,7 @@ ISR.templates.profile_page["alerts-container-all-date-ranges"] = '' +
 
             '<span class="alerts-container-time-range-label">' +
 
-                'Time 2' +
+                //'Time 2' +
 
             '</span>' +
 
@@ -137,7 +137,7 @@ ISR.templates.profile_page["alerts-container-all-date-ranges"] = '' +
 
             '</span>' +
 
-            '-' +
+            '<span class="alerts-container-time-range-divider">to</span>' +
 
             '<span class="alerts-container-time-range-times">' +
 
