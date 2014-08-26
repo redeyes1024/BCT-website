@@ -26,6 +26,8 @@ ISR.directories.site_roots.local;
 ISR.directories.paths.active =
 ISR.directories.paths.form_sources;
 
+ISR.directories.paths.icons = 'bct_my_ride/';
+
 //Utility functions
 ISR.utils = {};
 
@@ -52,8 +54,49 @@ ISR.utils.changePage = function(selected_page) {
 
     }
 
-    ISR.utils.styling.highlightHeaderPanel(selected_panel_name);
-    ISR.utils.styling.switchModule(selected_module_name);
+    ISR.utils.styling.highlightHeaderPanel(
+        "main", selected_panel_name
+    );
+
+    ISR.utils.styling.switchModule("main", selected_module_name);
+
+};
+
+ISR.utils.changeAgency = function(selected_agency) {
+
+    var selected_button_name = "";
+    var selected_sub_page_name = "";
+
+    switch (selected_agency) {
+
+        case "broward-county":
+
+            selected_button_name = "broward_county";
+            selected_sub_page_name = "broward_county_favorites";
+
+            break;
+
+        case "miami-dade":
+
+            selected_button_name = "miami_dade";
+            selected_sub_page_name = "miami_dade_favorites";
+
+            break;
+            
+        case "palm-beach":
+
+            selected_button_name = "palm_beach";
+            selected_sub_page_name = "palm_beach_favorites";
+
+            break;
+
+    }
+
+    ISR.utils.styling.highlightHeaderPanel(
+        "agencies", selected_button_name
+    );
+
+    ISR.utils.styling.switchModule("agencies", selected_sub_page_name);
 
 };
 
@@ -96,7 +139,8 @@ ISR.utils.highlightselectedtimerange = function(element) {
 
     var panel_selected = "alerts-container-time-range-selected";
 
-    var time_ranges = ISR.dom.post_templating["alerts-container-time-range"];
+    var time_ranges =
+    ISR.dom.post_templating.dom["alerts-container-time-range"];
 
     for (var i=0;i<time_ranges.length;i++) {
 
@@ -142,28 +186,46 @@ ISR.utils.init.general.startingDomQueries = function() {
 
     ISR.dom.modules = {};
 
-    ISR.dom.modules.favorites_module =
+    ISR.dom.modules.main = {};
+
+    ISR.dom.modules.main.favorites_module =
     document.getElementById("favorites-container");
 
-    ISR.dom.modules.alerts_module =
+    ISR.dom.modules.main.alerts_module =
     document.getElementById("alerts-container");
+
+    ISR.dom.modules.agencies = {};
+
+    ISR.dom.modules.agencies.broward_county_favorites =
+    document.getElementById("broward-county-favorites");
+
+    ISR.dom.modules.agencies.miami_dade_favorites =
+    document.getElementById("miami-dade-favorites");
+
+    ISR.dom.modules.agencies.palm_beach_favorites =
+    document.getElementById("palm-beach-favorites");
 
     /* Header Panels */
 
     ISR.dom.header_panels = {};
 
-    var header_panels =
+    ISR.dom.header_panels.main = {};
+
+    var module_header_panels =
     document.getElementsByClassName("profile-page-section-title-sub-container");
 
-    ISR.dom.header_panels.favorites_page_button = header_panels[0];
+    ISR.dom.header_panels.main.favorites_page_button =
+    module_header_panels[0];
     
-    ISR.dom.header_panels.alerts_page_button = header_panels[1];
+    ISR.dom.header_panels.main.alerts_page_button =
+    module_header_panels[1];
 
 };
 
 ISR.utils.init.general.addDefaultDynamicStyles = function() {
 
     ISR.utils.changePage("favorites");
+
 };
 
 //Dynamic CSS class manipulation
@@ -175,34 +237,53 @@ ISR.utils.styling.functions = {};
 //Dynamic styling configutation
 ISR.utils.styling.config = {};
 
-ISR.utils.styling.config.header_deactivated_styles = {
+ISR.utils.styling.config.header_activated_styles = {};
+
+ISR.utils.styling.config.header_activated_styles.main = {
 
     favorites_page_button: 
-    "profile-page-section-title-sub-container-deactivated-left",
+    "profile-page-section-title-sub-container-main-activated",
 
     alerts_page_button: 
-    "profile-page-section-title-sub-container-deactivated-right"
+    "profile-page-section-title-sub-container-main-activated"
 
 };
 
-ISR.utils.styling.highlightHeaderPanel = function(selected_panel_name) {
+ISR.utils.styling.config.header_activated_styles.agencies = {
 
-    for (var cur_panel_name in ISR.dom.header_panels) {
+    broward_county: 
+    "profile-page-section-title-sub-container-sub-activated",
 
-        var current_panel = ISR.dom.header_panels[cur_panel_name];
+    miami_dade: 
+    "profile-page-section-title-sub-container-sub-activated",
 
-        var panel_deactivated_style = ISR.utils.styling.config.
-        header_deactivated_styles[cur_panel_name];
+    palm_beach:
+    "profile-page-section-title-sub-container-sub-activated"
+
+};
+
+ISR.utils.styling.highlightHeaderPanel = function(
+    panel_list_name, selected_panel_name
+) {
+
+    var panel_list = ISR.dom.header_panels[panel_list_name];
+
+    for (var cur_panel_name in panel_list) {
+
+        var current_panel = panel_list[cur_panel_name];
+
+        var panel_activated_style = ISR.utils.styling.config.
+        header_activated_styles[panel_list_name][cur_panel_name];
 
         if (cur_panel_name === selected_panel_name) {
 
-            current_panel.classList.remove(panel_deactivated_style);
+            current_panel.classList.add(panel_activated_style);
 
         }
 
         else {
 
-            current_panel.classList.add(panel_deactivated_style);
+            current_panel.classList.remove(panel_activated_style);
 
         }
 
@@ -211,11 +292,13 @@ ISR.utils.styling.highlightHeaderPanel = function(selected_panel_name) {
 
 };
 
-ISR.utils.styling.switchModule = function(selected_module_name) {
+ISR.utils.styling.switchModule = function(module_list, selected_module_name) {
 
-    for (var cur_module_name in ISR.dom.modules) {
+    var modules = ISR.dom.modules[module_list];
 
-        var cur_module = ISR.dom.modules[cur_module_name];
+    for (var cur_module_name in modules) {
+
+        var cur_module = modules[cur_module_name];
 
         if (cur_module_name === selected_module_name) {
 
