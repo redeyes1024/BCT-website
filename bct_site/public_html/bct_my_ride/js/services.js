@@ -310,12 +310,16 @@ function(locationService) {
     ) {
 
         for (var i=0;i<bstops_list.length;i++) {
+
+            var current_coords = current_location.LatLng || current_location;
+
             var distance = self.computeLinearDistance(
-                current_location.LatLng,
+                current_coords,
                 bstops_list[i].LatLng
             );
 
             bstops_list[i].distance = distance;
+
         }
 
         bstops_list.sort(function(sd1, sd2) {
@@ -2022,25 +2026,19 @@ BCTAppServices.service('linkFunctions', [ '$compile', function($compile) {
         bind("click", function() {
 
             var data_id = element[0].childNodes[0].getAttribute("id");
-            var panel = document.getElementById(data_id + "-collapse");
-            var panel_is_closed = panel.classList.contains("in");
 
             //e.g. "cur_stop" and "stops"
             scope["cur_" + type] = scope[type + "s"][data_id];
 
-            //i.e. panel was closed and is now being opened
-            if (panel_is_closed) {
+            var panel_contents =
+            element.children().children()[1].childNodes[1].childNodes[3].
+            childNodes[0];
+
+            if(!panel_contents || !panel_contents.textContent.trim()) {
                 angular.element(
                     element[0].childNodes[0].childNodes[3].
                     childNodes[1].childNodes[3]
                 ).append($compile(inner_template)(scope));
-            }
-            //i.e. panel was open and now is being closed
-            else {
-                angular.element(
-                    element[0].childNodes[0].childNodes[3].
-                    childNodes[1].childNodes[3].childNodes[0]
-                ).remove();
             }
 
         });
