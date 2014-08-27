@@ -836,18 +836,19 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
 
         myride.dom_q.map.inst.setZoom(zoom);
 
+        var deferred = $q.defer();
+
         var map_ready_promise = self.touchMap();
 
         map_ready_promise.then(function() {
 
-            if (typeof coords !== "string") {
-                myride.dom_q.map.inst.setCenter(coords);
-            }
-            else {
-                myride.dom_q.map.overlays.points[coords].ShowWindow.func();
-            }
+            myride.dom_q.map.inst.setCenter(coords);
+
+            deferred.resolve();
 
         });
+
+        return deferred.promise;
 
     };
 
@@ -983,12 +984,16 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
         var id_type_name = "";
 
         if (module === "planner") {
+
             open_info_name = "trip_open_info";
             id_type_name = "trip_marker_window_id";
+
         }
         else if (module === "schedule") {
+
             open_info_name = "open_info";
             id_type_name = "schedule_marker_window_id";
+
         }
 
         var open_window = myride.dom_q.map.overlays[open_info_name][0];

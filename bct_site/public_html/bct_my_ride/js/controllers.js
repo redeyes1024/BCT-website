@@ -435,10 +435,24 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
 
         $scope.top_scope.show_trip_planner_itinerary_selector = false;
 
-        $scope.goToMarkerInfoWindow('planner', 'planner_step', 0);
+        $scope.goToFirstStep("planner");
 
+        var cur_trip_data =
         $scope.top_scope.current_trip_plan_data_selection =
         $scope.current_trip_plan_data[selection];
+
+        $scope.top_scope.current_trip_plan_summary = {
+
+            first_LatLng: {
+
+                lat: cur_trip_data.legsField[0].stepsField[0].latField,
+                lng: cur_trip_data.legsField[0].stepsField[0].lonField
+
+            },
+
+            zoom: myride.dom_q.map.inst.getZoom()
+
+        };
 
         $scope.top_scope.show_trip_planner_step_navigation_bar = true;
 

@@ -835,12 +835,32 @@ function (
 
         var point = {};
 
+        var marker_list_name = "";
+
+        var open_info_name = "";
+
+        var id_type_name = "";
+
         if (map_type === "planner") {
+
             point = myride.dom_q.map.overlays.trip_points[0];
+
+            marker_list_name = "trip_points";
+
+            open_info_name = "trip_open_info";
+            id_type_name = "trip_marker_window_id";
+
         }
         else if (map_type === "schedule") {
+
             point = myride.dom_q.map.overlays.
             points[$scope.initial_schedule_map_data.bstop_id];
+
+            marker_list_name = "points";
+
+            open_info_name = "open_info";
+            id_type_name = "schedule_marker_window_id";
+
         }
 
         var point_coords = point.marker.getPosition();
@@ -849,6 +869,16 @@ function (
             lat: point_coords.lat(),
             lng: point_coords.lng()
         });
+
+        //Closing Info Window/Box before attemping opening is for positioning
+        if (point.info[id_type_name] ===
+            myride.dom_q.map.overlays[open_info_name][0][id_type_name]) {
+
+            point.info.close();
+
+            googleMapUtilities.createDummyInfoWindow(marker_list_name);
+
+        }
 
         point.ShowWindow.func(true);
 
@@ -872,15 +902,38 @@ function (
 
         var map_type = "";
 
+        var first_stop_or_step_coords;
+
+        var new_zoom;
+
         if ($scope.show_trip_planner_title) {
+
             map_type = "planner";
+
+            first_stop_or_step_coords =
+            $scope.current_trip_plan_summary.first_LatLng;
+
+            new_zoom = $scope.current_trip_plan_summary.zoom;
+
         }
         else if ($scope.show_schedule_result_top_bar) {
+
             map_type = "schedule";
+            
+            first_stop_or_step_coords = $scope.initial_schedule_map_data.coords;
+
+            new_zoom = null;
+
         }
 
+        googleMapUtilities.setMapPosition(
+            first_stop_or_step_coords, new_zoom
+        );
+
         map_ready_promise.then(function() {
+            
             $scope.goToFirstStep(map_type);
+
         });
 
     };
@@ -1298,8 +1351,22 @@ function (
         $scope.initial_schedule_map_data.route_id = route;
         $scope.initial_schedule_map_data.bstop_id = stop;
 
+        var coords = {
+            lat: $scope.stops[stop].LatLng.Latitude,
+            lng:  $scope.stops[stop].LatLng.Longitude
+        };
+
+        $scope.initial_schedule_map_data.coords = coords;
+
         googleMapUtilities.clearMap();
-        googleMapUtilities.setMapPosition(stop);
+
+        googleMapUtilities.setMapPosition(coords).then(function() {
+
+            //Opening the window immediately would show redundant information
+            //$scope.goToFirstStep("schedule");
+
+        });
+
         googleMapUtilities.displayRoute(route, $scope.routes);
         googleMapUtilities.displayStops(route, $scope.routes, $scope.stops);
 
