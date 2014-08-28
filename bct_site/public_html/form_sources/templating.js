@@ -48,7 +48,7 @@ ISR.templates.data = {};
     catch(e) {
 
         ISR.templates.data.
-        profile_page["favorite-route-stop-panel"].favorites_list = [];
+        profile_page["favorites-container-route-stop-panel"].favorites_list = [];
 
         return true;
 
@@ -77,7 +77,7 @@ ISR.templates.data = {};
     }
 
     ISR.templates.data.
-    profile_page["favorite-route-stop-panel"].favorites_list =
+    profile_page["favorites-container-route-stop-panel"].favorites_list =
     formatted_favorites_list;
 
 }());
@@ -151,7 +151,7 @@ ISR.utils.addFavoriteAgencySelectors = function(target) {
 ISR.utils.addFavoriteRouteStopPanel = function(target) {
 
     var template_data = ISR.templates.data.
-    profile_page["favorite-route-stop-panel"].favorites_list;
+    profile_page["favorites-container-route-stop-panel"].favorites_list;
 
     for (var i=0;i<template_data.length;i++) {
 
@@ -312,7 +312,7 @@ ISR.utils.templating = {};
         return generateTemplateFromBase(
 
             ISR.templates.
-            profile_page["favorite-route-stop-panel"],
+            profile_page["favorites-container-route-stop-panel"],
 
             current_panel_data
 

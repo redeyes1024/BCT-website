@@ -15,54 +15,39 @@ ISR.templates.profile_page["favorites-container-agency-bar-item"] = '' +
 
     '</span>';
 
-ISR.templates.profile_page["favorite-route-stop-panel"] = '' +
+ISR.templates.profile_page["favorites-container-route-stop-panel"] = '' +
 
-    '<div class="favorite-route-stop-panel">' +
+    '<div class="favorites-container-route-stop-panel">' +
 
-        '<div class="favorite-route-stop-panel-property-container">' +
+        '<div class="favorites-container-route-stop-panel-item ' +
+        'favorites-container-route-stop-panel-myride ' +
+        'link-icon no-highlight ptr"\n\
+        onclick="ISR.utils.goToMyRideSchedule(' +
+            '\'{{ ROUTE_STOP_PANEL_ROUTE }}\', ' + 
+            '\'{{ ROUTE_STOP_PANEL_STOP_ID }}\'' +
+        ');">' +
 
-            '<span class="favorite-route-stop-panel-property ' +
-            'favorite-route-stop-panel-route">' +
-
-                '<span class="favorite-route-stop-panel-property-name">' +
-                    'Route:' +
-                '</span>' +
-
-                '<span class="favorite-route-stop-panel-property-content">' +
-                    '{{ ROUTE_STOP_PANEL_ROUTE }}' +
-                '</span>' +
-
-            '</span>' +
-
-            '<span class="favorite-route-stop-panel-property ' +
-            'favorite-route-stop-panel-stop">' +
-
-                '<span class="favorite-route-stop-panel-property-name">' +
-                    'Stop:' +
-                '</span>' +
-
-                '<span class="favorite-route-stop-panel-property-content">' +
-                    '{{ ROUTE_STOP_PANEL_STOP_ID }}' + ' - ' +
-                    '{{ ROUTE_STOP_PANEL_STOP_NAME }}' +
-                '</span>' +
-
-            '</span>' +
+            '<i class="fa fa-search"></i>' +
 
         '</div>' +
 
-        '<span class="favorite-route-stop-panel-property ' +
-        'favorite-route-stop-panel-myride-link">' +
+        '<div class="favorites-container-route-stop-panel-item ' +
+        'favorites-container-route-stop-panel-route">' +
 
-            '<a href="#" onclick="ISR.utils.goToMyRideSchedule(' +
-                '\'{{ ROUTE_STOP_PANEL_ROUTE }}\', ' + 
-                '\'{{ ROUTE_STOP_PANEL_STOP_ID }}\'' +
-            ');">' + 
-                'Search for stop in My Ride' +
-            '</a>' +
+            '{{ ROUTE_STOP_PANEL_ROUTE }}' +
 
-        '</span>' +
+        '</div>' +
 
-        '<span class="favorite-route-stop-panel-delete-button ' +
+        '<div class="favorites-container-route-stop-panel-item ' +
+        'favorites-container-route-stop-panel-stop">' +
+
+            '{{ ROUTE_STOP_PANEL_STOP_ID }}' + ' - ' +
+            '{{ ROUTE_STOP_PANEL_STOP_NAME }}' +
+
+        '</div>' +
+
+        '<div class="favorites-container-route-stop-panel-item ' +
+        'favorites-container-route-stop-panel-delete ' +
         'link-icon no-highlight ptr"' + 
         'onclick="ISR.utils.deleteFavoriteRouteStop(' +
             '\'{{ ROUTE_STOP_PANEL_ROUTE }}\', ' + 
@@ -72,7 +57,7 @@ ISR.templates.profile_page["favorite-route-stop-panel"] = '' +
 
             '<i class="fa fa-times-circle"></i>' +
 
-        '</span>' +
+        '</div>' +
 
     '</div>';
 
