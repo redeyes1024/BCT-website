@@ -256,7 +256,18 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
             }, 1000);
         }, $scope.GEOCODER_ERROR_ALERT_DIALOG_HIDE_DELAY);
 
-        console.log("Trip planner error: " + error_field.idField);
+        if (error_field === "plan_start_late") {
+
+            console.log("Trip planner error: plan start time already passed");
+
+        }
+
+        else if (error_field.idField) {
+
+            console.log("Trip planner error: " + error_field.idField);
+
+        }
+
     };
 
     $scope.GEOCODER_ERROR_ALERT_DIALOG_HIDE_DELAY = 3000;
@@ -361,6 +372,27 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
         }
     };
 
+    $scope.checkValidityOfTripPlanTimes = function(res) {
+
+//        var cur_time = (new Date).toString().match(/[0-9][0-9]:[0-9][0-9]/)[0];
+//
+//        var start_time_raw =
+//        res.data.planField.itinerariesField[0].startTimeField;
+//
+//        var start_time =
+//        start_time_raw.split("T")[1].match(/[0-9][0-9]:[0-9][0-9]/)[0];
+//
+//        var cur_time_num = Number(cur_time.replace(/:/,""));
+//        var start_time_num = Number(start_time.replace(/:/,""));
+//
+//        var trip_plan_time_is_valid = start_time_num >= cur_time_num;
+//
+//        return trip_plan_time_is_valid;
+
+        return true;
+
+    };
+
     $scope.getTripPlan = function() {
 
         $scope.showMapLoading();
@@ -391,6 +423,11 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
                 start_coords,
                 finish_coords
             ).then(function(res) {
+
+                if (!$scope.checkValidityOfTripPlanTimes(res)) {
+                    $scope.alertUserToTripPlannerErrors("plan_start_late");
+                    return false;
+                }
 
                 if (!res.data.planField) {
                     $scope.alertUserToTripPlannerErrors(res.data.errorField);

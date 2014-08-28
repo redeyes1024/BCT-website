@@ -723,15 +723,20 @@ BCTAppServices.service('generalServiceUtilities', [ function() {
 
     //Used only when absolutely necessary, i.e., for when Angular
     //fails to 'detect' a change to certain values from a function
-    //defined in a service method
+    //defined in a service method. Checks if $apply is already in
+    //progress as a safety measure.
     angular.element(document).ready(function() {
+
         self.top_level_scope = angular.element(
             document.getElementById("bct-app")
         ).scope();
 
         self.forceDigest = function() {
-            self.top_level_scope.$apply();
+            if(!self.top_level_scope.$$phase) {
+                self.top_level_scope.$apply();
+            }
         };
+
     });
 
     /* END Force Digest Workaround */
@@ -789,7 +794,20 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
             map_options);
     };
 
+    //Forces embedded Google Maps map to redraw
     this.touchMap = function() {
+
+        var cur_map_center_data =
+        myride.dom_q.map.inst.getCenter();
+
+        var cur_map_center = {
+            
+            lat: cur_map_center_data.lat(),
+            lng: cur_map_center_data.lng() + 0.0000000001
+            
+        };
+
+        myride.dom_q.map.inst.setCenter(cur_map_center);
 
         var deferred = $q.defer();
 
@@ -832,11 +850,6 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
             coords.lng = old_lng;
 
         }
-
-        myride.dom_q.map.inst.setCenter({
-            lat: default_demo_coords.LatLng.Latitude,
-            lng: default_demo_coords.LatLng.Longitude
-        });
 
         myride.dom_q.map.inst.setZoom(zoom);
 
