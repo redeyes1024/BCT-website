@@ -115,7 +115,7 @@
                 ng-show="show_trip_planner_itinerary_labels"
                 ng-click="displayTripPlan($index);">
 
-                    <div>
+                    <div ng-show="itinerary.times_valid">
 
                         <span class="trip-planer-itinerary-step"
                         ng-repeat="leg in itinerary.legsField">
@@ -132,7 +132,7 @@
                             </span>
                         </div>
 
-                        <div>
+                        <div ng-show="itinerary.fareField">
                             Fare:
                             {{ (itinerary.fareField.fare1Field[0].
                             valueField.centsField / 100).toFixed(2) }}

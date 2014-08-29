@@ -429,7 +429,7 @@ iframe #schedule-map-loading-modal {
 #schedule-map-loading-modal-spinner {
     font-size: 3em;
     position: relative;
-    top: 7em;
+    top: calc(50% - 0.5em);
 }
 iframe #schedule-map-loading-modal-spinner {
     top: 6em;

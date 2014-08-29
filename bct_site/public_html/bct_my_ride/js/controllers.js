@@ -372,24 +372,39 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
         }
     };
 
-    $scope.checkValidityOfTripPlanTimes = function(res) {
+    $scope.handleTripPlanTimePastDepartureTimes = function(res) {
 
-//        var cur_time = (new Date).toString().match(/[0-9][0-9]:[0-9][0-9]/)[0];
-//
-//        var start_time_raw =
-//        res.data.planField.itinerariesField[0].startTimeField;
-//
-//        var start_time =
-//        start_time_raw.split("T")[1].match(/[0-9][0-9]:[0-9][0-9]/)[0];
-//
-//        var cur_time_num = Number(cur_time.replace(/:/,""));
-//        var start_time_num = Number(start_time.replace(/:/,""));
-//
-//        var trip_plan_time_is_valid = start_time_num >= cur_time_num;
-//
-//        return trip_plan_time_is_valid;
+        var itineraries = res.data.planField.itinerariesField;
 
-        return true;
+        var all_itinerary_start_times_valid;
+
+        for (var i=0;i<itineraries.length;i++) {
+
+            itineraries[i].times_valid =
+            all_itinerary_start_times_valid =
+            $scope.checkValidityOfTripPlanTimes(itineraries[i]);
+
+        }
+
+        return all_itinerary_start_times_valid;
+
+    };
+
+    $scope.checkValidityOfTripPlanTimes = function(cur_itinerary) {
+
+        var cur_time = (new Date).toString().match(/[0-9][0-9]:[0-9][0-9]/)[0];
+
+        var start_time_raw = cur_itinerary.startTimeField;
+
+        var start_time =
+        start_time_raw.split("T")[1].match(/[0-9][0-9]:[0-9][0-9]/)[0];
+
+        var cur_time_num = Number(cur_time.replace(/:/,""));
+        var start_time_num = Number(start_time.replace(/:/,""));
+
+        var trip_plan_time_is_valid = start_time_num >= cur_time_num;
+
+        return trip_plan_time_is_valid;
 
     };
 
@@ -424,7 +439,7 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
                 finish_coords
             ).then(function(res) {
 
-                if (!$scope.checkValidityOfTripPlanTimes(res)) {
+                if (!$scope.handleTripPlanTimePastDepartureTimes(res)) {
                     $scope.alertUserToTripPlannerErrors("plan_start_late");
                     return false;
                 }
