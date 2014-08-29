@@ -307,6 +307,7 @@ em.hint-text {
 }
 .alert-header-message {
     position: absolute;
+    top: 0.2em;
     left: 1.8em;
     opacity: 1;
     transition: left 1s, opacity 1s;
@@ -870,6 +871,9 @@ inline-filter-icons {
 .result-icon-container-right {
     border-style: dotted;
     border-width: 0px 0px 0px 1px;
+}
+.favorite-route-icon-saved {
+    color: #017AC2;
 }
 .arrow-right-icon {
     cursor: default;

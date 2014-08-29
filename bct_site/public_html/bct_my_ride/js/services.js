@@ -293,7 +293,7 @@ function(locationService) {
 
             //Because distances were converted roughly to and from degrees
             //latitude and longitude, rounding is extensive
-            var rounded_distance = distance_in_yards.toFixed(-1);
+            var rounded_distance = (distance_in_yards / 10).toFixed(0) * 10;
 
             reported_distance = rounded_distance + " " + units;
         }
@@ -1844,6 +1844,29 @@ function() {
             }
 
         }
+
+    };
+
+    this.deleteFavoriteRouteStop = function(route, stop) {
+
+        var old_favorites = JSON.parse(localStorage.my_bct_fav);
+
+        for (var i=0;i<old_favorites.length;i++) {
+
+            if (old_favorites[i].fav_route.Id === route &&
+                old_favorites[i].fav_stop.Id === stop) {
+
+                old_favorites.splice(i, 1);
+
+                break;
+
+            }
+
+        }
+
+        var new_favorites_stringified = JSON.stringify(old_favorites);
+
+        localStorage.setItem('my_bct_fav', new_favorites_stringified);
 
     };
 

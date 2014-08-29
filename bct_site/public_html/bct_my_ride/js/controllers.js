@@ -191,7 +191,7 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
             train: true,
             bike: false
         },
-        datetarg: "arrive_by",
+        datetarg: "depart_by",
         datepick: new Date
     };
 

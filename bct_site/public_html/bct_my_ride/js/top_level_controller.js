@@ -1247,6 +1247,14 @@ function (
 
     };
 
+    $scope.deleteFavoriteRouteStop = function(route, stop) {
+        
+        profilePageService.deleteFavoriteRouteStop(
+            route, stop
+        );
+        
+    };
+
     $scope.addRouteStopToTripPlanner = function(stop) {
 
         var bstop_coords = $scope.stops[stop].LatLng;
