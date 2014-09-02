@@ -697,6 +697,10 @@ BCTAppServices.service('unitConversionAndDataReporting', [ function() {
             case "BUS":
                 path_suffix = "bus.png";
                 break;
+            case "DEST":
+                //TODO: Find a 'destination' icon
+                path_suffix = "walk.png";
+                break;
         }
 
         var full_path = path_prefix + path_suffix;
@@ -1302,6 +1306,7 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
 
         var leg_color = "";
         var route_text = "";
+        var label = "";
 
         switch (mode_field) {
             case "BUS":
@@ -1319,14 +1324,20 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
                 route_text = "";
                 label = "Train";
                 break;
+            case "DEST":
+                leg_color = "#000000",
+                route_text = "",
+                label = "Destination";
+                break;
             default:
                 throw (new Error).message = "" +
-                "Invalid transit mode setting: " + lmode_field;
+                "Invalid transit mode setting: " + mode_field;
         }
 
         return {
             leg_color: leg_color,
-            route_text: route_text
+            route_text: route_text,
+            label: label
         };
 
     };
@@ -1476,14 +1487,48 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
             lngs: []
         };
 
-        for (var i=0;i<legs.length;i++) {
+        var orig_legs_count = legs.length;
 
-            var path_coords_raw = self.decodePath(
-                legs[i].legGeometryField.pointsField
-            );
+        for (var i=0;i<orig_legs_count + 1;i++) {
+
+            var path_coords_raw;
+
+            if (i === orig_legs_count) {
+
+                legs[i] = {
+
+                    legGeometryField: {
+                        pointsField: []
+                    },
+                    modeField: "DEST",
+                    routeField: null,
+                    fromField: {
+                        latField: legs[i-1].toField.latField,
+                        lonField: legs[i-1].toField.lonField
+                    },
+                    distanceField: "DEST",
+                    durationField: "DEST"
+
+                };
+
+                path_coords_raw = [];
+
+            }
+
+            else {
+
+                path_coords_raw = self.decodePath(
+                    legs[i].legGeometryField.pointsField
+                );
+
+            }
+
             var path_coords = [];
 
+            var last_pline_coords;
+
             for (var j=0;j<path_coords_raw.length;j++) {
+
                 var LatLng = {};
 
                 LatLng.lat = path_coords_raw[j][0];
@@ -1493,6 +1538,9 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
                 all_path_coords_divided.lngs.push(path_coords_raw[j][1]);
 
                 path_coords.push(LatLng);
+
+                last_pline_coords = path_coords_raw[j];
+
             }
 
             var formattedModeResult = self.formatTransitModeResult(
@@ -1503,13 +1551,46 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
 
             var leg_color = formattedModeResult.leg_color;
             var route_text = formattedModeResult.route_text;
+            var label = formattedModeResult.label;
 
-            var leg_pline = new google.maps.Polyline({
-                map: myride.dom_q.map.inst,
-                path: path_coords,
-                strokeColor: leg_color,
-                strokeWeight: self.palette.weights.lines.mid
-            });
+            var line_symbol = {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 1,
+                strokeWeight: 3,
+                strokeOpacity: 1
+            };
+
+            var leg_pline_config;
+
+            if (legs[i].modeField === "WALK") {
+
+                leg_pline_config = {
+                    map: myride.dom_q.map.inst,
+                    path: path_coords,
+                    strokeColor: leg_color,
+                    strokeWeight: self.palette.weights.lines.mid,
+                    strokeOpacity: 0,
+                    icons: [{
+                        icon: line_symbol,
+                        offset: '0',
+                        repeat: '7px'
+                    }]
+                };
+
+            }
+
+            else {
+
+                leg_pline_config = {
+                    map: myride.dom_q.map.inst,
+                    path: path_coords,
+                    strokeColor: leg_color,
+                    strokeWeight: self.palette.weights.lines.mid
+                };
+
+            }
+
+            var leg_pline = new google.maps.Polyline(leg_pline_config);
 
             myride.dom_q.map.overlays.trip_pline.push(leg_pline);
 
@@ -1521,7 +1602,6 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
             var marker = new google.maps.Marker({
                 map: myride.dom_q.map.inst,
                 position: marker_coords,
-                //title: route + ' ' + bstops_names[i],
                 icon: {
                     path: google.maps.SymbolPath.CIRCLE,
                     scale: self.palette.scales.markers.small,
@@ -1530,28 +1610,51 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
                 }
             });
 
-            var formattedDistance = unitConversionAndDataReporting.
-                formatReportedDistance(legs[i].distanceField);
-            var reported_distance = formattedDistance.reported_distance;
-            var reported_distance_unit = formattedDistance.
+            var formattedDistance;
+            var reported_distance;
+            var reported_distance_unit;
+
+            formattedDistance = unitConversionAndDataReporting.
+            formatReportedDistance(legs[i].distanceField);
+
+            reported_distance = formattedDistance.reported_distance;
+
+            reported_distance_unit = formattedDistance.
             reported_distance_unit;
 
-            var trip_planner_info_box_contents = '' +
-                '<div class="trip-marker-info-window">' +
-                    "<span>" +
-                        "<em>" + (i+1) + ". </em> " +
-                        label + " " + route_text +
-                    "</span>" +
-                    "<span>" +
-                        "<em>Distance: </em>" +
-                        reported_distance + " " + reported_distance_unit +
-                    "</span>" +
-                    "<span>" +
-                        "<em> Time (approx): </em>" +
-                        (legs[i].durationField / 1000 / 60).toFixed(1) +
-                        " minutes" +
-                    "</span>";
-                '</div>';
+            var trip_planner_info_box_contents;
+
+            if (i === orig_legs_count) {
+
+                trip_planner_info_box_contents = '' +
+                    '<div class="trip-marker-info-window">' +
+                        "<span>" +
+                            "Arrived at destination."
+                        "</span>" +
+                    '</div>';
+
+            }
+
+            else {
+
+                trip_planner_info_box_contents = '' +
+                    '<div class="trip-marker-info-window">' +
+                        "<span>" +
+                            "<em>" + (i+1) + ". </em> " +
+                            label + " " + route_text +
+                        "</span>" +
+                        "<span>" +
+                            "<em>Distance: </em>" +
+                            reported_distance + " " + reported_distance_unit +
+                        "</span>" +
+                        "<span>" +
+                            "<em> Time (approx): </em>" +
+                            (legs[i].durationField / 1000 / 60).toFixed(1) +
+                            " minutes" +
+                        "</span>";
+                    '</div>';
+
+            }
 
             var info_window =
             new InfoBox({
@@ -1574,7 +1677,7 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
             });
 
             info_window.set("trip_marker_window_id", i);
-            
+
             var trip_marker_window = {
                 marker: marker,
                 info: info_window
@@ -1609,6 +1712,12 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
 
         }
 
+        if (i === orig_legs_count) {
+
+            legs.pop();
+
+        }
+
         var best_zoom_and_center = self.
         findBestZoomAndCenter(all_path_coords_divided);
 
@@ -1618,6 +1727,7 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
     };
 
     this.decodePath = function(encoded) {
+
         var len = encoded.length;
         var index = 0;
         var array = [];
@@ -1659,6 +1769,7 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
 
         return array;
     };
+
 }]);
 
 BCTAppServices.service('tripPlannerService', [ '$http', '$q',
