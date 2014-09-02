@@ -229,9 +229,6 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
             return false;
         }
 
-        $scope.geocoder_error_dialog_text =
-        $scope.TRIP_PLANNER_ERROR_TEXT_NO_PLAN_FOUND;
-
         dialog_styles["trip-planner-dialog-centered"] = true;
 
         dialog_styles["trip-planner-dialog-finish"] = false;
@@ -258,11 +255,17 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
 
         if (error_field === "plan_start_late") {
 
+            $scope.geocoder_error_dialog_text =
+            $scope.TRIP_PLANNER_ERROR_DEPART_TIME_PASSED;
+
             console.log("Trip planner error: plan start time already passed");
 
         }
 
         else if (error_field.idField) {
+
+            $scope.geocoder_error_dialog_text =
+            $scope.TRIP_PLANNER_ERROR_TEXT_NO_PLAN_FOUND;
 
             console.log("Trip planner error: " + error_field.idField);
 
@@ -324,6 +327,9 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
     };
 
     $scope.TRIP_PLANNER_ERROR_TEXT_NO_PLAN_FOUND = "No trip plan found.";
+
+    $scope.TRIP_PLANNER_ERROR_DEPART_TIME_PASSED =
+    "Please try setting a later departure time.";
 
     $scope.checkForGeocoderErrors = function(coords) {
         if (typeof(coords[0]) === "string") {
@@ -439,14 +445,20 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
                 finish_coords
             ).then(function(res) {
 
-                if (!$scope.handleTripPlanTimePastDepartureTimes(res)) {
-                    $scope.alertUserToTripPlannerErrors("plan_start_late");
+                if (!res.data.planField) {
+
+                    $scope.alertUserToTripPlannerErrors(res.data.errorField);
+
                     return false;
+
                 }
 
-                if (!res.data.planField) {
-                    $scope.alertUserToTripPlannerErrors(res.data.errorField);
+                if (!$scope.handleTripPlanTimePastDepartureTimes(res)) {
+
+                    $scope.alertUserToTripPlannerErrors("plan_start_late");
+
                     return false;
+
                 }
 
                 if ($scope.top_scope.show_trip_planner_title) {

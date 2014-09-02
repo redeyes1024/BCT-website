@@ -105,7 +105,8 @@
 
             <div class="trip-planner-itinerary-panel no-highlight"
             ng-class="itinerary_selector_panel_styles"
-            ng-repeat="itinerary in current_trip_plan_data track by $index">
+            ng-repeat="itinerary in current_trip_plan_data track by $index"
+            ng-show="itinerary.times_valid">
 
                 <div class="trip-planner-itinerary-labels">
                     {{ itinerary.loading }}
@@ -115,7 +116,7 @@
                 ng-show="show_trip_planner_itinerary_labels"
                 ng-click="displayTripPlan($index);">
 
-                    <div ng-show="itinerary.times_valid">
+                    <div>
 
                         <span class="trip-planer-itinerary-step"
                         ng-repeat="leg in itinerary.legsField">
