@@ -919,16 +919,19 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
     };
 
     this.displayRoute = function(route, routes) {
+
         var route_coords = self.decodePath(routes[route].Shp);
         var route_coords_cor = [];
 
         for (var i=0;i<route_coords.length;i++) {
+
             var coords_obj = { lat: "", lng: "" };
 
             coords_obj.lat = route_coords[i][0];
             coords_obj.lng = route_coords[i][1];
 
             route_coords_cor.push(coords_obj);
+
         }
 
         var route_color = "#" + routes[route].Color;
@@ -939,6 +942,9 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
             strokeColor: route_color,
             strokeWeight: self.palette.weights.lines.mid
         });
+
+        return route_coords_cor;
+
     };
 
     //Replace items in "other routes" list with clickable
@@ -1076,7 +1082,7 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
         google.maps.event.addListener(
             myride.dom_q.map.overlays[marker_list_name][marker_id].info,
             'closeclick',
-            function() { self.createDummyInfoWindow(marker_list_name) }
+            function() { self.createDummyInfoWindow(marker_list_name); }
         );
 
         google.maps.event.addListener(
@@ -1112,7 +1118,43 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
 
     };
 
-    this.displayStops = function(route, routes, stops) {
+    this.mapStopsToRoutePath = function(raw_coords, route_path) {
+
+        var linear_dist_arr = [];
+
+        for (var i=0;i<route_path.length;i++) {
+
+            var x1 = route_path[i].lat;
+            var y1 = route_path[i].lng;
+
+            var x2 = raw_coords.lat();
+            var y2 = raw_coords.lng();
+
+            var h_dist_pow_2 = Math.pow((x2 - x1), 2);
+            var v_dist_pow_2 = Math.pow((y2 - y1), 2);
+
+            var linear_dist = Math.pow((h_dist_pow_2 + v_dist_pow_2), 0.5);
+
+            var dist_obj = {
+
+                orig_coord: route_path[i],
+                linear_dist: linear_dist
+
+            };
+
+            linear_dist_arr.push(dist_obj);
+
+        }
+
+        linear_dist_arr.sort(function(d_obj1, d_obj2) {
+            return d_obj1.linear_dist - d_obj2.linear_dist;
+        });
+
+        return linear_dist_arr[0].orig_coord;
+
+    };
+
+    this.displayStops = function(route, routes, stops, route_path) {
 
         var cur_route = routes[route];
         var bstops_names = cur_route.Stops;
@@ -1124,16 +1166,28 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
             var lat = stops[bstops_names[i]].LatLng.Latitude;
             var lng = stops[bstops_names[i]].LatLng.Longitude;
 
-            var coords = new google.maps.LatLng(lat, lng);
+            var bus_svg = "m 0.06370115,24.346545 c 0,1.775805 0,3.55161 0,5.327417 0.37695395,2e-6 0.75390757,-1e-6 1.13086125,1e-6 0.044437,0.585789 -0.1273212,1.225868 0.1863604,1.756203 0.4481089,0.750874 1.6937176,0.628467 1.9925357,-0.191332 0.1510186,-0.505059 0.056148,-1.043689 0.082825,-1.564871 2.2617218,0 4.5234437,0 6.7851665,0 0.04444,0.585789 -0.127324,1.225868 0.186359,1.756203 0.448109,0.750874 1.693718,0.628467 1.992535,-0.191332 0.15102,-0.505059 0.05614,-1.043689 0.08283,-1.564871 0.376957,1e-6 0.753909,-1e-6 1.130864,0 -0.01186,-1.981555 0.02525,-3.964247 -0.02159,-5.944995 C 13.481829,22.331548 13.068065,20.981996 12.78573,19.610776 12.631817,19.0332 12.567571,18.42586 12.344778,17.872117 11.690725,16.85783 10.404718,16.534102 9.2931645,16.306554 7.2365974,15.977753 5.0772508,16.002935 3.0837476,16.649628 2.243562,16.952502 1.2572201,17.494443 1.1663809,18.487245 0.83047891,20.017788 0.42134603,21.533935 0.14308667,23.075844 0.087647,23.496959 0.0637434,23.921906 0.06371182,24.346545 z M 3.5976435,17.941278 c 0.042896,-0.557063 0.6668915,-0.402451 1.0496334,-0.424073 1.6762478,-1e-6 3.3524962,0 5.0287446,0 0.3756415,-0.0048 0.4530505,0.270584 0.4527835,0.469747 -3.17e-4,0.234481 -0.1938266,0.391204 -0.8281214,0.378398 -1.7596554,0 -3.5193113,0 -5.278968,0 C 3.79511,18.37415 3.5888718,18.167883 3.5976435,17.941278 z m -1.9966773,5.406927 c 0.2250551,-1.162349 0.4228279,-2.331317 0.6650982,-3.489487 0.2178927,-0.520799 0.8388074,-0.324291 1.2782804,-0.362505 2.4859868,0.0053 4.9728386,-0.01066 7.4582862,0.008 0.565415,0.124919 0.479988,0.793503 0.604055,1.230211 0.161748,0.914727 0.361909,1.82455 0.49892,2.742437 -0.02291,0.572155 -0.643446,0.567059 -1.065882,0.542791 -2.9607206,0 -5.9214411,0 -8.8821625,0 C 1.8132728,24.034962 1.5294139,23.68105 1.6009662,23.348203 z M 1.1945624,26.846809 C 1.1421029,25.930749 2.3628086,25.351486 3.0400119,25.969607 3.7844428,26.51115 3.4591978,27.820905 2.5509887,27.956964 1.8739823,28.112477 1.1716178,27.54303 1.1945624,26.846809 z m 9.0468886,0 c -0.05245,-0.91606 1.168246,-1.495323 1.845449,-0.877202 0.744433,0.541543 0.419186,1.851298 -0.489021,1.987357 -0.677009,0.155513 -1.379373,-0.413934 -1.356428,-1.110155 z";
+
+            var raw_coords = new google.maps.LatLng(lat, lng);
+
+            var coords = self.mapStopsToRoutePath(
+                raw_coords, route_path
+            );
+
+            var route_color = "#" + routes[route].Color;
+
             var marker = new google.maps.Marker({
                 map: myride.dom_q.map.inst,
                 position: coords,
                 title: route + ' ' + bstops_names[i],
                 icon: {
-                    path: google.maps.SymbolPath.CIRCLE,
-                    scale: self.palette.scales.markers.small,
-                    strokeColor: self.palette.colors.red,
-                    strokeWeight: self.palette.weights.markers.thin
+                    path: bus_svg,
+                    scale: 1.5,
+                    fillColor: route_color,
+                    fillOpacity: 1,
+                    strokeColor: "#000000",
+                    strokeWeight: 1,
+                    anchor: new google.maps.Point(7, 25)
                 }
             });
 
@@ -1552,8 +1606,6 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
             var leg_color = formattedModeResult.leg_color;
             var route_text = formattedModeResult.route_text;
             var label = formattedModeResult.label;
-
-            var bus_path = "M 14,4.5625 C 13.391771,4.5616742 12.830533,4.5770602 12.3125,4.59375 9.2043031,4.6938886 7.7309581,5.1728785 7.5625,6.4375 6.6643536,13.179922 6.5605623,21.142703 6.5,23.59375 c -0.011274,0.652338 2.6785128,0.484641 0.5625,0.21875 0.2721318,1.76e-4 0.6738403,0.02798 0.96875,0.03125 l 0,1.75 0.03125,0 C 8.0432616,25.66723 8,25.732823 8,25.8125 l 0,0.71875 c 0,0.499182 0.407068,0.90625 0.90625,0.90625 l 0.5,0 c 0.4991819,0 0.90625,-0.407068 0.90625,-0.90625 l 0,-0.71875 c 0,-0.07887 -0.01239,-0.145939 -0.03125,-0.21875 l 0.03125,0 0,-1.71875 c 3.744276,0.09778 8.098572,0.303302 11.1875,0.3125 l 0,1.46875 0.03125,0 C 21.517059,25.720181 21.5,25.775425 21.5,25.84375 l 0,0.75 c 0,0.502393 0.403857,0.90625 0.90625,0.90625 l 0.375,0 c 0.502393,0 0.90625,-0.403857 0.90625,-0.90625 l 0,-0.75 c 0,-0.06833 -0.01706,-0.123569 -0.03125,-0.1875 l 0.03125,0 0,-1.53125 c 0.796817,-0.05126 1.363874,-0.123529 1.375,-0.28125 0.01011,-5.592935 0.0012,-12.121745 -0.84375,-17.8125 -0.334416,-1.4248586 -4.511718,-1.373354 -8.25,-1.4375 C 15.263448,4.5803633 14.608229,4.5633258 14,4.5625 z M 15.765625,5.75 c 3.366875,0.00668 6.170155,0.1911756 6.5,1.59375 0.322327,1.2071795 0.569215,2.5255648 0.734375,3.875 0.119089,0.97301 0.301003,2.392322 0.445915,3.501573 0.100547,0.769648 0.231897,1.381924 0.110575,1.625869 -0.06415,0.12899 -0.154968,0.322371 -0.433711,0.416753 C 22.100786,17.121432 8.8412391,17.559229 8.2152163,16.668552 7.2022361,15.227333 7.9783987,16.577672 8.0091529,16.5 8.304593,13.481886 8.2097138,10.426249 9.625,7.25 10.22707,5.8754471 12.444449,5.7434151 15.765625,5.75 z M 21,18.53125 c 1.224039,0 2.21875,0.988797 2.21875,2.21875 0,1.229953 -0.994711,2.25 -2.21875,2.25 -1.224039,0 -2.21875,-1.020047 -2.21875,-2.25 0,-1.229953 0.994711,-2.21875 2.21875,-2.21875 z M 10.90625,18.5625 c 1.224039,0 2.21875,0.988797 2.21875,2.21875 C 13.125,22.011203 12.130289,23 10.90625,23 9.6822115,23 8.6875,22.011203 8.6875,20.78125 c 0,-1.229953 0.9947115,-2.21875 2.21875,-2.21875 z";
 
             var line_symbol = {
                 path: google.maps.SymbolPath.CIRCLE,

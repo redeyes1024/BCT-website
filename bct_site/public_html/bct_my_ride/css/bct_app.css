@@ -351,7 +351,6 @@ em.hint-text {
     width: 100%;
     background-color: #FFF;
     border-bottom: 1px dotted #000;
-    margin: 0em 0em 1em 0em;
 }
 #index-schedule-search-bar {
     position: fixed;
@@ -833,6 +832,7 @@ inline-filter-icons {
     height: 32.5em;
     height: calc(100% - 6em);
     overflow: auto;
+    margin: 1em 0em 0em;
 }
 .route-title {
     position: relative;
@@ -1316,7 +1316,7 @@ iframe .trip-planner-dialog-finish {
     .schedule-results-main-container,
     .index-main-container {
         height: 30em;
-        height: calc(100% - 9em);
+        height: calc(100% - 9.5em);
     }
 
     /* Trip Planner */

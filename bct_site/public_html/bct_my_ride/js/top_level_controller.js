@@ -1375,8 +1375,12 @@ function (
 
         });
 
+        $scope.cur_route_path =
         googleMapUtilities.displayRoute(route, $scope.routes);
-        googleMapUtilities.displayStops(route, $scope.routes, $scope.stops);
+
+        googleMapUtilities.displayStops(
+            route, $scope.routes, $scope.stops, $scope.cur_route_path
+        );
 
     };
 
