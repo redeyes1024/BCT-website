@@ -1115,9 +1115,9 @@ iframe #trip-planner-itinerary-selector {
 }
 .trip-planner-itinerary-transit-type-icon {
     display: block;
-    position: relative;
-    width: 2em;
-    height: 2em;
+    background-size: contain;
+    height: 4em;
+    width: 5em;
 }
 .trip-planner-itinerary-transit-type-icon-image {
     width: 100%;

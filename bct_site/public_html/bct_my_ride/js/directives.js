@@ -220,3 +220,36 @@ BCTApp.directive('scheduleMapAlertsHeader', [ function() {
     };
 
 }]);
+
+BCTApp.directive('busSvg', [ function() {
+
+    return {
+        restrict: 'E',
+        templateUrl: window.myride.directories.site_roots.active +
+        window.myride.directories.paths.active +
+        'partials/svg/bus.html'
+    };
+
+}]);
+
+BCTApp.directive('destSvg', [ function() {
+
+    return {
+        restrict: 'E',
+        templateUrl: window.myride.directories.site_roots.active +
+        window.myride.directories.paths.active +
+        'partials/svg/dest.html'
+    };
+
+}]);
+
+BCTApp.directive('walkingSvg', [ function() {
+
+    return {
+        restrict: 'E',
+        templateUrl: window.myride.directories.site_roots.active +
+        window.myride.directories.paths.active +
+        'partials/svg/walking.html'
+    };
+
+}]);
