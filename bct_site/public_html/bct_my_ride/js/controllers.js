@@ -28,7 +28,7 @@ function ($scope, $timeout, profilePageService) {
 
     $scope.sortResultStopsByDistance = function() {
         $scope.sort_bstops_by_distance = true;
-        //A new digest cycle is automatically started 
+        //A new digest cycle is automatically started
     };
 
     $scope.setNearestResultStopsLocationSpinner = function(new_state) {

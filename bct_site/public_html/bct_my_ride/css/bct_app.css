@@ -1103,43 +1103,47 @@ iframe #trip-planner-itinerary-selector {
 .trip-planner-itinerary-arrow {
     font-size: 1.5em;
     position: relative;
-    bottom: 1.1em;
-    margin-left: 0.11em;
+    bottom: 0.6em;
+    margin: 0em 0em 0em 0.2em;
 }
 .trip-planner-itinerary-arrow-hidden {
     color: #FFF;
 }
 .trip-planner-itinerary-transit-type-icon-with-text {
     display: inline-block;
-    height: 3.2em;
+    position: relative;
+    width: 2.7em;
+    height: 3em;
 }
 .trip-planner-itinerary-transit-type-icon {
     display: block;
-    background-size: contain;
-    height: 4em;
-    width: 5em;
-}
-.trip-planner-itinerary-transit-type-icon-image {
-    width: 100%;
-    height: 100%;
 }
 .trip-planner-itinerary-transit-type-text {
-    position: relative;
     display: block;
-    font-size: 1.1em;
-    font-weight: 400;
+    position: absolute;
+    width: 100%;
+    bottom: calc(2em - 10px);
+    font-size: 1em;
+    font-weight: 700;
+    color: #555;
 }
 .trip-planner-itinerary-transit-type-text-space {
     color: #FFF;
 }
-.trip-planner-itinerary-transit-type-icon-cover {
-    position: absolute;
-    width: calc(100% - 3px);
-    height: calc(100% - 2px);
-    left: 1px;
-    top: 1px;
-    opacity: 0.5;
-    background-color: #000;
+.trip-planner-transit-type-icon {
+    
+}
+.trip-planner-transit-type-icon-non-highlighted {
+    fill: grey;
+}
+.trip-planner-transit-mode-icon-walking {
+    width: 1.5em;
+}
+.trip-planner-transit-mode-icon-bus {
+    width: 3.5em;
+}
+.trip-planner-transit-mode-icon-dest {
+    width: 2.5em;
 }
 .trip-planner-itinerary-time-range {
     margin: 0.5em;
@@ -1152,9 +1156,8 @@ iframe #trip-planner-itinerary-selector {
     position: relative;
     margin: 0.2em;
 }
-.trip-planer-itinerary-navigation-step img:hover,
 .trip-planner-itinerary-step-highlighted {
-    box-shadow: 0px 0px 1px 2px yellow;
+    fill: #017AC2;
 }
 trip-planner-navigation-bar {
     border-style: dotted solid dashed;

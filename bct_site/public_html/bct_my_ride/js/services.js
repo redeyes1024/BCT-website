@@ -681,31 +681,17 @@ BCTAppServices.service('unitConversionAndDataReporting', [ function() {
         return formatted_date;
     };
 
-    this.getIconPath = function(leg_data) {
+    this.checkIfCorrectTripPlannerIcon = function(leg_data, icon_type) {
 
-        var path_prefix =
-        window.myride.directories.site_roots.active +
-        window.myride.directories.paths.active +
-        "css/ico/";
+        var icon_is_correct = false;
 
-        var path_suffix = "";
+        if (leg_data.modeField === icon_type) {
 
-        switch (leg_data.modeField) {
-            case "WALK":
-                path_suffix = "walk.png";
-                break;
-            case "BUS":
-                path_suffix = "bus.png";
-                break;
-            case "DEST":
-                //TODO: Find a 'destination' icon
-                path_suffix = "walk.png";
-                break;
+            icon_is_correct = true;
+
         }
 
-        var full_path = path_prefix + path_suffix;
-
-        return full_path;
+        return icon_is_correct;
 
     };
 

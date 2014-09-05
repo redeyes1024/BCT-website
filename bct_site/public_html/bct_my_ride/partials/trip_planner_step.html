@@ -1,38 +1,28 @@
 <span class="trip-planner-itinerary-transit-type-icon-with-text">
 
-    <span class="trip-planner-itinerary-transit-type-icon ptr {{ leg.styles }}"
+    <span class="trip-planner-itinerary-transit-type-icon
+    trip-planner-transit-type-icon-non-highlighted ptr {{ leg.styles }}"
     ng-click="goToMarkerInfoWindow('planner', 'planner_step', $index);"
     ng-show="show_trip_planner_itinerary_transit_type_icon_selectable">
 
-        <img class="trip-planner-itinerary-transit-type-icon-image"
-        src="{{getIconPath(leg)}}">
-
-        <span ng-hide="uncoverSelectedStepIcon($index);"
-        class="trip-planner-itinerary-transit-type-icon-cover">
-        </span>
+        <trip-planner-icon></trip-planner-icon>
 
     </span>
 
-    <span class="trip-planner-itinerary-transit-type-icon ptr"
-    ng-show="show_trip_planner_itinerary_transit_type_icon_non_selectable">
-
-        <walking-svg></walking-svg>
-        
-        <img class="trip-planner-itinerary-transit-type-icon-image"
-        src="{{getIconPath(leg)}}">
-
-    </span>
-
-    <span class="trip-planner-itinerary-transit-type-text">
+    <span class="trip-planner-itinerary-transit-type-text ptr"
+    ng-click="goToMarkerInfoWindow('planner', 'planner_step', $index);">
 
         <span ng-show="leg.routeField">
             {{ leg.routeField }}
         </span>
 
-        <span ng-hide="leg.routeField"
-        class="trip-planner-itinerary-transit-type-text-space">
-            --
-        </span>
+    </span>
+
+    <span class="trip-planner-itinerary-transit-type-icon ptr
+    trip-planner-transit-type-icon-highlighted"
+    ng-show="show_trip_planner_itinerary_transit_type_icon_non_selectable">
+
+        <trip-planner-icon></trip-planner-icon>
 
     </span>
 

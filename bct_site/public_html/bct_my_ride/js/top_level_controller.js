@@ -803,20 +803,6 @@ function (
 
     $scope.legend_icon_list = legend_icon_list;
 
-    $scope.uncoverSelectedStepIcon = function(step_index) {
-
-        var uncover_this_step = false;
-
-        if ($scope.map_navigation_marker_indices.planner === step_index) {
-
-            uncover_this_step = true;
-
-        }
-
-        return uncover_this_step;
-
-    };
-
     $scope.toggleIconLegendOverlay = function() {
 
         if ($scope.show_icon_legend_overlay) {

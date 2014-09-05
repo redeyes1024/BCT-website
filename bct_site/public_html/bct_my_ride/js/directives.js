@@ -253,3 +253,44 @@ BCTApp.directive('walkingSvg', [ function() {
     };
 
 }]);
+
+BCTApp.directive('tripPlannerIcon', [ '$compile', function($compile) {
+
+    function link(scope, element) {
+
+        var cur_mode = scope.leg.modeField;
+
+        var trip_planner_icon_html = "";
+
+        switch (cur_mode) {
+
+            case "WALK":
+
+              trip_planner_icon_html = "<walking-svg></walking-svg>";
+
+            break;
+
+            case "BUS":
+
+                trip_planner_icon_html = "<bus-svg></bus-svg>";
+
+            break;
+
+            case "DEST":
+
+                trip_planner_icon_html = "<dest-svg></dest-svg>";
+
+            break;
+
+        }
+
+        element.append($compile(trip_planner_icon_html)(scope));
+
+    }
+
+    return {
+        restrict: 'E',
+        link: link
+    };
+
+}]);
