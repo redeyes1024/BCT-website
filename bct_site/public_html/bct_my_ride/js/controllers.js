@@ -189,7 +189,8 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
         modeswitch: {
             bus: true,
             train: true,
-            bike: false
+            bike: false,
+            com_bus: true
         },
         datetarg: "depart_by",
         datepick: new Date

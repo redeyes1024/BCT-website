@@ -15,13 +15,17 @@ ng-class="main_module_styles">
             </span>
 
         </span>
+
         <span class="title-header no-highlight"
         ng-show="show_schedule_results_module_title_with_back_function">
 
             <span class="text-shadow-hover ptr"
             ng-click="closeMapAndResetScheduleMap();">
+
                 <i class="fa fa-arrow-circle-left"></i>
+
                 Back to Schedule Search - BCT MyRide
+
             </span>
 
             <span class="info-corner-icon text-shadow-hover-icon ptr"
@@ -33,12 +37,13 @@ ng-class="main_module_styles">
 
         <div class="search-area-contents">
 
-            <span id="schedule-search-back-button"
-                class="search-top-buttons">
+            <span id="schedule-search-back-button" class="search-top-buttons">
+
                 <span class="link-icon"
                 ng-click="changeURLHash('bctappindex');">
                     <i class="fa fa-arrow-circle-left icon-lower-3 ptr"></i>
                 </span>
+
             </span>
 
             <div>
@@ -101,10 +106,7 @@ ng-class="main_module_styles">
                 </span>
 
                 <stop-result-panel
-                ng-repeat="stop in stops_arr |
-                stopFilter:query_data.schedule_search:
-                sort_bstops_by_distance:
-                latest_location">
+                ng-repeat="stop in filtered_stops_arr">
                 </stop-result-panel>
 
             </div>
@@ -117,8 +119,7 @@ ng-class="main_module_styles">
                 </span>
 
                 <route-result-panel
-                ng-repeat="route in routes_arr | routeFilter:
-                query_data.schedule_search">
+                ng-repeat="route in filtered_routes_arr">
                 </route-result-panel>
 
             </div>
@@ -128,11 +129,12 @@ ng-class="main_module_styles">
     </div>
 
     <div class="schedule-results-no-results-text"
-        ng-show="show_empty_result_message_search_too_short">
+    ng-show="show_empty_result_message_search_too_short">
         {{ SCHEDULE_RESULTS_MESSAGE_TEXT_SEARCH_TOO_SHORT }}
     </div>
+
     <div class="schedule-results-no-results-text"
-        ng-show="show_empty_result_message_no_results">
+    ng-show="show_empty_result_message_no_results">
         {{ SCHEDULE_RESULTS_MESSAGE_TEXT_NO_RESULTS }}
     </div>
 

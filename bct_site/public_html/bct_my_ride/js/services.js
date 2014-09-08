@@ -2190,7 +2190,7 @@ function(nearestStopsService, locationService, latest_location, filterHelpers) {
                 var input_lower = search_string.toLowerCase();
 
                 var input_simplified =
-                input_lower.replace("\(", "\\(").replace("\)", "\\)")
+                input_lower.replace("\(", "\\(").replace("\)", "\\)");
 
                 if (!self.filter_condition(search_string.length)) { 
                     return true; 
@@ -2275,6 +2275,22 @@ BCTAppServices.service('linkFunctions', [ '$compile', function($compile) {
 
             //e.g. "cur_stop" and "stops"
             scope["cur_" + type] = scope[type + "s"][data_id];
+
+            if (type === "route") {
+
+                scope.top_scope.filtered_sub_routes_arr = 
+                scope.top_scope.route_stop_list =
+                scope["cur_" + type].bstop_refs;
+
+            }
+            
+            else if (type === "stop") {
+
+                scope.top_scope.filtered_sub_stops_arr = 
+                scope.top_scope.stop_route_list =
+                scope["cur_" + type].route_refs;
+
+            }
 
             var panel_contents =
             element.children().children()[1].childNodes[1].childNodes[3].

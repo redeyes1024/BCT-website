@@ -685,6 +685,7 @@ schedule-map-navigation-bar {
 }
 #planner-option-date .quickdate-popup {
     margin: 3.4em 0em 0em -9em;
+    top: -16.8em;
 }
 .schedule-full-result-row {
     display: table;
@@ -992,11 +993,9 @@ inline-filter-icons {
     margin: 0em 0em 1em;
     position: absolute;
     z-index: 1031;
-    top: -7em;
-    /*
-    top: calc(-7.5em + 5px);
-    */
+    top: -7.4em;
     left: 0em;
+    max-height: 7.5em;
 }
 .trip-marker-info-window {
     width: 14em;
@@ -1122,7 +1121,7 @@ iframe #trip-planner-itinerary-selector {
     display: block;
     position: absolute;
     width: 100%;
-    bottom: calc(2em - 10px);
+    bottom: calc(2em - 12px);
     font-size: 1em;
     font-weight: 700;
     color: #555;
@@ -1294,6 +1293,7 @@ iframe .trip-planner-dialog-finish {
     }
     #planner-option-date .quickdate-popup {
         margin: 6em 0em 0em -9em;
+        top: -17em;
     }
     .schedule-full-result-row {
         font-size: 1em;
@@ -1327,6 +1327,10 @@ iframe .trip-planner-dialog-finish {
     .planner-option-switch {
         display: inline-block;
     }
+    #planner-option-bar {
+        max-height: 7.5em;
+        top: -7em;
+    }
     #trip-planner-itinerary-selector {
         font-size: 0.8em;
         top: 5.5em;
@@ -1339,6 +1343,9 @@ iframe .trip-planner-dialog-finish {
     }
     .trip-planner-itinerary-panel-smaller {
         height: 8.5em;
+    }
+    .trip-planner-itinerary-transit-type-text {
+        bottom: calc(2em - 10px);
     }
     .navigation-bar-directions {
         width: 1.5em;

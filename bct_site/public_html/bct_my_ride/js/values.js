@@ -66,7 +66,7 @@ BCTAppValues.value('legend_icon_list', [
     },
     {
         fa_name: "",
-        filename: "walk.png",
+        filename: "walking.svg",
         legend: {
             module: "Trip Planner",
             desc: "Indicates a walking portion of a Trip Planner result."
@@ -74,10 +74,18 @@ BCTAppValues.value('legend_icon_list', [
     },
     {
         fa_name: "",
-        filename: "bus.png",
+        filename: "fa_bus.svg",
         legend: {
             module: "Trip Planner",
             desc: "Indicates a bussing portion of a Trip Planner result."
+        }
+    },
+    {
+        fa_name: "",
+        filename: "solid_flag.svg",
+        legend: {
+            module: "Trip Planner",
+            desc: "Indicates the destination of a Trip Planner result."
         }
     },
     {

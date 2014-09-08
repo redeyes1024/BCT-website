@@ -8,7 +8,7 @@ BCTAppTopController.controller('BCTController', [
     'placeholderService', 'locationService', 'location_icons',
     'agency_filter_icons', 'results_exist', 'map_navigation_marker_indices',
     'legend_icon_list', 'all_alerts',
-    'profilePageService',
+    'profilePageService', 'routeAndStopFilters',
 
 function (
 
@@ -17,7 +17,7 @@ function (
     unitConversionAndDataReporting, miniScheduleService, placeholderService,
     locationService, location_icons, agency_filter_icons, results_exist,
     map_navigation_marker_indices, legend_icon_list, all_alerts,
-    profilePageService
+    profilePageService, routeAndStopFilters
 
 ) {
 
@@ -165,6 +165,18 @@ function (
 
     $scope.$watch("query_data.schedule_search", function(new_val, old_val) {
         if (new_val !== old_val) {
+
+            $scope.filtered_routes_arr = $scope.routeFilterFunc(
+                $scope.routes_arr,
+                $scope.query_data.schedule_search,
+                false
+            );
+
+            $scope.filtered_stops_arr = $scope.stopFilterFunc(
+                $scope.stops_arr,
+                $scope.query_data.schedule_search,
+                $scope.sort_bstops_by_distance
+            );
 
             if (!$scope.rs_scope_loaded) { return true; }
 
@@ -367,6 +379,7 @@ function (
         else if (new_val < old_val) {
             $scope.show_schedule_map_info_bar = true;
         }
+
     });
 
     $scope.$watch("show_map_full_screen_modal",
@@ -379,6 +392,36 @@ function (
         else if (new_val < old_val) {
             $scope.schedule_map_styles["schedule-map-full-screen"] = false;
         }
+    });
+
+    $scope.$watch("bstopFilter.f",
+    function(new_val, old_val) {
+        
+        if (new_val !== old_val) {
+
+            $scope.filtered_sub_routes_arr = $scope.stopSubFilterFunc(
+                $scope.route_stop_list,
+                $scope.bstopFilter.f,
+                false
+            );
+
+        }
+
+    });
+
+    $scope.$watch("routeFilter.f",
+    function(new_val, old_val) {
+        
+        if (new_val !== old_val) {
+
+            $scope.filtered_sub_stops_arr = $scope.routeSubFilterFunc(
+                $scope.stop_route_list,
+                $scope.routeFilter.f,
+                false
+            );
+
+        }
+
     });
 
     /* END Custom Watchers */
@@ -448,7 +491,23 @@ function (
         end: "2014/09/13"
     };
 
-    /* END Data Object Templates */    
+    /* END Data Object Templates */
+
+    $scope.routeFilterFunc =
+    (new routeAndStopFilters.RouteAndStopFilterMaker("LName", true)).
+    filter;
+
+    $scope.stopFilterFunc =
+    (new routeAndStopFilters.RouteAndStopFilterMaker("Name", true)).
+    filter;
+
+    $scope.routeSubFilterFunc =
+    (new routeAndStopFilters.RouteAndStopFilterMaker("LName", false)).
+    filter;
+
+    $scope.stopSubFilterFunc =
+    (new routeAndStopFilters.RouteAndStopFilterMaker("Name", false)).
+    filter;
 
     $scope.global_alerts = all_alerts.global;
     $scope.schedule_map_alerts = all_alerts.schedule_map;

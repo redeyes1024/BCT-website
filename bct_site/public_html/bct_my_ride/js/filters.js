@@ -1,3 +1,4 @@
+//TODO: After new filter configuration is tested, delete this file
 var BCTAppFilters = angular.module('BCTAppFilters', []);
 
 BCTAppFilters.filter('routeFilter', [ 'routeAndStopFilters',
