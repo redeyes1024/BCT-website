@@ -862,6 +862,8 @@ function (
 
         }
 
+        input_el.value = input_el.value.trim();
+
         $scope.query_data.schedule_search =
         input_el.value;
 
