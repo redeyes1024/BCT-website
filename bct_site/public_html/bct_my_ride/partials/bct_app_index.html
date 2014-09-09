@@ -33,15 +33,14 @@
 
         <div class="search-area-contents">
 
-            <input type="text" id="index-search-input"
+            <input type="text" id="route-stop-search-index-input"
             class="search-input-field needsclick"
-            placeholder="Search routes, stops or intersections"
-            ng-model="query_data.schedule_search">
+            placeholder="Search routes, stops or intersections">
 
             <span class="search-submit-button search-top-buttons">
                 <i class="fa fa-search icon-lower-2 link-icon ptr"
                 ng-click="changeURLHash('#routeschedules', 'schedule_search');
-                submitRouteStopSearch('click');">     
+                submitRouteStopSearch('click', 'index');">     
                 </i>
             </span>
 

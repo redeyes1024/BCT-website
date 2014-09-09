@@ -178,8 +178,6 @@ function (
                 $scope.sort_bstops_by_distance
             );
 
-            if (!$scope.rs_scope_loaded) { return true; }
-
             if ($scope.query_data.schedule_search.length < 3) {
                 $scope.show_empty_result_message_search_too_short = true;
                 $scope.show_empty_result_message_no_results = false;
@@ -848,10 +846,24 @@ function (
     window.myride.directories.site_roots.active +
     window.myride.directories.paths.active;
 
-    $scope.submitRouteStopSearch = function(e) {
+    $scope.submitRouteStopSearch = function(e, input) {
+
+        var input_el;
+
+        if (input === "index") {
+
+            input_el = myride.dom_q.inputs.elements.index_search_input;
+
+        }
+
+        else if (input === "results") {
+
+            input_el = myride.dom_q.inputs.elements.rs_search_input;
+
+        }
 
         $scope.query_data.schedule_search =
-        myride.dom_q.inputs.elements.rs_search_input.value;
+        input_el.value;
 
         //Only the 'click' event calls the $apply automatically (from ng-click)
         if (e === 'enter') {
@@ -1811,14 +1823,6 @@ function (
 
         //The following are return key press handlers for each input.
         //The names are not used directly and are for descriptive purposes only
-        function indexSearchInputEnter() {
-
-            $scope.changeURLHash('#routeschedules', 'schedule_search');
-
-            return true;
-
-        }
-
         function recentStopFilterEnter() {
             return true;
         }
@@ -1831,9 +1835,19 @@ function (
             return true;
         }
 
+        function routeStopSearchIndexInputEnter() {
+
+            $scope.submitRouteStopSearch('enter', 'index');
+
+            $scope.changeURLHash('#routeschedules', 'schedule_search');
+
+            return true;
+
+        }
+
         function routeStopSearchInputEnter() {
 
-            $scope.submitRouteStopSearch('enter');
+            $scope.submitRouteStopSearch('enter', 'results');
 
             return true;
 
@@ -1864,12 +1878,12 @@ function (
         }
 
         window.myride.dom_q.inputs.input_labels = {
-            "index-search-input": indexSearchInputEnter,
             "recent-stop-filter": recentStopFilterEnter,
             "recent-trip-filter": recentTripFilterEnter,
             "sub-bus-stop-filter": subBusStopFilterEnter,
             "sub-route-filter": subRouteFilterEnter,
             "route-stop-search-input": routeStopSearchInputEnter,
+            "route-stop-search-index-input": routeStopSearchIndexInputEnter,
             "trip-planner-start": tripPlannerStartEnter,
             "trip-planner-finish": tripPlannerFinishEnter
         };

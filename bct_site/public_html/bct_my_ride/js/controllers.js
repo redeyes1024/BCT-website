@@ -54,8 +54,6 @@ function ($scope, $timeout, profilePageService) {
         );
     };
 
-    $scope.displayResultsIfExist();
-
     $scope.checkIfRouteStopFavorited = function(route, stop) {
 
         return profilePageService.checkIfRouteStopFavorited(route, stop);
@@ -72,7 +70,7 @@ function ($scope, $timeout, nearestStopsService) {
     window.index_scope = $scope;
 
     myride.dom_q.inputs.elements.index_search_input =
-    document.getElementById("index-search-input");
+    document.getElementById("route-stop-search-index-input");
 
     $scope.nearest_bstops = $scope.nearest_bstops_loading;
 
@@ -367,7 +365,8 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
         return all_itineraries;
     };
 
-    window.myride.dom_q.inputs.trip = document.getElementsByClassName("planner-input");
+    window.myride.dom_q.inputs.trip =
+    document.getElementsByClassName("planner-input");
 
     $scope.showMapLoading = function() {
         $scope.top_scope.show_schedule_map_loading_modal = true;

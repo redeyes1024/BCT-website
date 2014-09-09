@@ -358,7 +358,7 @@ em.hint-text {
     background-color: #FFF;
     z-index: 1;
 }
-#index-search-input {
+#route-stop-search-index-input {
     width: calc(100% - 0.5em);
 }
 #recent-accordion {
