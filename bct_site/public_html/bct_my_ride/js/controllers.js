@@ -54,12 +54,6 @@ function ($scope, $timeout, profilePageService) {
         );
     };
 
-    $scope.checkIfRouteStopFavorited = function(route, stop) {
-
-        return profilePageService.checkIfRouteStopFavorited(route, stop);
-
-    };
-
 }]);
 
 BCTAppControllers.controller('indexController', ['$scope', '$timeout',
@@ -216,6 +210,56 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
 
     $scope.planner_error_alert_dialog_hide_in_progress = false;
 
+    $scope.TRIP_PLANNER_ERROR_TEXT_NO_PLAN_FOUND =
+    "No trip plan found.";
+
+    $scope.TRIP_PLANNER_ERROR_DEPART_TIME_PASSED =
+    "Please try setting a later departure time.";
+
+    $scope.TRIP_PLANNER_ERROR_NO_DATA_ERROR_MESSAGE =
+    "There was a problem retrieving your trip plan. Please try again later.";
+
+    $scope.selectTripPlannerErrorMessage = function (error_field) {
+
+        var geocoder_error_dialog_text = "";
+
+        if (!error_field) {
+
+            geocoder_error_dialog_text =
+            $scope.TRIP_PLANNER_ERROR_NO_DATA_ERROR_MESSAGE;
+
+            console.log(
+                "Trip planner error: problem communicating with server."
+            );
+
+        }
+
+        else if (error_field === "plan_start_late") {
+
+            geocoder_error_dialog_text =
+            $scope.TRIP_PLANNER_ERROR_DEPART_TIME_PASSED;
+
+            console.log(
+                "Trip planner error: plan start time already passed"
+            );
+
+        }
+
+        else if (error_field.idField) {
+
+            geocoder_error_dialog_text =
+            $scope.TRIP_PLANNER_ERROR_NO_DATA_ERROR_MESSAGE;
+
+            console.log(
+                "Trip planner error: problem communicating with server."
+            );
+
+        }
+
+        return geocoder_error_dialog_text;
+
+    };
+
     $scope.alertUserToTripPlannerErrors = function(error_field) {
         $scope.top_scope.show_trip_planner_itinerary_selector = false;
         $scope.top_scope.show_schedule_map_loading_modal = false;
@@ -252,23 +296,8 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
             }, 1000);
         }, $scope.GEOCODER_ERROR_ALERT_DIALOG_HIDE_DELAY);
 
-        if (error_field === "plan_start_late") {
-
-            $scope.geocoder_error_dialog_text =
-            $scope.TRIP_PLANNER_ERROR_DEPART_TIME_PASSED;
-
-            console.log("Trip planner error: plan start time already passed");
-
-        }
-
-        else if (error_field.idField) {
-
-            $scope.geocoder_error_dialog_text =
-            $scope.TRIP_PLANNER_ERROR_TEXT_NO_PLAN_FOUND;
-
-            console.log("Trip planner error: " + error_field.idField);
-
-        }
+        $scope.geocoder_error_dialog_text =
+        $scope.selectTripPlannerErrorMessage(error_field);
 
     };
 
@@ -324,11 +353,6 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
             }, 1000);
         }, $scope.GEOCODER_ERROR_ALERT_DIALOG_HIDE_DELAY);
     };
-
-    $scope.TRIP_PLANNER_ERROR_TEXT_NO_PLAN_FOUND = "No trip plan found.";
-
-    $scope.TRIP_PLANNER_ERROR_DEPART_TIME_PASSED =
-    "Please try setting a later departure time.";
 
     $scope.checkForGeocoderErrors = function(coords) {
         if (typeof(coords[0]) === "string") {
@@ -414,6 +438,80 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
 
     };
 
+    $scope.setTripPlannerStepIconContainerSizeClass =
+    function(itinerary_number, current_trip_plan_data) {
+
+        var trip_planner_itinerary_step_container;
+
+        switch (itinerary_number) {
+
+                case 0:
+
+                    trip_planner_itinerary_step_container =
+                    $scope.trip_planner_itinerary_step_container_size_0;
+
+                    break;
+
+                case 1:
+
+                    trip_planner_itinerary_step_container =
+                    $scope.trip_planner_itinerary_step_container_size_1;
+
+                    break;
+
+                case 2:
+
+                    trip_planner_itinerary_step_container =
+                    $scope.trip_planner_itinerary_step_container_size_2;
+
+                    break;
+
+
+        }
+
+        for (var i=0;i<current_trip_plan_data.length;i++) {
+
+            for (var style in trip_planner_itinerary_step_container) {
+
+                trip_planner_itinerary_step_container[style] = false;
+
+            }
+
+        }
+
+        var leg_count = current_trip_plan_data[itinerary_number].
+        legsField.length;
+
+        var trip_planner_step_icon_container_size_class = "";
+
+        if (leg_count <= 6) {
+
+            trip_planner_step_icon_container_size_class =
+            "trip-planner-itinerary-step-container-le-6";
+
+        }
+
+        else if (leg_count <= 8) {
+
+            trip_planner_step_icon_container_size_class =
+            "trip-planner-itinerary-step-container-le-8";
+
+        }
+
+        //TODO: Add new size classes if needed
+        else if (leg_count > 8) {
+
+            trip_planner_step_icon_container_size_class =
+            "trip-planner-itinerary-step-container-le-10";
+
+        }
+
+        trip_planner_itinerary_step_container[
+            trip_planner_step_icon_container_size_class
+        ] = true;
+
+    };
+
     $scope.getTripPlan = function() {
 
         $scope.showMapLoading();
@@ -463,8 +561,19 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
 
                 if ($scope.top_scope.show_trip_planner_title) {
 
+                    var trip_planner_itineraries_count =
+                    res.data.planField.itinerariesField.length;
+
                     $scope.top_scope.
                     show_trip_planner_itinerary_selector = true;
+
+                    for (var i=0;i<trip_planner_itineraries_count;i++) {
+
+                        $scope.setTripPlannerStepIconContainerSizeClass(
+                            i, res.data.planField.itinerariesField
+                        );
+
+                    }
 
                 }
 

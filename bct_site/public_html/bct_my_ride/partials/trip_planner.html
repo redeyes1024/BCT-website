@@ -1,7 +1,7 @@
 <div id="trip-planner-module" ng-controller="tripPlannerController"
     ng-class="trip_planner_styles">
 
-    <span class="title-header">Plan a trip</span>
+    <span class="title-header myride-title-shadow">Plan a trip</span>
 
     <div id="planner-top-bar">
 
@@ -118,12 +118,19 @@
 
                     <div>
 
-                        <span class="trip-planer-itinerary-step"
-                        ng-repeat="leg in itinerary.legsField">
+                        <div id="trip-planner-itinerary-step-container"
+                        ng-class="trip_planner_itinerary_step_container_size_{{
+                            $index 
+                        }}">
 
-                            <trip-planner-step></trip-planner-step>
+                            <span class="trip-planer-itinerary-step"
+                            ng-repeat="leg in itinerary.legsField">
 
-                        </span>
+                                <trip-planner-step></trip-planner-step>
+
+                            </span>
+
+                        </div>
 
                         <div class="trip-planner-itinerary-time-range">
                             {{ itinerary.startTimeField }} -

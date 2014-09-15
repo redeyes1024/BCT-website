@@ -466,9 +466,11 @@ BCTAppServices.service('scheduleDownloadAndTransformation', ['$http', '$q',
     };
 
     this.downloadSchedule = function(route, stop, date) {
+
         if (!date) {
             var date = new Date;
         }
+
         var iso_date = date.toISOString().slice(0,10).replace(/-/g,"");
 
         return $http({
@@ -480,15 +482,18 @@ BCTAppServices.service('scheduleDownloadAndTransformation', ['$http', '$q',
 		"StopId": stop,	
 		"Direction": "1",
 		"Date": iso_date
-
             },
             transformResponse: function(res) {
+
 //                if (localStorage) {
 //                    localStorage.setItem('route_data', res);
 //                }
+
                 return JSON.parse(res);
+
             }
         });
+
     };
 
     this.downloadStopsForRoute = function(route) {
@@ -1145,6 +1150,22 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
         var cur_route = routes[route];
         var bstops_names = cur_route.Stops;
 
+//        //Test code showing points used to generate polyline
+//        var line_points =
+//        myride.dom_q.map.overlays.pline.latLngs.getArray()[0].getArray();
+//
+//        for (var z=0;z<line_points.length;z++) {
+//            
+//            var test_lat = line_points[z].lat();
+//            var test_lng = line_points[z].lng();
+//
+//            var test_marker = new google.maps.Marker({
+//                map: myride.dom_q.map.inst,
+//                position: {lat: test_lat, lng: test_lng}
+//            });
+//
+//        }
+
         for (var i=0;i<bstops_names.length;i++) {
 
             if (!stops[bstops_names[i]].LatLng.Latitude) { continue; }
@@ -1290,6 +1311,14 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
                     scheduleDownloadAndTransformation.
                     downloadSchedule(route, self.s_id).then(function(res) {
 
+                        if (!res.data.Today) {
+
+                            console.log("Problem communicating with server.")
+
+                            return true;
+
+                        }
+
                         var nearest_schedule =
                         scheduleDownloadAndTransformation.
                         transformSchedule("nearest", res.data.Today);
@@ -1297,14 +1326,20 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
                         angular.element(document).ready(function() {
 
                             try {
+
                                 document.getElementById(
                                     "stop-window-times-" + self.s_id
                                 ).
                                 innerHTML = nearest_schedule.
                                 nearest.next_times.join(", ");
-                            } catch(e) {
+
+                            }
+
+                            catch(e) {
+
                                 console.log("A Google Maps infowindow was " +
                                 "closed before next times were fully loaded.");
+
                             }
 
                         });
