@@ -231,16 +231,26 @@ a.link-icon-rev {
     box-shadow: -2px 4px 4px 1px #000;
 }
 .profile-page-section-title-sub-container-sub-activated:first-child {
-    box-shadow: 2px -2px 4px 1px #000;
+    box-shadow: 1px 0px 6px 0px #000;;
 }
 .profile-page-section-title-sub-container-sub-activated:nth-child(2) {
-    box-shadow: 0px -4px 4px 2px #000;
+    box-shadow: 0px 0px 6px 0px #000;
 }
 .profile-page-section-title-sub-container-sub-activated:last-child {
-    box-shadow: -2px -2px 4px 1px #000;
+    box-shadow: -1px 0px 6px 0px #000;
 }
 .profile-page-section-title-sub {
     
+}
+.profile-page-section-description {
+    overflow-y: scroll;
+    height: 5em;
+    transition: height 1s ease 0s;
+    padding: 0.5em;
+}
+.profile-page-section-description-segment {
+    margin: 0em 0em 0.5em 0em;
+    display: block;
 }
 
 #favorites-container {
@@ -255,6 +265,12 @@ a.link-icon-rev {
 .favorites-container-all-contents {
     min-width: 23em;
 }
+.favorites-container-description {
+    
+}
+.alerts-container-description {
+    
+}
 #favorites-container-agency-bar {
     display: table;
     width: 100%;
@@ -262,7 +278,7 @@ a.link-icon-rev {
     text-align: center;
     border-style: solid;
     border-width: 1px 0px;
-    box-shadow: 0px 21px 10px -18px #777;
+    box-shadow: 0px 0px 6px 0px #000;
 }
 .favorites-container-agency-page {
     
@@ -413,14 +429,23 @@ favorite-route-stop-panel-property-container {
 #alerts-container {
     
 }
+.favorites-container-header,
+.alerts-container-header {
+    border-style: solid;
+    border-color: #000000;
+    border-width: 0px 0px 1px;
+}
 .alerts-container-header {
     position: relative;
     width: calc(100% - 0.5em);
     z-index: 2;
 }
 .alerts-container-all-alerts {
-    height: calc(100% - 6em - 3px);
+    height: calc(100% - 6.5em);
     overflow-y: auto;
+}
+.alerts-container-all-alerts-rows-only {
+    box-shadow: 0px -3px 6px -1px;
 }
 .alerts-container-main-contents {
     display: table;
@@ -483,10 +508,13 @@ favorite-route-stop-panel-property-container {
     border-style: solid;
     border-width: 0px 0px 1px 0px;
 }
-.alerts-container-time-range:nth-child(-n+7) {
+.alerts-container-time-range:nth-child(-n+8) {
     border-width: 0px 0px 1px 0px !important;
 }
-.alerts-container-time-range:nth-child(9) {
+.alerts-container-time-range:nth-child(2) {
+    border-width: 1px 0px 1px 0px !important;
+}
+.alerts-container-time-range:nth-child(10) {
     border-width: 1px 0px 1px 0px;
 }
 .alerts-container-time-range:last-child {

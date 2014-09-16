@@ -1531,19 +1531,22 @@ function (
 
         googleMapUtilities.clearMap();
 
-        googleMapUtilities.setMapPosition(coords).then(function() {
-
-            //Opening the window immediately would show redundant information
-            //$scope.goToFirstStep("schedule");
-
-        });
-
         $scope.cur_route_path =
         googleMapUtilities.displayRoute(route, $scope.routes);
 
         googleMapUtilities.displayStops(
             route, $scope.routes, $scope.stops, $scope.cur_route_path
         );
+
+        var projected_coords = 
+        googleMapUtilities.mapStopsToRoutePath(coords, $scope.cur_route_path);
+
+        googleMapUtilities.setMapPosition(projected_coords).then(function() {
+
+        //Opening the window immediately would show redundant information
+        //$scope.goToFirstStep("schedule");
+
+        });
 
     };
 

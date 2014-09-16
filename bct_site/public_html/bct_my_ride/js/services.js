@@ -1109,7 +1109,7 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
 
     };
 
-    this.mapStopsToRoutePath = function(raw_coords, route_path) {
+    this.mapStopsToRoutePath = function(coords, route_path) {
 
         var linear_dist_arr = [];
 
@@ -1118,8 +1118,8 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
             var x1 = route_path[i].lat;
             var y1 = route_path[i].lng;
 
-            var x2 = raw_coords.lat();
-            var y2 = raw_coords.lng();
+            var x2 = typeof coords.lat === "number" ? coords.lat : coords.lat();
+            var y2 = typeof coords.lng === "number" ? coords.lng : coords.lng();
 
             var h_dist_pow_2 = Math.pow((x2 - x1), 2);
             var v_dist_pow_2 = Math.pow((y2 - y1), 2);
@@ -2054,6 +2054,7 @@ function() {
                 }
 
             }
+
         ];
 
         if (localStorage) {

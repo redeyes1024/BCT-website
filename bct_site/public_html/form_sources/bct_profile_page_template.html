@@ -35,12 +35,39 @@
         class="profile-page-section-container">
 
             <div class="favorites-container-all-contents">
-            
+
                 <span class="title-header favorites-container-header">
 
                     My Favorites
 
                 </span>
+
+                <div class="profile-page-section-description
+                favorites-container-description">
+
+                    <span class="profile-page-section-description-segment">
+                        Favorite route/stop combinations from BCT - MyRide are
+                        displayed here. Any alerts that you set (other panel)
+                        are applied to this list. See the "Alerts" panel for
+                        details.
+                    </span>
+
+                    <span class="profile-page-section-description-segment">
+                        From this panel, you have the option of searching
+                        for each favorite route/stop combination by clicking
+                        on its associated magnifying glass icon
+                        <i class="fa fa-search"></i>
+                        .
+                    </span>
+
+                    <span class="profile-page-section-description-segment">
+                        You also delete a particular favorite route/stop
+                        combination by clicking on its "x" icon below
+                        <i class="fa fa-times-circle"></i>
+                        .
+                    </span>
+
+                </div>
 
                 <div id="favorites-container-agency-bar"></div>
 
@@ -116,28 +143,60 @@
 
             <div class="alerts-container-all-alerts">
 
-                <div class="alerts-container-sub-table
-                alerts-container-time-range
-                alerts-container-time-range-deselected">
+                <div class="profile-page-section-description
+                alerts-container-description">
 
-                    <div class="alerts-container-radio-button
-                    alerts-container-top-radio-button">
+                    <span class="profile-page-section-description-segment">
+                        Set alerts for the favorite route/stop
+                        combinations set on the "Favorites" panel.
+                    </span>
 
-                        <input type="radio" name="alerts_time_range_type" 
-                        onchange="ISR.utils.highlightselectedtimerange(this);"/>
+                    <span class="profile-page-section-description-segment">
+                        By selecting the <em>Turn on alerts for all times</em>
+                        option, all route and stop alerts from all route/stop
+                        combinations will be sent to by text message or email
+                        (see below), regardless of the day or time.
+                    </span>
 
-                    </div>
+                    <span class="profile-page-section-description-segment">
+                        The rest of the options allow you to set alerts for
+                        up to two time ranges over a full week, weekdays only,
+                        or weekends only.
+                    </span>
 
-                    <div class="alerts-container-all-times">
-
-                        Turn on alerts for all times
-
-                    </div>
+                    <span class="profile-page-section-description-segment">
+                        Finally, you can set the option to receive alerts via
+                        text message or email from the option bar below.
+                    </span>
 
                 </div>
 
-                <div id="alerts-container-all-date-ranges"
-                class="alerts-container-main-contents"></div>
+                <div class="alerts-container-all-alerts-rows-only">
+
+                    <div class="alerts-container-sub-table
+                    alerts-container-time-range
+                    alerts-container-time-range-deselected">
+
+                        <div class="alerts-container-radio-button
+                        alerts-container-top-radio-button">
+
+                            <input type="radio" name="alerts_time_range_type" 
+                            onchange="ISR.utils.highlightselectedtimerange(this);"/>
+
+                        </div>
+
+                        <div class="alerts-container-all-times">
+
+                            Turn on alerts for all times
+
+                        </div>
+
+                    </div>
+
+                    <div id="alerts-container-all-date-ranges"
+                    class="alerts-container-main-contents"></div>
+
+                </div>
 
             </div>
 
