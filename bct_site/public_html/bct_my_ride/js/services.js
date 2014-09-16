@@ -1961,9 +1961,6 @@ BCTAppServices.service('tripPlannerService', [ '$http', '$q',
 
     this.getTripPlanPromise = function(trip_opts, start, finish) {
 
-        //Suggested TODO: Set a timer to update the default time selection
-        //if sufficient time has passed since it was last set
-
         var arrdep = false;
         var date = trip_opts.datepick.toISOString().slice(0,10).
         replace(/-/g,"");

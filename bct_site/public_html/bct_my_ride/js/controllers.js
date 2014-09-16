@@ -27,8 +27,15 @@ function ($scope, $timeout, profilePageService) {
     $scope.sort_bstops_by_distance = false;
 
     $scope.sortResultStopsByDistance = function() {
-        $scope.sort_bstops_by_distance = true;
-        //A new digest cycle is automatically started
+
+        $scope.top_scope.sort_bstops_by_distance = true;
+
+        $scope.filtered_stops_arr = $scope.stopFilterFunc(
+            $scope.stops_arr,
+            $scope.query_data.schedule_search,
+            $scope.top_scope.sort_bstops_by_distance
+        );
+
     };
 
     $scope.setNearestResultStopsLocationSpinner = function(new_state) {
@@ -176,7 +183,7 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
 
     $scope.geocoder_error_dialog_text = "Default dialog text";
 
-    $scope.trip_opts = {
+    $scope.top_scope.trip_opts = {
         optimize: "QUICK",
         modeswitch: {
             bus: true,
@@ -187,6 +194,24 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
         datetarg: "depart_by",
         datepick: new Date
     };
+
+    $scope.updateTripPlannerTime = function() {
+
+        $timeout(function() {
+
+            if (!$scope.top_scope.trip_date_changed.value) {
+
+                $scope.trip_opts.datepick = new Date;
+
+                $scope.updateTripPlannerTime();
+
+            }
+
+        }, 120000);
+
+    };
+
+    $scope.updateTripPlannerTime();
 
     $scope.setPlannerLocationSpinner = function(new_state) {
         $scope.setLocationSpinnerAnimation(

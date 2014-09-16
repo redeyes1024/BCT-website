@@ -110,6 +110,10 @@ function (
         "trip-planner-itinerary-step-container-le-10": false
     };
 
+    $scope.trip_planner_title_header_style = {
+        "myride-title-shadow": true
+    };
+
     /* END CSS class expressions to be used to ng-class, with defaults */
 
     /* START Overlay Display Controls */
@@ -339,6 +343,9 @@ function (
             $scope.itinerary_selector_styles["trip-planner-itinerary-selector-pushed"] = true;
             $scope.itinerary_selector_panel_styles["trip-planner-itinerary-panel-smaller"] = true;
 
+            $scope.
+            trip_planner_title_header_style["myride-title-shadow"] = false;
+
         }
 
         else if (new_val < old_val) {
@@ -346,6 +353,9 @@ function (
             $scope.itinerary_selector_modal_styles["trip-planner-itinerary-selector-modal-smaller"] = false;
             $scope.itinerary_selector_styles["trip-planner-itinerary-selector-pushed"] = false;
             $scope.itinerary_selector_panel_styles["trip-planner-itinerary-panel-smaller"] = false;
+
+            $scope.
+            trip_planner_title_header_style["myride-title-shadow"] = true;
 
         }
 
@@ -450,6 +460,23 @@ function (
 
     });
 
+    $scope.trip_date_changed = { value: false };
+
+    $scope.removeTripOptsDateWatch = $scope.$watch("trip_opts.datepick",
+    function(new_val, old_val) {
+
+        if (new_val !== old_val) {
+
+            $scope.watchCalendarForUserChangeOnce(
+                $scope.trip_opts.datepick,
+                $scope.trip_date_changed,
+                $scope.removeTripOptsDateWatch
+            );
+
+        }
+
+    });
+
     /* END Custom Watchers */
 
     /* START Data Object Templates */
@@ -518,6 +545,28 @@ function (
     };
 
     /* END Data Object Templates */
+
+    $scope.watchCalendarForUserChangeOnce = function(
+        calendar_model, date_time_changed_flag, deregisterWatch
+    ) {
+
+        var current_date = new Date;
+
+        var current_time =
+        current_date.toISOString().split('T')[1].slice(0,5);
+
+        var set_calendar_time =
+        calendar_model.toISOString().split('T')[1].slice(0,5);
+
+        if (set_calendar_time !== current_time) {
+
+            date_time_changed_flag.value = true;
+
+            deregisterWatch();
+
+        }
+
+    };
 
     $scope.checkIfRouteStopFavorited = function(route, stop) {
 
