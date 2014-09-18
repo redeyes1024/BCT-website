@@ -171,9 +171,10 @@ function ($scope, $timeout, nearestStopsService) {
 
 BCTAppControllers.controller('tripPlannerController', ['$scope',
 'googleMapUtilities', '$timeout', 'tripPlannerService',
-'unitConversionAndDataReporting',
+'unitConversionAndDataReporting', 'module_error_messages',
+
 function ($scope, googleMapUtilities, $timeout, tripPlannerService,
-        unitConversionAndDataReporting) {
+unitConversionAndDataReporting, module_error_messages) {
 
     //For ease of debugging (development only)
     window.trip_scope = $scope;
@@ -235,15 +236,6 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
 
     $scope.planner_error_alert_dialog_hide_in_progress = false;
 
-    $scope.TRIP_PLANNER_ERROR_TEXT_NO_PLAN_FOUND =
-    "No trip plan found.";
-
-    $scope.TRIP_PLANNER_ERROR_DEPART_TIME_PASSED =
-    "Please try setting a later departure time.";
-
-    $scope.TRIP_PLANNER_ERROR_NO_DATA_ERROR_MESSAGE =
-    "There was a problem retrieving your trip plan. Please try again later.";
-
     $scope.selectTripPlannerErrorMessage = function (error_field) {
 
         var geocoder_error_dialog_text = "";
@@ -251,7 +243,8 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
         if (!error_field) {
 
             geocoder_error_dialog_text =
-            $scope.TRIP_PLANNER_ERROR_NO_DATA_ERROR_MESSAGE;
+            module_error_messages.trip_planner.
+            TRIP_PLANNER_ERROR_NO_DATA_ERROR_MESSAGE;
 
             console.log(
                 "Trip planner error: problem communicating with server."
@@ -262,7 +255,8 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
         else if (error_field === "plan_start_late") {
 
             geocoder_error_dialog_text =
-            $scope.TRIP_PLANNER_ERROR_DEPART_TIME_PASSED;
+            module_error_messages.trip_planner.
+            TRIP_PLANNER_ERROR_DEPART_TIME_PASSED;
 
             console.log(
                 "Trip planner error: plan start time already passed"
@@ -273,7 +267,8 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
         else if (error_field.idField) {
 
             geocoder_error_dialog_text =
-            $scope.TRIP_PLANNER_ERROR_NO_DATA_ERROR_MESSAGE;
+            module_error_messages.trip_planner.
+            TRIP_PLANNER_ERROR_NO_DATA_ERROR_MESSAGE;
 
             console.log(
                 "Trip planner error: problem communicating with server."
@@ -286,6 +281,7 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
     };
 
     $scope.alertUserToTripPlannerErrors = function(error_field) {
+
         $scope.top_scope.show_trip_planner_itinerary_selector = false;
         $scope.top_scope.show_schedule_map_loading_modal = false;
         myride.dom_q.inputs.trip[0].focus();
@@ -293,10 +289,11 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
         var dialog_styles = $scope.top_scope.planner_dialog_styles;
 
         if ($scope.planner_error_alert_dialog_hide_in_progress ||
-            dialog_styles["trip-planner-dialog-faded-in"]) {
+            dialog_styles["error-dialog-faded-in"]) {
             return false;
         }
 
+        dialog_styles["error-dialog-centered"] = true;
         dialog_styles["trip-planner-dialog-centered"] = true;
 
         dialog_styles["trip-planner-dialog-finish"] = false;
@@ -305,13 +302,16 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
         $scope.top_scope.show_geocoder_error_dialog = true;
 
         $timeout(function() {
-            dialog_styles["trip-planner-dialog-faded-out"] = false;
-            dialog_styles["trip-planner-dialog-faded-in"] = true;
+
+            dialog_styles["error-dialog-faded-out"] = false;
+            dialog_styles["error-dialog-faded-in"] = true;
+
         }, 200);
 
         $scope.geocoder_error_dialog_timeout = $timeout(function() {
-            dialog_styles["trip-planner-dialog-faded-in"] = false;
-            dialog_styles["trip-planner-dialog-faded-out"] = true;
+
+            dialog_styles["error-dialog-faded-in"] = false;
+            dialog_styles["error-dialog-faded-out"] = true;
 
             $scope.planner_error_alert_dialog_hide_in_progress = true;
 
@@ -319,6 +319,7 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
                 $scope.top_scope.show_geocoder_error_dialog = false;
                 $scope.planner_error_alert_dialog_hide_in_progress = false;
             }, 1000);
+
         }, $scope.GEOCODER_ERROR_ALERT_DIALOG_HIDE_DELAY);
 
         $scope.geocoder_error_dialog_text =
@@ -327,56 +328,79 @@ function ($scope, googleMapUtilities, $timeout, tripPlannerService,
     };
 
     $scope.GEOCODER_ERROR_ALERT_DIALOG_HIDE_DELAY = 3000;
-    $scope.GEOCODER_ERROR_ALERT_DIALOG_TEXT_NOT_FOUND = "Location not found.";
-    $scope.GEOCODER_ERROR_ALERT_DIALOG_TEXT_OVER_LIMIT = "Please wait before posting again.";
 
-    $scope.alertUserToGeocoderErrors = function(input_field_name, error_status) {
+    $scope.alertUserToGeocoderErrors = function(
+        input_field_name, error_status
+    ) {
+
         $scope.top_scope.show_trip_planner_itinerary_selector = false;
         $scope.top_scope.show_schedule_map_loading_modal = false;
 
         var dialog_styles = $scope.top_scope.planner_dialog_styles;
 
         if (error_status === "ZERO_RESULTS") {
-            $scope.geocoder_error_dialog_text = $scope.GEOCODER_ERROR_ALERT_DIALOG_TEXT_NOT_FOUND;
+
+            $scope.geocoder_error_dialog_text =
+            module_error_messages.geocoder.
+            GEOCODER_ERROR_ALERT_DIALOG_TEXT_NOT_FOUND;
+
+            dialog_styles["error-dialog-centered"] = false;
             dialog_styles["trip-planner-dialog-centered"] = false;
 
             switch (input_field_name) {
-            case "start":
-                dialog_styles["trip-planner-dialog-finish"] = false;
-                dialog_styles["trip-planner-dialog-start"] = true;
-                myride.dom_q.inputs.trip[0].focus();
-                break;
-            case "finish":
-                dialog_styles["trip-planner-dialog-start"] = false;
-                dialog_styles["trip-planner-dialog-finish"] = true;
-                myride.dom_q.inputs.trip[1].focus();
-                break;
+
+                case "start":
+
+                    dialog_styles["trip-planner-dialog-finish"] = false;
+                    dialog_styles["trip-planner-dialog-start"] = true;
+                    myride.dom_q.inputs.trip[0].focus();
+
+                    break;
+
+                case "finish":
+
+                    dialog_styles["trip-planner-dialog-start"] = false;
+                    dialog_styles["trip-planner-dialog-finish"] = true;
+                    myride.dom_q.inputs.trip[1].focus();
+
+                    break;
+
             }
+
         }
+
         else if (error_status === "OVER_QUERY_LIMIT") {
-            $scope.geocoder_error_dialog_text = $scope.GEOCODER_ERROR_ALERT_DIALOG_TEXT_OVER_LIMIT;
-            dialog_styles["trip-planner-dialog-centered"] = true;
+
+            $scope.geocoder_error_dialog_text =
+            module_error_messages.geocoder.
+            GEOCODER_ERROR_ALERT_DIALOG_TEXT_OVER_LIMIT;
+
+            dialog_styles["error-dialog-centered"] = true;
 
             dialog_styles["trip-planner-dialog-finish"] = false;
             dialog_styles["trip-planner-dialog-start"] = false;
+
         }
 
         $scope.top_scope.show_geocoder_error_dialog = true;
 
         $timeout(function() {
-            dialog_styles["trip-planner-dialog-faded-out"] = false;
-            dialog_styles["trip-planner-dialog-faded-in"] = true;
+            dialog_styles["error-dialog-faded-out"] = false;
+            dialog_styles["error-dialog-faded-in"] = true;
         }, 200);
 
         $timeout.cancel($scope.geocoder_error_dialog_timeout);
 
         $scope.geocoder_error_dialog_timeout = $timeout(function() {
-            dialog_styles["trip-planner-dialog-faded-in"] = false;
-            dialog_styles["trip-planner-dialog-faded-out"] = true;
+
+            dialog_styles["error-dialog-faded-in"] = false;
+            dialog_styles["error-dialog-faded-out"] = true;
             $timeout(function() {
                 $scope.top_scope.show_geocoder_error_dialog = false;
             }, 1000);
+
         }, $scope.GEOCODER_ERROR_ALERT_DIALOG_HIDE_DELAY);
+
     };
 
     $scope.checkForGeocoderErrors = function(coords) {

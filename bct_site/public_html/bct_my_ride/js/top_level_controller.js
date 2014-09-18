@@ -7,8 +7,8 @@ BCTAppTopController.controller('BCTController', [
     '$interval', 'unitConversionAndDataReporting', 'miniScheduleService',
     'placeholderService', 'locationService', 'location_icons',
     'agency_filter_icons', 'results_exist', 'map_navigation_marker_indices',
-    'legend_icon_list', 'all_alerts',
-    'profilePageService', 'routeAndStopFilters',
+    'legend_icon_list', 'all_alerts', 'profilePageService',
+    'routeAndStopFilters', 'module_error_messages',
 
 function (
 
@@ -17,7 +17,7 @@ function (
     unitConversionAndDataReporting, miniScheduleService, placeholderService,
     locationService, location_icons, agency_filter_icons, results_exist,
     map_navigation_marker_indices, legend_icon_list, all_alerts,
-    profilePageService, routeAndStopFilters
+    profilePageService, routeAndStopFilters, module_error_messages
 
 ) {
 
@@ -35,7 +35,7 @@ function (
     */
 
     $scope.schedule_map_styles = {
-        "hide-scroll": true,
+        "hide-scroll": true
     };
 
     $scope.trip_planner_styles = {
@@ -46,8 +46,21 @@ function (
         "trip-planner-dialog-start": false,
         "trip-planner-dialog-finish": false,
         "trip-planner-dialog-centered": false,
-        "trip-planner-dialog-faded-in": false,
-        "trip-planner-dialog-faded-out": true
+        "error-dialog-centered": false,
+        "error-dialog-faded-in": false,
+        "error-dialog-faded-out": true
+    };
+
+    $scope.schedule_map_error_dialog_styles = {
+        "error-dialog-centered": false,
+        "error-dialog-faded-in": false,
+        "error-dialog-faded-out": true
+    };
+
+    $scope.full_schedule_error_dialog_styles = {
+        "error-dialog-centered": false,
+        "error-dialog-faded-in": false,
+        "error-dialog-faded-out": true
     };
 
     $scope.itinerary_selector_styles = {
@@ -148,6 +161,9 @@ function (
 
     $scope.show_trip_planner_itinerary_selector = false;
     $scope.show_trip_planner_itinerary_labels = false;
+
+    $scope.show_schedule_map_error_dialog = false;
+    $scope.show_full_schedule_error_dialog = false;
 
     $scope.show_schedule_results_module_title_normal = true;
     $scope.show_schedule_results_module_title_with_back_function = false;
@@ -256,6 +272,8 @@ function (
             $scope.show_map_canvas = false;
             $scope.show_schedule_map_stop_navigation_bar = false;
 
+            $timeout.cancel($scope.schedule_map_error_dialog_timeout);
+
         }
 
         else if (new_val < old_val) {
@@ -290,10 +308,10 @@ function (
                 ).
                 then(function(res) {
 
-                    if (res.data.Today) {
+                    $scope.show_schedule_result_date_pick_row_loading =
+                    false;
 
-                        $scope.show_schedule_result_date_pick_row_loading =
-                        false;
+                    if (res.data.Today) {
 
                         var t_schedule = scheduleDownloadAndTransformation.
                         transformSchedule("datepick", res.data.Today);
@@ -301,6 +319,20 @@ function (
                         $scope.schedule.date_pick = t_schedule.date_pick;
 
                     }
+
+                    else {
+
+                        console.log(
+                            "Server communication error: full schedule."
+                        );
+
+                        $scope.schedule.date_pick = "Error.";
+
+                    }
+
+                }).catch(function() {
+
+                    console.log("Server communication error: full schedule.");
 
                 });
 
@@ -1040,9 +1072,9 @@ function (
         $scope.show_trip_planner_step_navigation_bar =
         full_screen_on &&
         $scope.show_trip_planner_title &&
-        $scope.top_scope.current_trip_plan_data_selection &&
+        $scope.current_trip_plan_data_selection &&
         //TODO: "Stress test" this line (in case of server API issues)
-        $scope.top_scope.current_trip_plan_data_selection.legsField[0];
+        $scope.current_trip_plan_data_selection.legsField[0];
 
         var map_ready_promise = googleMapUtilities.touchMap();
 
@@ -1146,6 +1178,243 @@ function (
 
     };
 
+    $scope.alertUserToMainModuleError = function(
+        error_field,
+        dialog_styles,
+        disableErrorAlert,
+        ng_show_flag_name,
+        dialog_timeout_name,
+        hide_in_progress_flag_name,
+        display_time,
+        display_text_name,
+        displayTextSelector
+    ) {
+
+        if (disableErrorAlert(dialog_styles)) { return false; }
+
+        dialog_styles["error-dialog-centered"] = true;
+
+        $scope[ng_show_flag_name] = true;
+
+        $timeout(function() {
+
+            dialog_styles["error-dialog-faded-out"] = false;
+            dialog_styles["error-dialog-faded-in"] = true;
+
+        }, 200);
+
+        $scope[dialog_timeout_name] = $timeout(function() {
+
+            dialog_styles["error-dialog-faded-in"] = false;
+            dialog_styles["error-dialog-faded-out"] = true;
+
+            $scope[hide_in_progress_flag_name] = true;
+
+            $timeout(function() {
+
+                $scope[ng_show_flag_name] = false;
+                $scope[hide_in_progress_flag_name] = false;
+
+            }, 1000);
+
+        }, display_time);
+
+        $scope[display_text_name] =
+        displayTextSelector(error_field);
+
+    };
+
+    $scope.full_schedule_error_dialog_text = "Default Dialog Text";
+
+    $scope.checkIfShouldDisableFullScheduleErrorDialog = function(
+        dialog_styles
+    ) {
+
+        var disable_full_schedule_error_dialog = true;
+
+        if ($scope.full_schedule_error_dialog_hide_in_progress ||
+            dialog_styles["error-dialog-faded-in"] ||
+            !$scope.show_map_overlay_module ||
+            !$scope.show_full_schedule_module) {
+
+            disable_full_schedule_error_dialog = false;
+
+        }
+
+        return disable_full_schedule_error_dialog;
+
+    };
+
+    $scope.selectFullScheduleErrorMessage = function(error_field) {
+
+        var full_schedule_error_dialog_text = "";
+
+        if (!error_field) {
+
+            full_schedule_error_dialog_text  =
+            module_error_messages.schedule_map.
+            FULL_SCHEDULE_ERROR_NO_DATA_ERROR_MESSAGE;
+
+            console.log(
+                "Full Schedule error: problem communicating with server."
+            );
+
+        }
+
+        return full_schedule_error_dialog_text;
+
+    };
+
+    $scope.full_schedule_error_dialog_hide_in_progress = false;
+
+    $scope.alertUserToFullScheduleErrors = function(error_field) {
+
+        var dialog_styles = $scope.full_schedule_error_dialog_styles;
+
+        var disableErrorAlert =
+        $scope.checkIfShouldDisableFullScheduleErrorDialog;
+
+        var ng_show_flag_name = "show_full_schedule_error_dialog";
+
+        var dialog_timeout_name = "full_schedule_error_dialog_timeout";
+
+        var hide_in_progress_flag_name =
+        "full_schedule_error_dialog_hide_in_progress";
+
+        var display_time = 3000;
+
+        var display_text_name = "full_schedule_error_dialog_text";
+
+        var displayTextSelector = $scope.selectFullScheduleErrorMessage;
+
+        $scope.alertUserToMainModuleError(
+            error_field,
+            dialog_styles,
+            disableErrorAlert,
+            ng_show_flag_name,
+            dialog_timeout_name,
+            hide_in_progress_flag_name,
+            display_time,
+            display_text_name,
+            displayTextSelector
+        );
+
+    };
+
+    $scope.schedule_map_error_dialog_text = "Default Dialog Text";
+
+    $scope.selectScheduleMapErrorMessage = function(error_field) {
+
+        var schedule_map_error_dialog_text = "";
+
+        if (!error_field) {
+
+            schedule_map_error_dialog_text =
+            module_error_messages.schedule_map.
+            SCHEDULE_MAP_ERROR_NO_DATA_ERROR_MESSAGE;
+
+            console.log(
+                "Schedule Map error: problem communicating with server"
+            );
+
+        }
+
+        else if (error_field === "stop_seeker") {
+
+            schedule_map_error_dialog_text =
+            module_error_messages.schedule_map.
+            SCHEDULE_MAP_ERROR_STOP_SEEKER ;
+
+            console.log(
+                "Schedule Map error: Stop Seeker."
+            );
+
+        }
+
+        else if (error_field === "main_schedule") {
+
+            schedule_map_error_dialog_text =
+            module_error_messages.schedule_map.
+            SCHEDULE_MAP_ERROR_MAIN_SCHEDULE;
+
+            console.log(
+                "Schedule Map error: Main Schedule."
+            );
+
+        }
+
+        return schedule_map_error_dialog_text;
+
+    };
+
+    $scope.checkIfShouldDisableScheduleMapErrorDialog = function(
+        dialog_styles
+    ) {
+
+        var disable_schedule_map_error_dialog = true;
+
+        if ($scope.full_schedule_error_dialog_hide_in_progress ||
+            dialog_styles["error-dialog-faded-in"] ||
+            !$scope.show_map_overlay_module ||
+            $scope.show_full_schedule_module) {
+
+            disable_schedule_map_error_dialog = false;
+
+        }
+
+        return disable_schedule_map_error_dialog;
+
+    };
+
+    $scope.schedule_map_error_dialog_hide_in_progress = false;
+
+    $scope.alertUserToScheduleMapErrors = function(error_field) {
+
+        var dialog_styles = $scope.schedule_map_error_dialog_styles;
+
+        var disableErrorAlert =
+        $scope.checkIfShouldDisableScheduleMapErrorDialog;
+
+        var ng_show_flag_name = "show_schedule_map_error_dialog";
+
+        var dialog_timeout_name = "schedule_map_error_dialog_timeout";
+
+        var hide_in_progress_flag_name =
+        "schedule_map_error_dialog_hide_in_progress";
+
+        var display_time = 3000;
+
+        var display_text_name = "schedule_map_error_dialog_text";
+
+        var displayTextSelector = $scope.selectScheduleMapErrorMessage;
+
+        $scope.alertUserToMainModuleError(
+            error_field,
+            dialog_styles,
+            disableErrorAlert,
+            ng_show_flag_name,
+            dialog_timeout_name,
+            hide_in_progress_flag_name,
+            display_time,
+            display_text_name,
+            displayTextSelector
+        );
+
+    };
+
+    $scope.full_schedule_error_dialog_text = "Default Dialog Text";
+
+    $scope.full_schedule_error_dialog_hide_in_progress = false;
+
+    $scope.SCHEDULE_MAP_ERROR_STOP_SEEKER =
+    "There was a problem with the Stop Seeker. Please try again later.";
+
+    $scope.SCHEDULE_MAP_ERROR_MAIN_SCHEDULE =
+    "There was a problem downloading the main schedule. " +
+    "Please try again later.";
+
+    $scope.full_schedule_error_dialog_hide_in_progress = false;
+
     $scope.activateScheduleMapStopNavigation = function() {
 
         $scope.schedule_map_navigation_bar_same_stop_open = true;
@@ -1175,6 +1444,15 @@ function (
 
             $scope.show_schedule_map_navigation_bar_loading = false;
             $scope.show_schedule_map_stop_navigation_bar_contents = true;
+
+        }).catch(function() {
+
+            $scope.alertUserToScheduleMapErrors("stop_seeker");
+
+            $scope.current_schedule_map_navigation_bar_activation_message =
+            $scope.schedule_map_navigation_bar_activation_messages.inactive; 
+
+            $scope.show_schedule_map_navigation_bar_loading = false;
 
         });
 
@@ -1364,21 +1642,25 @@ function (
 
         $scope.populateScheduleMapTimes(new_route, bstop_id);
 
-        $scope.populateScheduleMap(new_route, bstop_id);
+        var map_ready_promise = $scope.populateScheduleMap(new_route, bstop_id);
 
-        myride.dom_q.map.overlays.points[bstop_id].ShowWindow.func();
+        map_ready_promise.then(function() {
+
+            myride.dom_q.map.overlays.points[bstop_id].ShowWindow.func();
+
+        });
 
     };
 
     $scope.displayResultsIfExist = function() {
 
         if ($scope.results_exist.main) {
-            $scope.top_scope.show_empty_result_message_no_results = false;
-            $scope.top_scope.show_schedule_results_result_panels = true;
+            $scope.show_empty_result_message_no_results = false;
+            $scope.show_schedule_results_result_panels = true;
         }
         else {
-            $scope.top_scope.show_empty_result_message_no_results = true;
-            $scope.top_scope.show_schedule_results_result_panels = false;
+            $scope.show_empty_result_message_no_results = true;
+            $scope.show_schedule_results_result_panels = false;
         }
 
     };
@@ -1541,12 +1823,7 @@ function (
         var projected_coords = 
         googleMapUtilities.mapStopsToRoutePath(coords, $scope.cur_route_path);
 
-        googleMapUtilities.setMapPosition(projected_coords).then(function() {
-
-        //Opening the window immediately would show redundant information
-        //$scope.goToFirstStep("schedule");
-
-        });
+        return googleMapUtilities.setMapPosition(projected_coords)
 
     };
 
@@ -1557,15 +1834,22 @@ function (
 
         scheduleDownloadAndTransformation.downloadSchedule(route, stop).
         then(function(res) {
+
             if (!res.data.Today) {
+
                 console.log("Schedule loading error.");
+
+                $scope.alertUserToScheduleMapErrors("main_schedule");
+
                 return false;
+
             }
 
             var t_schedule = scheduleDownloadAndTransformation.
             transformSchedule("nearest", res.data.Today);
 
             $scope.updateAndPushSchedule(t_schedule);
+
         });
 
     };

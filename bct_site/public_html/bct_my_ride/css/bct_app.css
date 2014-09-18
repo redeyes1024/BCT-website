@@ -335,6 +335,19 @@ em.hint-text {
     font-weight: normal;
 }
 
+.error-dialog-centered {
+    left: calc(50% - 7.5em);
+    bottom: calc(12.5em - 3px);
+    width: 15em;
+    text-align: center;
+}
+.error-dialog-faded-out {
+    opacity: 0;
+}
+.error-dialog-faded-in {
+    opacity: 1;
+}
+
 /* END Generic Classes */
 
 /* START Index Page */
@@ -1187,6 +1200,7 @@ trip-planner-navigation-bar {
 .trip-planner-navigation-bar-main-contents {
     height: 4em;
 }
+#schedule-map-error-dialog,
 #trip-planner-dialog {
     background-color: #F2CD00;
     position: absolute;
@@ -1226,19 +1240,10 @@ iframe .trip-planner-dialog-finish {
     left: 1em;
 }
 .trip-planner-dialog-centered {
-    left: calc(50% - 7.5em);
-    bottom: calc(12.5em - 3px);
-    width: 15em;
-    text-align: center;
+    
 }
 .trip-planner-dialog-centered:after {
     border-style: none;
-}
-.trip-planner-dialog-faded-out {
-    opacity: 0;
-}
-.trip-planner-dialog-faded-in {
-    opacity: 1;
 }
 
 /* END Trip Planner */
@@ -1286,7 +1291,7 @@ iframe .trip-planner-dialog-finish {
 
     /* Schedule Results */
     #schedule-full-result-dialog {
-        height: 30em;
+        height: calc(28em - 2px);
     }
     #schedule-full-result-dialog-info-text {
         font-size: 1em;

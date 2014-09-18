@@ -4,6 +4,55 @@ var BCTAppValues = angular.module('BCTAppValues', []);
 //BCTAppValues.value('scheduleWebSocket',
 //new WebSocket("ws://echo.websocket.org"));
 
+BCTAppValues.value('module_error_messages', {
+
+    schedule_map: {
+
+        SCHEDULE_MAP_ERROR_NO_DATA_ERROR_MESSAGE: "" +
+        "Schedule Map error: Problem communicating with server.",
+
+        SCHEDULE_MAP_ERROR_STOP_SEEKER:
+        "There was a problem with the Stop Seeker. Please try again later.",
+
+        SCHEDULE_MAP_ERROR_MAIN_SCHEDULE:
+        "There was a problem downloading the main schedule. " +
+        "Please try again later."
+
+    },
+
+    full_schedule: {
+
+        FULL_SCHEDULE_ERROR_NO_DATA_ERROR_MESSAGE: "" +
+        "Full Schedule error: Problem communicating with server."
+
+    },
+
+    trip_planner: {
+
+        TRIP_PLANNER_ERROR_TEXT_NO_PLAN_FOUND: "" +
+        "No trip plan found.",
+
+        TRIP_PLANNER_ERROR_DEPART_TIME_PASSED: "" +
+        "Please try setting a later departure time.",
+
+        TRIP_PLANNER_ERROR_NO_DATA_ERROR_MESSAGE: "" +
+        "There was a problem retrieving your trip plan. " +
+        "Please try again later."   
+
+    },
+
+    geocoder: {
+        
+        GEOCODER_ERROR_ALERT_DIALOG_TEXT_NOT_FOUND:
+        "Location not found.",
+
+        GEOCODER_ERROR_ALERT_DIALOG_TEXT_OVER_LIMIT:
+        "Please wait before posting again."
+
+    }
+
+});
+
 //TODO: When paths are finalized, break into smaller lines
 BCTAppValues.value('svg_icon_paths', {
 
