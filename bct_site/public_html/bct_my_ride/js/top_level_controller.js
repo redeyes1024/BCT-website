@@ -584,9 +584,49 @@ function (
         one_file: [4, 5, 7, 9, 12, 14, 15, 16, 18, 19, 20, 23, 30, 31, 34, 36,
         40, 42, 48, 50, 55, 56, 60, 62, 72, 81, 83, 88],
 
-        two_files: [1, 2, 6, 10, 11, 22, 28]
+        two_files: [1, 2, 6, 10, 11, 22, 28],
+
+        breeze: {
+
+            101: 1,
+            102: 2,
+            441: 441
+
+        },
+
+        express: {
+
+            110: "595X110",
+            112: "595X112",
+            114: "595X114",
+            106: "95X106",
+            107: "95X107",
+            108: "95X108",
+            109: "95X109"
+
+        }
 
     };
+
+    (function() {
+
+        $scope.breeze_sched_listed = [];
+
+        for (var b in $scope.full_schedule_availabilities.breeze) {
+
+            $scope.breeze_sched_listed.push(b);
+
+        }
+
+        $scope.express_sched_listed = [];
+
+        for (var e in $scope.full_schedule_availabilities.express) {
+
+            $scope.express_sched_listed.push(e);
+
+        }
+
+    })();
 
     /* END Data Object Templates */
 
@@ -613,6 +653,36 @@ function (
         else if (one_page_sched_listed.indexOf(Number(route_id_short)) !== -1) {
 
             $scope.goToBCTSiteFullSchedule("one_page", route_id_short);
+
+        }
+
+        else if ($scope.breeze_sched_listed.indexOf(route_id_short) !== -1) {
+
+            var breeze_bus_list_index =
+            $scope.breeze_sched_listed.indexOf(route_id_short);
+
+            var breeze_bus_index =
+            $scope.breeze_sched_listed[breeze_bus_list_index];
+
+            route_id_short =
+            $scope.full_schedule_availabilities.breeze[breeze_bus_index];
+
+            $scope.goToBCTSiteFullSchedule("breeze", route_id_short);
+
+        }
+
+        else if ($scope.express_sched_listed.indexOf(route_id_short) !== -1) {
+
+            var express_bus_list_index =
+            $scope.express_sched_listed.indexOf(route_id_short);
+
+            var express_bus_index =
+            $scope.express_sched_listed[express_bus_list_index];
+
+            route_id_short =
+            $scope.full_schedule_availabilities.express[express_bus_index];
+
+            $scope.goToBCTSiteFullSchedule("express", route_id_short);
 
         }
 
@@ -662,6 +732,20 @@ function (
                 console.error("Schedule type unspecified.");
 
             }
+
+        }
+
+        else if (schedule_layout === "breeze") {
+
+            file_middle_prefix = "breeze";
+
+        }
+
+        else if (schedule_layout === "express") {
+
+            file_prefix = "";
+
+            file_middle_prefix = "";
 
         }
 
