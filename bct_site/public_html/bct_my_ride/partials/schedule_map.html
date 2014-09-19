@@ -68,6 +68,49 @@ ng-class="schedule_map_styles" class="fbox" ng-class="schedule_map_styles">
         ng-show="show_schedule_result_top_alert_bar">
         </schedule-map-alerts-header>
 
+        <div class="schedule-full-result-pdf-selector-modal"
+        ng-show="show_schedule_full_result_pdf_selector">
+
+            <div class="schedule-full-result-pdf-selector">
+
+                <div class="schedule-full-result-pdf-selector-button-panel">
+
+                    <div class="schedule-full-result-pdf-selector-button
+                    no-highlight ptr">
+
+                        <span
+                        class="schedule-full-result-pdf-selector-button-text"
+                        ng-click="goToBCTSiteFullSchedule(
+                            'two_page', 'on_page', 'weekday'
+                        )">
+
+                            Weekdays
+
+                        </span>
+
+                    </div>
+
+                    <div class="schedule-full-result-pdf-selector-button
+                    no-highlight ptr">
+
+                        <span
+                        class="schedule-full-result-pdf-selector-button-text"
+                        ng-click="goToBCTSiteFullSchedule(
+                            'two_page', 'on_page', 'weekend'
+                        )">
+
+                            Weekends
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
 
     <span ng-show="show_trip_planner_title">

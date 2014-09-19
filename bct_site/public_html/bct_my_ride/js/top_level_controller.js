@@ -188,6 +188,8 @@ function (
 
     $scope.show_map_canvas = true;
 
+    $scope.show_schedule_full_result_pdf_selector = false;
+
     (function() {
 
         for (icon in location_icons) {
@@ -576,7 +578,110 @@ function (
         end: "2014/09/13"
     };
 
+    //Values taken from BCT site on 14/09/19 12:20 PM EST
+    $scope.full_schedule_availabilities = {
+
+        one_file: [4, 5, 7, 9, 12, 14, 15, 16, 18, 19, 20, 23, 30, 31, 34, 36,
+        40, 42, 48, 50, 55, 56, 60, 62, 72, 81, 83, 88],
+
+        two_files: [1, 2, 6, 10, 11, 22, 28]
+
+    };
+
     /* END Data Object Templates */
+
+    $scope.selectBCTSiteFullSchedule = function() {
+
+        var route_id_short =
+        $scope.map_schedule_info.route.match(/[0-9][0-9]*/)[0].
+        replace(/^0*/,"");
+
+        var one_page_sched_listed =
+        $scope.full_schedule_availabilities.one_file;
+
+        var two_page_sched_listed =
+        $scope.full_schedule_availabilities.two_files;
+
+        if (two_page_sched_listed.indexOf(Number(route_id_short)) !== -1) {
+
+            $scope.show_schedule_full_result_pdf_selector = true;
+
+            return true;
+
+        }
+
+        else if (one_page_sched_listed.indexOf(Number(route_id_short)) !== -1) {
+
+            $scope.goToBCTSiteFullSchedule("one_page", route_id_short);
+
+        }
+
+        else {
+
+            console.log("Route not found: " + route_id_short);
+
+            return false;
+
+        }
+
+    };
+
+    $scope.goToBCTSiteFullSchedule = function(
+        schedule_layout, route_id_short, schedule_type
+    ) {
+
+        var url_base = "http://www.broward.org/BCT/MapsAndSchedules/Documents/";
+        var file_prefix = "rt";
+        var file_middle = "web";
+        var file_ext = ".pdf";
+
+        var file_middle_prefix;
+
+        if (schedule_layout === "one_page") {
+
+            file_middle_prefix = "";
+
+        }
+
+        else if (schedule_layout === "two_page") {
+
+            if (schedule_type === "weekday") {
+
+                file_middle_prefix = "w";
+
+            }
+
+            else if (schedule_type === "weekend") {
+
+                file_middle_prefix = "ss";
+
+            }
+
+            else {
+
+                console.error("Schedule type unspecified.");
+
+            }
+
+        }
+
+        if (route_id_short === "on_page") {
+
+            var route_id_short =
+            $scope.map_schedule_info.route.match(/[0-9][0-9]*/)[0].
+            replace(/^0*/,"");
+
+        }
+
+        var full_url =
+        url_base + file_prefix + route_id_short + file_middle_prefix +
+        file_middle + file_ext;
+
+        window.open(full_url);
+
+        $scope.show_schedule_full_result_pdf_selector = false;
+
+    };
 
     $scope.watchCalendarForUserChangeOnce = function(
         calendar_model, date_time_changed_flag, deregisterWatch
@@ -1036,6 +1141,8 @@ function (
             id_type_name = "schedule_marker_window_id";
 
         }
+
+        if (!point) { return true; }
 
         var point_coords = point.marker.getPosition();
 

@@ -702,8 +702,6 @@ BCTAppServices.service('unitConversionAndDataReporting', [ function() {
 
     this.getAltOrTitleText = function(leg_data) {
 
-        
-
         return full_text;
 
     };
