@@ -1128,6 +1128,7 @@ iframe #trip-planner-itinerary-selector {
 }
 .trip-planner-itinerary-selector-pushed {
     top: 6.5em !important;
+    line-height: 1.5em;
 }
 #trip-planner-itinerary-selector-title {
     border-style: solid;
@@ -1217,8 +1218,11 @@ iframe #trip-planner-itinerary-selector {
 .trip-planner-transit-mode-icon-dest {
     width: 2.5em;
 }
+.trip-planner-itinerary-date {
+    font-weight: bold;
+}
 .trip-planner-itinerary-time-range {
-    margin: 0.5em;
+
 }
 .trip-planner-itinerary-duration {
     font-weight: bold;

@@ -418,13 +418,20 @@ unitConversionAndDataReporting, module_error_messages) {
 
         for (var i=0;i<all_itineraries.length;i++) {
 
-            all_itineraries[i].durationField = unitConversionAndDataReporting.
-                formatReportedDuration(all_itineraries[i].durationField);
+            all_itineraries[i].durationFieldFormatted =
+            unitConversionAndDataReporting.formatReportedDuration(
+                all_itineraries[i].durationField
+            );
 
-            all_itineraries[i].startTimeField = unitConversionAndDataReporting.
-                formatReportedDate(all_itineraries[i].startTimeField);
-            all_itineraries[i].endTimeField = unitConversionAndDataReporting.
-                formatReportedDate(all_itineraries[i].endTimeField);
+            all_itineraries[i].startTimeFieldFormatted =
+            unitConversionAndDataReporting.formatReportedDate(
+                all_itineraries[i].startTimeField
+            );
+
+            all_itineraries[i].endTimeFieldFormatted =
+            unitConversionAndDataReporting.formatReportedDate(
+                all_itineraries[i].endTimeField
+            );
 
             all_itineraries[i].legsField[0].styles =
             "trip-planner-itinerary-step-highlighted";
@@ -455,33 +462,69 @@ unitConversionAndDataReporting, module_error_messages) {
 
         var itineraries = res.data.planField.itinerariesField;
 
-        var all_itinerary_start_times_valid;
+        var valid_itineraries_counter = 0;
 
         for (var i=0;i<itineraries.length;i++) {
 
+            var itinerary_is_valid = true;
+
+            itinerary_is_valid =
             itineraries[i].times_valid =
-            all_itinerary_start_times_valid =
             $scope.checkValidityOfTripPlanTimes(itineraries[i]);
+
+            valid_itineraries_counter += itinerary_is_valid;
 
         }
 
-        return all_itinerary_start_times_valid;
+        var at_least_one_itinerary_time_is_valid = true;
+
+        if (valid_itineraries_counter < 1) {
+            at_least_one_itinerary_time_is_valid = false;
+        }
+
+        return at_least_one_itinerary_time_is_valid;
 
     };
 
     $scope.checkValidityOfTripPlanTimes = function(cur_itinerary) {
 
-        var cur_time = (new Date).toString().match(/[0-9][0-9]:[0-9][0-9]/)[0];
+        var cur_date = new Date;
+        var cur_day = Number(cur_date.toDateString().slice(8,10));
+        var cur_time = cur_date.toTimeString().slice(0,5);
 
-        var start_time_raw = cur_itinerary.startTimeField;
+        var start_date = cur_itinerary.startTimeField;
+        var start_day = Number(start_date.slice(8,10));
 
         var start_time =
-        start_time_raw.split("T")[1].match(/[0-9][0-9]:[0-9][0-9]/)[0];
+        start_date.split("T")[1].match(/[0-9][0-9]:[0-9][0-9]/)[0];
 
-        var cur_time_num = Number(cur_time.replace(/:/,""));
-        var start_time_num = Number(start_time.replace(/:/,""));
+        var trip_plan_time_is_valid = false;
 
-        var trip_plan_time_is_valid = start_time_num >= cur_time_num;
+        if (start_day > cur_day) {
+
+            trip_plan_time_is_valid = true;
+
+            cur_itinerary.start_date = start_date.slice(0,10);
+
+        }
+
+        else {
+
+            var cur_time_num = Number(cur_time.replace(/:/,""));
+            var start_time_num = Number(start_time.replace(/:/,""));
+
+            trip_plan_time_is_valid = start_time_num >= cur_time_num;
+
+        }
+
+        var end_date = cur_itinerary.endTimeField;
+        var end_day = Number(end_date.slice(8,10));
+
+        if (end_day > cur_day) {
+
+            cur_itinerary.end_date = end_date.slice(0,10);
+
+        }
 
         return trip_plan_time_is_valid;
 
@@ -626,7 +669,8 @@ unitConversionAndDataReporting, module_error_messages) {
 
                 }
 
-                $scope.current_trip_plan_data = $scope.formatRawTripStats(
+                $scope.top_scope.current_trip_plan_data =
+                $scope.formatRawTripStats(
                     res.data.planField.itinerariesField
                 );
 

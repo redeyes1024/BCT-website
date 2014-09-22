@@ -400,8 +400,8 @@ BCTAppServices.service('placeholderService', [ function() {
 }]);
 
 BCTAppServices.service('scheduleDownloadAndTransformation', ['$http', '$q',
-    'miniScheduleService',
-    function($http, $q, miniScheduleService) {
+    'miniScheduleService', 'generalServiceUtilities',
+    function($http, $q, miniScheduleService, generalServiceUtilities) {
     //TO DO: Backend will create "booking version" string for all data sets;
     //It will be requested and compared to see if and what data must be updated
     var self = this;
@@ -422,7 +422,7 @@ BCTAppServices.service('scheduleDownloadAndTransformation', ['$http', '$q',
         return $http({
             method: 'POST',
             url: 'http://174.94.153.48:7777/TransitApi/Routes/',
-            data: { 
+            data: {
                 "AgencyId":"BCT"
             },
             transformResponse: function(res) {
@@ -471,7 +471,7 @@ BCTAppServices.service('scheduleDownloadAndTransformation', ['$http', '$q',
             var date = new Date;
         }
 
-        var iso_date = date.toISOString().slice(0,10).replace(/-/g,"");
+        var formatted_date = generalServiceUtilities(date);
 
         return $http({
             method: 'POST',
@@ -481,7 +481,7 @@ BCTAppServices.service('scheduleDownloadAndTransformation', ['$http', '$q',
                 "RouteId": route,
 		"StopId": stop,	
 		"Direction": "1",
-		"Date": iso_date
+		"Date": formatted_date
             },
             transformResponse: function(res) {
 
@@ -500,7 +500,7 @@ BCTAppServices.service('scheduleDownloadAndTransformation', ['$http', '$q',
 
         var date = new Date;
 
-        var iso_date = date.toISOString().slice(0,10).replace(/-/g,"");
+        var formatted_date = generalServiceUtilities(date);
 
         return $http({
             method: 'POST',
@@ -509,7 +509,7 @@ BCTAppServices.service('scheduleDownloadAndTransformation', ['$http', '$q',
                 "AgencyId": "BCT",
                 "RouteId": route,
 		"Direction": "0",
-		"Date": iso_date
+		"Date": formatted_date
 
             },
             transformResponse: function(res) {
@@ -570,7 +570,9 @@ BCTAppServices.service('scheduleDownloadAndTransformation', ['$http', '$q',
 
 }]);
 
-BCTAppServices.service('unitConversionAndDataReporting', [ function() {
+BCTAppServices.service('unitConversionAndDataReporting', [
+    'generalServiceUtilities',
+    function(generalServiceUtilities) {
 
     var self = this;
 
@@ -597,6 +599,7 @@ BCTAppServices.service('unitConversionAndDataReporting', [ function() {
     };
 
     this.splitHoursMinutes = function(minutes_count) {
+
         var minutes_label = " minute";
         var mins_plural = "s";
 
@@ -625,24 +628,29 @@ BCTAppServices.service('unitConversionAndDataReporting', [ function() {
         }
 
         var formatted_hours_with_minutes = hours_count + hours_label +
-            hours_plural + divider + minutes_count + minutes_label +
-            mins_plural;
+        hours_plural + divider + minutes_count + minutes_label +
+        mins_plural;
 
         return formatted_hours_with_minutes;
+
     };
 
     this.formatReportedDuration = function(raw_duration) {
+
         var minutes_count =  (raw_duration / 1000 / 60).toFixed(0);
 
         var formatted_duration = self.splitHoursMinutes(minutes_count);
 
         return formatted_duration;
+
     };
 
     this.addTimeDiffMessages = function(diff_arr) {
+
         var message_arr = [];
 
         for (var i=0;i<diff_arr.length;i++) {
+
             var start_text = "";
             var end_text = "";
             var time_difference = "";
@@ -651,10 +659,12 @@ BCTAppServices.service('unitConversionAndDataReporting', [ function() {
                 time_difference = self.splitHoursMinutes(diff_arr[i] * -1);
                 end_text = " ago";
             }
+
             else if (diff_arr[i] > 0) {
                 time_difference = self.splitHoursMinutes(diff_arr[i]);
                 start_text = "in ";
             }
+
             else if (diff_arr[i] === 0) {
                 start_text = "about now";
             }
@@ -662,28 +672,18 @@ BCTAppServices.service('unitConversionAndDataReporting', [ function() {
             var time_diff_message = start_text + time_difference + end_text;
 
             message_arr.push(time_diff_message);
+
         }
         return message_arr;
+
     };
 
     this.formatReportedDate = function(raw_date) {
-        var current_date_ISO = (new Date).toISOString();
 
-        var input_date_time = raw_date.slice(11, 16);
-
-        var input_date_yymmdd = raw_date.slice(0, 10);
-        var current_date_yymmdd = current_date_ISO.slice(0, 10);
-
-        var start = "";
-        //var start = input_date_yymmdd;
-
-        if (input_date_yymmdd === current_date_yymmdd) {
-            start = "";
-        }
-
-        var formatted_date = start + " " + input_date_time;
+        var formatted_date = raw_date.slice(11, 16);
 
         return formatted_date;
+
     };
 
     this.checkIfCorrectTripPlannerIcon = function(leg_data, icon_type) {
@@ -733,6 +733,22 @@ BCTAppServices.service('generalServiceUtilities', [ function() {
     });
 
     /* END Force Digest Workaround */
+
+    this.formatDateYYYYMMDD = function(date_obj) {
+
+        var date = String(date_obj.getDate());
+        var date_two_digits = date[1] ? date : "0" + date;
+
+        var full_year = String(date_obj.getFullYear());
+
+        var month = String(date_obj.getMonth() + 1);
+        var month_two_digits = month[1] ? month : "0" + month;
+
+        var full_date = full_year + month_two_digits + date_two_digits;
+
+        return full_date;
+
+    };
 
 }]);
 
@@ -1903,7 +1919,8 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
 }]);
 
 BCTAppServices.service('tripPlannerService', [ '$http', '$q',
-    function($http, $q) {
+'generalServiceUtilities',
+function($http, $q, generalServiceUtilities) {
 
     var self = this;
     var geocoder = new google.maps.Geocoder;
@@ -1960,8 +1977,10 @@ BCTAppServices.service('tripPlannerService', [ '$http', '$q',
     this.getTripPlanPromise = function(trip_opts, start, finish) {
 
         var arrdep = false;
-        var date = trip_opts.datepick.toISOString().slice(0,10).
-        replace(/-/g,"");
+
+        var date =
+        generalServiceUtilities.formatDateYYYYMMDD(trip_opts.datepick);
+
         var time = trip_opts.datepick.toTimeString().slice(0,5);
         var optimize = "";
         var modearr = ["WALK"];

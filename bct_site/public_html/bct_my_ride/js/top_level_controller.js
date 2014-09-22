@@ -373,9 +373,18 @@ function (
 
         if (new_val > old_val) {
 
-            $scope.itinerary_selector_modal_styles["trip-planner-itinerary-selector-modal-smaller"] = true;
-            $scope.itinerary_selector_styles["trip-planner-itinerary-selector-pushed"] = true;
-            $scope.itinerary_selector_panel_styles["trip-planner-itinerary-panel-smaller"] = true;
+            $scope.itinerary_selector_modal_styles
+            ["trip-planner-itinerary-selector-modal-smaller"] = true;
+
+            if ($scope.current_trip_plan_data.length > 2) {
+
+                $scope.itinerary_selector_styles
+                ["trip-planner-itinerary-selector-pushed"] = true;
+
+                $scope.itinerary_selector_panel_styles
+                ["trip-planner-itinerary-panel-smaller"] = true;
+
+            }
 
             $scope.
             trip_planner_title_header_style["myride-title-shadow"] = false;
@@ -384,9 +393,14 @@ function (
 
         else if (new_val < old_val) {
 
-            $scope.itinerary_selector_modal_styles["trip-planner-itinerary-selector-modal-smaller"] = false;
-            $scope.itinerary_selector_styles["trip-planner-itinerary-selector-pushed"] = false;
-            $scope.itinerary_selector_panel_styles["trip-planner-itinerary-panel-smaller"] = false;
+            $scope.itinerary_selector_modal_styles
+            ["trip-planner-itinerary-selector-modal-smaller"] = false;
+
+            $scope.itinerary_selector_styles
+            ["trip-planner-itinerary-selector-pushed"] = false;
+
+            $scope.itinerary_selector_panel_styles
+            ["trip-planner-itinerary-panel-smaller"] = false;
 
             $scope.
             trip_planner_title_header_style["myride-title-shadow"] = true;

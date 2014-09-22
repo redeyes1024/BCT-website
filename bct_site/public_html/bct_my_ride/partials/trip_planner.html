@@ -134,10 +134,29 @@
                         </div>
 
                         <div class="trip-planner-itinerary-time-range">
-                            {{ itinerary.startTimeField }} -
-                            {{ itinerary.endTimeField }}
+
+                            <span class="trip-planner-itinerary-date"
+                            ng-show="itinerary.start_date">
+                                ({{ itinerary.start_date }})
+                            </span>
+
+                            {{ itinerary.startTimeFieldFormatted }}
+
+                            to
+
+                            <span class="trip-planner-itinerary-date"
+                            ng-show="itinerary.end_date">
+                                ({{ itinerary.end_date }})
+                            </span>
+
+                            {{ itinerary.endTimeFieldFormatted }}
+
+                        </div>
+
+                        <div>
+                            Duration:
                             <span class="trip-planner-itinerary-duration">
-                                ({{ itinerary.durationField }})
+                                {{ itinerary.durationFieldFormatted }}
                             </span>
                         </div>
 
