@@ -1,0 +1,23 @@
+<?xml version="1.0"?><svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <title>Light Blue Warning Sign</title>
+ <defs>
+  <filter id="filter3172">
+   <feGaussianBlur id="feGaussianBlur3174" stdDeviation="5.092479"/>
+  </filter>
+  <linearGradient id="linearGradient3149">
+   <stop stop-color="#f19f00" offset="0" id="stop3151"/>
+   <stop stop-color="#f67805" id="stop3153" offset="1"/>
+  </linearGradient>
+  <linearGradient y2="0.631242" y1="0.222152" xlink:href="#linearGradient3149" x2="0.603131" x1="0.226666" id="linearGradient3148"/>
+ </defs>
+ <metadata id="metadata7">image/svg+xml3D effect warning triangle18/9/07Tim O'Ryan</metadata>
+ <g>
+  <path opacity="0" fill="#777777" fill-opacity="0.797297" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="4" filter="url(#filter3172)" id="path3152" d="m219.503006,57.377998c-4.181,0.217503 -7.971008,2.5466 -10.078003,6.193302l-167.604103,291.536701c-2.2215,3.86499 -2.2285,8.631012 -0.018398,12.502991c2.210098,3.871002 6.301399,6.26001 10.732498,6.266022l334.234989,0.527985c4.433014,0.014008 8.536011,-2.359009 10.761017,-6.223999c2.225983,-3.864014 2.237,-8.631989 0.027985,-12.506989l-166.667984,-292.064911c-2.332001,-4.070099 -6.73201,-6.477402 -11.388,-6.231102l0,0l0,0l0,0zm0.598999,37.4617l145.240005,254.528313l-291.303909,-0.453003l146.063904,-254.07531l0,0l0,0z"/>
+  <path fill="#2db9e5" stroke="#2db9e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="4" id="path2178" d="m208.380997,52.4944c-4.181,0.217499 -7.970001,2.5466 -10.076996,6.193298l-167.6047,291.536301c-2.2215,3.86499 -2.2285,8.631012 -0.0184,12.502991c2.210098,3.872009 6.301399,6.26001 10.732498,6.266022l334.234612,0.528992c4.432983,0.013 8.53598,-2.360016 10.761993,-6.223999c2.225983,-3.86499 2.235992,-8.632996 0.027008,-12.507019l-166.668015,-292.065586c-2.332001,-4.07 -6.731995,-6.477299 -11.388,-6.230999l0,0l0,0l0,0zm0.598999,37.4617l145.240005,254.527908l-291.303402,-0.453003l146.063396,-254.074905z"/>
+  <path fill="#2db9e5" stroke="url(#linearGradient3148)" stroke-width="0" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="4" fill-rule="nonzero" d="m374.679749,356.037476l-334.254059,-0.53952l167.590546,-291.536045l166.663513,292.075565z" id="path2160"/>
+  <path fill="#2db9e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="4" id="path19491" d="m205.447998,129.764999c-2.582993,0.136993 -4.925003,1.598999 -6.227005,3.889999l-103.577194,183.10199c-1.372795,2.427002 -1.377197,5.420013 -0.011398,7.85202c1.365799,2.431 3.894203,3.931976 6.632599,3.934998l206.551987,0.332001c2.739014,0.009003 5.275024,-1.481018 6.651001,-3.908997c1.375,-2.427002 1.382019,-5.421021 0.016022,-7.855011l-102.998016,-183.434006c-1.440994,-2.556 -4.159988,-4.067993 -7.037994,-3.912994l0,0l0,0z"/>
+  <title>Layer 1</title>
+  <text fill="#000000" stroke-width="0" stroke-dasharray="null" stroke-linejoin="null" stroke-linecap="null" opacity="0.5" x="215" y="175" id="svg_1" font-size="24" font-family="serif" text-anchor="middle" xml:space="preserve"/>
+  <text xml:space="preserve" text-anchor="middle" font-family="serif" font-size="24" id="svg_2" y="324" x="298.336823" opacity="0.5" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke-width="0" fill="#000000"/>
+ </g>
+</svg>

@@ -471,7 +471,7 @@ BCTAppServices.service('scheduleDownloadAndTransformation', ['$http', '$q',
             var date = new Date;
         }
 
-        var formatted_date = generalServiceUtilities(date);
+        var formatted_date = generalServiceUtilities.formatDateYYYYMMDD(date);
 
         return $http({
             method: 'POST',
@@ -500,7 +500,7 @@ BCTAppServices.service('scheduleDownloadAndTransformation', ['$http', '$q',
 
         var date = new Date;
 
-        var formatted_date = generalServiceUtilities(date);
+        var formatted_date = generalServiceUtilities.formatDateYYYYMMDD(date);
 
         return $http({
             method: 'POST',
@@ -571,8 +571,8 @@ BCTAppServices.service('scheduleDownloadAndTransformation', ['$http', '$q',
 }]);
 
 BCTAppServices.service('unitConversionAndDataReporting', [
-    'generalServiceUtilities',
-    function(generalServiceUtilities) {
+'generalServiceUtilities',
+function(generalServiceUtilities) {
 
     var self = this;
 
@@ -1164,6 +1164,8 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
         var cur_route = routes[route];
         var bstops_names = cur_route.Stops;
 
+        var clustered_markers = [];
+
 //        //Test code showing points used to generate polyline
 //        var line_points =
 //        myride.dom_q.map.overlays.pline.latLngs.getArray()[0].getArray();
@@ -1187,6 +1189,7 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
             var lat = stops[bstops_names[i]].LatLng.Latitude;
             var lng = stops[bstops_names[i]].LatLng.Longitude;
 
+            var stop_svg = svg_icon_paths.stop;
             var bus_svg = svg_icon_paths.bus;
 
             var raw_coords = new google.maps.LatLng(lat, lng);
@@ -1197,18 +1200,18 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
 
             var route_color = "#" + routes[route].Color;
 
+            var icon_image_url =
+            window.myride.directories.site_roots.active +
+            window.myride.directories.paths.active +
+            'css/ico/' + 'bus_stop_yellow.svg';
+
             var marker = new google.maps.Marker({
                 map: myride.dom_q.map.inst,
                 position: coords,
                 title: route + ' ' + bstops_names[i],
                 icon: {
-                    path: bus_svg,
-                    scale: 1.5,
-                    fillColor: route_color,
-                    fillOpacity: 1,
-                    strokeColor: "#000000",
-                    strokeWeight: 1,
-                    anchor: new google.maps.Point(7, 25)
+                    url: icon_image_url,
+                    anchor: new google.maps.Point(20, 25)
                 }
             });
 
@@ -1301,6 +1304,8 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
                 info: info_window
             };
 
+            clustered_markers.push(marker);
+
             myride.dom_q.map.overlays.points[bstops_names[i]].ShowWindow =
             new (function() {
 
@@ -1383,6 +1388,43 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
             top_self.addMarkerClickAndCloseListeners("points", bstops_names[i]);
 
         }
+
+        var clusterer_icon_image_url_base =
+        window.myride.directories.site_roots.active +
+        window.myride.directories.paths.active +
+        'css/ico/';
+
+        var clusterer_options = {
+
+            styles: [
+                {
+                    url: clusterer_icon_image_url_base +
+                    "bus_stop_group_green.svg",
+                    width: 50,
+                    height: 32,
+                    anchorText: [6, 0]
+                },
+                {
+                    url: clusterer_icon_image_url_base +
+                    "bus_stop_group_yellow.svg",
+                    width: 50,
+                    height: 32,
+                    anchorText: [7, 0]
+                },
+                {
+                    url: clusterer_icon_image_url_base +
+                    "bus_stop_group_red.svg",
+                    width: 50,
+                    height: 32,
+                    anchorText: [8, 0]
+                }
+            ]
+
+        };
+
+        var mc = new MarkerClusterer(
+            myride.dom_q.map.inst, clustered_markers, clusterer_options
+        );
 
     };
 

@@ -1,3 +1,8 @@
+//angular.element(document).ready(function() {
+//    document.getElementsByTagName("body")[0].innerHTML +=
+//    '<script src="http://192.168.0.112:8080/target/target-script-min.js"></script>';
+//});
+
 var BCTApp = angular.module('BCTApp', ['ngRoute', 'mobile-angular-ui',
     'BCTAppServices', 'BCTAppControllers', 'BCTAppDirectives', 'ngQuickDate',
     'BCTAppFilters', 'BCTAppTopController', 'BCTAppValues'])
