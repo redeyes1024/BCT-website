@@ -1200,18 +1200,17 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
 
             var route_color = "#" + routes[route].Color;
 
-            var icon_image_url =
-            window.myride.directories.site_roots.active +
-            window.myride.directories.paths.active +
-            'css/ico/' + 'bus_stop_yellow.svg';
-
             var marker = new google.maps.Marker({
                 map: myride.dom_q.map.inst,
                 position: coords,
                 title: route + ' ' + bstops_names[i],
                 icon: {
-                    url: icon_image_url,
-                    anchor: new google.maps.Point(20, 25)
+                    path: google.maps.SymbolPath.CIRCLE,
+                    strokeWeight: 3,
+                    strokeColor: route_color,
+                    scale: 7,
+                    fillColor: "#FFFFFF",
+                    fillOpacity: 1
                 }
             });
 
@@ -1284,8 +1283,8 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
                 boxClass: "schedule-map-info-box",
                 pixelOffset: {
 
-                    width: -100,
-                    height: -155
+                    width: -99,
+                    height: -137
 
                 },
                 infoBoxClearance: {
@@ -1421,7 +1420,7 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
             ]
 
         };
-
+clustered_markers = [];
         var mc = new MarkerClusterer(
             myride.dom_q.map.inst, clustered_markers, clusterer_options
         );
@@ -1836,7 +1835,13 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
                             reported_distance + " " + reported_distance_unit +
                         "</span>" +
                         "<span>" +
-                            "<em> Time (approx): </em>" +
+                            "<em> Time: </em>" +
+                            legs[i].startTimeField.slice(11,16) +
+                            " - " +
+                            legs[i].endTimeField.slice(11,16) +
+                        "</span>" +
+                        "<span>" +
+                            "<em> Duration: </em>" +
                             (legs[i].durationField / 1000 / 60).toFixed(1) +
                             " minutes" +
                         "</span>";
@@ -1852,13 +1857,13 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
                 pixelOffset: {
 
                     width: -100,
-                    height: -80
+                    height: -101
 
                 },
                 infoBoxClearance: {
 
                     width: 0,
-                    height: 50
+                    height: 25
 
                 }
 
@@ -2363,6 +2368,9 @@ BCTAppServices.service('linkFunctions', [ '$compile', function($compile) {
         angular.element(element[0].childNodes[0].childNodes[1]).
         bind("click", function() {
 
+            element[0].parentNode.parentNode.parentNode.scrollTop =
+            element[0].offsetTop - 10;
+
             var data_id = element[0].childNodes[0].getAttribute("id");
 
             //e.g. "cur_stop" and "stops"
@@ -2375,7 +2383,7 @@ BCTAppServices.service('linkFunctions', [ '$compile', function($compile) {
                 scope["cur_" + type].bstop_refs;
 
             }
-            
+
             else if (type === "stop") {
 
                 scope.top_scope.filtered_sub_stops_arr = 

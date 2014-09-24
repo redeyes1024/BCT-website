@@ -529,6 +529,7 @@ em.maker-info-window-title {
     font-size: 12px;
     line-height: 1.5em;
     background-color: #017AC2;
+    background: linear-gradient(to bottom, #4a94bf 1%,#017ac2 6%,#017ac2 96%,#4a94bf 100%);
     color: #FFF;
     text-align: left;
     padding: 0.5em;
@@ -536,11 +537,11 @@ em.maker-info-window-title {
 }
 .schedule-map-info-box {
     width: 200px !important;
-    height: 135px !important;
+    height: 120px !important;
 }
 .trip-planner-info-box {
     width: 200px !important;
-    height: 65px !important;
+    height: 85px !important;
 }
 .schedule-map-info-box:after,
 .trip-planner-info-box:after {
@@ -1363,6 +1364,9 @@ iframe .trip-planner-dialog-finish {
     #planner-option-date .quickdate-popup {
         margin: 6em 0em 0em -9em;
         top: -17em;
+    }
+    .stops-list {
+        height: calc(9em + 1px);
     }
     .schedule-full-result-row {
         font-size: 1em;
