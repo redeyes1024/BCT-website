@@ -20,16 +20,24 @@ BCTApp.directive('bctMyRideTopLevelOverlays', [ function() {
 
 BCTApp.directive('scheduleMap', [ 'googleMapUtilities',
 function(googleMapUtilities) {
+
+    function link() {
+
+        myride.dom_q.map.cont = document.getElementById("map-canvas");
+        googleMapUtilities.mapMaker(myride.dom_q.map.cont);
+
+    }
+
     return {
-        link: function() {
-            myride.dom_q.map.cont = document.getElementById("map-canvas");
-            googleMapUtilities.mapMaker(myride.dom_q.map.cont);
-        },
+
+        link: link,
         restrict: 'E',
         templateUrl: window.myride.directories.site_roots.active +
         window.myride.directories.paths.active +
         'partials/schedule_map.html'
+
     };
+
 }]);
 
 BCTApp.directive('scheduleMapOverlay', [ function() {

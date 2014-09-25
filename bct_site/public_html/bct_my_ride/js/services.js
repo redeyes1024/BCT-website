@@ -756,13 +756,15 @@ BCTAppServices.service('generalServiceUtilities', [ function() {
 }]);
 
 BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
-    'scheduleDownloadAndTransformation', 'unitConversionAndDataReporting',
-    'locationService', 'map_navigation_marker_indices',
-    'generalServiceUtilities', 'default_demo_coords', 'svg_icon_paths',
-    function($compile, $q, scheduleDownloadAndTransformation,
-    unitConversionAndDataReporting, locationService,
-    map_navigation_marker_indices, generalServiceUtilities,
-    default_demo_coords, svg_icon_paths) {
+'scheduleDownloadAndTransformation', 'unitConversionAndDataReporting',
+'locationService', 'map_navigation_marker_indices',
+'generalServiceUtilities', 'default_demo_coords', 'svg_icon_paths',
+'map_clusterer',
+
+function($compile, $q, scheduleDownloadAndTransformation,
+unitConversionAndDataReporting, locationService,
+map_navigation_marker_indices, generalServiceUtilities,
+default_demo_coords, svg_icon_paths, map_clusterer) {
 
     var self = this;
 
@@ -795,15 +797,80 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
         }
     };
 
-    this.mapMaker = function(container, lat, lng) {
-        //Default location is near Broward County
-        if (!lat) { lat =  26.103277; lng = -80.399114; }
-        var map_options = {
-            center: new google.maps.LatLng(lat, lng),
-            zoom: 10
+    this.initializeMarkerClusterer = function() {
+
+        var clusterer_icon_image_url_base =
+        window.myride.directories.site_roots.active +
+        window.myride.directories.paths.active +
+        'css/ico/';
+
+        var clusterer_options = {
+
+            styles: [
+                {
+                    url: clusterer_icon_image_url_base +
+                    "button_green.svg",
+                    width: 50,
+                    height: 50,
+                    textColor: "#FFFFFF",
+                    textSize: 18
+                },
+                {
+                    url: clusterer_icon_image_url_base +
+                    "button_yellow.svg",
+                    width: 50,
+                    height: 50,
+                    textColor: "#FFFFFF",
+                    textSize: 16
+                },
+                {
+                    url: clusterer_icon_image_url_base +
+                    "button_red.svg",
+                    width: 50,
+                    height: 50,
+                    textColor: "#FFFFFF",
+                    textSize: 14
+                }
+            ]
+
         };
+
+        map_clusterer.clusterer = new MarkerClusterer(
+            myride.dom_q.map.inst, [], clusterer_options
+        );
+
+    };
+
+    this.mapMaker = function(container, lat, lng) {
+
+        var center;
+
+        if (lat && lng) {
+
+            center = { 
+                lat: lat,
+                lng: lng 
+            };
+
+        }
+        
+        else {
+
+            center = locationService.getDefaultDemoCoords(["lat", "lng"]);
+
+        }
+
+        var map_options = {
+            center: center,
+            zoom: 10,
+            minZoom: 8
+        };
+
         myride.dom_q.map.inst = new google.maps.Map(container,
             map_options);
+
+        self.initializeMarkerClusterer();
+
     };
 
     //Forces embedded Google Maps map to redraw
@@ -923,6 +990,14 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
         }
 
         myride.dom_q.map.overlays.points = {};
+
+        map_clusterer.clusterer.markers_ = [];
+
+        for (var cl=0;cl<map_clusterer.clusterer.clusters_.length;cl++) {
+
+            map_clusterer.clusterer.clusters_[cl].remove();
+
+        }
 
     };
 
@@ -1391,45 +1466,7 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
 
         }
 
-        var clusterer_icon_image_url_base =
-        window.myride.directories.site_roots.active +
-        window.myride.directories.paths.active +
-        'css/ico/';
-
-        var clusterer_options = {
-
-            styles: [
-                {
-                    url: clusterer_icon_image_url_base +
-                    "button_green.svg",
-                    width: 50,
-                    height: 50,
-                    textColor: "#FFFFFF",
-                    textSize: 18
-                },
-                {
-                    url: clusterer_icon_image_url_base +
-                    "button_yellow.svg",
-                    width: 50,
-                    height: 50,
-                    textColor: "#FFFFFF",
-                    textSize: 16
-                },
-                {
-                    url: clusterer_icon_image_url_base +
-                    "button_red.svg",
-                    width: 50,
-                    height: 50,
-                    textColor: "#FFFFFF",
-                    textSize: 14
-                }
-            ]
-
-        };
-
-        var mc = new MarkerClusterer(
-            myride.dom_q.map.inst, clustered_markers, clusterer_options
-        );
+        map_clusterer.clusterer.markers_ = clustered_markers;
 
     };
 

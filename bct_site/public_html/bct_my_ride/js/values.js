@@ -4,6 +4,12 @@ var BCTAppValues = angular.module('BCTAppValues', []);
 //BCTAppValues.value('scheduleWebSocket',
 //new WebSocket("ws://echo.websocket.org"));
 
+BCTAppValues.value('map_clusterer', {
+
+    clusterer: {}
+
+});
+
 BCTAppValues.value('module_error_messages', {
 
     schedule_map: {
