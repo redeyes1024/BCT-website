@@ -4,6 +4,13 @@ var BCTAppValues = angular.module('BCTAppValues', []);
 //BCTAppValues.value('scheduleWebSocket',
 //new WebSocket("ws://echo.websocket.org"));
 
+BCTAppValues.value('trip_planner_constants', {
+
+    trip_duration_cutoff_hours: 4,
+    trip_walking_cutoff_meters: 2000
+
+});
+
 BCTAppValues.value('map_clusterer', {
 
     clusterer: {}
@@ -43,7 +50,11 @@ BCTAppValues.value('module_error_messages', {
 
         TRIP_PLANNER_ERROR_NO_DATA_ERROR_MESSAGE: "" +
         "There was a problem retrieving your trip plan. " +
-        "Please try again later."   
+        "Please try again later.",
+
+        TRIP_PLANNER_ERROR_ALL_TRIPS_FILTERED_OUT: "" +
+        "No suitable trip plans found. " +
+        "Please try different trip planner settings."
 
     },
 

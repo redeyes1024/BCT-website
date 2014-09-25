@@ -2009,8 +2009,10 @@ default_demo_coords, svg_icon_paths, map_clusterer) {
 }]);
 
 BCTAppServices.service('tripPlannerService', [ '$http', '$q',
-'generalServiceUtilities',
-function($http, $q, generalServiceUtilities) {
+'generalServiceUtilities', 'unitConversionAndDataReporting',
+'trip_planner_constants',
+function($http, $q, generalServiceUtilities, unitConversionAndDataReporting,
+trip_planner_constants) {
 
     var self = this;
     var geocoder = new google.maps.Geocoder;
@@ -2048,10 +2050,12 @@ function($http, $q, generalServiceUtilities) {
     };
 
     this.getLatLon = function(start_input_string, finish_input_string) {
+
         return $q.all([
             self.geocodeAddress(start_input_string),
             self.geocodeAddress(finish_input_string)
         ]);
+
     };
 
     this.transformGeocodeCoords = function(coords_object) {
@@ -2099,6 +2103,70 @@ function($http, $q, generalServiceUtilities) {
              }
          });
     };
+
+    this.formatRawTripStats = function(all_itineraries) {
+
+        for (var i=0;i<all_itineraries.length;i++) {
+
+            all_itineraries[i].durationFieldFormatted =
+            unitConversionAndDataReporting.formatReportedDuration(
+                all_itineraries[i].durationField
+            );
+
+            all_itineraries[i].startTimeFieldFormatted =
+            unitConversionAndDataReporting.formatReportedDate(
+                all_itineraries[i].startTimeField
+            );
+
+            all_itineraries[i].endTimeFieldFormatted =
+            unitConversionAndDataReporting.formatReportedDate(
+                all_itineraries[i].endTimeField
+            );
+
+            all_itineraries[i].legsField[0].styles =
+            "trip-planner-itinerary-step-highlighted";
+
+            for (var j=1;j<all_itineraries[i].legsField.length;j++) {
+                all_itineraries[i].legsField[j].styles = "";
+            }
+
+        }
+
+        return all_itineraries;
+
+    };
+
+    this.filterTripItineraries = function(all_itineraries) {
+
+        var filtered_trip_itineraries = [];
+
+        var trip_duration_cutoff =
+        trip_planner_constants.trip_duration_cutoff_hours;
+
+        var trip_walking_cutoff =
+        trip_planner_constants.trip_walking_cutoff_meters;
+
+        for (var i=0;i<all_itineraries.length;i++) {
+            
+            var trip_duration_in_hours =
+            all_itineraries[i].durationField / 1000 / 60 / 60;
+
+            var trip_walking_distance =
+            all_itineraries[i].walkDistanceField;
+
+            if (trip_duration_in_hours < trip_duration_cutoff &&
+                trip_walking_distance < trip_walking_cutoff) {
+
+                filtered_trip_itineraries.push(all_itineraries[i]);
+
+            }
+
+        }
+
+        return filtered_trip_itineraries;
+
+    };
+
 }]);
 
 BCTAppServices.service('profilePageService', [

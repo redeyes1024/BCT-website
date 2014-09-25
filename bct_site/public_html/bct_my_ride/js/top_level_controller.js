@@ -127,6 +127,10 @@ function (
         "myride-title-shadow": true
     };
 
+    $scope.trip_planner_module_map_title_styles = {
+        "trip-planner-module-map-title-extra-padding": false
+    };
+
     /* END CSS class expressions to be used to ng-class, with defaults */
 
     /* START Overlay Display Controls */
@@ -521,6 +525,25 @@ function (
                 $scope.trip_date_changed,
                 $scope.removeTripOptsDateWatch
             );
+
+        }
+
+    });
+
+    $scope.$watch("show_trip_planner_step_navigation_bar",
+    function(new_val, old_val) {
+
+        if (new_val > old_val) {
+
+            $scope.trip_planner_module_map_title_styles
+            ["trip-planner-module-map-title-extra-padding"] = true;
+
+        }
+
+        if (new_val < old_val) {
+
+            $scope.trip_planner_module_map_title_styles
+            ["trip-planner-module-map-title-extra-padding"] = false;
 
         }
 

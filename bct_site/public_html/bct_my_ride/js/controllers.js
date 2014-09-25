@@ -238,11 +238,11 @@ unitConversionAndDataReporting, module_error_messages) {
 
     $scope.selectTripPlannerErrorMessage = function (error_field) {
 
-        var geocoder_error_dialog_text = "";
+        var trip_planner_error_dialog_text = "";
 
         if (!error_field) {
 
-            geocoder_error_dialog_text =
+            trip_planner_error_dialog_text =
             module_error_messages.trip_planner.
             TRIP_PLANNER_ERROR_NO_DATA_ERROR_MESSAGE;
 
@@ -254,7 +254,7 @@ unitConversionAndDataReporting, module_error_messages) {
 
         else if (error_field === "plan_start_late") {
 
-            geocoder_error_dialog_text =
+            trip_planner_error_dialog_text =
             module_error_messages.trip_planner.
             TRIP_PLANNER_ERROR_DEPART_TIME_PASSED;
 
@@ -264,9 +264,21 @@ unitConversionAndDataReporting, module_error_messages) {
 
         }
 
+        else if (error_field === "all_trips_filtered_out") {
+
+            trip_planner_error_dialog_text =
+            module_error_messages.trip_planner.
+            TRIP_PLANNER_ERROR_ALL_TRIPS_FILTERED_OUT;
+
+            console.log(
+                "Trip planner error: no practical trips found."
+            );
+
+        }
+
         else if (error_field.idField) {
 
-            geocoder_error_dialog_text =
+            trip_planner_error_dialog_text =
             module_error_messages.trip_planner.
             TRIP_PLANNER_ERROR_NO_DATA_ERROR_MESSAGE;
 
@@ -276,7 +288,7 @@ unitConversionAndDataReporting, module_error_messages) {
 
         }
 
-        return geocoder_error_dialog_text;
+        return trip_planner_error_dialog_text;
 
     };
 
@@ -404,45 +416,25 @@ unitConversionAndDataReporting, module_error_messages) {
     };
 
     $scope.checkForGeocoderErrors = function(coords) {
+
         if (typeof(coords[0]) === "string") {
+
             $scope.alertUserToGeocoderErrors("start", coords[0]);
+
             return false;
-        } else if (typeof(coords[1]) === "string") {
+
+        }
+
+        else if (typeof(coords[1]) === "string") {
+
             $scope.alertUserToGeocoderErrors("finish", coords[1]);
+
             return false;
+
         }
+
         return true;
-    };
 
-    $scope.formatRawTripStats = function(all_itineraries) {
-
-        for (var i=0;i<all_itineraries.length;i++) {
-
-            all_itineraries[i].durationFieldFormatted =
-            unitConversionAndDataReporting.formatReportedDuration(
-                all_itineraries[i].durationField
-            );
-
-            all_itineraries[i].startTimeFieldFormatted =
-            unitConversionAndDataReporting.formatReportedDate(
-                all_itineraries[i].startTimeField
-            );
-
-            all_itineraries[i].endTimeFieldFormatted =
-            unitConversionAndDataReporting.formatReportedDate(
-                all_itineraries[i].endTimeField
-            );
-
-            all_itineraries[i].legsField[0].styles =
-            "trip-planner-itinerary-step-highlighted";
-
-            for (var j=1;j<all_itineraries[i].legsField.length;j++) {
-                all_itineraries[i].legsField[j].styles = "";
-            }
-
-        }
-
-        return all_itineraries;
     };
 
     window.myride.dom_q.inputs.trip =
@@ -670,9 +662,24 @@ unitConversionAndDataReporting, module_error_messages) {
                 }
 
                 $scope.top_scope.current_trip_plan_data =
-                $scope.formatRawTripStats(
+                tripPlannerService.formatRawTripStats(
                     res.data.planField.itinerariesField
                 );
+
+                $scope.top_scope.current_trip_plan_data =
+                tripPlannerService.filterTripItineraries(
+                    $scope.top_scope.current_trip_plan_data
+                );
+
+                if ($scope.top_scope.current_trip_plan_data.length === 0) {
+
+                    $scope.alertUserToTripPlannerErrors(
+                        "all_trips_filtered_out"
+                    );
+
+                    return true;
+
+                }
 
                 $scope.top_scope.show_trip_planner_itinerary_labels = true;
 
