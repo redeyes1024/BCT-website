@@ -529,8 +529,7 @@ em.maker-info-window-title {
     font-size: 12px;
     line-height: 1.5em;
     background-color: #017AC2;
-    background: linear-gradient(to bottom, #4a94bf 1%,#017ac2 6%,#017ac2 96%,#4a94bf 100%);
-    color: #FFF;
+    color: #FFFFFF;
     text-align: left;
     padding: 0.5em;
     border-radius: 1em;

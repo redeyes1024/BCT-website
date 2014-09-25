@@ -41,10 +41,13 @@ BCTAppServices.service('miniScheduleService', [ function() {
     var self = this;
 
     this.convertToTime = function(time_int) {
-        var int_arr = String(time_int).split("")
+
+        var int_arr = String(time_int).split("");
+
         int_arr.splice(-2,0,":");
 
         return int_arr.join("");
+
     };
 
     this.mini_schedule_quantity_defaults = {
@@ -1398,29 +1401,32 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
             styles: [
                 {
                     url: clusterer_icon_image_url_base +
-                    "bus_stop_group_green.svg",
+                    "button_green.svg",
                     width: 50,
-                    height: 32,
-                    anchorText: [6, 0]
+                    height: 50,
+                    textColor: "#FFFFFF",
+                    textSize: 18
                 },
                 {
                     url: clusterer_icon_image_url_base +
-                    "bus_stop_group_yellow.svg",
+                    "button_yellow.svg",
                     width: 50,
-                    height: 32,
-                    anchorText: [7, 0]
+                    height: 50,
+                    textColor: "#FFFFFF",
+                    textSize: 16
                 },
                 {
                     url: clusterer_icon_image_url_base +
-                    "bus_stop_group_red.svg",
+                    "button_red.svg",
                     width: 50,
-                    height: 32,
-                    anchorText: [8, 0]
+                    height: 50,
+                    textColor: "#FFFFFF",
+                    textSize: 14
                 }
             ]
 
         };
-clustered_markers = [];
+
         var mc = new MarkerClusterer(
             myride.dom_q.map.inst, clustered_markers, clusterer_options
         );

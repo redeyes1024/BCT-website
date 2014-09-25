@@ -376,7 +376,8 @@ function (
             $scope.itinerary_selector_modal_styles
             ["trip-planner-itinerary-selector-modal-smaller"] = true;
 
-            if ($scope.current_trip_plan_data.length > 2) {
+            if ($scope.current_trip_plan_data &&
+                $scope.current_trip_plan_data.length > 2) {
 
                 $scope.itinerary_selector_styles
                 ["trip-planner-itinerary-selector-pushed"] = true;
