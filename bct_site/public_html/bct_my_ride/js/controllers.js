@@ -30,7 +30,7 @@ function ($scope, $timeout, profilePageService) {
 
         $scope.top_scope.sort_bstops_by_distance = true;
 
-        $scope.filtered_stops_arr = $scope.stopFilterFunc(
+        $scope.top_scope.filtered_stops_arr = $scope.stopFilterFunc(
             $scope.stops_arr,
             $scope.query_data.schedule_search,
             $scope.top_scope.sort_bstops_by_distance
@@ -54,11 +54,13 @@ function ($scope, $timeout, profilePageService) {
     });
 
     $scope.getLocationAndDisplayForResultsPage = function() {
+
         $scope.results_page_location_spinner_timeout =
         $scope.getCurrentLocationAndDisplayData(
             $scope.setNearestResultStopsLocationSpinner,
             $scope.sortResultStopsByDistance
         );
+
     };
 
 }]);
