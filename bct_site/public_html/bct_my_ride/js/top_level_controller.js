@@ -131,6 +131,10 @@ function (
         "trip-planner-module-map-title-extra-padding": false
     };
 
+    $scope.map_full_screen_activate_button_styles = {
+        "map-full-screen-activate-button-schedule-map": true
+    };
+
     /* END CSS class expressions to be used to ng-class, with defaults */
 
     /* START Overlay Display Controls */
@@ -336,7 +340,7 @@ function (
 
                     }
 
-                }).catch(function() {
+                })["catch"](function() {
 
                     console.log("Server communication error: full schedule.");
 
@@ -359,6 +363,9 @@ function (
 
             $scope.show_full_schedule_module = false;
 
+            $scope.map_full_screen_activate_button_styles
+            ["map-full-screen-activate-button-schedule-map"] = false;
+
         }
 
         //If trip planner is deactivating
@@ -367,6 +374,9 @@ function (
             $scope.show_trip_planner_step_navigation_bar = false;
 
             $scope.show_trip_planner_itinerary_selector = false;
+
+            $scope.map_full_screen_activate_button_styles
+            ["map-full-screen-activate-button-schedule-map"] = true;
 
         }
 
@@ -602,8 +612,8 @@ function (
     };
 
     $scope.schedule_map_navigation_bar_activation_messages = {
-        inactive: "Activate Stop Seeker",
-        activating: "Activating Stop Seeker..."
+        inactive: "Show more stops",
+        activating: "Showing more stops..."
     };
 
     $scope.map_full_screen_return_button_messages = {
@@ -834,19 +844,19 @@ function (
     };
 
     $scope.routeFilterFunc =
-    (new routeAndStopFilters.RouteAndStopFilterMaker("LName", true)).
+    (new routeAndStopFilters.RouteAndStopFilterMaker("route", true)).
     filter;
 
     $scope.stopFilterFunc =
-    (new routeAndStopFilters.RouteAndStopFilterMaker("Name", true)).
+    (new routeAndStopFilters.RouteAndStopFilterMaker("stop", true)).
     filter;
 
     $scope.routeSubFilterFunc =
-    (new routeAndStopFilters.RouteAndStopFilterMaker("LName", false)).
+    (new routeAndStopFilters.RouteAndStopFilterMaker("route", false)).
     filter;
 
     $scope.stopSubFilterFunc =
-    (new routeAndStopFilters.RouteAndStopFilterMaker("Name", false)).
+    (new routeAndStopFilters.RouteAndStopFilterMaker("stop", false)).
     filter;
 
     $scope.global_alerts = all_alerts.global;
@@ -1674,7 +1684,7 @@ function (
             $scope.show_schedule_map_navigation_bar_loading = false;
             $scope.show_schedule_map_stop_navigation_bar_contents = true;
 
-        }).catch(function() {
+        })["catch"](function() {
 
             $scope.alertUserToScheduleMapErrors("stop_seeker");
 
@@ -2285,7 +2295,7 @@ function (
     ]);
 
     var route_props = ["Id", "LName"];
-    var bstop_props = ["Id", "Name"];
+    var bstop_props = ["Id", "Name", "Code"];
 
     $scope.goToScheduleFromProfilePage = function() {
 
@@ -2358,9 +2368,6 @@ function (
         }
 
         for (var bstop in all_stops) {
-
-            //Temporary placeholder bus stop-specific alert messages
-            all_stops[bstop].alert = ["Sample alert for stop " + bstop + "."];
 
             all_stops[bstop].route_refs = [];
 

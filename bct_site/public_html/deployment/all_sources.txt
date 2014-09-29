@@ -8,7 +8,7 @@ media="screen" />
 
 <!-- END Sources for forms -->
 
-<!-- START Sources for BCT MyRide -->
+<!-- START Sources for MyRide -->
 
 <!-- Third-party Stylesheets -->
 <link rel="stylesheet" type="text/css" href="bct_my_ride/css/mobile-angular-ui-desktop.css" media="screen" />

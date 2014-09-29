@@ -144,6 +144,9 @@ em.hint-text {
 .map-full-screen-activate-button {
     
 }
+.map-full-screen-activate-button-schedule-map {
+    border-width: 1px 0px 0px !important
+}
 .map-full-screen-return-button {
     position: fixed;
     width: calc(100% - 4.6em);

@@ -410,6 +410,7 @@ BCTAppServices.service('scheduleDownloadAndTransformation', ['$http', '$q',
     var self = this;
 
     this.downloadRouteInfo = function() {
+
         if (localStorage.route_data) {
             var deferred = $q.defer();
             var promise = deferred.promise;
@@ -429,12 +430,17 @@ BCTAppServices.service('scheduleDownloadAndTransformation', ['$http', '$q',
                 "AgencyId":"BCT"
             },
             transformResponse: function(res) {
+
                 if (localStorage) {
                     localStorage.setItem('route_data', res);
                 }
-                return JSON.parse(res);
+
+                return generalServiceUtilities.
+                tryParsingResponse(res, "downloadRouteInfo");
+
             }
         });
+
     };
 
     this.downloadStopInfo = function() {
@@ -462,7 +468,8 @@ BCTAppServices.service('scheduleDownloadAndTransformation', ['$http', '$q',
                     localStorage.setItem('stop_data', res);
                 }
 
-                return JSON.parse(res);
+                return generalServiceUtilities.
+                tryParsingResponse(res, "downloadStopInfo");
 
             }
         });
@@ -492,7 +499,8 @@ BCTAppServices.service('scheduleDownloadAndTransformation', ['$http', '$q',
 //                    localStorage.setItem('route_data', res);
 //                }
 
-                return JSON.parse(res);
+                return generalServiceUtilities.
+                tryParsingResponse(res, "downloadSchedule");
 
             }
         });
@@ -516,7 +524,10 @@ BCTAppServices.service('scheduleDownloadAndTransformation', ['$http', '$q',
 
             },
             transformResponse: function(res) {
-                return JSON.parse(res);
+
+                return generalServiceUtilities.
+                tryParsingResponse(res, "downloadStopsForRoute");
+
             }
         });
 
@@ -599,6 +610,7 @@ function(generalServiceUtilities) {
             reported_distance: reported_distance,
             reported_distance_unit: reported_distance_unit
         };
+
     };
 
     this.splitHoursMinutes = function(minutes_count) {
@@ -709,6 +721,12 @@ function(generalServiceUtilities) {
 
     };
 
+    this.convertToTwelveHourTime = function(twenty_four_hour_time) {
+
+        
+
+    };
+
 }]);
 
 BCTAppServices.service('generalServiceUtilities', [ function() {
@@ -750,6 +768,28 @@ BCTAppServices.service('generalServiceUtilities', [ function() {
         var full_date = full_year + month_two_digits + date_two_digits;
 
         return full_date;
+
+    };
+
+    this.tryParsingResponse = function(res, function_name) {
+
+        var error_message = "" +
+        "There was a problem parsing the data into JSON: " +
+        function_name;
+
+        try {
+
+            return JSON.parse(res);
+
+        }
+
+        catch(e) {
+
+            console.log(error_message);
+
+            return false;
+
+        }
 
     };
 
@@ -831,7 +871,9 @@ default_demo_coords, svg_icon_paths, map_clusterer) {
                     textColor: "#FFFFFF",
                     textSize: 14
                 }
-            ]
+            ],
+
+            maxZoom: 14
 
         };
 
@@ -863,11 +905,21 @@ default_demo_coords, svg_icon_paths, map_clusterer) {
         var map_options = {
             center: center,
             zoom: 10,
-            minZoom: 8
+            minZoom: 8,
+            styles: [
+                {
+                    featureType: "transit.station.bus",
+                    stylers: [
+                        { visibility: "off" }
+                    ]
+                }
+            ]
         };
 
-        myride.dom_q.map.inst = new google.maps.Map(container,
-            map_options);
+        myride.dom_q.map.inst = new google.maps.Map(
+            container,
+            map_options
+        );
 
         self.initializeMarkerClusterer();
 
@@ -1203,6 +1255,9 @@ default_demo_coords, svg_icon_paths, map_clusterer) {
 
     this.mapStopsToRoutePath = function(coords, route_path) {
 
+        //Disabling stop coordinate projection; verify before function deleted
+        return coords;
+
         var linear_dist_arr = [];
 
         for (var i=0;i<route_path.length;i++) {
@@ -1284,10 +1339,10 @@ default_demo_coords, svg_icon_paths, map_clusterer) {
                 title: route + ' ' + bstops_names[i],
                 icon: {
                     path: google.maps.SymbolPath.CIRCLE,
-                    strokeWeight: 3,
-                    strokeColor: route_color,
-                    scale: 7,
-                    fillColor: "#FFFFFF",
+                    strokeWeight: 2,
+                    strokeColor: "#FFFFFF",
+                    scale: 5,
+                    fillColor: route_color,
                     fillOpacity: 1
                 }
             });
@@ -1325,12 +1380,13 @@ default_demo_coords, svg_icon_paths, map_clusterer) {
             var schedule_map_info_box_contents = '' +
                 '<div class="myride-info-box-contents">' +
                     '<span>' + 
-                        '<em class="maker-info-window-title">Route: </em>' +
+//                        '<em class="maker-info-window-title">Route: </em>' +
                         route +
                     '</span>' +
                     '<span>' +
-                        '<em class="maker-info-window-title">Stop: </em>' +
-                        bstops_names[i] + " - " +
+//                        '<em class="maker-info-window-title">Stop: </em>' +
+                        "[ID #" + stops[bstops_names[i]].Code + "]" +
+                        " - " +
                         stops[bstops_names[i]].Name +
                     '</span>' +
                     '<span>' +
@@ -1340,12 +1396,8 @@ default_demo_coords, svg_icon_paths, map_clusterer) {
                         route_swap_button_templates + 
                     '</span>' +
                     '<span>' +
-                        '<em class="maker-info-window-title">Alerts: </em>' +
-                        stops[bstops_names[i]].alert +
-                    '</span>' +
-                    '<span>' +
                         '<em class="maker-info-window-title">' +
-                            'Next departures: ' +
+                            'Next busses: ' +
                         '</em>' +
                         '<span id="stop-window-times-' + bstops_names[i] +
                         '">' +
@@ -1885,7 +1937,7 @@ default_demo_coords, svg_icon_paths, map_clusterer) {
                         "</span>" +
                         "<span>" +
                             "<em> Duration: </em>" +
-                            (legs[i].durationField / 1000 / 60).toFixed(1) +
+                            (legs[i].durationField / 1000 / 60).toFixed(0) +
                             " minutes" +
                         "</span>";
                     '</div>';
@@ -2356,13 +2408,29 @@ function(results_exist, filter_buffer_data) {
 BCTAppServices.factory('routeAndStopFilters', [ 'nearestStopsService',
 'locationService', 'latest_location', 'filterHelpers',
 function(nearestStopsService, locationService, latest_location, filterHelpers) {
+
     return {
 
-        RouteAndStopFilterMaker: function(non_id_property, use_minimum_length) {
+        RouteAndStopFilterMaker: function(
+            route_or_stop,
+            use_minimum_length
+        ) {
 
             var self = this;
 
-            this.property_name = non_id_property;
+            if (route_or_stop === "stop") {
+
+                this.property_name = "Name";
+                this.id_or_code = "Code";
+
+            }
+
+            else if (route_or_stop === "route") {
+
+                this.property_name = "LName";
+                this.id_or_code = "Id";
+
+            }
 
             //The two top level search filters use minimum length
             if (use_minimum_length) {
@@ -2424,7 +2492,8 @@ function(nearestStopsService, locationService, latest_location, filterHelpers) {
 
                     for (var i=0;i<items.length;i++) {
 
-                        var item_search_string_cased = items[i].Id + " " +
+                        var item_search_string_cased = "" +
+                        items[i][self.id_or_code] + " " +
                         items[i][self.property_name];
 
                         var item_search_string =

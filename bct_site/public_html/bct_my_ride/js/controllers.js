@@ -687,16 +687,31 @@ unitConversionAndDataReporting, module_error_messages) {
 
                 $scope.top_scope.show_schedule_map_loading_modal = false;
 
+                //N.B. "catch" method is not used with the dot operator due
+                //to the fact that the YUI Compressor (which uses the Rhino
+                //Engine) reserves this word for try/catch statements
+
+            })["catch"](function() {
+
+                console.log(
+                    "There was an error retrieving the trip plan data."
+                );
+
+                $scope.alertUserToTripPlannerErrors();
+
+                $scope.top_scope.show_schedule_map_loading_modal = false;
+
             });
 
-        //N.B. "catch" mathod is not used with the dot operator due to the fact
-        //that the YUI Compressor (which uses the Rhino Engine) reserves this
-        //word for try/catch statements
-
         })["catch"](function() {
-            console.log("There was an error retrieving the trip plan data.");
+
+            console.log(
+                "There was an error retrieving trip planner coordinate data. " +
+                "Consult additional console output for Geocoder error messages."
+            );
 
             $scope.top_scope.show_schedule_map_loading_modal = false;
+
         });
 
     };
