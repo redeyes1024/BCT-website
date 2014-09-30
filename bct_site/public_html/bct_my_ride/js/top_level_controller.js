@@ -904,8 +904,10 @@ function (
 
         };
 
+        //These arrays of configuration objects are used to create a simple
+        //list of animation 'frames' for each direction (forward and reverse)
         //Frame counts are calculated and set below
-        var animation_config = [
+        var animation_config_forward = [
 
             {
 
@@ -926,6 +928,34 @@ function (
             {
 
                 keyframe_setup_name: "hidden_on_right",
+                duration: message_hidden_time,
+                number_of_frames: 0
+
+            }
+
+        ];
+
+        var animation_config_reverse = [
+
+            {
+
+                keyframe_setup_name: "displayed_in_middle",
+                duration: MESSAGE_DISPLAY_TIME,
+                number_of_frames: 0
+
+            },
+
+            {
+
+                keyframe_setup_name: "hidden_on_right",
+                duration: MESSAGE_TRANSITION_OUT_TIME,
+                number_of_frames: 0
+
+            },
+
+            {
+
+                keyframe_setup_name: "hidden_on_left",
                 duration: message_hidden_time,
                 number_of_frames: 0
 
@@ -959,6 +989,12 @@ function (
 
             }
 
+            else if (old_index < 0) {
+
+                new_index = number_of_steps - 1;
+
+            }
+
             return new_index;
 
         }
@@ -981,6 +1017,24 @@ function (
 
             }
 
+            else if (old_index === -3) {
+
+                new_index = number_of_messages - 3;
+
+            }
+
+            else if (old_index === -2) {
+
+                new_index = number_of_messages - 2;
+
+            }
+
+            else if (old_index === -1) {
+
+                new_index = number_of_messages - 1;
+
+            }
+
             return new_index;
 
         }
@@ -988,11 +1042,25 @@ function (
         $scope.global_alerts_index = alert_message_indices.global;
         $scope.schedule_map_alerts_index = alert_message_indices.schedule_map;
 
-        function changeAlertMessage(module, message) {
+        function changeAlertMessage(module, message, direction) {
+
+            var message_iterator_amount;
+
+            if (direction === "prev") {
+
+                message_iterator_amount = -2;
+
+            }
+
+            else if (direction === "next") {
+
+                message_iterator_amount = 2;
+
+            }
 
             var cur_indices = alert_message_indices[module];
 
-            cur_indices[message] += 2;
+            cur_indices[message] += message_iterator_amount;
 
             cur_indices[message] =
             cycleThroughAlertMessages(module, cur_indices[message]);
@@ -1018,7 +1086,11 @@ function (
         };
 
         function setKeyframeStyle(
-            module, message, current_styling, keyframe_setup
+            module,
+            message,
+            current_styling,
+            keyframe_setup,
+            direction
         ) {
 
             var cur_keyframe_setup = keyframe_setups[keyframe_setup];
@@ -1036,7 +1108,14 @@ function (
             if (prev_stylings[module][message] === "hidden_on_left" &&
                 keyframe_setup === "hidden_on_right") {
 
-                changeAlertMessage(module, message);
+                changeAlertMessage(module, message, direction);
+
+            }
+
+            else if (prev_stylings[module][message] === "hidden_on_right" &&
+                keyframe_setup === "hidden_on_left") {
+
+                changeAlertMessage(module, message, direction);
 
             }
 
@@ -1054,7 +1133,8 @@ function (
 
             if (self.type === "leader") {
 
-                this.step = 0;
+                this.step_forward = 0;
+                this.step_reverse = 1;
 
                 this.message_index = 0;
 
@@ -1080,7 +1160,8 @@ function (
 
             else if (self.type === "follower") {
 
-                this.step = 8;
+                this.step_forward = 8;
+                this.step_reverse = 9;
 
                 this.message_index = 0;
 
@@ -1106,17 +1187,41 @@ function (
                     self.module,
                     type,
                     self.current_styling,
-                    steps_list[self.step].keyframe_setup
+                    steps_list_forward[self.step_forward].keyframe_setup,
+                    "next"
                 );
 
-                self.step++;
+                self.step_forward++;
 
-                self.step = cycleThroughAlertFrames(self.step);
+                self.step_forward = cycleThroughAlertFrames(self.step_forward);
 
                 if (self.follower_message) {
 
                     //General case: called on an array of followers in sequence
                     self.follower_message.goToNextStep();
+
+                }
+
+            };
+
+            this.goToPrevStep = function() {
+
+                setKeyframeStyle(
+                    self.module,
+                    type,
+                    self.current_styling,
+                    steps_list_reverse[self.step_reverse].keyframe_setup,
+                    "prev"
+                );
+
+                self.step_reverse++;
+
+                self.step_reverse = cycleThroughAlertFrames(self.step_reverse);
+
+                if (self.follower_message) {
+
+                    //General case: called on an array of followers in sequence
+                    self.follower_message.goToPrevStep();
 
                 }
 
@@ -1139,12 +1244,20 @@ function (
         //General case: the minimum in an array of animation times
         var shortest_animation_time = MESSAGE_TRANSITION_OUT_TIME;
 
-        for (var i=0;i<animation_config.length;i++) {
+        var animation_configs = [
+            animation_config_forward, animation_config_reverse
+        ];
 
-            var number_of_frames =
-            animation_config[i].duration / shortest_animation_time;
+        for (var i=0;i<animation_configs.length;i++) {
 
-            animation_config[i].number_of_frames = number_of_frames;
+            for (var j=0;j<animation_configs[i].length;j++) {
+
+                var number_of_frames =
+                animation_configs[i][j].duration / shortest_animation_time;
+
+                animation_configs[i][j].number_of_frames = number_of_frames;
+
+            }
 
         }
 
@@ -1152,25 +1265,51 @@ function (
         var number_of_steps =
         (MESSAGE_DISPLAY_TIME * 2) / shortest_animation_time;
 
-        var steps_list = new Array(number_of_steps);
+        var steps_list_forward = new Array(number_of_steps);
+        var steps_list_reverse = new Array(number_of_steps);
 
-        var steps_counter = 0;
+        var steps_counter_forward = 0;
+        var steps_counter_reverse = 0;
 
-        for (var j=0;j<animation_config.length;j++) {
+        var steps_list;
+        var steps_counter;
 
-            var cur_length = animation_config[j].number_of_frames;
+        for (var k=0;k<animation_configs.length;k++) {
 
-            for (var k=0;k<cur_length;k++) {
+            //k === 0, i.e., the forward direction for the scrolling animation
+            if (k === 0) {
 
-                var cur_step = {
+                steps_list = steps_list_forward;
+                steps_counter = steps_counter_forward;
 
-                    keyframe_setup: animation_config[j].keyframe_setup_name
+            }
 
-                };
+            //k === 1, i.e., the reverse direction for the scrolling animation
+            else if (k === 1) {
 
-                steps_list[steps_counter] = cur_step;
+                steps_list = steps_list_reverse;
+                steps_counter = steps_counter_reverse;
 
-                steps_counter++;
+            }
+
+            for (var l=0;l<animation_configs[k].length;l++) {
+
+                var cur_length = animation_configs[k][l].number_of_frames;
+
+                for (var m=0;m<cur_length;m++) {
+
+                    var cur_step = {
+
+                        keyframe_setup: animation_configs[k][l].
+                        keyframe_setup_name
+
+                    };
+
+                    steps_list[steps_counter] = cur_step;
+
+                    steps_counter++;
+
+                }
 
             }
 
@@ -1190,7 +1329,35 @@ function (
 
         }
 
-        runMessageScrollingAnimations();
+        //runMessageScrollingAnimations();
+
+        var frames_to_skip = animation_configs[0][0].number_of_frames;
+
+        $scope.goToNextGlobalAlertMessage = function() {
+
+            for (var i=0;i<frames_to_skip;i++) {
+
+                global_leader_message.goToNextStep();
+
+                schedule_map_leader_message.goToNextStep();
+
+            }
+
+        };
+
+        $scope.goToPrevGlobalAlertMessage = function() {
+
+            for (var i=0;i<frames_to_skip;i++) {
+
+                global_leader_message.goToPrevStep();
+
+                schedule_map_leader_message.goToPrevStep();
+
+            }
+
+        };
+
+        $scope.goToNextGlobalAlertMessage();
 
     }());
 

@@ -287,6 +287,7 @@ em.hint-text {
     overflow-y: auto;
     overflow-x: hidden;
 }
+
 .global-alerts-header-contents {
     position: absolute;
     top: -0.8em;
@@ -298,7 +299,7 @@ em.hint-text {
     width: 100%;
     padding: 0.2em 0em 0.1em;
     text-align: left;
-    overflow: hidden;
+    /*overflow: hidden;*/
     background-color: #FFF;
     box-shadow: 2px 7px 5px -5px #555;
     z-index: 1;
@@ -306,27 +307,35 @@ em.hint-text {
 .alert-area-icon {
     position: relative;
     font-size: 1.4em;
-    padding-left: 0.2em;
     background-color: #FFF;
+    border-style: dotted;
+    padding-left: 0.3em;
     z-index: 1;
-    color: red;
+}
+.alert-area-left {
+    border-width: 0px 2px 0px 0px;
+}
+.alert-area-right {
+    right: calc(-100% + 2.9em);
+    border-width: 0px 0px 0px 2px;
 }
 .alert-header-message {
     position: absolute;
     top: 0.2em;
-    left: 1.8em;
+    left: 2.5em;
     opacity: 1;
     transition: left 1s, opacity 1s;
 }
 .alert-header-message-hidden-right {
     opacity: 0;
     left: 100%;
-    transition: none;
+    /*transition: none;*/
 }
 .alert-header-message-hidden-left {
-    opacity: 0;
+    opacity: 1;
     left: -100%;
 }
+
 #bct-app .quickdate  {
     font-weight: 700;
     margin: 0.2em;
