@@ -869,13 +869,11 @@ function (
         var MESSAGE_DISPLAY_TIME = 4000;
         var MESSAGE_TRANSITION_OUT_TIME = 500;
 
-        var message_hidden_time =
-        MESSAGE_DISPLAY_TIME - MESSAGE_TRANSITION_OUT_TIME;
-
         var keyframes = {
 
             hidden_left: "alert-header-message-hidden-left",
-            hidden_right: "alert-header-message-hidden-right"
+            hidden_right: "alert-header-message-hidden-right",
+            hidden_no_transition: "alert-header-message-hidden-no-transition"
 
         };
 
@@ -884,21 +882,40 @@ function (
             displayed_in_middle: {
 
                 hidden_right: false,
-                hidden_left: false
+                hidden_left: false,
+                hidden_no_transition: false
 
             },
 
             hidden_on_left: {
 
                 hidden_right: false,
-                hidden_left: true
+                hidden_left: true,
+                hidden_no_transition: false
 
             },
 
             hidden_on_right: {
 
                 hidden_right: true,
-                hidden_left: false
+                hidden_left: false,
+                hidden_no_transition: false
+
+            },
+
+            hidden_on_right_no_transition: {
+
+                hidden_right: true,
+                hidden_left: false,
+                hidden_no_transition: true
+
+            },
+
+            hidden_on_left_no_transition: {
+
+                hidden_right: false,
+                hidden_left: true,
+                hidden_no_transition: true
 
             }
 
@@ -927,8 +944,8 @@ function (
 
             {
 
-                keyframe_setup_name: "hidden_on_right",
-                duration: message_hidden_time,
+                keyframe_setup_name: "hidden_on_right_no_transition",
+                duration: MESSAGE_TRANSITION_OUT_TIME,
                 number_of_frames: 0
 
             }
@@ -955,8 +972,8 @@ function (
 
             {
 
-                keyframe_setup_name: "hidden_on_left",
-                duration: message_hidden_time,
+                keyframe_setup_name: "hidden_on_left_no_transition",
+                duration: MESSAGE_TRANSITION_OUT_TIME,
                 number_of_frames: 0
 
             }
@@ -968,13 +985,9 @@ function (
         var alert_message_indices = {
 
             global: {
-                "leader": 0,
-                "follower": -1
-            },
 
-            schedule_map: {
-                "leader": 0,
-                "follower": -1
+                "leader": 0
+
             }
 
         };
@@ -1044,17 +1057,11 @@ function (
 
         function changeAlertMessage(module, message, direction) {
 
-            var message_iterator_amount;
+            var message_iterator_amount = 1;
 
             if (direction === "prev") {
 
-                message_iterator_amount = -2;
-
-            }
-
-            else if (direction === "next") {
-
-                message_iterator_amount = 2;
+                message_iterator_amount *= -1;
 
             }
 
@@ -1071,15 +1078,7 @@ function (
 
             global: {
 
-                "leader": "",
-                "follower": ""
-
-            },
-
-            schedule_map: {
-
-                "leader": "",
-                "follower": ""
+                "leader": ""
 
             }
 
@@ -1106,14 +1105,14 @@ function (
             }
 
             if (prev_stylings[module][message] === "hidden_on_left" &&
-                keyframe_setup === "hidden_on_right") {
+                keyframe_setup === "hidden_on_right_no_transition") {
 
                 changeAlertMessage(module, message, direction);
 
             }
 
             else if (prev_stylings[module][message] === "hidden_on_right" &&
-                keyframe_setup === "hidden_on_left") {
+                keyframe_setup === "hidden_on_left_no_transition") {
 
                 changeAlertMessage(module, message, direction);
 
@@ -1143,40 +1142,6 @@ function (
                     this.current_styling =
                     $scope.global_alert_message_styles_1;
 
-                    this.follower_message = global_follower_message;
-
-                }
-
-                if (self.module === "schedule_map") {
-
-                    this.current_styling =
-                    $scope.schedule_map_alert_message_styles_1;
-
-                    this.follower_message = schedule_map_follower_message;
-
-                }
-
-            }
-
-            else if (self.type === "follower") {
-
-                this.step_forward = 8;
-                this.step_reverse = 9;
-
-                this.message_index = 0;
-
-                if (self.module === "global") {
-
-                    this.current_styling =
-                    $scope.global_alert_message_styles_2;
-
-                }
-
-                if (self.module === "schedule_map") {
-
-                    this.current_styling =
-                    $scope.schedule_map_alert_message_styles_2;
-
                 }
 
             }
@@ -1195,13 +1160,6 @@ function (
 
                 self.step_forward = cycleThroughAlertFrames(self.step_forward);
 
-                if (self.follower_message) {
-
-                    //General case: called on an array of followers in sequence
-                    self.follower_message.goToNextStep();
-
-                }
-
             };
 
             this.goToPrevStep = function() {
@@ -1218,34 +1176,21 @@ function (
 
                 self.step_reverse = cycleThroughAlertFrames(self.step_reverse);
 
-                if (self.follower_message) {
-
-                    //General case: called on an array of followers in sequence
-                    self.follower_message.goToPrevStep();
-
-                }
-
             };
 
         }
 
-        var global_follower_message =
-        new ScrollingMessage("global", "follower");
-
         var global_leader_message =
         new ScrollingMessage("global", "leader");
-
-        var schedule_map_follower_message =
-        new ScrollingMessage("schedule_map", "follower");
-
-        var schedule_map_leader_message =
-        new ScrollingMessage("schedule_map", "leader");
 
         //General case: the minimum in an array of animation times
         var shortest_animation_time = MESSAGE_TRANSITION_OUT_TIME;
 
         var animation_configs = [
-            animation_config_forward, animation_config_reverse
+
+            animation_config_forward,
+            animation_config_reverse
+
         ];
 
         for (var i=0;i<animation_configs.length;i++) {
@@ -1263,7 +1208,8 @@ function (
 
         //General case: the sum of all animation steps
         var number_of_steps =
-        (MESSAGE_DISPLAY_TIME * 2) / shortest_animation_time;
+        ((MESSAGE_TRANSITION_OUT_TIME * 2) + MESSAGE_DISPLAY_TIME) /
+        shortest_animation_time;
 
         var steps_list_forward = new Array(number_of_steps);
         var steps_list_reverse = new Array(number_of_steps);
@@ -1315,49 +1261,206 @@ function (
 
         }
 
-        function runMessageScrollingAnimations() {
+        function runMessageForwardScrollingAnimations() {
         
-            $timeout(function() {
+            $scope.forward_message_timer = $timeout(function() {
 
                 global_leader_message.goToNextStep();
 
-                schedule_map_leader_message.goToNextStep();
-
-                runMessageScrollingAnimations();
+                runMessageForwardScrollingAnimations();
 
             }, shortest_animation_time);
 
         }
 
-        //runMessageScrollingAnimations();
+        function runMessageReverseScrollingAnimations() {
+        
+            $scope.reverse_message_timer = $timeout(function() {
 
-        var frames_to_skip = animation_configs[0][0].number_of_frames;
+                global_leader_message.goToPrevStep();
+
+                runMessageReverseScrollingAnimations();
+
+            }, shortest_animation_time);
+
+        }
+
+        runMessageForwardScrollingAnimations();
+
+        function getStepLastDisplayIndex(steps_list) {
+
+            var step_last_display_index;
+
+            for (var step_index in steps_list) {
+
+                var current_step =
+                steps_list_forward[step_index].keyframe_setup;
+
+                if (current_step === "hidden_on_right_no_transition" ||
+                    current_step === "hidden_on_left_no_transition") {
+
+                    step_last_display_index = step_index;
+
+                    return step_last_display_index;
+
+                }
+
+            }
+
+        }
+
+        var forward_step_last_display_index =
+        getStepLastDisplayIndex(steps_list_forward);
+
+        var reverse_step_last_display_index =
+        getStepLastDisplayIndex(steps_list_reverse);
+
+        function getTransitionStepLabels(steps_list) {
+
+            var transition_steps =
+            steps_list.filter(function(step) {
+
+                if (step.keyframe_setup !== "displayed_in_middle") {
+
+                    return step;
+
+                }
+
+            });
+
+            return transition_steps;
+
+        }
+
+        var forward_transition_steps =
+        getTransitionStepLabels(steps_list_forward);
+
+        var reverse_transition_steps =
+        getTransitionStepLabels(steps_list_reverse);
+
+        function getIndexObjectsArray(obj_array, targ_object, targ_property) {
+
+            var targ_prop_val = targ_object[targ_property];
+
+            for (var i=0;i<obj_array.length;i++) {
+
+                var cur_prop_val = obj_array[i][targ_property];
+
+                if (cur_prop_val === targ_prop_val) {
+
+                    return i;
+
+                }
+
+            }
+
+            return -1;
+
+        }
+
+        function getTransitionStepIndices(full_step_list, transition_steps) {
+
+            var transition_steps_indices = [];
+
+            for (var t_s_idx=0;t_s_idx<transition_steps.length;t_s_idx++) {
+
+                var transition_step_index =
+                getIndexObjectsArray(
+                    full_step_list,
+                    transition_steps[t_s_idx],
+                    "keyframe_setup"
+                );
+
+                transition_steps_indices.push(transition_step_index);
+
+            }
+
+            return transition_steps_indices;
+
+        }
+
+        var forward_transition_steps_indices =
+        getTransitionStepIndices(steps_list_forward, forward_transition_steps);
+
+        var reverse_transition_steps_indices =
+        getTransitionStepIndices(steps_list_reverse, reverse_transition_steps);
+
+        var previous_global_alert_direction;
+        var current_global_alert_direction;
 
         $scope.goToNextGlobalAlertMessage = function() {
+
+            current_global_alert_direction = "forward";
+
+            if (current_global_alert_direction !==
+                previous_global_alert_direction &&
+                !!previous_global_alert_direction) {
+
+                global_leader_message.reverse_step = 0;
+                
+                $timeout.cancel($scope.reverse_message_timer);
+
+                runMessageForwardScrollingAnimations();
+
+            }
+
+            if (forward_transition_steps_indices.
+                indexOf(global_leader_message.step_forward) !== -1) {
+
+                return true;
+
+            }
+
+            var frames_to_skip =
+            forward_step_last_display_index -
+            global_leader_message.step_forward;
 
             for (var i=0;i<frames_to_skip;i++) {
 
                 global_leader_message.goToNextStep();
 
-                schedule_map_leader_message.goToNextStep();
-
             }
+
+            previous_global_alert_direction = "forward";
 
         };
 
         $scope.goToPrevGlobalAlertMessage = function() {
 
+            current_global_alert_direction = "reverse";
+
+            if (current_global_alert_direction !==
+                previous_global_alert_direction &&
+                !!previous_global_alert_direction) {
+
+                global_leader_message.forward_step = 0;
+
+                $timeout.cancel($scope.forward_message_timer);
+
+                runMessageReverseScrollingAnimations();
+
+            }
+
+            if (reverse_transition_steps_indices.
+                indexOf(global_leader_message.step_reverse) !== -1) {
+
+                return true;
+
+            }
+
+            var frames_to_skip =
+            reverse_step_last_display_index -
+            global_leader_message.step_reverse;
+
             for (var i=0;i<frames_to_skip;i++) {
 
                 global_leader_message.goToPrevStep();
 
-                schedule_map_leader_message.goToPrevStep();
-
             }
 
-        };
+            previous_global_alert_direction = "reverse";
 
-        $scope.goToNextGlobalAlertMessage();
+        };
 
     }());
 
