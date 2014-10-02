@@ -443,6 +443,7 @@ unitConversionAndDataReporting, module_error_messages) {
     document.getElementsByClassName("planner-input");
 
     $scope.showMapLoading = function() {
+
         $scope.top_scope.show_schedule_map_loading_modal = true;
         $scope.top_scope.show_trip_planner_options = false;
         $scope.top_scope.show_trip_planner_itinerary_selector = false;
@@ -450,6 +451,7 @@ unitConversionAndDataReporting, module_error_messages) {
         for (var i=0;i<myride.dom_q.inputs.trip.length;i++) {
             myride.dom_q.inputs.trip[i].blur();
         }
+
     };
 
     $scope.handleTripPlanTimePastDepartureTimes = function(res) {

@@ -177,6 +177,7 @@ function (
     $scope.show_schedule_results_module_title_with_back_function = false;
 
     $scope.show_schedule_result_date_pick_row_loading = false;
+    $scope.show_schedule_result_date_pick_row_no_data = false;
 
     $scope.show_trip_planner_step_navigation_bar = false;
 
@@ -197,6 +198,8 @@ function (
     $scope.show_map_canvas = true;
 
     $scope.show_schedule_full_result_pdf_selector = false;
+
+    $scope.show_schedule_map_mini_schedule_no_data = true;
 
     (function() {
 
@@ -282,6 +285,8 @@ function (
             $scope.show_map_canvas = false;
             $scope.show_schedule_map_stop_navigation_bar = false;
 
+            $scope.show_schedule_map_error_dialog = false;
+
             $timeout.cancel($scope.schedule_map_error_dialog_timeout);
 
         }
@@ -296,7 +301,7 @@ function (
     });
 
     $scope.full_schedule_loading_placeholder =
-        placeholderService.createLoadingPlaceholder(20, " ");
+    placeholderService.createLoadingPlaceholder(20, " ");
 
     angular.element(document).ready(function() {
 
@@ -308,6 +313,8 @@ function (
                 $scope.full_schedule_loading_placeholder;
 
                 $scope.show_schedule_result_date_pick_row_loading = true;
+
+                $scope.show_schedule_result_date_pick_row_no_data = false;
 
                 scheduleDownloadAndTransformation.downloadSchedule(
 
@@ -332,17 +339,18 @@ function (
 
                     else {
 
-                        console.log(
-                            "Server communication error: full schedule."
-                        );
+                        $scope.show_schedule_result_date_pick_row_no_data =
+                        true;
 
-                        $scope.schedule.date_pick = "Error.";
+                        $scope.alertUserToFullScheduleErrors();
 
                     }
 
                 })["catch"](function() {
 
                     console.log("Server communication error: full schedule.");
+
+                    $scope.alertUserToFullScheduleErrors();
 
                 });
 
@@ -1739,14 +1747,14 @@ function (
         dialog_styles
     ) {
 
-        var disable_full_schedule_error_dialog = true;
+        var disable_full_schedule_error_dialog = false;
 
         if ($scope.full_schedule_error_dialog_hide_in_progress ||
             dialog_styles["error-dialog-faded-in"] ||
             !$scope.show_map_overlay_module ||
             !$scope.show_full_schedule_module) {
 
-            disable_full_schedule_error_dialog = false;
+            disable_full_schedule_error_dialog = true;
 
         }
 
@@ -1761,7 +1769,7 @@ function (
         if (!error_field) {
 
             full_schedule_error_dialog_text  =
-            module_error_messages.schedule_map.
+            module_error_messages.full_schedule.
             FULL_SCHEDULE_ERROR_NO_DATA_ERROR_MESSAGE;
 
             console.log(
@@ -1860,14 +1868,14 @@ function (
         dialog_styles
     ) {
 
-        var disable_schedule_map_error_dialog = true;
+        var disable_schedule_map_error_dialog = false;
 
         if ($scope.full_schedule_error_dialog_hide_in_progress ||
             dialog_styles["error-dialog-faded-in"] ||
             !$scope.show_map_overlay_module ||
             $scope.show_full_schedule_module) {
 
-            disable_schedule_map_error_dialog = false;
+            disable_schedule_map_error_dialog = true;
 
         }
 
@@ -2266,7 +2274,10 @@ function (
     };
 
     $scope.mini_schedule_loading_template = miniScheduleService.
-        makeMiniScheduleLoadingTemplate();
+    makeMiniScheduleLoadingTemplate();
+
+    $scope.mini_schedule_loading_error_template =
+    miniScheduleService.makeMiniScheduleLoadingTemplate(true);
 
     $scope.schedule.nearest.times_and_diffs = $scope.mini_schedule_loading_template;
 
@@ -2290,11 +2301,20 @@ function (
         addTimeDiffMessages(diffs);
 
         for (var i=0;i<nearest_times.length;i++) {
+
+            var time_12H =
+            unitConversionAndDataReporting.convertToTwelveHourTime(
+                nearest_times[i]
+            );
+
             var time_and_diff = {
                 time: nearest_times[i],
-                diff: diff_msgs[i]
+                diff: diff_msgs[i],
+                time_12H: time_12H
             };
+
             nearest_full.times_and_diffs.push(time_and_diff);
+
         }
 
         $scope.schedule.nearest.times_and_diffs = nearest_full.times_and_diffs;
@@ -2332,7 +2352,7 @@ function (
         var projected_coords = 
         googleMapUtilities.mapStopsToRoutePath(coords, $scope.cur_route_path);
 
-        return googleMapUtilities.setMapPosition(projected_coords)
+        return googleMapUtilities.setMapPosition(projected_coords);
 
     };
 
@@ -2350,9 +2370,16 @@ function (
 
                 $scope.alertUserToScheduleMapErrors("main_schedule");
 
+                $scope.schedule.nearest.times_and_diffs =
+                $scope.mini_schedule_loading_error_template;
+
+                $scope.show_schedule_map_mini_schedule_no_data = true;
+
                 return false;
 
             }
+
+            $scope.show_schedule_map_mini_schedule_no_data = false;
 
             var t_schedule = scheduleDownloadAndTransformation.
             transformSchedule("nearest", res.data.Today);

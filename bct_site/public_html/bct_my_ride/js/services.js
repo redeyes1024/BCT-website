@@ -59,18 +59,42 @@ BCTAppServices.service('miniScheduleService', [ function() {
         this.mini_schedule_quantity_defaults.before_times +
         this.mini_schedule_quantity_defaults.after_times;
 
-    this.makeMiniScheduleLoadingTemplate = function() {
+    this.makeMiniScheduleLoadingTemplate = function(loading_error) {
+
         var mini_schedule_loading_template = [];
 
-        for (var i=0;i<self.mini_schedule_quantity_defaults.total_times;i++) {
+        if (loading_error) {
+
             var time_holder = {
-                time: "Loading...",
-                diff: ""
+
+                time: "",
+                diff: "",
+                time_12H: ""
+
             };
+
+        }
+
+        else {
+
+            var time_holder = {
+
+                time: "Loading...",
+                diff: "",
+                time_12H: "Loading..."
+
+            };
+
+        }
+
+        for (var i=0;i<self.mini_schedule_quantity_defaults.total_times;i++) {
+
             mini_schedule_loading_template.push(time_holder);
+
         }
 
         return mini_schedule_loading_template;
+
     };
 
     this.getNearestTimes = function(time, times, bef, aft) {
@@ -723,7 +747,45 @@ function(generalServiceUtilities) {
 
     this.convertToTwelveHourTime = function(twenty_four_hour_time) {
 
-        
+        var twelve_hour_time;
+
+        var am_pm = "AM";
+
+        var hour = Number(twenty_four_hour_time.split(":")[0]);
+
+        var minute = twenty_four_hour_time.split(":")[1];
+
+        if (hour < 0 || hour > 23) {
+
+            console.log("Invalid time entered: " + twenty_four_hour_time);
+
+            return false;
+
+        }
+
+        else if (hour >= 13) {
+
+            am_pm = "PM";
+
+            hour -= 12;
+
+        }
+
+        else if (hour === 12) {
+
+            am_pm = "PM";
+
+        }
+
+        else if (hour === 0) {
+
+            hour = 12;
+
+        }
+
+        twelve_hour_time = "" + hour + ":" + minute + " " + am_pm;
+
+        return twelve_hour_time;
 
     };
 

@@ -27,16 +27,20 @@ ng-class="schedule_map_styles" class="fbox" ng-class="schedule_map_styles">
 
         <div id="schedule-map-info" ng-show="show_schedule_result_top_info_bar">
 
+            <div class="schedule-map-mini-schedule-no-data"
+            ng-show="show_schedule_map_mini_schedule_no_data"></div>
+
             <div id="schedule-map-mini-schedule">
 
                 <div id="schedule-map-mini-schedule-time-group">
 
                     <div class="schedule-map-mini-schedule-time"
-                    ng-repeat="time in schedule.nearest.times_and_diffs">
+                    ng-repeat="time in schedule.nearest.times_and_diffs
+                    track by $index">
 
                         <span class="schedule-map-mini-schedule-time-text">
 
-                            {{ time.time }} <br>
+                            {{ time.time_12H }} <br>
 
                             <span class="schedule-map-mini-schedule-time-eta"
                             ng-show="time.diff">
@@ -64,10 +68,6 @@ ng-class="schedule_map_styles" class="fbox" ng-class="schedule_map_styles">
 
         </div>
 
-<!--        <schedule-map-alerts-header
-        ng-show="show_schedule_result_top_alert_bar">
-        </schedule-map-alerts-header>
--->
         <div class="schedule-full-result-pdf-selector-modal"
         ng-show="show_schedule_full_result_pdf_selector">
 
