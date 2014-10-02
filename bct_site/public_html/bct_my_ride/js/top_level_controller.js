@@ -135,6 +135,14 @@ function (
         "map-full-screen-activate-button-schedule-map": true
     };
 
+    $scope.alert_area_left_styles = {
+        "alert-area-highlighted": false
+    };
+
+    $scope.alert_area_right_styles = {
+        "alert-area-highlighted": false
+    };
+
     /* END CSS class expressions to be used to ng-class, with defaults */
 
     /* START Overlay Display Controls */
@@ -1293,8 +1301,6 @@ function (
 
         }
 
-        runMessageForwardScrollingAnimations();
-
         function getStepLastDisplayIndex(steps_list) {
 
             var step_last_display_index;
@@ -1401,14 +1407,19 @@ function (
             current_global_alert_direction = "forward";
 
             if (current_global_alert_direction !==
-                previous_global_alert_direction &&
-                !!previous_global_alert_direction) {
+                previous_global_alert_direction) {
 
                 global_leader_message.reverse_step = 0;
                 
                 $timeout.cancel($scope.reverse_message_timer);
 
                 runMessageForwardScrollingAnimations();
+
+                $scope.alert_area_left_styles
+                ["alert-area-highlighted"] = false;
+
+                $scope.alert_area_right_styles
+                ["alert-area-highlighted"] = true;
 
             }
 
@@ -1438,14 +1449,19 @@ function (
             current_global_alert_direction = "reverse";
 
             if (current_global_alert_direction !==
-                previous_global_alert_direction &&
-                !!previous_global_alert_direction) {
+                previous_global_alert_direction) {
 
                 global_leader_message.forward_step = 0;
 
                 $timeout.cancel($scope.forward_message_timer);
 
                 runMessageReverseScrollingAnimations();
+
+                $scope.alert_area_left_styles
+                ["alert-area-highlighted"] = true;
+
+                $scope.alert_area_right_styles
+                ["alert-area-highlighted"] = false;
 
             }
 
@@ -1469,6 +1485,9 @@ function (
             previous_global_alert_direction = "reverse";
 
         };
+
+        //Start scrolling animation (default: forward direction)
+        $scope.goToNextGlobalAlertMessage();
 
     }());
 
