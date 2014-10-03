@@ -1289,6 +1289,16 @@ default_demo_coords, svg_icon_paths, map_clusterer) {
             func
         );
 
+        google.maps.event.addListener(
+            myride.dom_q.map.overlays[marker_list_name][marker_id].marker,
+            'mouseover',
+            function() {
+
+                
+
+            }
+        );
+
     };
 
     this.getOrderedStopListForCurrentRoute = function(route) {
@@ -1403,7 +1413,7 @@ default_demo_coords, svg_icon_paths, map_clusterer) {
                     path: google.maps.SymbolPath.CIRCLE,
                     strokeWeight: 2,
                     strokeColor: "#FFFFFF",
-                    scale: 5,
+                    scale: 10,
                     fillColor: route_color,
                     fillOpacity: 1
                 }
