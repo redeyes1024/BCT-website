@@ -1,6 +1,8 @@
 <div id="schedule-map" ng-show="show_map_overlay_module"
 ng-class="schedule_map_styles" class="fbox" ng-class="schedule_map_styles">
 
+    <route-alert-overlay></route-alert-overlay>
+
     <div id="schedule-map-loading-modal" class="app-area-modal"
     ng-show="show_schedule_map_loading_modal">
 
@@ -14,6 +16,9 @@ ng-class="schedule_map_styles" class="fbox" ng-class="schedule_map_styles">
 
         <div id="schedule-map-info-bar" class="title-header"
         ng-show="show_schedule_map_info_bar">
+
+            <i class="fa fa-exclamation-circle text-shadow-hover-icon ptr"
+            ng-click="toggleRouteAlertOverlay();"></i>
 
             {{ map_schedule_info.route }}
 

@@ -40,6 +40,15 @@ function(googleMapUtilities) {
 
 }]);
 
+BCTApp.directive('routeAlertOverlay', [ function() {
+    return {
+        restrict: 'E',
+        templateUrl: window.myride.directories.site_roots.active +
+        window.myride.directories.paths.active +
+        'partials/route_alert_overlay.html'
+    };
+}]);
+
 BCTApp.directive('scheduleMapOverlay', [ function() {
     return {
         restrict: 'E',

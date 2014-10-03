@@ -107,8 +107,13 @@ BCTAppValues.value('all_alerts', {
     ],
 
     schedule_map: [
-        "The first route alert",
-        "The second route alert"
+
+        "This is the first test alert for routes. This alert is short.",
+
+        "This is the second test alert for routes. This alert is longer, to " +
+        "test different ways to display longer alert text. Lorem ipsum dolor " +
+        "sit amet."
+
     ]
 
 });

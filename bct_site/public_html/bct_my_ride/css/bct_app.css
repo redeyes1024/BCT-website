@@ -589,6 +589,66 @@ em.maker-info-window-title {
 .schedule-map-info-box a {
     color: yellow !important;
 }
+
+.route-alert-overlay-modal {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1033;
+}
+.route-alert-overlay-main-container {
+    position: relative;
+    height: 16em;
+    width: 20em;
+    left: calc(50% - 10em);
+    top: calc(50% - 8em);
+    background-color: #FFFFFF;
+}
+.route-alert-overlay-change-alert {
+    display: inline-block;
+    font-size: 2em;
+    position: absolute;
+    top: 3.5em;
+}
+.route-alert-overlay-prev-alert {
+    left: 0.2em;
+}
+.route-alert-overlay-next-alert {
+    right: 0.2em;
+}
+.route-alert-overlay-alerts-container {
+    display: inline-block;
+    position: relative;
+    width: calc(100% - 4.5em);
+    height: calc(100% - 5.5em);
+    top: 1em;
+    border-style: dashed;
+    border-width: 2px;
+    padding: 0.5em;
+    overflow-y: auto;
+}
+.route-alert-overlay-exit {
+    display: inline-table;
+    border-style: solid;
+    border-width: 2px;
+    border-color: #333;
+    padding: 0em 1em;
+    border-radius: 0.5em;
+    height: 2em;
+    background-color: #FFFFFF;
+    margin: 1.1em 0em 0em 2em;
+}
+.route-alert-overlay-exit-text{
+    vertical-align: middle;
+}
+.route-alert-overlay-counter {
+    position: relative;
+    float: right;
+    top: 1.5em;
+    right: 1em;
+}
+
 .myride-info-box-contents {
     height: 100%;
     overflow-y: auto;
@@ -696,7 +756,8 @@ schedule-map-navigation-bar {
     background-color: #FFFFFF;
     margin: 0em 0.5em;
 }
-.schedule-full-result-pdf-selector-button:hover {
+.schedule-full-result-pdf-selector-button:hover,
+.route-alert-overlay-exit:hover {
     border-color: #AAA;
     color: #777;
 }

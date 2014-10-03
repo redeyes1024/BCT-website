@@ -209,6 +209,8 @@ function (
 
     $scope.show_schedule_map_mini_schedule_no_data = true;
 
+    $scope.show_route_alert_overlay = false;
+
     (function() {
 
         for (icon in location_icons) {
@@ -297,6 +299,8 @@ function (
 
             $timeout.cancel($scope.schedule_map_error_dialog_timeout);
 
+            $scope.show_route_alert_overlay = false;
+
         }
 
         else if (new_val < old_val) {
@@ -381,6 +385,8 @@ function (
 
             $scope.map_full_screen_activate_button_styles
             ["map-full-screen-activate-button-schedule-map"] = false;
+
+            $scope.show_route_alert_overlay = false;
 
         }
 
@@ -584,12 +590,6 @@ function (
         route_id: "",
         bstop_id: ""
     };
-
-    $scope.current_route_alerts = [
-        "Bus route will change to include Data Ave. starting in January",
-        "Bus route will change to include Picard Ave. starting in February",
-        "Bus route will change to include Riker Ave. starting in March"
-    ];
 
     $scope.query_data = {
         schedule_search: ""
@@ -997,6 +997,62 @@ function (
         ];
 
         /* END Animation Settings */
+
+        $scope.toggleRouteAlertOverlay = function() {
+
+            if (!$scope.show_route_alert_overlay) {
+
+                $scope.current_route_alert_index = 0;
+
+            }
+
+            $scope.show_route_alert_overlay = !$scope.show_route_alert_overlay;
+
+        };
+
+        $scope.cycleThroughRouteAlerts = function(old_index) {
+
+            var number_of_alerts =
+            $scope.routes[$scope.map_schedule_info.route].alerts.length;
+
+            var new_index = old_index;
+
+            if (old_index > number_of_alerts - 1) {
+
+                new_index = 0;
+
+            }
+
+            else if (old_index < 0) {
+
+                new_index = number_of_alerts - 1;
+
+            }
+
+            return new_index;
+
+        };
+
+        $scope.changeRouteAlert = function(direction) {
+
+            var cur_route_index = $scope.current_route_alert_index;
+
+            if (direction === "next") {
+
+                cur_route_index++;
+
+            }
+
+            else if (direction === "prev") {
+
+                cur_route_index--;
+
+            }
+
+            $scope.current_route_alert_index =
+            $scope.cycleThroughRouteAlerts(cur_route_index);
+
+        };
 
         var alert_message_indices = {
 
@@ -1406,27 +1462,29 @@ function (
 
             current_global_alert_direction = "forward";
 
+            if (current_global_alert_direction ===
+                previous_global_alert_direction &&
+                forward_transition_steps_indices.
+                indexOf(global_leader_message.step_forward) !== -1) {
+
+                return true;
+
+            }
+
             if (current_global_alert_direction !==
                 previous_global_alert_direction) {
-
-                global_leader_message.reverse_step = 0;
                 
                 $timeout.cancel($scope.reverse_message_timer);
 
                 runMessageForwardScrollingAnimations();
+
+                global_leader_message.reverse_step = 0;
 
                 $scope.alert_area_left_styles
                 ["alert-area-highlighted"] = false;
 
                 $scope.alert_area_right_styles
                 ["alert-area-highlighted"] = true;
-
-            }
-
-            if (forward_transition_steps_indices.
-                indexOf(global_leader_message.step_forward) !== -1) {
-
-                return true;
 
             }
 
@@ -1448,27 +1506,29 @@ function (
 
             current_global_alert_direction = "reverse";
 
+            if (current_global_alert_direction ===
+                previous_global_alert_direction &&
+                reverse_transition_steps_indices.
+                indexOf(global_leader_message.step_reverse) !== -1) {
+
+                return true;
+
+            }
+
             if (current_global_alert_direction !==
                 previous_global_alert_direction) {
-
-                global_leader_message.forward_step = 0;
 
                 $timeout.cancel($scope.forward_message_timer);
 
                 runMessageReverseScrollingAnimations();
+
+                global_leader_message.forward_step = 0;
 
                 $scope.alert_area_left_styles
                 ["alert-area-highlighted"] = true;
 
                 $scope.alert_area_right_styles
                 ["alert-area-highlighted"] = false;
-
-            }
-
-            if (reverse_transition_steps_indices.
-                indexOf(global_leader_message.step_reverse) !== -1) {
-
-                return true;
 
             }
 
@@ -2448,6 +2508,8 @@ function (
         $scope.show_map_overlay_module = false;
         $scope.show_full_schedule_module = false;
 
+        $scope.show_route_alert_overlay = false;
+
     };
     
     $scope.closeTripPlannerMap = function() {
@@ -2464,21 +2526,26 @@ function (
     $scope.toggleMapSchedule = function(from_trip_planner, route, stop) {
 
         if ($scope.show_map_overlay_module) {
+
             if (from_trip_planner) {
                 $scope.closeTripPlannerMap();
             }
+
             else {
                 $scope.closeMapSchedule();
             }
+
         }
 
         else {
+
             if (from_trip_planner) {
                 $scope.openTripPlannerMap(route, stop);
             }
             else {
                 $scope.openMapSchedule(route, stop);
             }
+
         }
 
     };
@@ -2660,6 +2727,9 @@ function (
 
         for (var route in all_routes) {
 
+            //The following property is a placeholder
+            all_routes[route].alerts = all_alerts.schedule_map;
+
             all_routes[route].bstop_refs = [];
 
             var bstops = all_routes[route].Stops;
@@ -2716,16 +2786,20 @@ function (
     });
 
     $scope.swapTripInputs = function() {
+
         var old_start = $scope.trip_inputs.start.slice();
         var old_finish = $scope.trip_inputs.finish.slice();
 
         $scope.trip_inputs.start = old_finish;
         $scope.trip_inputs.finish = old_start;
+
     };
 
     $scope.clearFilters = function() {
+
         $scope.bstopFilter.f = "";
         $scope.routeFilter.f = "";
+
     };
 
     $scope.agency_filter_icons = agency_filter_icons;

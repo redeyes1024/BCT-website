@@ -1,0 +1,63 @@
+<div class="route-alert-overlay-modal"
+ng-show="show_route_alert_overlay">
+
+    <div class="route-alert-overlay-main-container">
+
+        <span class="title-header myride-title-shadow no-highlight">
+
+            Route Alerts
+
+        </span>
+
+        <div class="route-alert-overlay-change-alert
+        route-alert-overlay-prev-alert link-icon no-highlight ptr"
+        ng-click="changeRouteAlert('prev');">
+
+            <i class="fa fa-chevron-left"></i>
+
+        </div>
+
+        <div class="route-alert-overlay-alerts-container">
+
+            {{
+                routes[map_schedule_info.route].
+                alerts[current_route_alert_index]
+            }}
+
+        </div>
+
+        <div class="route-alert-overlay-change-alert
+        route-alert-overlay-next-alert link-icon no-highlight ptr"
+        ng-click="changeRouteAlert('next');">
+
+            <i class="fa fa-chevron-right"></i>
+
+        </div>
+
+        <div class="route-alert-overlay-exit no-highlight ptr"
+        ng-click="toggleRouteAlertOverlay();">
+
+            <div class="route-alert-overlay-exit-text">
+
+                Back to Map
+
+            </div>
+
+        </div>
+
+        <div class="route-alert-overlay-counter">
+
+            {{ current_route_alert_index + 1 }}
+
+            /
+
+            {{
+                routes[map_schedule_info.route].
+                alerts.length
+            }}
+
+        </div>
+
+    </div>
+
+</div>
