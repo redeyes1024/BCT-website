@@ -861,12 +861,12 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
 'scheduleDownloadAndTransformation', 'unitConversionAndDataReporting',
 'locationService', 'map_navigation_marker_indices',
 'generalServiceUtilities', 'default_demo_coords', 'svg_icon_paths',
-'map_clusterer',
+'map_clusterer', 'marker_icon_options',
 
 function($compile, $q, scheduleDownloadAndTransformation,
 unitConversionAndDataReporting, locationService,
 map_navigation_marker_indices, generalServiceUtilities,
-default_demo_coords, svg_icon_paths, map_clusterer) {
+default_demo_coords, svg_icon_paths, map_clusterer, marker_icon_options) {
 
     var self = this;
 
@@ -1184,7 +1184,7 @@ default_demo_coords, svg_icon_paths, map_clusterer) {
 
     };
 
-    this.createDummyInfoWindow = function(marker_list_name) {
+    this.createDummyInfoWindow = function(marker_list_name, hovered) {
 
         var open_info_name = "";
 
@@ -1192,7 +1192,15 @@ default_demo_coords, svg_icon_paths, map_clusterer) {
             open_info_name = "trip_open_info";
         }
         else if (marker_list_name === "points") {
-            open_info_name = "open_info";
+
+            if (hovered) {
+                open_info_name = "open_info_hovered";
+            }
+
+            else {
+                open_info_name = "open_info";
+            }
+
         }
 
         myride.dom_q.map.overlays[open_info_name] = [{
@@ -1202,7 +1210,12 @@ default_demo_coords, svg_icon_paths, map_clusterer) {
 
     };
 
-    this.showSelectedInfoWindow = function(module, point, e, point_name) {
+    this.showSelectedInfoWindow = function(
+        module,
+        point, e,
+        point_name,
+        hovered
+    ) {
 
         var open_info_name = "";
         var id_type_name = "";
@@ -1215,9 +1228,28 @@ default_demo_coords, svg_icon_paths, map_clusterer) {
         }
         else if (module === "schedule") {
 
-            open_info_name = "open_info";
+            if (hovered) {
+
+                open_info_name = "open_info_hovered";
+
+            }
+
+            else {
+
+                open_info_name = "open_info";
+
+            }
+
             id_type_name = "schedule_marker_window_id";
 
+        }
+
+        //Prevent info box from opening from hover if already opened from click
+        if (module === "schedule" && !!hovered) {
+            if (point.info[id_type_name] ===
+                myride.dom_q.map.overlays["open_info"][0][id_type_name]) { 
+                return true;
+            }
         }
 
         var open_window = myride.dom_q.map.overlays[open_info_name][0];
@@ -1233,34 +1265,41 @@ default_demo_coords, svg_icon_paths, map_clusterer) {
 
         //Store a reference to the latest opened info window
         //so it can be closed when another is opened
-        myride.dom_q.map.overlays[open_info_name][0].close();
+        if (!hovered) {
+            myride.dom_q.map.overlays[open_info_name][0].close();
+        }
+
         myride.dom_q.map.overlays[open_info_name].pop();
         myride.dom_q.map.overlays[open_info_name].push(point.info);
 
-        var point_coords = point.marker.getPosition();
+        if (!hovered) {
 
-        myride.dom_q.map.inst.setCenter({
-            lat: point_coords.lat(),
-            lng: point_coords.lng()
-        });
+            var point_coords = point.marker.getPosition();
 
-        if (e) {
+            myride.dom_q.map.inst.setCenter({
+                lat: point_coords.lat(),
+                lng: point_coords.lng()
+            });
 
-            var ordered_stops = myride.dom_q.map.overlays.ordered_stop_list;
+            if (e) {
 
-            if (ordered_stops && module === "schedule") {
+                var ordered_stops = myride.dom_q.map.overlays.ordered_stop_list;
 
-                map_navigation_marker_indices.schedule =
-                ordered_stops.indexOf(point_name);
+                if (ordered_stops && module === "schedule") {
 
-            }
-            else if (module === "planner") {
+                    map_navigation_marker_indices.schedule =
+                    ordered_stops.indexOf(point_name);
 
-                var newly_opened_window = myride.dom_q.map.
-                overlays[open_info_name][0];
+                }
+                else if (module === "planner") {
 
-                map_navigation_marker_indices.planner =
-                newly_opened_window[id_type_name];
+                    var newly_opened_window = myride.dom_q.map.
+                    overlays[open_info_name][0];
+
+                    map_navigation_marker_indices.planner =
+                    newly_opened_window[id_type_name];
+
+                }
 
             }
 
@@ -1279,25 +1318,98 @@ default_demo_coords, svg_icon_paths, map_clusterer) {
         google.maps.event.addListener(
             myride.dom_q.map.overlays[marker_list_name][marker_id].info,
             'closeclick',
-            function() { self.createDummyInfoWindow(marker_list_name); }
-        );
-
-        google.maps.event.addListener(
-            myride.dom_q.map.overlays[marker_list_name][marker_id].marker,
-            'click',
-            myride.dom_q.map.overlays[marker_list_name][marker_id].ShowWindow.
-            func
-        );
-
-        google.maps.event.addListener(
-            myride.dom_q.map.overlays[marker_list_name][marker_id].marker,
-            'mouseover',
             function() {
 
+                self.createDummyInfoWindow(marker_list_name);
                 
+                myride.dom_q.map.overlays[marker_list_name][marker_id].
+                info.clicked = false;
 
             }
         );
+
+        if (marker_list_name === "points") {
+
+            google.maps.event.addListener(
+                myride.dom_q.map.overlays[marker_list_name][marker_id].marker,
+                'click',
+                function() {
+                    myride.dom_q.map.overlays[marker_list_name][marker_id].
+                    ShowWindow.func("click", false);
+                }
+            );
+
+            google.maps.event.addListener(
+                myride.dom_q.map.overlays[marker_list_name][marker_id].marker,
+                'mouseover',
+                function() {
+
+                    var icon_options =
+                    marker_icon_options.schedule_map.mouseover;
+
+                    icon_options.fillColor =
+                    myride.dom_q.map.overlays[marker_list_name][marker_id].
+                    marker.getIcon().fillColor;
+
+                    myride.dom_q.map.overlays[marker_list_name][marker_id].
+                    marker.setOptions(
+                        {
+                            icon: icon_options
+                        }
+                    );
+
+                    myride.dom_q.map.overlays[marker_list_name][marker_id].
+                    ShowWindow.func(null, true);
+
+                }
+            );
+
+            google.maps.event.addListener(
+                myride.dom_q.map.overlays[marker_list_name][marker_id].marker,
+                'mouseout',
+                function() {
+
+                    var icon_options = marker_icon_options.schedule_map.default;
+
+                    icon_options.fillColor =
+                    myride.dom_q.map.overlays[marker_list_name][marker_id].
+                    marker.getIcon().fillColor;
+
+                    myride.dom_q.map.overlays[marker_list_name][marker_id].
+                    marker.setOptions(
+                        {
+                            icon: icon_options
+                        }
+                    );
+
+                    var marker_was_clicked =
+                    myride.dom_q.map.overlays[marker_list_name][marker_id].
+                    info.clicked;
+
+                    if (!marker_was_clicked) {
+
+                        myride.dom_q.map.overlays[marker_list_name][marker_id].
+                        info.close();
+
+                        self.createDummyInfoWindow(marker_list_name, true);
+
+                    }
+
+                }
+            );
+
+        }
+        
+        else if (marker_list_name === "trip_points") {
+        
+            google.maps.event.addListener(
+                myride.dom_q.map.overlays[marker_list_name][marker_id].marker,
+                'click',
+                myride.dom_q.map.overlays[marker_list_name][marker_id].
+                ShowWindow.func
+            );
+
+        }
 
     };
 
@@ -1405,77 +1517,84 @@ default_demo_coords, svg_icon_paths, map_clusterer) {
 
             var route_color = "#" + routes[route].Color;
 
+            var icon_options = marker_icon_options.schedule_map.default;
+
+            icon_options.fillColor = route_color;
+
             var marker = new google.maps.Marker({
                 map: myride.dom_q.map.inst,
                 position: coords,
                 title: route + ' ' + bstops_names[i],
-                icon: {
-                    path: google.maps.SymbolPath.CIRCLE,
-                    strokeWeight: 2,
-                    strokeColor: "#FFFFFF",
-                    scale: 10,
-                    fillColor: route_color,
-                    fillOpacity: 1
-                }
+                icon: icon_options
             });
 
-            var route_swap_button_templates = '';
+            var associated_routes = stops[bstops_names[i]].Routes;
 
-            var alt_routes = stops[bstops_names[i]].Routes.
-            filter(function(filtered_route) { 
-                if (filtered_route !== route ) { return filtered_route; } 
-            });
+            //Put current route as the first element (CSS pseudo-element
+            //will handle highlighting)
+            associated_routes.splice(associated_routes.indexOf(route), 1);
 
-            if (alt_routes.length === 0) {
+            associated_routes.splice(0, 0, route);
 
-                route_swap_button_templates = 'None';
+            var associated_routes_icons = '';
 
-            }
-            else {
+            for (var k=0; k<associated_routes.length; k++) {
 
-                for (var k=0; k<alt_routes.length; k++) {
+                var switch_route_function_attribute;
 
-                    route_swap_button_templates += 
-                    '<span class="route-swap-button-holder">' +
-                        alt_routes[k] +
-                    '</span>';
+                if (k === 0) {
 
-                    if (k < alt_routes.length - 1) {
-                        route_swap_button_templates += ", ";
-                    }
+                    switch_route_function_attribute = "";
 
                 }
 
+                else {
+
+                    switch_route_function_attribute = '' +
+                    'ng-click="switchRoutes(' +
+                        '\'' + stops[bstops_names[i]].Routes[k] + '\', ' +
+                        '\'' + bstops_names[i] + '\'' +
+                    ');"'
+
+                }
+
+                associated_routes_icons += '' +
+
+                    '<div class="schedule-map-info-box-route-icon ' +
+                    'no-highlight ptr" ' + switch_route_function_attribute +
+                    '>' +
+
+                        '<span class="schedule-map-info-box-route-id">' +
+
+                            stops[bstops_names[i]].Routes[k].replace(/BCT/,"") +
+
+                        '</span>' +
+
+                        '<bus-svg></bus-svg>' +
+
+                    '</div>';
 
             }
 
             var schedule_map_info_box_contents = '' +
+
                 '<div class="myride-info-box-contents">' +
-                    '<span>' + 
-//                        '<em class="maker-info-window-title">Route: </em>' +
-                        route +
-                    '</span>' +
+
                     '<span>' +
-//                        '<em class="maker-info-window-title">Stop: </em>' +
-                        "[ID #" + stops[bstops_names[i]].Code + "]" +
-                        " - " +
                         stops[bstops_names[i]].Name +
                     '</span>' +
+
                     '<span>' +
-                        '<em class="maker-info-window-title">' +
-                            'Other Routes: '+
-                        '</em>' +
-                        route_swap_button_templates + 
+                        "[ID #" + stops[bstops_names[i]].Code + "]" +
                     '</span>' +
-                    '<span>' +
-                        '<em class="maker-info-window-title">' +
-                            'Next busses: ' +
-                        '</em>' +
-                        '<span id="stop-window-times-' + bstops_names[i] +
-                        '">' +
-                            'Loading...' + 
-                        '</span>' +
-                    '</span>' +
+
+                    '<hr>' +
+
+                    //The class name is needed for $compile step when opened
+                    '<span class="info-window-associated-routes"></span>' +
+
+                    '<span class="schedule-map-info-window-schedule"></span>' +
+
                 '</div>';
 
             var info_window =
@@ -1518,53 +1637,102 @@ default_demo_coords, svg_icon_paths, map_clusterer) {
 
                 this.pt = myride.dom_q.map.overlays.points[self.pt_name];
 
-                this.func = function(e) {
+                this.associated_routes_icons = associated_routes_icons;
+
+                this.func = function(e, hovered) {
 
                     var window_already_open = 
                     top_self.showSelectedInfoWindow(
-                        "schedule", self.pt, e, self.pt_name
+                        "schedule",
+                        self.pt,
+                        e,
+                        self.pt_name,
+                        hovered
                     );
 
                     if (window_already_open) { return true; }
 
-                    //Request next arrivals for clicked route/stop
-                    scheduleDownloadAndTransformation.
-                    downloadSchedule(route, self.s_id).then(function(res) {
+                    angular.element(document).ready(function() {
 
-                        if (!res.data.Today) {
+                        try {
 
-                            console.log("Problem communicating with server.")
+                            var route_icons_el = self.pt.info.div_.
+                            getElementsByClassName(
+                                "info-window-associated-routes"
+                            )[0];
 
-                            return true;
+                            var route_icons_el_ang_obj =
+                            angular.element(route_icons_el);
+
+                            var scope = generalServiceUtilities.top_level_scope;
+
+                            route_icons_el_ang_obj.
+                            append(
+                                $compile(self.associated_routes_icons)(scope)
+                            );
 
                         }
 
-                        var nearest_schedule =
+                        catch(e) {
+
+                            console.log(
+                                "Info box closed too quickly to load SVGs."
+                            );
+
+                        }
+
+                    });
+
+                    if (!hovered) {
+
+                        self.pt.info.clicked = true;
+
+                        //Request next arrivals for clicked route/stop
                         scheduleDownloadAndTransformation.
-                        transformSchedule("nearest", res.data.Today);
+                        downloadSchedule(route, self.s_id).then(function(res) {
 
-                        angular.element(document).ready(function() {
+                            console.log("Downloading schedule.");
 
-                            try {
+                            if (!res.data.Today) {
 
-                                document.getElementById(
-                                    "stop-window-times-" + self.s_id
-                                ).
-                                innerHTML = nearest_schedule.
-                                nearest.next_times.join(", ");
+                                console.log(
+                                    "Problem communicating with server: " +
+                                    "InfoBox schedule."
+                                );
 
-                            }
-
-                            catch(e) {
-
-                                console.log("A Google Maps infowindow was " +
-                                "closed before next times were fully loaded.");
+                                return true;
 
                             }
+
+                            var nearest_schedule =
+                            scheduleDownloadAndTransformation.
+                            transformSchedule("nearest", res.data.Today);
+
+                            angular.element(document).ready(function() {
+
+                                try {
+
+                                    document.getElementById(
+                                        "stop-window-times-" + self.s_id
+                                    ).
+                                    innerHTML = nearest_schedule.
+                                    nearest.next_times.join(", ");
+
+                                }
+
+                                catch(e) {
+
+                                    console.log("A Google Maps infowindow " +
+                                    "was closed before next times were fully " +
+                                    "loaded.");
+
+                                }
+
+                            });
 
                         });
 
-                    });
+                    }
 
                     angular.element(document).ready(function() {
 

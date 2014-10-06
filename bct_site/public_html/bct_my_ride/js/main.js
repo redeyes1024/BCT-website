@@ -54,6 +54,10 @@ window.myride.dom_q = {
                 close: function() {},
                 content: "<span>Stop: First</span>"
             }],
+            open_info_hovered: [{
+                close: function() {},
+                content: "<span>Stop: First</span>"
+            }],
             ordered_stop_list: [],
             points: {}
         }

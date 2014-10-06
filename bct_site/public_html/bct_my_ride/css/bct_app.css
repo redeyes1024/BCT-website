@@ -661,6 +661,51 @@ em.maker-info-window-title {
 .myride-info-box-contents span span {
     display: inline;
 }
+.schedule-map-info-box-route-icon {
+    display: inline-block;
+    position: relative;
+    width: 32px;
+    height: 32px;
+    margin: 0em 0.5em;
+    text-align: center;
+    fill: #FFFFFF;
+}
+.info-window-associated-routes {
+    display: block;
+    position: relative;
+    width: 160px;
+    height: 42px;
+    padding: 4px 0px 0px;
+    overflow-y: auto;
+}
+.schedule-map-info-box-route-icon:hover {
+    fill: yellow;
+}
+.schedule-map-info-box-route-icon:first-child {
+    fill: yellow;
+    margin: 0px 10px;
+}
+.schedule-map-info-box-route-icon:first-child svg {
+    transform: scale(1.3);
+}
+.schedule-map-info-box-route-icon:first-child .schedule-map-info-box-route-id {
+    font-size: 1.3em;
+    left: -1px;
+    bottom: 10px;
+}
+.schedule-map-info-box-route-id {
+    display: block;
+    position: absolute;
+    width: 100%;
+    bottom: 9px;
+    font-size: 1em;
+    font-weight: 700;
+    color: #FFFFFF;
+}
+.schedule-map-info-window-schedule {
+    
+}
+
 #map-loading-screen {
     height: 100%;
     width: 100%;

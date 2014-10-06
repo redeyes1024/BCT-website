@@ -4,6 +4,32 @@ var BCTAppValues = angular.module('BCTAppValues', []);
 //BCTAppValues.value('scheduleWebSocket',
 //new WebSocket("ws://echo.websocket.org"));
 
+BCTAppValues.value('marker_icon_options', {
+
+    schedule_map: {
+
+        default: {
+            path: google.maps.SymbolPath.CIRCLE,
+            strokeWeight: 2,
+            strokeColor: "#FFFFFF",
+            scale: 10,
+            fillColor: "",
+            fillOpacity: 1
+        },
+
+        mouseover: {
+            path: google.maps.SymbolPath.CIRCLE,
+            strokeWeight: 4,
+            strokeColor: "#FFFFFF",
+            scale: 14,
+            fillColor: "",
+            fillOpacity: 1
+        }
+
+    }
+
+});
+
 BCTAppValues.value('trip_planner_constants', {
 
     trip_duration_cutoff_hours: 4,
