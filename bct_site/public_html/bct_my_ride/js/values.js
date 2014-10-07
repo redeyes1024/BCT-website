@@ -90,7 +90,7 @@ BCTAppValues.value('module_error_messages', {
         "Location not found.",
 
         GEOCODER_ERROR_ALERT_DIALOG_TEXT_OVER_LIMIT:
-        "Please wait before posting again."
+        "Application Busy. Try again."
 
     }
 
@@ -147,6 +147,24 @@ BCTAppValues.value('all_alerts', {
 
 BCTAppValues.value('legend_icon_list', [
 
+    {
+        fa_name: "fa-chevron-left",
+        filename: "",
+        legend: {
+            module: "Top Alerts",
+            desc: "View global alerts in reverse order and skip to " +
+            "the previous global alert in the list."
+        }
+    },
+    {
+        fa_name: "fa-chevron-right",
+        filename: "",
+        legend: {
+            module: "Top Alerts",
+            desc: "View global alerts in forward order and skip to " +
+            "the next global alert in the list."
+        }
+    },
     {
         fa_name: "fa-exchange",
         filename: "",
@@ -263,12 +281,40 @@ BCTAppValues.value('legend_icon_list', [
         }
     },
     {
+        fa_name: "fa-exclamation-circle",
+        filename: "",
+        legend: {
+            module: "Map Schedule",
+            desc: "View alerts associated with the currently viewed route."
+        }
+    },
+    {
+        fa_name: "",
+        filename: "button_yellow.svg",
+        legend: {
+            module: "Map Schedule",
+            desc: "A map marker cluster. Represents the indicated number " +
+            "of stops. Stop markers become visible again when zoomed in " +
+            "sufficiently."
+        }
+    },
+    {
         fa_name: "fa-calendar",
         filename: "",
         legend: {
             module: "Map Schedule",
             desc: "Opens the full schedule view. There you can view the full " +
             "weekly schedule or a schedule for a future date of your choice."
+        }
+    },
+    {
+        fa_name: "",
+        filename: "fa_bus.svg",
+        legend: {
+            module: "Map Schedule",
+            desc: "Select a different route going through the clicked stop. " +
+            "The ID of the alternate route is embedded in this icon. " +
+            "The larger, yellow icon indicates the currently viewed route."
         }
     },
     {
@@ -357,16 +403,19 @@ BCTAppValues.value('agency_filter_icons', {
     broward: {
         agency: "broward",
         icon_filename: "broward_100px.png",
-        selection_class: ""
+        selection_class: "",
+        name: "Broward County"
     },
     miami: {
         agency: "miami",
         icon_filename: "miami_dade_100px.png",
-        selection_class: ""
+        selection_class: "",
+        name: "Miami-Dade"
     },
     palm: {
         agency: "palm",
         icon_filename: "palm_100px.png",
-        selection_class: ""
+        selection_class: "",
+        name: "Palm Beach"
     }
 });

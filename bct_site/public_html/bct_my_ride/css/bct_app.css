@@ -566,7 +566,7 @@ em.maker-info-window-title {
 }
 .schedule-map-info-box {
     width: 200px !important;
-    height: 120px !important;
+    height: 130px !important;
 }
 .trip-planner-info-box {
     width: 200px !important;
@@ -584,7 +584,7 @@ em.maker-info-window-title {
     border-color: rgba(255, 255, 255, 0);
     border-top-color: #017AC2;
     border-width: 9px;
-    margin-left: -9px;
+    margin-left: -10px;
 }
 .schedule-map-info-box a {
     color: yellow !important;
@@ -702,8 +702,14 @@ em.maker-info-window-title {
     font-weight: 700;
     color: #FFFFFF;
 }
-.schedule-map-info-window-schedule {
-    
+.schedule-map-info-window-schedule-contents {
+    position: absolute;
+    width: 100%;
+    padding: 0.5em;
+    top: calc(13em + 20px);;
+    left: 0em;
+    background-color: #017AC2;
+    border-radius: 1em;
 }
 
 #map-loading-screen {

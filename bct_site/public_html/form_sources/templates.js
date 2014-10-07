@@ -11,6 +11,7 @@ ISR.templates.profile_page["favorites-container-agency-bar-item"] = '' +
     'onclick="ISR.utils.changeAgency(\'{{ AGENCY_NAME }}\');">' +
 
         '<img class="favorites-container-agency-bar-item-image" ' +
+        'alt="Select Agency" title="Select Agency" ' +
         'src="{{ PATH_TO_AGENCY_ICON }}">' +
 
     '</span>';

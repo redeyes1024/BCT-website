@@ -98,16 +98,24 @@ BCTAppServices.service('miniScheduleService', [ function() {
     };
 
     this.getNearestTimes = function(time, times, bef, aft) {
+
         if (!bef) {
             var bef = self.mini_schedule_quantity_defaults.before_times;
             var aft = self.mini_schedule_quantity_defaults.after_times;
         }
+
         else if (!aft) {
             var aft = self.mini_schedule_quantity_defaults.after_times;
         }
         
-        var times_int = times.map(function(a) { return parseInt(a.replace(/:/,"")) })
+        var times_int = times.map(function(a) {
+
+            return parseInt(a.replace(/:/,""));
+
+        });
+
         var now_int = parseInt(time.replace(/:/,""));
+
         var nearest = {
             prev_times: [],
             next_times: []
@@ -131,6 +139,7 @@ BCTAppServices.service('miniScheduleService', [ function() {
         nearest.next_times = nearest.next_times.map(self.convertToTime);
 
         return nearest;
+
     };
 
 }]);
@@ -1212,7 +1221,8 @@ default_demo_coords, svg_icon_paths, map_clusterer, marker_icon_options) {
 
     this.showSelectedInfoWindow = function(
         module,
-        point, e,
+        point,
+        e,
         point_name,
         hovered
     ) {
@@ -1246,10 +1256,15 @@ default_demo_coords, svg_icon_paths, map_clusterer, marker_icon_options) {
 
         //Prevent info box from opening from hover if already opened from click
         if (module === "schedule" && !!hovered) {
-            if (point.info[id_type_name] ===
-                myride.dom_q.map.overlays["open_info"][0][id_type_name]) { 
+
+            if (!!myride.dom_q.map.overlays["open_info"][0][id_type_name] &&
+                point.info[id_type_name] ===
+                myride.dom_q.map.overlays["open_info"][0][id_type_name]) {
+
                 return true;
+
             }
+
         }
 
         var open_window = myride.dom_q.map.overlays[open_info_name][0];
@@ -1263,13 +1278,21 @@ default_demo_coords, svg_icon_paths, map_clusterer, marker_icon_options) {
             point.marker
         );
 
-        //Store a reference to the latest opened info window
-        //so it can be closed when another is opened
-        if (!hovered) {
+        var marker_label =
+        myride.dom_q.map.overlays[open_info_name][0].marker_label;
+
+        if (!hovered && marker_label) {
+
             myride.dom_q.map.overlays[open_info_name][0].close();
+
+            myride.dom_q.map.overlays.points[marker_label].info.clicked = false;
+
         }
 
         myride.dom_q.map.overlays[open_info_name].pop();
+
+        //Store a reference to the latest opened info window
+        //so it can be closed when another is opened
         myride.dom_q.map.overlays[open_info_name].push(point.info);
 
         if (!hovered) {
@@ -1321,7 +1344,9 @@ default_demo_coords, svg_icon_paths, map_clusterer, marker_icon_options) {
             function() {
 
                 self.createDummyInfoWindow(marker_list_name);
-                
+
+                self.createDummyInfoWindow(marker_list_name, true);
+
                 myride.dom_q.map.overlays[marker_list_name][marker_id].
                 info.clicked = false;
 
@@ -1538,6 +1563,12 @@ default_demo_coords, svg_icon_paths, map_clusterer, marker_icon_options) {
 
             var associated_routes_icons = '';
 
+            var schedule_template = '' +
+
+                '<span class="schedule-map-info-window-schedule-contents">' +
+                    'Loading Schedule...' +
+                '</span>';
+
             for (var k=0; k<associated_routes.length; k++) {
 
                 var switch_route_function_attribute;
@@ -1554,7 +1585,7 @@ default_demo_coords, svg_icon_paths, map_clusterer, marker_icon_options) {
                     'ng-click="switchRoutes(' +
                         '\'' + stops[bstops_names[i]].Routes[k] + '\', ' +
                         '\'' + bstops_names[i] + '\'' +
-                    ');"'
+                    ');"';
 
                 }
 
@@ -1605,7 +1636,7 @@ default_demo_coords, svg_icon_paths, map_clusterer, marker_icon_options) {
                 pixelOffset: {
 
                     width: -99,
-                    height: -137
+                    height: -161
 
                 },
                 infoBoxClearance: {
@@ -1618,6 +1649,8 @@ default_demo_coords, svg_icon_paths, map_clusterer, marker_icon_options) {
             });
 
             info_window.set("schedule_marker_window_id", i);
+
+            info_window.set("marker_label", bstops_names[i]);
 
             myride.dom_q.map.overlays.points[bstops_names[i]] = {
                 marker: marker,
@@ -1639,6 +1672,8 @@ default_demo_coords, svg_icon_paths, map_clusterer, marker_icon_options) {
 
                 this.associated_routes_icons = associated_routes_icons;
 
+                this.schedule_template = schedule_template;
+
                 this.func = function(e, hovered) {
 
                     var window_already_open = 
@@ -1652,6 +1687,8 @@ default_demo_coords, svg_icon_paths, map_clusterer, marker_icon_options) {
 
                     if (window_already_open) { return true; }
 
+                    var scope = generalServiceUtilities.top_level_scope;
+
                     angular.element(document).ready(function() {
 
                         try {
@@ -1661,14 +1698,27 @@ default_demo_coords, svg_icon_paths, map_clusterer, marker_icon_options) {
                                 "info-window-associated-routes"
                             )[0];
 
+                            var schedule_el = self.pt.info.div_.
+                            getElementsByClassName(
+                                "schedule-map-info-window-schedule"
+                            )[0];
+
+                            schedule_el.style.display = "none";
+
                             var route_icons_el_ang_obj =
                             angular.element(route_icons_el);
 
-                            var scope = generalServiceUtilities.top_level_scope;
+                            var schedule_el_ang_obj =
+                            angular.element(schedule_el);
 
                             route_icons_el_ang_obj.
                             append(
                                 $compile(self.associated_routes_icons)(scope)
+                            );
+
+                            schedule_el_ang_obj.
+                            append(
+                                $compile(self.schedule_template)(scope)
                             );
 
                         }
@@ -1687,11 +1737,22 @@ default_demo_coords, svg_icon_paths, map_clusterer, marker_icon_options) {
 
                         self.pt.info.clicked = true;
 
+                        angular.element(document).ready(function() {
+
+                            var schedule_el = self.pt.info.div_.
+                            getElementsByClassName(
+                                "schedule-map-info-window-schedule"
+                            )[0];
+
+                            schedule_el.style.display = "block";
+
+                        });
+
+                        scope.show_info_window_schedule = true;
+
                         //Request next arrivals for clicked route/stop
                         scheduleDownloadAndTransformation.
                         downloadSchedule(route, self.s_id).then(function(res) {
-
-                            console.log("Downloading schedule.");
 
                             if (!res.data.Today) {
 
@@ -1712,10 +1773,12 @@ default_demo_coords, svg_icon_paths, map_clusterer, marker_icon_options) {
 
                                 try {
 
-                                    document.getElementById(
-                                        "stop-window-times-" + self.s_id
-                                    ).
-                                    innerHTML = nearest_schedule.
+                                    var schedule_el = self.pt.info.div_.
+                                    getElementsByClassName(
+                                        "schedule-map-info-window-schedule"
+                                    )[0];
+
+                                    schedule_el.innerHTML = nearest_schedule.
                                     nearest.next_times.join(", ");
 
                                 }
@@ -2847,15 +2910,23 @@ function(agency_filter_icons) {
 
         var template = '';
 
-        for (agency in agency_filter_icons) {
+        for (var agency in agency_filter_icons) {
+
             var agency_filter = agency_filter_icons[agency];
 
+            var agency_name = agency_filter_icons[agency].name;
+
             template += '' +
+
             '<span id="' + agency_filter.agency + '-filter-' + filter_type +
-                '"' +
-                'class="link-icon agency-filter ' +
-                icon_arrangement_class + '">' +
-                '<img class="agency-filter-icon ptr ' +
+            '"' +
+            'class="link-icon agency-filter ' +
+            icon_arrangement_class + '">' +
+
+                '<img ' +
+                'alt="Select Agency: ' + agency_name + '" ' +
+                'title="Select Agency: ' + agency_name + '" ' +
+                'class="agency-filter-icon ptr ' +
                 '{{ agency_filter_icons.' + agency_filter.agency +
                 '.selection_class }}" ' +
                 'src="' +
@@ -2864,8 +2935,11 @@ function(agency_filter_icons) {
                 'css/ico/' +
                 agency_filter.icon_filename + '" ' +
                 'ng-click="enableAgencyFilter(\'' + agency_filter.agency +
-                '\'' + ');">' +
+                '\'' + '); ' +
+                '">' +
+
             '</span>';
+
         }
 
         return template;
