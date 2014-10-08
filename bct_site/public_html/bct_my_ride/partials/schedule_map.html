@@ -128,6 +128,16 @@ ng-class="schedule_map_styles" class="fbox" ng-class="schedule_map_styles">
 
     </span>
 
+    <span ng-show="show_nearest_map_stops_title">
+
+        <span class="nearest-map-stops-title title-header no-highlight"
+        ng-show="show_nearest_map_stops_title_header"
+        ng-class="nearest_map_stops_title_styles">
+            Nearest Stops Map
+        </span>
+
+    </span>
+
     <div id="map-canvas" ng-class="map_canvas_styles"
     ng-show="show_map_canvas"></div>
 

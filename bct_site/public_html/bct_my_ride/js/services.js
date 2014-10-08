@@ -1281,11 +1281,16 @@ default_demo_coords, svg_icon_paths, map_clusterer, marker_icon_options) {
         var marker_label =
         myride.dom_q.map.overlays[open_info_name][0].marker_label;
 
-        if (!hovered && marker_label) {
+        if ((!hovered && marker_label) || module === "planner") {
 
             myride.dom_q.map.overlays[open_info_name][0].close();
 
-            myride.dom_q.map.overlays.points[marker_label].info.clicked = false;
+            if (module === "schedule") {
+
+                myride.dom_q.map.overlays.points[marker_label].info.clicked =
+                false;
+
+            }
 
         }
 
@@ -1773,13 +1778,15 @@ default_demo_coords, svg_icon_paths, map_clusterer, marker_icon_options) {
 
                                 try {
 
-                                    var schedule_el = self.pt.info.div_.
+                                    var schedule_el_cont = self.pt.info.div_.
                                     getElementsByClassName(
-                                        "schedule-map-info-window-schedule"
+                                        "schedule-map-info-" +
+                                        "window-schedule-contents"
                                     )[0];
 
-                                    schedule_el.innerHTML = nearest_schedule.
-                                    nearest.next_times.join(", ");
+                                    schedule_el_cont.innerHTML =
+                                    nearest_schedule.nearest.
+                                    next_times.join(", ");
 
                                 }
 

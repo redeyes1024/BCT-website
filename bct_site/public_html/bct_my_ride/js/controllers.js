@@ -39,18 +39,22 @@ function ($scope, $timeout, profilePageService) {
     };
 
     $scope.setNearestResultStopsLocationSpinner = function(new_state) {
+
         $scope.setLocationSpinnerAnimation(
             "nearest_results_bstops",
             new_state
         );
+
     };
 
     $scope.$on('$destroy', function() {
+
         $scope.setLocationSpinnerAnimation(
             "nearest_results_bstops", "inactive"
         );
 
         $timeout.cancel($scope.results_page_location_spinner_timeout);
+
     });
 
     $scope.getLocationAndDisplayForResultsPage = function() {
@@ -780,7 +784,7 @@ unitConversionAndDataReporting, module_error_messages) {
         $scope.trip_planner_styles["trip-planner-module-active"] = true;
 
         if (!$scope.show_map_overlay_module) {
-            $scope.toggleMapSchedule(true);
+            $scope.toggleMapSchedule("planner");
         }
 
         $scope.top_scope.show_trip_planner_title = true;
@@ -804,11 +808,15 @@ unitConversionAndDataReporting, module_error_messages) {
     //The first time the trip form is submitted, the map is shown (see above)
     $scope.submitTrip = $scope.submitTripPlannerQueryAndShowMap;
 
-    $scope.top_scope.closeMapAndResetTripPlanner = function() {
+    $scope.top_scope.closeMapAndResetTripPlanner = function(
+        disable_map_toggle
+    ) {
+
+        if(disable_map_toggle) {
+            $scope.toggleMapSchedule("planner");
+        }
 
         googleMapUtilities.createDummyInfoWindow("trip_points");
-
-        $scope.toggleMapSchedule(true);
 
         $scope.top_scope.show_trip_planner_title = false;
 
@@ -820,7 +828,7 @@ unitConversionAndDataReporting, module_error_messages) {
 
         googleMapUtilities.createDummyInfoWindow("points");
 
-        $scope.toggleMapSchedule();
+        $scope.toggleMapSchedule("schedule");
 
         $scope.top_scope.show_schedule_result_top_bar = false;
 
@@ -829,5 +837,38 @@ unitConversionAndDataReporting, module_error_messages) {
         $scope.submitTrip = $scope.submitTripPlannerQueryAndShowMap;
 
     };
+
+}]);
+
+BCTAppControllers.controller('nearestMapStopsController', ['$scope',
+'$timeout', 'nearestStopsService', 'googleMapUtilities',
+function ($scope, $timeout, nearestStopsService, googleMapUtilities) {
+
+    //For ease of debugging (development only)
+    window.nms_scope = $scope;
+
+    googleMapUtilities.clearMap();
+
+    $scope.toggleMapSchedule("nearest");
+
+    var coordsClickListener = google.maps.event.addListener(
+        myride.dom_q.map.inst,
+        "click",
+        function(event) {
+
+        var lat = event.latLng.lat();
+        var lng = event.latLng.lng();
+
+        console.log(lat, lng);
+
+    });
+
+    $scope.$on("$destroy", function() {
+
+        $scope.toggleMapSchedule("nearest");
+
+        coordsClickListener.remove();
+
+    });
 
 }]);

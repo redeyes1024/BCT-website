@@ -1,4 +1,4 @@
-<div id="index-page" ng-class="main_module_styles">
+<div id="index-page">
 
     <div class="schedule-search-area-container myride-title-shadow
     no-highlight">
@@ -20,8 +20,11 @@
 
             <span ng-click="closeMapAndResetTripPlanner();"
             class="ptr text-shadow-hover">
+
                 <i class="fa fa-arrow-circle-left"></i>
+
                 Back to Index - MyRide
+
             </span>
 
             <span class="info-corner-icon text-shadow-hover-icon ptr"
@@ -39,7 +42,7 @@
 
             <span class="search-submit-button search-top-buttons">
                 <i class="fa fa-search icon-lower-2 link-icon ptr"
-                ng-click="changeURLHash('#routeschedules', 'schedule_search');
+                ng-click="changeURLHash('routeschedules', 'schedule_search');
                 submitRouteStopSearch('click', 'index');">     
                 </i>
             </span>
@@ -108,44 +111,76 @@
             <!-- Recently Viewed Trips -->
 
             <div class="panel panel-default">
+
                 <h2 class="panel-heading panel-title no-highlight ptr" toggle
-                    target="recent-trips" ng-click="foldOptions($event);">
+                target="recent-trips" ng-click="foldOptions($event);">
+
                     <span class="collapse-button">
+
                         <i class="fa fa-plus-circle collapse-icon"></i>
+
                     </span>
+
                     Recently Viewed Trips
+
                 </h2>
+
                 <div id="recent-trips" toggleable active-class="in"
-                    exclusion-group="accordion1"
-                    class="panel-collapse collapse">
+                exclusion-group="accordion1"
+                class="panel-collapse collapse">
+
                     <div class="panel-body">
+
                         <input type="text" id="recent-trip-filter"
                         class="result-filter" ng-model="recentTripFilter"
                         placeholder="Filter trips...">
-                        <div class="list-group scrollable-content stops-list no-highlight">
-                            <div class="list-group-item list-group-item-responsive"
-                                ng-repeat="recent_trip in recently_viewed.trips | filter:{name:recentTripFilter}">
+
+                        <div class="list-group scrollable-content stops-list
+                        no-highlight">
+
+                            <div class="list-group-item
+                            list-group-item-responsive"
+                            ng-repeat="recent_trip in recently_viewed.trips
+                            | filter:{name:recentTripFilter}">
+
                                 <div class="result-icon-container link-icon ptr">
                                     <i class="fa fa-star-o fa-lg"></i>
                                 </div>
+
                                 <div class="result-list-text">
-                                    {{ recent_trip.name }}
+                                        {{ recent_trip.name }}
                                 </div>
+
                                 <div class="result-icon-container link-icon
-                                    link-icon ptr" ng-click="changeURLHash('#tripplanner')">
+                                link-icon ptr"
+                                ng-click="changeURLHash('tripplanner')">
+
                                     <i class="fa fa-chevron-right fa-lg
-                                        arrow-right-icon ptr">
-                                    </i>
+                                    arrow-right-icon ptr"></i>
+
                                 </div>
+
                             </div>
+
                         </div>
+
                     </div>
+
                 </div>
+
             </div>
 
         </div>
 
         <nearest-stops></nearest-stops>
+
+        <div id="nearest-stops-header" class="title-header myride-title-shadow
+        no-highlight ptr"
+        ng-click="changeURLHash('nearestmapstops');">
+
+            Find on Map
+
+        </div>
 
     </div>
 

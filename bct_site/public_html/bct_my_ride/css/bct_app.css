@@ -97,7 +97,8 @@ em.hint-text {
     height: calc(100% - 7.5em);
 }
 #index-page,
-#route-schedules-module {
+#route-schedules-module,
+#nearest-map-stops {
     height: calc(100% - 1em);
 }
 .agency-filter,
@@ -1449,6 +1450,32 @@ iframe .trip-planner-dialog-finish {
 }
 
 /* END Trip Planner */
+
+/* START Nearest Map Stops */
+
+#nearest-map-stops {
+    
+}
+.nearest-map-stops-title {
+    box-shadow: 0px 6px 6px -5px #000;
+    z-index: 1029;
+    padding: 2px 0em calc(1.5em + 0px) 0.5em;
+    position: relative;
+}
+.nearest-map-stops-main-stop-info-container {
+    
+}
+.nearest-map-stops-initial-display {
+    
+}
+.nearest-map-stops-stop-index-display {
+    
+}
+.nearest-map-stops-single-stop-display {
+    
+}
+
+/* END Nearest Map Stops */
 
 /* START All Media Queries */
 

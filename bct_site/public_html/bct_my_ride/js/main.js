@@ -87,6 +87,6 @@ angular.element(document).ready(function() {
     }
 
     if (checkLocationHash()) {
-        window.location.hash = "#bctappindex";
+        window.location.hash = "#/bctappindex";
     }
 });
