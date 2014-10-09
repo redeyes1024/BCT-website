@@ -145,21 +145,13 @@ BCTAppServices.service('miniScheduleService', [ function() {
 }]);
 
 BCTAppServices.service('locationService', [ '$timeout', 'latest_location',
-'default_demo_coords',
-function($timeout, latest_location, default_demo_coords) {
+'default_demo_coords', 'out_of_region_cutoff_coords',
+function($timeout, latest_location, default_demo_coords,
+out_of_region_cutoff_coords) {
 
     var self = this;
 
-    this.OUT_OF_REGION_CUTOFF_COORDS = {
-        lat: {
-            max: 27,
-            min: 25
-        },
-        lng: {
-            max: -81,
-            min: -82
-        }
-    };
+    this.OUT_OF_REGION_CUTOFF_COORDS = out_of_region_cutoff_coords;
 
     this.getDefaultDemoCoords = function(coord_labels) {
 
@@ -300,7 +292,7 @@ function(locationService) {
 
     //Will not report stops further than this distance
     //In degrees, or meters divided by 111111 as a rough conversion
-    this.MAXIMUM_DISTANCE = 500 / 111111;
+    this.MAXIMUM_DISTANCE = 1000 / 111111;
 
     this.MAXIMUM_REPORTED_STOPS = 3;
 
@@ -374,12 +366,18 @@ function(locationService) {
     this.findNearestStops = function(
         current_location,
         full_bstop_list,
-        bus_stop_dictionary
+        bus_stop_dictionary,
+        return_full_list,
+        disable_location_check
     ) {
 
-        current_location =
-        locationService.
-        changeToDefaultLocationIfOutsideOfFlorida(current_location);
+        if (!disable_location_check) {
+
+            current_location =
+            locationService.
+            changeToDefaultLocationIfOutsideOfFlorida(current_location);
+
+        }
 
         var full_bstop_list_ids_coords = [];
 
@@ -401,8 +399,20 @@ function(locationService) {
             return sd.distance < self.MAXIMUM_DISTANCE;
         });
 
-        var nearest_bstops = stops_below_cutoff.
-        slice(0, self.MAXIMUM_REPORTED_STOPS);
+        var nearest_bstops;
+
+        if (return_full_list) {
+
+            nearest_bstops = stops_below_cutoff;
+
+        } 
+
+        else {
+
+            nearest_bstops = stops_below_cutoff.
+            slice(0, self.MAXIMUM_REPORTED_STOPS);
+
+        }
 
         for (var j=0;j<nearest_bstops.length;j++) {
 
@@ -870,12 +880,13 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
 'scheduleDownloadAndTransformation', 'unitConversionAndDataReporting',
 'locationService', 'map_navigation_marker_indices',
 'generalServiceUtilities', 'default_demo_coords', 'svg_icon_paths',
-'map_clusterer', 'marker_icon_options',
+'map_clusterer', 'marker_icon_options', 'marker_click_memory',
 
 function($compile, $q, scheduleDownloadAndTransformation,
 unitConversionAndDataReporting, locationService,
 map_navigation_marker_indices, generalServiceUtilities,
-default_demo_coords, svg_icon_paths, map_clusterer, marker_icon_options) {
+default_demo_coords, svg_icon_paths, map_clusterer, marker_icon_options,
+marker_click_memory) {
 
     var self = this;
 
@@ -1071,12 +1082,20 @@ default_demo_coords, svg_icon_paths, map_clusterer, marker_icon_options) {
 
     };
 
-    this.clearMap = function() {
+    this.clearMap = function(keep_draggable) {
 
         var points = myride.dom_q.map.overlays.points;
+
         var pline =  myride.dom_q.map.overlays.pline;
+
         var trip_points = myride.dom_q.map.overlays.trip_points;
+
         var trip_pline = myride.dom_q.map.overlays.trip_pline;
+
+        var nearest_map_points = myride.dom_q.map.overlays.nearest_map_points;
+
+        var nearest_map_draggable =
+        myride.dom_q.map.overlays.nearest_map_draggable;
 
         for (var mk=0;mk<trip_points.length;mk++) {
             trip_points[mk].marker.setMap(null);
@@ -1121,6 +1140,28 @@ default_demo_coords, svg_icon_paths, map_clusterer, marker_icon_options) {
             map_clusterer.clusterer.clusters_[cl].remove();
 
         }
+
+        for (var np in nearest_map_points) {
+
+            nearest_map_points[np].marker.setMap(null);
+
+        }
+
+        myride.dom_q.map.overlays.nearest_map_points = {};
+
+        if (!keep_draggable) {
+
+            for (var nd in nearest_map_draggable) {
+
+                nearest_map_draggable[nd].marker.setMap(null);
+
+            }
+
+            myride.dom_q.map.overlays.nearest_map_draggable = {};
+
+        }
+
+        marker_click_memory.nearest = "";
 
     };
 
@@ -1829,6 +1870,138 @@ default_demo_coords, svg_icon_paths, map_clusterer, marker_icon_options) {
         }
 
         map_clusterer.clusterer.markers_ = clustered_markers;
+
+    };
+
+    this.addNearestMapMarkerClickAndHoverListeners = function(
+        cur_point,
+        cur_point_id
+    ) {
+
+        google.maps.event.addListener(
+            cur_point.marker,
+            'mouseover',
+            function() {
+
+                var icon_options = marker_icon_options.schedule_map.mouseover;
+
+                icon_options.fillColor = self.palette.colors.blue;
+
+                cur_point.marker.setOptions(
+                    {
+                        icon: icon_options
+                    }
+                );
+
+            }
+        );
+
+        google.maps.event.addListener(
+            cur_point.marker,
+            'mouseout',
+            function() {
+
+                if(!cur_point.clicked) {
+
+                    var icon_options = marker_icon_options.schedule_map.default;
+
+                    icon_options.fillColor = self.palette.colors.red;
+
+                    cur_point.marker.setOptions(
+                        {
+                            icon: icon_options
+                        }
+                    );
+
+                }
+
+            }
+        );
+
+        google.maps.event.addListener(
+            cur_point.marker,
+            'click',
+            function() {
+
+                if (marker_click_memory.nearest === cur_point_id) {
+                    return true;
+                }
+
+                cur_point.clicked = true;
+
+                var icon_options;
+
+                if (!!myride.dom_q.map.overlays.
+                    nearest_map_points[marker_click_memory.nearest]) {
+
+                    var old_point = myride.dom_q.map.overlays.
+                    nearest_map_points[marker_click_memory.nearest];
+
+                    old_point.clicked = false;
+
+                    icon_options =
+                    marker_icon_options.schedule_map.default;
+
+                    icon_options.fillColor = self.palette.colors.red;
+
+                    old_point.marker.setOptions( {
+                        icon: icon_options
+                    });
+
+                }
+
+                marker_click_memory.nearest = cur_point_id;
+
+                icon_options =
+                marker_icon_options.schedule_map.mouseover;
+
+                icon_options.fillColor = self.palette.colors.blue;
+
+                cur_point.marker.setOptions(
+                    {
+                        icon: icon_options
+                    }
+                );
+
+            }
+    );
+
+    };
+
+    this.displayNearestMapStops = function(
+        nearest_stops,
+        stops
+    ) {
+
+        for (var i=0; i<nearest_stops.length;i++) {
+
+            var marker_coords = { 
+                lat: nearest_stops[i].LatLng.Latitude,
+                lng: nearest_stops[i].LatLng.Longitude
+            };
+
+            var marker_options = marker_icon_options.
+            schedule_map.default;
+
+            marker_options.fillColor = self.palette.colors.red;
+
+            var marker = new google.maps.Marker({
+                map: myride.dom_q.map.inst,
+                position: marker_coords,
+                icon: marker_options
+            });
+
+            var cur_point =
+            myride.dom_q.map.overlays.nearest_map_points[nearest_stops[i].Id] =
+            {
+                marker: marker
+            };
+
+            top_self.addNearestMapMarkerClickAndHoverListeners(
+                cur_point,nearest_stops[i].Id
+            );
+
+        }
 
     };
 
@@ -2950,6 +3123,38 @@ function(agency_filter_icons) {
         }
 
         return template;
+
+    };
+
+}]);
+
+BCTAppServices.service('nearestMapStopsService', [ 'nearestStopsService',
+'googleMapUtilities',
+
+function(nearestStopsService, googleMapUtilities) {
+
+    this.showNearestStopsFromMapCoords = function(
+        coords,
+        full_bstop_list,
+        bus_stop_dictionary
+    ) {
+
+        var nearest_stops_to_map_point = nearestStopsService.findNearestStops(
+            coords,
+            full_bstop_list,
+            bus_stop_dictionary,
+            true,
+            true
+        );
+
+        googleMapUtilities.clearMap(true);
+
+        googleMapUtilities.displayNearestMapStops(
+            nearest_stops_to_map_point,
+            bus_stop_dictionary
+        );
+
+        return nearest_stops_to_map_point;
 
     };
 

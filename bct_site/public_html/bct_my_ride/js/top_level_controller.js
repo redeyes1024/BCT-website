@@ -8,7 +8,8 @@ BCTAppTopController.controller('BCTController', [
     'placeholderService', 'locationService', 'location_icons',
     'agency_filter_icons', 'results_exist', 'map_navigation_marker_indices',
     'legend_icon_list', 'all_alerts', 'profilePageService',
-    'routeAndStopFilters', 'module_error_messages',
+    'routeAndStopFilters', 'module_error_messages', 'default_demo_coords',
+    'nearestMapStopsService',
 
 function (
 
@@ -17,7 +18,8 @@ function (
     unitConversionAndDataReporting, miniScheduleService, placeholderService,
     locationService, location_icons, agency_filter_icons, results_exist,
     map_navigation_marker_indices, legend_icon_list, all_alerts,
-    profilePageService, routeAndStopFilters, module_error_messages
+    profilePageService, routeAndStopFilters, module_error_messages,
+    default_demo_coords, nearestMapStopsService
 
 ) {
 
@@ -143,6 +145,10 @@ function (
         
     };
 
+    $scope.nearest_map_stops_info_container_styles = {
+        
+    };
+
     /* END CSS class expressions to be used to ng-class, with defaults */
 
     /* START Overlay Display Controls */
@@ -214,6 +220,8 @@ function (
     $scope.show_nearest_map_stops_title = false;
     $scope.show_nearest_map_stops_title_header = true;
     $scope.show_nearest_map_stops_title_with_back_function = false;
+
+    $scope.show_nearest_map_stops_info_container = false;
 
     (function() {
 
@@ -2523,6 +2531,47 @@ function (
         $scope.show_nearest_map_stops_title_with_back_function = true;
 
         googleMapUtilities.setMapPosition(null, 10);
+
+        var position = { 
+            lat: default_demo_coords.LatLng.Latitude,
+            lng: default_demo_coords.LatLng.Longitude
+        };
+
+        myride.dom_q.map.overlays.nearest_map_draggable.default = {};
+
+        var marker =
+        myride.dom_q.map.overlays.nearest_map_draggable.default.marker =
+        new google.maps.Marker({
+            map: myride.dom_q.map.inst,
+            position: position,
+            draggable: true
+        });
+
+        google.maps.event.addListener(
+            marker,
+            'dragend',
+            function() {
+
+                var lat = this.getPosition().lat();
+                var lng = this.getPosition().lng();
+
+                var coords = {
+
+                    LatLng: {
+                        Latitude: lat,
+                        Longitude: lng
+                    }
+
+                };
+
+                nearestMapStopsService.showNearestStopsFromMapCoords(
+                    coords,
+                    $scope.stops_arr,
+                    $scope.stops
+                );
+
+            }
+        );
 
     };
 

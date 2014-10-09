@@ -1462,11 +1462,15 @@ iframe .trip-planner-dialog-finish {
     padding: 2px 0em calc(1.5em + 0px) 0.5em;
     position: relative;
 }
-.nearest-map-stops-main-stop-info-container {
-    
+.nearest-map-stops-info-container {
+    height: 8em;
+    border-style: dotted;
+    border-width: 1px 0px;
 }
 .nearest-map-stops-initial-display {
-    
+    position: relative;
+    font-size: 1.5em;
+    top: calc(2em - 8px);
 }
 .nearest-map-stops-stop-index-display {
     

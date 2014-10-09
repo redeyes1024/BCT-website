@@ -16,15 +16,18 @@ window.myride = {};
 
 //For relative directory structure changes
 window.myride.directories = {
+
     site_roots: {
         local: '',
         remote: 'http://www.isrtransit.com/files/bct/webapp/',
         active: ''
     },
+
     paths: {
         my_ride: 'bct_my_ride/',
         active: ''
     }
+
 };
 
 //Select the current directory from the above object
@@ -59,7 +62,9 @@ window.myride.dom_q = {
                 content: "<span>Stop: First</span>"
             }],
             ordered_stop_list: [],
-            points: {}
+            points: {},
+            nearest_map_points: {},
+            nearest_map_draggable: {}
         }
     },
     inputs: {

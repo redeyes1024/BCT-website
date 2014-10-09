@@ -345,3 +345,14 @@ BCTApp.directive('tripPlannerIcon', [ '$compile', function($compile) {
     };
 
 }]);
+
+BCTApp.directive('nearestMapStopsInfoContainer', [ function() {
+
+    return {
+        restrict: 'E',
+        templateUrl: window.myride.directories.site_roots.active +
+        window.myride.directories.paths.active +
+        'partials/nearest_map_stops_info_container.html'
+    };
+
+}]);

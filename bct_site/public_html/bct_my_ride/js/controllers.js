@@ -788,7 +788,10 @@ unitConversionAndDataReporting, module_error_messages) {
         }
 
         $scope.top_scope.show_trip_planner_title = true;
+
         $scope.top_scope.show_schedule_result_top_bar = false;
+
+        $scope.top_scope.show_nearest_map_stops_info_container = false;
 
         //Do not toggle map the subsequent times this function is called
         //until function is re-defined yet again (when map is closed)
@@ -812,7 +815,7 @@ unitConversionAndDataReporting, module_error_messages) {
         disable_map_toggle
     ) {
 
-        if(disable_map_toggle) {
+        if(!disable_map_toggle) {
             $scope.toggleMapSchedule("planner");
         }
 
@@ -841,8 +844,9 @@ unitConversionAndDataReporting, module_error_messages) {
 }]);
 
 BCTAppControllers.controller('nearestMapStopsController', ['$scope',
-'$timeout', 'nearestStopsService', 'googleMapUtilities',
-function ($scope, $timeout, nearestStopsService, googleMapUtilities) {
+'$timeout', 'googleMapUtilities',
+
+function ($scope, $timeout, googleMapUtilities) {
 
     //For ease of debugging (development only)
     window.nms_scope = $scope;
@@ -851,23 +855,15 @@ function ($scope, $timeout, nearestStopsService, googleMapUtilities) {
 
     $scope.toggleMapSchedule("nearest");
 
-    var coordsClickListener = google.maps.event.addListener(
-        myride.dom_q.map.inst,
-        "click",
-        function(event) {
+    $scope.top_scope.show_trip_planner_title = false;
 
-        var lat = event.latLng.lat();
-        var lng = event.latLng.lng();
-
-        console.log(lat, lng);
-
-    });
+    $scope.top_scope.show_nearest_map_stops_info_container = true;
 
     $scope.$on("$destroy", function() {
 
         $scope.toggleMapSchedule("nearest");
 
-        coordsClickListener.remove();
+        $scope.top_scope.show_nearest_map_stops_info_container = false;
 
     });
 

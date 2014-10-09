@@ -4,6 +4,28 @@ var BCTAppValues = angular.module('BCTAppValues', []);
 //BCTAppValues.value('scheduleWebSocket',
 //new WebSocket("ws://echo.websocket.org"));
 
+
+
+BCTAppValues.value('marker_click_memory', {
+
+    nearest: ""
+
+});
+
+BCTAppValues.value('out_of_region_cutoff_coords', {
+
+    lat: {
+        max: 27,
+        min: 25
+    },
+
+    lng: {
+        max: -80.0,
+        min: -80.5
+    }
+
+});
+
 BCTAppValues.value('marker_icon_options', {
 
     schedule_map: {
@@ -117,10 +139,12 @@ BCTAppValues.value('svg_icon_paths', {
 });
 
 BCTAppValues.value('default_demo_coords', {
+
     LatLng: {
         Latitude: 25.977301,
         Longitude: -80.12027
     }
+
 });
 
 BCTAppValues.value('all_alerts', {
