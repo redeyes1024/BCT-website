@@ -881,12 +881,13 @@ BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
 'locationService', 'map_navigation_marker_indices',
 'generalServiceUtilities', 'default_demo_coords', 'svg_icon_paths',
 'map_clusterer', 'marker_icon_options', 'marker_click_memory',
+'selected_nearest_map_stop', 'nearest_map_stop_distances',
 
 function($compile, $q, scheduleDownloadAndTransformation,
 unitConversionAndDataReporting, locationService,
 map_navigation_marker_indices, generalServiceUtilities,
 default_demo_coords, svg_icon_paths, map_clusterer, marker_icon_options,
-marker_click_memory) {
+marker_click_memory, selected_nearest_map_stop, nearest_map_stop_distances) {
 
     var self = this;
 
@@ -1162,6 +1163,10 @@ marker_click_memory) {
         }
 
         marker_click_memory.nearest = "";
+
+        selected_nearest_map_stop.stop_id = "";
+
+        nearest_map_stop_distances.dists = [];
 
     };
 
@@ -1962,6 +1967,8 @@ marker_click_memory) {
                         icon: icon_options
                     }
                 );
+
+                selected_nearest_map_stop.stop_id = cur_point_id;
 
             }
     );

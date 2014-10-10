@@ -1,17 +1,72 @@
-<div class="nearest-map-stops-initial-display">
+<div class="nearest-map-stops-initial-display"
+ng-hide="selected_nearest_map_stop.stop_id">
 
-    Select location on map.
+    <span class="nearest-map-stops-initial-display-text">
+
+        Drag the marker pin to the desired location on the map,
+        then select a stop.
+
+    </span>
 
 </div>
 
-<div class="nearest-map-stops-stop-index-display">
+<div ng-show="selected_nearest_map_stop.stop_id"
+class="nearest-map-stops-single-stop-display">
 
-    
+    <div class="nearest-map-stops-single-stop-display-left-side">
 
-</div>
+        <span class="nearest-map-stops-single-stop-display-bus-route"
+        ng-repeat="route in stops[selected_nearest_map_stop.stop_id].Routes">
 
-<div class="nearest-map-stops-single-stop-display">
+            <span class="nearest-map-stops-single-stop-display-bus-route-id">
 
-    
+                {{ routes[route].SName }}
+
+            </span>
+
+            <bus-svg style="fill: #{{ routes[route].Color }};"></bus-svg>
+
+        </span>
+
+    </div>
+
+    <div class="nearest-map-stops-single-stop-display-right-side">
+
+        <div class="nearest-map-stops-single-stop-display-right-side-contents">
+
+            <span class="nearest-map-stops-single-stop-display-stop-id">
+
+            [ID #{{ stops[selected_nearest_map_stop.stop_id].Code }}]
+            -
+            {{ stops[selected_nearest_map_stop.stop_id].Name }}
+
+            </span>
+
+            <span class="nearest-map-stops-single-stop-display-stop-distance">
+
+                {{
+                    nearest_map_stop_distances.dists[selected_nearest_map_stop.stop_id]
+                }}
+
+            </span>
+
+            <span class="nearest-map-stops-single-stop-display-stop-search
+            no-highlight ptr">
+
+                <span
+                class="nearest-map-stops-single-stop-display-stop-search-text"
+                ng-click="goToMyRideSchedule(
+                    null, selected_nearest_map_stop.stop_id
+                );">
+
+                    Search for Stop
+
+                </span>
+
+            </span>
+
+        </div>
+
+    </div>
 
 </div>

@@ -844,9 +844,9 @@ unitConversionAndDataReporting, module_error_messages) {
 }]);
 
 BCTAppControllers.controller('nearestMapStopsController', ['$scope',
-'$timeout', 'googleMapUtilities',
+'$timeout', 'googleMapUtilities', 'selected_nearest_map_stop',
 
-function ($scope, $timeout, googleMapUtilities) {
+function ($scope, $timeout, googleMapUtilities, selected_nearest_map_stop) {
 
     //For ease of debugging (development only)
     window.nms_scope = $scope;

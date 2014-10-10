@@ -9,7 +9,8 @@ BCTAppTopController.controller('BCTController', [
     'agency_filter_icons', 'results_exist', 'map_navigation_marker_indices',
     'legend_icon_list', 'all_alerts', 'profilePageService',
     'routeAndStopFilters', 'module_error_messages', 'default_demo_coords',
-    'nearestMapStopsService',
+    'nearestMapStopsService', 'selected_nearest_map_stop',
+    'nearest_map_stop_distances',
 
 function (
 
@@ -19,7 +20,8 @@ function (
     locationService, location_icons, agency_filter_icons, results_exist,
     map_navigation_marker_indices, legend_icon_list, all_alerts,
     profilePageService, routeAndStopFilters, module_error_messages,
-    default_demo_coords, nearestMapStopsService
+    default_demo_coords, nearestMapStopsService, selected_nearest_map_stop,
+    nearest_map_stop_distances
 
 ) {
 
@@ -705,6 +707,10 @@ function (
     })();
 
     /* END Data Object Templates */
+
+    $scope.nearest_map_stop_distances = nearest_map_stop_distances;
+
+    $scope.selected_nearest_map_stop = selected_nearest_map_stop;
 
     $scope.selectBCTSiteFullSchedule = function() {
 
@@ -2519,6 +2525,15 @@ function (
 
     };
 
+    $scope.goToMyRideSchedule = function(route, stop) {
+
+        window.location = "index.html#routeschedules?route=" + route + "&" +
+        "stop=" + stop;
+
+        $scope.goToScheduleFromProfilePage();
+
+    };
+
     $scope.openNearestMapStops = function() {
 
         $scope.show_map_overlay_module =  true;
@@ -2564,11 +2579,27 @@ function (
 
                 };
 
+                var nearest_stops_to_map_point =
                 nearestMapStopsService.showNearestStopsFromMapCoords(
                     coords,
                     $scope.stops_arr,
                     $scope.stops
                 );
+
+                var stop_ids_and_dists = {};
+
+                for (var i=0;i<nearest_stops_to_map_point.length;i++) {
+
+                    var cur_stop_id = nearest_stops_to_map_point[i].Id;
+
+                    var cur_dist_to_stop =
+                    nearest_stops_to_map_point[i].distance;
+
+                    stop_ids_and_dists[cur_stop_id] = cur_dist_to_stop;
+
+                }
+
+                nearest_map_stop_distances.dists = stop_ids_and_dists;
 
             }
         );
