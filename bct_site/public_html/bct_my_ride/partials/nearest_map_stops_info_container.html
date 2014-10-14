@@ -15,18 +15,27 @@ class="nearest-map-stops-single-stop-display">
 
     <div class="nearest-map-stops-single-stop-display-left-side">
 
-        <span class="nearest-map-stops-single-stop-display-bus-route"
-        ng-repeat="route in stops[selected_nearest_map_stop.stop_id].Routes">
+       <div class="nearest-map-stops-single-stop-display-left-side-contents">
+        
+            <span class="nearest-map-stops-single-stop-display-bus-route"
+            ng-repeat="
+                route in stops[selected_nearest_map_stop.stop_id].Routes
+            ">
 
-            <span class="nearest-map-stops-single-stop-display-bus-route-id">
+                <span
+                class="nearest-map-stops-single-stop-display-bus-route-id">
 
-                {{ routes[route].SName }}
+                    {{
+                    all_transit_agency_data.BCT.indexers.partial_labels[route]
+                    }}
+
+                </span>
+
+                <bus-svg style="fill: #{{ routes[route].Color }};"></bus-svg>
 
             </span>
 
-            <bus-svg style="fill: #{{ routes[route].Color }};"></bus-svg>
-
-        </span>
+       </div>
 
     </div>
 
@@ -45,16 +54,16 @@ class="nearest-map-stops-single-stop-display">
             <span class="nearest-map-stops-single-stop-display-stop-distance">
 
                 {{
-                    nearest_map_stop_distances.dists[selected_nearest_map_stop.stop_id]
+            nearest_map_stop_distances.dists[selected_nearest_map_stop.stop_id]
                 }}
 
             </span>
 
-            <span class="nearest-map-stops-single-stop-display-stop-search
-            no-highlight ptr">
+            <span class="nearest-map-stops-single-stop-display-stop-search">
 
                 <span
-                class="nearest-map-stops-single-stop-display-stop-search-text"
+                class="nearest-map-stops-single-stop-display-stop-search-text
+                no-highlight ptr"
                 ng-click="goToMyRideSchedule(
                     null, selected_nearest_map_stop.stop_id
                 );">

@@ -241,6 +241,7 @@ function (
     $scope.results_exist = results_exist;
 
     $scope.$watch("query_data.schedule_search", function(new_val, old_val) {
+
         if (new_val !== old_val) {
 
             $scope.filtered_routes_arr = $scope.routeFilterFunc(
@@ -270,6 +271,7 @@ function (
             }
 
         }
+
     });
 
     $scope.$watch("results_exist.main", function(new_val, old_val) {
@@ -615,13 +617,19 @@ function (
     };
 
     $scope.schedule = {
+
         nearest: {},
+
         planned: {
+
             weekdays: [],
             saturday: [],
             sunday: []
+
         },
+
         date_pick: []
+
     };
 
     $scope.all_days = [
@@ -705,6 +713,16 @@ function (
         }
 
     })();
+
+    $scope.all_transit_agency_data = {
+        BCT: {
+            obj: {},
+            arr: [],
+            indexers: {
+                partial_labels: {}
+            }
+        }
+    };
 
     /* END Data Object Templates */
 
@@ -2803,9 +2821,6 @@ function (
         })
     ]);
 
-    var route_props = ["Id", "LName"];
-    var bstop_props = ["Id", "Name", "Code"];
-
     $scope.goToScheduleFromProfilePage = function() {
 
         var url = window.location.toString();
@@ -2837,13 +2852,26 @@ function (
             $scope.query_data.schedule_search =
             stop + " " + $scope.stops[stop].Name;
 
+            if (myride.dom_q.inputs.elements.rs_search_input) {
+
+                myride.dom_q.inputs.elements.rs_search_input.value =
+                $scope.query_data.schedule_search;
+
+            }
+
         });
 
     };
 
+    var route_props = ["Id", "LName"];
+    var bstop_props = ["Id", "Name", "Code"];
+
     //Creates a partial link between the routes and stops data objects
     //in the form of a numerically indexed array
     fullDataDownloadPromise.then(function() {
+
+        var full_data = $scope.all_transit_agency_data;
+        var BCT_partial_label_obj = full_data.BCT.indexers.partial_labels;
 
         var all_stops = $scope.stops;
         var all_routes = $scope.routes;
@@ -2852,6 +2880,8 @@ function (
         var all_routes_arr = [];
 
         for (var route in all_routes) {
+
+            BCT_partial_label_obj[route] = route.slice(3);
 
             //The following property is a placeholder
             all_routes[route].alerts = all_alerts.schedule_map;

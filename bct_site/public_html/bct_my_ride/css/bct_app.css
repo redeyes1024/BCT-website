@@ -1483,26 +1483,29 @@ iframe .trip-planner-dialog-finish {
 .nearest-map-stops-single-stop-display {
     height: 100%;
     width: 100%;
+    display: table;
 }
 .nearest-map-stops-single-stop-display-left-side {
     overflow-y: auto;
-    vertical-align: middle;
-    display: inline-block;
-    height: 100%;
-    width: 8em;
+    display: table-cell;
+    width: calc(8em + 10px);
     border-style: dashed;
     border-width: 0px 1px 0px 0px;
-    padding: 0.5em 0.5em 0.5em 0em;
+    vertical-align: middle;
+}
+.nearest-map-stops-single-stop-display-left-side-contents {
+    overflow-y: auto;
+    max-height: 7em;
+    padding: 0.5em 0em;
 }
 .nearest-map-stops-single-stop-display-right-side {
-    display: inline-table;
-    vertical-align: middle;
+    display: table-cell;
     width: calc(100% - 8.5em);
-    height: 100%;
+    vertical-align: middle;
 }
 .nearest-map-stops-single-stop-display-right-side-contents {
-    display: table-cell;
-    vertical-align: middle;
+    overflow-y: auto;
+    max-height: 7em;
 }
 .nearest-map-stops-single-stop-display-stop-id {
     display: block;
@@ -1523,9 +1526,9 @@ iframe .trip-planner-dialog-finish {
 .nearest-map-stops-single-stop-display-bus-route {
     position: relative;
     display: inline-block;
-    height: 40px;
-    width: 37px;
-    margin: 0px 0.2em;
+    height: 2.8em;
+    width: 2.7em;
+    margin: 0 0.2em;
 }
 .nearest-map-stops-single-stop-display-bus-route-id {
     position: absolute;
