@@ -382,10 +382,13 @@ function(locationService) {
         var full_bstop_list_ids_coords = [];
 
         for (var i=0;i<full_bstop_list.length;i++) {
+
             full_bstop_list_ids_coords.push({
                 Id: full_bstop_list[i].Id,
-                LatLng: full_bstop_list[i].LatLng
+                LatLng: full_bstop_list[i].LatLng,
+                Code: full_bstop_list[i].Code
             });
+
         }
 
         full_bstop_list_ids_coords = self.sortStopsByDistance(
