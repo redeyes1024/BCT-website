@@ -1,7 +1,7 @@
-<div id="{{ route.Id }}" class="panel panel-default">
+<div id="{{ landmark.Id }}" class="panel panel-default">
 
     <h2 class="panel-heading panel-title route-title ptr" toggle
-    target="{{ route.Id }}-collapse" ng-click="foldOptions($event);">
+    target="{{ landmark.Id }}-collapse" ng-click="foldOptions($event);">
 
         <span class="collapse-button">
 
@@ -9,17 +9,17 @@
 
         </span>
 
-        {{ route.Id }} {{ route.LName }}
+        {{ landmark.Description }}
 
     </h2>
 
-    <div id="{{ route.Id }}-collapse" toggleable active-class="in"
+    <div id="{{ landmark.Id }}-collapse" toggleable active-class="in"
     exclusion-group="accordion1" class="panel-collapse collapse">
 
         <div class="panel-body">
 
             <input type="text" id="sub-bus-stop-filter"
-            class="result-filter" ng-model="bstopFilter.f"
+            class="result-filter" ng-model="landmarkBstopFilter.f"
             placeholder="Filter stops...">
 
             <div class="list-group scrollable-content stops-list no-highlight">

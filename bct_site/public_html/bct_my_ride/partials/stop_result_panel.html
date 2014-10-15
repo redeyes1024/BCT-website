@@ -1,22 +1,39 @@
 <div id="{{ stop.Id }}" class="panel panel-default">
+
     <h2 class="panel-heading panel-title route-title ptr" toggle
-        target="{{ stop.Id }}-collapse" ng-click="foldOptions($event);">
+    target="{{ stop.Id }}-collapse" ng-click="foldOptions($event);">
+
         <span class="collapse-button">
+
             <i class="fa fa-plus-circle collapse-icon"></i>
+
         </span>
+
         [#ID {{ stop.Code }}] - {{ stop.Name }}
+
         <span ng-show="stop.show_dist">
+
             ({{ stop.distance }})
+
         </span>
+
     </h2>
+
     <div id="{{ stop.Id }}-collapse" toggleable active-class="in"
-        exclusion-group="accordion1"
-        class="panel-collapse collapse">
+    exclusion-group="accordion1"
+    class="panel-collapse collapse">
+
         <div class="panel-body">
+
             <input type="text" id="sub-route-filter"
             class="result-filter" ng-model="routeFilter.f"
             placeholder="Filter routes...">
-            <div class="list-group scrollable-content stops-list no-highlight"></div>
+
+            <div class="list-group scrollable-content stops-list no-highlight">
+            </div>
+
         </div>
+
     </div>
+
 </div>

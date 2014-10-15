@@ -448,9 +448,57 @@ BCTAppServices.service('placeholderService', [ function() {
     };
 }]);
 
+BCTAppServices.service('landmarkInfoService', ['$http', '$q',
+'generalServiceUtilities',
+
+function($http, $q, generalServiceUtilities) {
+
+    var self = this;
+
+    this.downloadLandmarkInfo = function() {
+
+        if (localStorage.landmark_data) {
+
+            var deferred = $q.defer();
+            var promise = deferred.promise;
+
+            var virtual_response = {
+                data: JSON.parse(localStorage.landmark_data)
+            };
+
+            deferred.resolve(virtual_response);
+
+            return promise;
+
+        }
+
+        return $http({
+            method: 'POST',
+            url: 'http://174.94.153.48:7777/TransitApi/Landmarks/',
+            data: {
+                "AgencyId":"BCT"
+            },
+            transformResponse: function(res) {
+
+                if (localStorage) {
+                    localStorage.setItem('landmark_data', res);
+                }
+
+                return generalServiceUtilities.
+                tryParsingResponse(res, "downloadLandmarkInfo");
+
+            }
+        });
+
+    };
+
+}]);
+
 BCTAppServices.service('scheduleDownloadAndTransformation', ['$http', '$q',
-    'miniScheduleService', 'generalServiceUtilities',
-    function($http, $q, miniScheduleService, generalServiceUtilities) {
+'miniScheduleService', 'generalServiceUtilities',
+
+function($http, $q, miniScheduleService, generalServiceUtilities) {
+
     //TO DO: Backend will create "booking version" string for all data sets;
     //It will be requested and compared to see if and what data must be updated
     var self = this;
@@ -2905,23 +2953,30 @@ function(nearestStopsService, locationService, latest_location, filterHelpers) {
     return {
 
         RouteAndStopFilterMaker: function(
-            route_or_stop,
+            filter_type,
             use_minimum_length
         ) {
 
             var self = this;
 
-            if (route_or_stop === "stop") {
+            if (filter_type === "stop") {
 
                 this.property_name = "Name";
                 this.id_or_code = "Code";
 
             }
 
-            else if (route_or_stop === "route") {
+            else if (filter_type === "route") {
 
                 this.property_name = "LName";
                 this.id_or_code = "Id";
+
+            }
+
+            else if (filter_type === "landmark") {
+
+                this.property_name = "Description";
+                this.id_or_code = false;
 
             }
 
@@ -2929,10 +2984,13 @@ function(nearestStopsService, locationService, latest_location, filterHelpers) {
             if (use_minimum_length) {
 
                 this.filter_condition = function(input_string_length) {
+
                     if (input_string_length < 3) {
                         return false;
                     }
+
                     return true;
+
                 };
 
                 this.results_exist_flag = "main";
@@ -2985,9 +3043,17 @@ function(nearestStopsService, locationService, latest_location, filterHelpers) {
 
                     for (var i=0;i<items.length;i++) {
 
-                        var item_search_string_cased = "" +
-                        items[i][self.id_or_code] + " " +
+                        var item_search_string_cased;
+
+                        item_search_string_cased = "" +
                         items[i][self.property_name];
+
+                        if (self.id_or_code) {
+
+                            item_search_string_cased +=
+                            " " + items[i][self.id_or_code];
+
+                        }
 
                         var item_search_string =
                         item_search_string_cased.toLowerCase();
@@ -3062,6 +3128,14 @@ BCTAppServices.service('linkFunctions', [ '$compile', function($compile) {
                 scope.top_scope.filtered_sub_stops_arr = 
                 scope.top_scope.stop_route_list =
                 scope["cur_" + type].route_refs;
+
+            }
+
+            else if (type === "landmark") {
+
+                scope.top_scope.filtered_sub_routes_arr = 
+                scope.top_scope.landmark_stop_list =
+                scope["cur_" + type].bstop_refs;
 
             }
 

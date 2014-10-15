@@ -10,7 +10,7 @@ BCTAppTopController.controller('BCTController', [
     'legend_icon_list', 'all_alerts', 'profilePageService',
     'routeAndStopFilters', 'module_error_messages', 'default_demo_coords',
     'nearestMapStopsService', 'selected_nearest_map_stop',
-    'nearest_map_stop_distances',
+    'nearest_map_stop_distances', 'landmarkInfoService',
 
 function (
 
@@ -21,7 +21,7 @@ function (
     map_navigation_marker_indices, legend_icon_list, all_alerts,
     profilePageService, routeAndStopFilters, module_error_messages,
     default_demo_coords, nearestMapStopsService, selected_nearest_map_stop,
-    nearest_map_stop_distances
+    nearest_map_stop_distances, landmarkInfoService
 
 ) {
 
@@ -254,6 +254,12 @@ function (
                 $scope.stops_arr,
                 $scope.query_data.schedule_search,
                 $scope.sort_bstops_by_distance
+            );
+
+            $scope.filtered_landmarks_arr = $scope.landmarkFilterFunc(
+                $scope.landmarks_arr,
+                $scope.query_data.schedule_search,
+                false
             );
 
             if ($scope.query_data.schedule_search.length < 3) {
@@ -546,6 +552,21 @@ function (
 
     });
 
+    $scope.$watch("landmarkBstopFilter.f",
+    function(new_val, old_val) {
+        
+        if (new_val !== old_val) {
+
+            $scope.filtered_sub_landmarks_arr = $scope.stopSubFilterFunc(
+                $scope.landmark_stop_list,
+                $scope.landmarkBstopFilter.f,
+                false
+            );
+
+        }
+
+    });
+
     $scope.$watch("routeFilter.f",
     function(new_val, old_val) {
         
@@ -640,6 +661,7 @@ function (
 
     $scope.routeFilter = { f: "" };
     $scope.bstopFilter = { f: "" };
+    $scope.landmarkBstopFilter = { f: "" };
 
     $scope.full_schedule_date = new Date;
 
@@ -896,20 +918,19 @@ function (
     };
 
     $scope.routeFilterFunc =
-    (new routeAndStopFilters.RouteAndStopFilterMaker("route", true)).
-    filter;
+    (new routeAndStopFilters.RouteAndStopFilterMaker("route", true)).filter;
 
     $scope.stopFilterFunc =
-    (new routeAndStopFilters.RouteAndStopFilterMaker("stop", true)).
-    filter;
+    (new routeAndStopFilters.RouteAndStopFilterMaker("stop", true)).filter;
+
+    $scope.landmarkFilterFunc =
+    (new routeAndStopFilters.RouteAndStopFilterMaker("landmark", true)).filter;
 
     $scope.routeSubFilterFunc =
-    (new routeAndStopFilters.RouteAndStopFilterMaker("route", false)).
-    filter;
+    (new routeAndStopFilters.RouteAndStopFilterMaker("route", false)).filter;
 
     $scope.stopSubFilterFunc =
-    (new routeAndStopFilters.RouteAndStopFilterMaker("stop", false)).
-    filter;
+    (new routeAndStopFilters.RouteAndStopFilterMaker("stop", false)).filter;
 
     $scope.global_alerts = all_alerts.global;
     $scope.schedule_map_alerts = all_alerts.schedule_map;
@@ -2751,6 +2772,7 @@ function (
     $scope.clearFilters = function() {
         $scope.bstopFilter.f = "";
         $scope.routeFilter.f = "";
+        $scope.landmarkBstopFilter.f = "";
     };
 
     $scope.getCurrentLocationAndDisplayData = locationService.
@@ -2779,47 +2801,102 @@ function (
 
     };
 
-    function transformRoutes() {
-        var routes = $scope.routes = {};
+    var fullDataDownloadPromise;
 
-        for (var r_i=0;r_i<$scope.route_data.length;r_i++) {
-            var cur_route = $scope.route_data[r_i];
-            var full_route_id = cur_route.Id;
+    (function() {
 
-            routes[full_route_id] = cur_route;
+        function transformLandmarks() {
+
+            var landmarks = $scope.landmarks = [];
+
+            for (var l_i=0;l_i<$scope.landmark_data.length;l_i++) {
+
+                var cur_landmark = $scope.landmark_data[l_i];
+
+                for (var j=0;j<cur_landmark.POIS.length;j++) {
+
+                    landmarks.push(cur_landmark.POIS[j]);
+
+                }
+
+            }
+
         }
-    }
 
-    function transformStops() {
-        var bstops = $scope.stops = {};
+        function transformRoutes() {
 
-        for (var s_i=0;s_i<$scope.bstop_data.length;s_i++) {
-            var cur_bstop = $scope.bstop_data[s_i];
-            var full_stop_id = cur_bstop.Id;
+            var routes = $scope.routes = {};
 
-            bstops[full_stop_id] = cur_bstop;
+            for (var r_i=0;r_i<$scope.route_data.length;r_i++) {
+
+                var cur_route = $scope.route_data[r_i];
+
+                routes[cur_route.Id] = cur_route;
+
+            }
+
         }
-    }
 
-    //N.B. "catch" mathod is not used with the dot operator due to
-    //YUI Compressor (Rhino Engine) reserving the word for try/catch statement
+        function transformStops() {
 
-    var fullDataDownloadPromise= $q.all([
-        scheduleDownloadAndTransformation.downloadRouteInfo().
-        then(function(res) {
-            $scope.route_data = res.data;
-            transformRoutes();
-        })["catch"](function() {
-            console.log("There was an error retrieving the transit data.");
-        }),
-        scheduleDownloadAndTransformation.downloadStopInfo().
-        then(function(res) {
-            $scope.bstop_data= res.data;
-            transformStops();
-        })["catch"](function() {
-            console.log("There was an error retrieving the transit data.");
-        })
-    ]);
+            var bstops = $scope.stops = {};
+
+            for (var s_i=0;s_i<$scope.bstop_data.length;s_i++) {
+
+                var cur_bstop = $scope.bstop_data[s_i];
+
+                bstops[cur_bstop.Id] = cur_bstop;
+
+            }
+
+        }
+
+        //N.B. "catch" mathod is not used with the dot operator due to
+        //YUI Compressor (Rhino Engine) reserving the word for try/catch statement
+
+        fullDataDownloadPromise = $q.all([
+
+            landmarkInfoService.downloadLandmarkInfo().
+            then(function(res) {
+
+                $scope.landmark_data = res.data;
+
+                transformLandmarks();
+
+            })["catch"](function() {
+
+                console.log("There was an error retrieving the landmark data.");
+
+            }),
+
+            scheduleDownloadAndTransformation.downloadRouteInfo().
+            then(function(res) {
+
+                $scope.route_data = res.data;
+
+                transformRoutes();
+
+            })["catch"](function() {
+
+                console.log("There was an error retrieving the route data.");
+
+            }),
+
+            scheduleDownloadAndTransformation.downloadStopInfo().
+            then(function(res) {
+
+                $scope.bstop_data= res.data;
+
+                transformStops();
+
+            })["catch"](function() {
+
+                console.log("There was an error retrieving the stop data.");
+
+            })
+        ]);
+
+    })();
 
     $scope.goToScheduleFromProfilePage = function() {
 
@@ -2875,9 +2952,11 @@ function (
 
         var all_stops = $scope.stops;
         var all_routes = $scope.routes;
+        var all_landmarks = $scope.landmarks;
 
         var all_stops_arr = [];
         var all_routes_arr = [];
+        var all_landmarks_arr = [];
 
         for (var route in all_routes) {
 
@@ -2934,8 +3013,37 @@ function (
 
         }
 
+        for (var lmk=0;lmk<all_landmarks.length;lmk++) {
+
+            //The following property is a placeholder
+            all_landmarks[lmk].alerts = all_alerts.schedule_map;
+
+            all_landmarks[lmk].bstop_refs = [];
+
+            var lmk_bstops = all_landmarks[lmk].Stops;
+
+            for (var lmk_s=0;lmk_s<lmk_bstops.length;lmk_s++) {
+
+                var lmk_s_res = {};
+
+                for (var i=0;i<bstop_props.length;i++) {
+
+                    lmk_s_res[bstop_props[i]] =
+                    all_stops[lmk_bstops[lmk_s]][bstop_props[i]];
+
+                }
+
+                all_landmarks[lmk].bstop_refs.push(lmk_s_res);
+
+            }
+
+            all_landmarks_arr.push(all_landmarks[lmk]);
+
+        }
+
         $scope.routes_arr = all_routes_arr;
         $scope.stops_arr = all_stops_arr;
+        $scope.landmarks_arr = all_landmarks_arr;
 
         $scope.goToScheduleFromProfilePage();
 
@@ -2948,13 +3056,6 @@ function (
 
         $scope.trip_inputs.start = old_finish;
         $scope.trip_inputs.finish = old_start;
-
-    };
-
-    $scope.clearFilters = function() {
-
-        $scope.bstopFilter.f = "";
-        $scope.routeFilter.f = "";
 
     };
 

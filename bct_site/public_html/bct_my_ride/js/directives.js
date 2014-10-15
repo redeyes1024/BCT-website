@@ -128,6 +128,27 @@ function(linkFunctions) {
 
 }]);
 
+BCTApp.directive('landmarkResultPanel', [ 'linkFunctions', 
+function(linkFunctions) {
+
+    function link(scope, element) {
+
+        var type = "landmark";
+
+        linkFunctions.dynamicPanelContentsLoader(
+            scope, element, type
+        );
+    }
+
+    return {
+        link: link,
+        restrict: 'E',
+        templateUrl: window.myride.directories.site_roots.active +
+        window.myride.directories.paths.active +
+        'partials/landmark_result_panel.html'
+    };
+}]);
+
 BCTApp.directive('tripPlannerDialog', [ function() {
 
     var template = '' +
