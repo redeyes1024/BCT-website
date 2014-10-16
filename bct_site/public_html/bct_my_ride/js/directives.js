@@ -85,6 +85,15 @@ BCTApp.directive('subPanelStops', [ function() {
     };
 }]);
 
+BCTApp.directive('subPanelLandmarks', [ function() {
+    return {
+        restrict: 'E',
+        templateUrl: window.myride.directories.site_roots.active +
+        window.myride.directories.paths.active +
+        'partials/sub_panel_landmarks.html'
+    };
+}]);
+
 BCTApp.directive('routeResultPanel', [ 'linkFunctions', 
 function(linkFunctions) {
 

@@ -1,5 +1,5 @@
 <div class="list-group-item list-group-item-responsive"
-ng-repeat="stop in filtered_sub_routes_arr">
+ng-repeat="stop in filtered_sub_landmarks_arr">
 
     <div class="result-icon-container link-icon ptr"
     ng-show="checkIfRouteStopFavorited(route.Id, stop.Id);"
@@ -7,14 +7,6 @@ ng-repeat="stop in filtered_sub_routes_arr">
 
         <i class="fa fa-star fa-lg favorite-route-icon
         favorite-route-icon-saved"></i>
-
-    </div>
-
-    <div class="result-icon-container link-icon ptr"
-    ng-click="addRouteStopToFavorites(route.Id, stop.Id)"
-    ng-hide="checkIfRouteStopFavorited(route.Id, stop.Id);">
-
-        <i class="fa fa-star-o fa-lg favorite-route-icon"></i>
 
     </div>
 
@@ -30,9 +22,9 @@ ng-repeat="stop in filtered_sub_routes_arr">
     </div>
 
     <div class="result-icon-container result-icon-container-right link-icon ptr"
-    ng-click="toggleMapSchedule('schedule', route.Id, stop.Id);">
+    ng-click="submitRouteStopSearch('click', 'specified', stop.Id);">
 
-        <i class="fa fa-chevron-right fa-lg arrow-right-icon ptr"></i>
+        <i class="fa fa-search fa-lg ptr"></i>
 
     </div>
 

@@ -680,6 +680,7 @@ function($http, $q, miniScheduleService, generalServiceUtilities) {
 
 BCTAppServices.service('unitConversionAndDataReporting', [
 'generalServiceUtilities',
+
 function(generalServiceUtilities) {
 
     var self = this;
@@ -3095,7 +3096,9 @@ function(nearestStopsService, locationService, latest_location, filterHelpers) {
 
 }]);
 
-BCTAppServices.service('linkFunctions', [ '$compile', function($compile) {
+BCTAppServices.service('linkFunctions', [ '$compile',
+
+function($compile) {
 
     this.dynamicPanelContentsLoader = function(
         scope, element, type
@@ -3110,40 +3113,57 @@ BCTAppServices.service('linkFunctions', [ '$compile', function($compile) {
             element[0].parentNode.parentNode.parentNode.scrollTop =
             element[0].offsetTop - 10;
 
-            var data_id = element[0].childNodes[0].getAttribute("id");
-
-            //e.g. "cur_stop" and "stops"
-            scope["cur_" + type] = scope[type + "s"][data_id];
+            var data_id;
 
             if (type === "route") {
 
+                data_id = element[0].childNodes[0].getAttribute("id");
+
+                scope.cur_route = scope.routes[data_id];
+
                 scope.top_scope.filtered_sub_routes_arr = 
                 scope.top_scope.route_stop_list =
-                scope["cur_" + type].bstop_refs;
+                scope.cur_route.bstop_refs;
 
             }
 
             else if (type === "stop") {
 
+                data_id = element[0].childNodes[0].getAttribute("id");
+
+                scope.cur_stop = scope.stops[data_id];
+
                 scope.top_scope.filtered_sub_stops_arr = 
                 scope.top_scope.stop_route_list =
-                scope["cur_" + type].route_refs;
+                scope.cur_stop.route_refs;
 
             }
 
             else if (type === "landmark") {
 
-                scope.top_scope.filtered_sub_routes_arr = 
+                var landmark_id = element[0].childNodes[0].getAttribute("id");
+
+                for (var lmk_idx=0;lmk_idx<scope.landmarks.length;lmk_idx++) {
+
+                    if (scope.landmarks[lmk_idx].Id === landmark_id) {
+                        break;
+                    }
+
+                }
+
+                scope.cur_landmark = scope.landmarks[lmk_idx];
+
+                scope.top_scope.filtered_sub_landmarks_arr = 
                 scope.top_scope.landmark_stop_list =
-                scope["cur_" + type].bstop_refs;
+                scope.cur_landmark.bstop_refs;
 
             }
 
             var panel_contents =
             element.children().children()[1].childNodes[1].childNodes[3].
-            childNodes[0];
+            childNodes[1];
 
-            if(!panel_contents || !panel_contents.textContent.trim()) {
+            if(!panel_contents) {
                 angular.element(
                     element[0].childNodes[0].childNodes[3].
                     childNodes[1].childNodes[3]

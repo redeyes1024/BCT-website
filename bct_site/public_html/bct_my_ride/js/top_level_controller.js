@@ -737,6 +737,7 @@ function (
     })();
 
     $scope.all_transit_agency_data = {
+
         BCT: {
             obj: {},
             arr: [],
@@ -744,6 +745,7 @@ function (
                 partial_labels: {}
             }
         }
+
     };
 
     /* END Data Object Templates */
@@ -1612,13 +1614,19 @@ function (
     window.myride.directories.site_roots.active +
     window.myride.directories.paths.active;
 
-    $scope.submitRouteStopSearch = function(e, input) {
+    $scope.submitRouteStopSearch = function(
+        e, input,externally_specified_stop
+    ) {
 
         var input_el;
+
+        var new_input_value;
 
         if (input === "index") {
 
             input_el = myride.dom_q.inputs.elements.index_search_input;
+
+            new_input_value = input_el.value.trim();
 
         }
 
@@ -1626,9 +1634,19 @@ function (
 
             input_el = myride.dom_q.inputs.elements.rs_search_input;
 
+            new_input_value = input_el.value.trim();
+
         }
 
-        input_el.value = input_el.value.trim();
+        else if (input === "specified") {
+
+            input_el = myride.dom_q.inputs.elements.rs_search_input;
+
+            new_input_value = externally_specified_stop;
+
+        }
+
+        input_el.value = new_input_value;
 
         $scope.query_data.schedule_search =
         input_el.value;
@@ -3121,6 +3139,10 @@ function (
             return true;
         }
 
+        function landmarkSubBusStopFilterEnter() {
+            return true;
+        }
+
         function routeStopSearchIndexInputEnter() {
 
             $scope.submitRouteStopSearch('enter', 'index');
@@ -3167,6 +3189,7 @@ function (
             "recent-stop-filter": recentStopFilterEnter,
             "recent-trip-filter": recentTripFilterEnter,
             "sub-bus-stop-filter": subBusStopFilterEnter,
+            "landmark-sub-bus-stop-filter": subBusStopFilterEnter,
             "sub-route-filter": subRouteFilterEnter,
             "route-stop-search-input": routeStopSearchInputEnter,
             "route-stop-search-index-input": routeStopSearchIndexInputEnter,
