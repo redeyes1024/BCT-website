@@ -1882,9 +1882,24 @@ marker_click_memory, selected_nearest_map_stop, nearest_map_stop_distances) {
                                         "window-schedule-contents"
                                     )[0];
 
+                                    var nearest_times =
+                                    nearest_schedule.nearest.next_times;
+
+                                    var converted_nearest_times = [];
+
+                                    for (var i=0;i<nearest_times.length;i++) {
+
+                                        converted_nearest_times.push(
+                                            unitConversionAndDataReporting.
+                                            convertToTwelveHourTime(
+                                                nearest_times[i]
+                                            )
+                                        );
+
+                                    }
+                                    
                                     schedule_el_cont.innerHTML =
-                                    nearest_schedule.nearest.
-                                    next_times.join(", ");
+                                    converted_nearest_times.join(", ");
 
                                 }
 
@@ -2763,152 +2778,87 @@ trip_planner_constants) {
 
 }]);
 
-BCTAppServices.service('profilePageService', [
-function() {
+BCTAppServices.service('profilePageService', [ '$http', 'favorites_data',
+'generalServiceUtilities',
+
+function($http, favorites_data, generalServiceUtilities) {
 
     var self = this;
 
-    this.checkFavoriteUniqueness = function(new_item_list, full_list) {
+    this.downloadUserFavorites = function() {
 
-        var new_item_is_unique = true;
+        return $http({
+            method: 'POST',
+            url: 'http://174.94.153.48:7777/TransitAPI/Favorites',
+            data: {
+                UserId: 777,
+                Action: "GET",
+                "Favorite": null
+            },
+            transformResponse: function(res) {
 
-        var new_item = new_item_list[0];
-
-        var new_item_route_id = new_item.fav_route.Id;
-        var new_item_bstop_id = new_item.fav_stop.Id;
-
-        for (var i=0;i<full_list.length;i++) {
-
-            var cur_route_id = full_list[i].fav_route.Id;
-            var cur_bstop_id = full_list[i].fav_stop.Id;
-
-            if (new_item_route_id === cur_route_id &&
-                new_item_bstop_id === cur_bstop_id
-            ) {
-
-                new_item_is_unique = false;
+                return generalServiceUtilities.
+                tryParsingResponse(res, "downloadUserFavorites");
 
             }
-
-        }
-
-        return new_item_is_unique;
+        });
 
     };
 
-    this.addRouteStopToFavorites = function(routes, stops, route, stop) {
+    this.addRouteStopToFavorites = function(route, stop) {
 
-        var route_info = routes[route];
-        var bstop_info = stops[stop];
-
-        var new_favorite_info = [
-
-            {
-
-                agency: "BCT",
-
-                fav_route: {
-
-                    Id: route_info.Id,
-                    LName: route_info.LName,
-                    SName: route_info.SName
-
-                },
-
-                fav_stop: {
-
-                    Id: bstop_info.Id,
-                    Name: bstop_info.Name
-
+        return $http({
+            method: 'POST',
+            url: 'http://174.94.153.48:7777/TransitAPI/Favorites',
+            data: {
+                UserId: 777,
+                Action: "ADD",
+                Favorite: {
+                    UserId: 777,
+                    AgencyId: "BCT",
+                    RouteId: route,
+                    StopId: stop
                 }
-
             }
-
-        ];
-
-        if (localStorage) {
-
-            if (!localStorage.my_bct_fav) {
-
-                localStorage.setItem('my_bct_fav', JSON.stringify(
-                    new_favorite_info
-                ));
-
-            }
-
-            else {
-
-                var old_favorites = JSON.parse(localStorage.my_bct_fav);
-
-                if (!self.checkFavoriteUniqueness(
-                        new_favorite_info, old_favorites
-                    )
-                ) { return true; }
-
-                var new_favorites = old_favorites.concat(
-                    new_favorite_info
-                );
-
-                var new_favorites_stringified = JSON.stringify(new_favorites);
-
-                localStorage.setItem('my_bct_fav', new_favorites_stringified);
-
-            }
-
-        }
+        });
 
     };
 
     this.deleteFavoriteRouteStop = function(route, stop) {
 
-        var old_favorites = JSON.parse(localStorage.my_bct_fav);
+       return $http({
+            method: 'POST',
+            url: 'http://174.94.153.48:7777/TransitAPI/Favorites',
+            data: {
+                UserId: 777,
+                Action: "DELETE",
+                "Favorite": {
+                    UserId: 777,
+                    AgencyId: "BCT",
+                    RouteId: route,
+                    StopId: stop
+                }
+            }
+        });
 
-        for (var i=0;i<old_favorites.length;i++) {
+    };
 
-            if (old_favorites[i].fav_route.Id === route &&
-                old_favorites[i].fav_stop.Id === stop) {
+    this.checkIfRouteStopFavorited = function(route, stop) {
 
-                old_favorites.splice(i, 1);
+        var favorites = favorites_data.arr;
 
-                break;
+        for (var i=0;i<favorites.length;i++) {
+
+            if (favorites[i].RouteId === "route" &&
+                favorites[i].StopId === "stop") {
+
+                return true;
 
             }
 
         }
 
-        var new_favorites_stringified = JSON.stringify(old_favorites);
-
-        localStorage.setItem('my_bct_fav', new_favorites_stringified);
-
-    };
-
-    this.checkIfRouteStopFavorited = function(route_id, stop_id) {
-
-        if (!localStorage.my_bct_fav) { return false; }
-
-        var route_stop = [
-
-            {
-
-                fav_route: {
-
-                    Id: route_id
-
-                },
-
-                fav_stop: {
-
-                    Id: stop_id
-
-                }
-
-            }
-        ];
-
-        var full_favorites_list = JSON.parse(localStorage.my_bct_fav);
-
-        //If item is not unique in the favorites list, it has been favorited
-        return !self.checkFavoriteUniqueness(route_stop, full_favorites_list);
+        return false;
 
     };
 

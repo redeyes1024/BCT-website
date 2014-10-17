@@ -4,6 +4,11 @@ var BCTAppValues = angular.module('BCTAppValues', []);
 //BCTAppValues.value('scheduleWebSocket',
 //new WebSocket("ws://echo.websocket.org"));
 
+BCTAppValues.value('favorites_data', {
+    obj: {},
+    arr: []
+});
+
 BCTAppValues.value('selected_nearest_map_stop', {
 
     stop_id: ""

@@ -10,7 +10,7 @@ BCTAppTopController.controller('BCTController', [
     'legend_icon_list', 'all_alerts', 'profilePageService',
     'routeAndStopFilters', 'module_error_messages', 'default_demo_coords',
     'nearestMapStopsService', 'selected_nearest_map_stop',
-    'nearest_map_stop_distances', 'landmarkInfoService',
+    'nearest_map_stop_distances', 'landmarkInfoService', 'favorites_data',
 
 function (
 
@@ -21,7 +21,7 @@ function (
     map_navigation_marker_indices, legend_icon_list, all_alerts,
     profilePageService, routeAndStopFilters, module_error_messages,
     default_demo_coords, nearestMapStopsService, selected_nearest_map_stop,
-    nearest_map_stop_distances, landmarkInfoService
+    nearest_map_stop_distances, landmarkInfoService, favorites_data
 
 ) {
 
@@ -913,11 +913,8 @@ function (
 
     };
 
-    $scope.checkIfRouteStopFavorited = function(route, stop) {
-
-        return profilePageService.checkIfRouteStopFavorited(route, stop);
-
-    };
+    $scope.checkIfRouteStopFavorited =
+    profilePageService.checkIfRouteStopFavorited;
 
     $scope.routeFilterFunc =
     (new routeAndStopFilters.RouteAndStopFilterMaker("route", true)).filter;
@@ -1642,7 +1639,7 @@ function (
 
             input_el = myride.dom_q.inputs.elements.rs_search_input;
 
-            new_input_value = externally_specified_stop;
+            new_input_value = $scope.stops[externally_specified_stop].Name;
 
         }
 
@@ -2353,21 +2350,9 @@ function (
 
     };
 
-    $scope.addRouteStopToFavorites = function(route, stop) {
+    $scope.addRouteStopToFavorites = profilePageService.addRouteStopToFavorites;
 
-        profilePageService.addRouteStopToFavorites(
-            $scope.routes, $scope.stops, route, stop
-        );
-
-    };
-
-    $scope.deleteFavoriteRouteStop = function(route, stop) {
-        
-        profilePageService.deleteFavoriteRouteStop(
-            route, stop
-        );
-        
-    };
+    $scope.deleteFavoriteRouteStop = profilePageService.deleteFavoriteRouteStop;
 
     $scope.addRouteStopToTripPlanner = function(stop) {
 
@@ -2823,6 +2808,16 @@ function (
 
     (function() {
 
+        function transformFavorites() {
+
+            for (var f_i in favorites_data.obj) {
+
+                favorites_data.arr.push(favorites_data.obj[f_i]);
+
+            }
+
+        }
+
         function transformLandmarks() {
 
             var landmarks = $scope.landmarks = [];
@@ -2870,9 +2865,26 @@ function (
         }
 
         //N.B. "catch" mathod is not used with the dot operator due to
-        //YUI Compressor (Rhino Engine) reserving the word for try/catch statement
+        //YUI Compressor (Rhino Engine) reserving the word for try/catch
+        //statement
 
         fullDataDownloadPromise = $q.all([
+
+            profilePageService.downloadUserFavorites().
+            then(function(res) {
+
+                favorites_data.obj =
+                res.data;
+
+                transformFavorites();
+
+            })["catch"](function() {
+
+                console.log(
+                    "There was an error retrieving the favorites data."
+                );
+
+            }),
 
             landmarkInfoService.downloadLandmarkInfo().
             then(function(res) {
@@ -2945,7 +2957,7 @@ function (
         angular.element(document).ready(function() {
 
             $scope.query_data.schedule_search =
-            stop + " " + $scope.stops[stop].Name;
+            $scope.stops[stop].Name;
 
             if (myride.dom_q.inputs.elements.rs_search_input) {
 
