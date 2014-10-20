@@ -1291,6 +1291,9 @@ marker_click_memory, selected_nearest_map_stop, nearest_map_stop_distances) {
 
     };
 
+    //Creates a temporary object made to resemble an info window/box object by
+    //including mock placeholder properties. These objects are generally used
+    //in order to get around checks for which info windows/boxes are open
     this.createDummyInfoWindow = function(marker_list_name, hovered) {
 
         var open_info_name = "";
@@ -1897,9 +1900,20 @@ marker_click_memory, selected_nearest_map_stop, nearest_map_stop_distances) {
                                         );
 
                                     }
-                                    
-                                    schedule_el_cont.innerHTML =
-                                    converted_nearest_times.join(", ");
+
+                                    if (converted_nearest_times[0]) {
+
+                                        schedule_el_cont.innerHTML =
+                                        converted_nearest_times.join(", ");
+
+                                    }
+
+                                    else {
+
+                                        schedule_el_cont.innerHTML =
+                                        "No more departures today.";
+
+                                    }
 
                                 }
 

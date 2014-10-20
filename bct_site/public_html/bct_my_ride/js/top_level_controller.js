@@ -2304,7 +2304,7 @@ function (
         $scope.resetScheduleMapNavigationBar();
         $scope.show_schedule_map_stop_navigation_bar = true;
 
-        googleMapUtilities.createDummyInfoWindow();
+        googleMapUtilities.createDummyInfoWindow("points", false);
 
         $timeout.cancel($scope.schedule_update_timer);
 
@@ -2352,9 +2352,71 @@ function (
 
     };
 
-    $scope.addRouteStopToFavorites = profilePageService.addRouteStopToFavorites;
+    $scope.addRouteStopToFavorites = function() {
 
-    $scope.deleteFavoriteRouteStop = profilePageService.deleteFavoriteRouteStop;
+        var route_stop_add_promise =
+        profilePageService.addRouteStopToFavorites();
+
+        route_stop_add_promise.then(function(res) {
+
+            if (!res.data.Type) {
+
+                //favorites_data.arr.push();
+
+                //favorites_data.obj;
+
+            }
+
+            else {
+
+                console.log(
+                    "Error adding stop: " + res.data.Message
+                );
+
+            }
+
+        })["catch"](function() {
+
+            console.log(
+                "Failed to add stop to favorites."
+            );
+
+        });
+
+    };
+
+    $scope.deleteFavoriteRouteStop = function() {
+
+        var route_stop_delete_promise =
+        profilePageService.deleteFavoriteRouteStop();
+
+        route_stop_delete_promise.then(function() {
+
+            if (!res.data.Type) {
+
+                //favorites_data.arr.splice();
+
+                //delete favorites_data.obj;
+
+            }
+
+            else {
+
+                console.log(
+                    "Error adding stop: " + res.data.Message
+                );
+
+            }
+
+        })["catch"](function() {
+
+            console.log(
+                "Failed to delete stop from favorites."
+            );
+
+        });
+
+    };
 
     $scope.addRouteStopToTripPlanner = function(stop) {
 
