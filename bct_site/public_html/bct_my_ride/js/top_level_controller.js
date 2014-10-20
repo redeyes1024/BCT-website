@@ -155,6 +155,8 @@ function (
 
     /* START Overlay Display Controls */
 
+    $scope.show_main_loading_modal = true;
+
     $scope.show_icon_legend_overlay = false;
 
     $scope.show_empty_result_message_search_too_short = false;
@@ -2973,9 +2975,11 @@ function (
     var route_props = ["Id", "LName"];
     var bstop_props = ["Id", "Name", "Code"];
 
-    //Creates a partial link between the routes and stops data objects
-    //in the form of a numerically indexed array
+    //After all main data is downloaded (or retrived from Local Storage),
+    //the following callback performs data transformation
     fullDataDownloadPromise.then(function() {
+
+        $scope.show_main_loading_modal = false;
 
         var full_data = $scope.all_transit_agency_data;
         var BCT_partial_label_obj = full_data.BCT.indexers.partial_labels;
