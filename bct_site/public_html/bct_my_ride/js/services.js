@@ -97,6 +97,172 @@ BCTAppServices.service('miniScheduleService', [ function() {
 
     };
 
+    var prev_nearest_times_recursion_counter = 0;
+
+    this.findPrevNearestTimes = function(nearest, times_int, int_index, bef) {
+
+        for (var b=0;b<bef;b++) {
+
+            if (!times_int[int_index - (1 + b)]) { break; }
+
+            nearest.prev_times.push(times_int[int_index - (1 + b)]);
+
+        }
+
+        if (nearest.prev_times.length < bef &&
+            times_int.length > prev_nearest_times_recursion_counter + 1) {
+
+            var new_times_int;
+
+            var new_int_index_value;
+
+            if (prev_nearest_times_recursion_counter < 1) {
+
+                var new_times_int = times_int.map(function(time) {
+
+                    var new_time;
+
+                    if (times_int.indexOf(time) === 0) {
+
+                        //If an hour is set below 0 it indicates to other
+                        //components that it is for the previous day
+                        new_time = time + 2400;
+
+                        new_int_index_value = times_int[0];
+
+                    }
+
+                    else {
+    
+                        new_time = time;
+
+                    }
+
+                    return new_time;
+
+                });
+
+                new_times_int.sort();
+
+            }
+
+            else {
+
+                new_times_int = times_int;
+
+            }
+
+            prev_nearest_times_recursion_counter++;
+
+            if (prev_nearest_times_recursion_counter < 10) {
+
+                var new_int_index = new_times_int.indexOf(new_int_index_value);
+
+                self.findPrevNearestTimes(
+                    nearest, new_times_int, new_int_index, bef
+                );
+
+            }
+
+            else {
+
+                throw new Error("Too many recursions: findPrevNearestTimes.");
+
+            }
+
+        }
+
+        if (prev_nearest_times_recursion_counter !== 0) {
+
+            prev_nearest_times_recursion_counter--;
+
+        }
+
+    };
+
+    var next_nearest_times_recursion_counter = 0;
+
+    this.findNextNearestTimes = function(nearest, times_int, int_index, aft) {
+
+        for (var a=0;a<aft;a++) {
+
+            if (!times_int[int_index + (1 + a)]) { break; }
+
+            nearest.next_times.push(times_int[int_index + (1 + a)]);
+
+        }
+
+        if (nearest.next_times.length < aft &&
+            times_int.length > next_nearest_times_recursion_counter + 1) {
+
+            var new_times_int;
+
+            var new_int_index_value;
+
+            if (next_nearest_times_recursion_counter < 1) {
+
+                var new_times_int = times_int.map(function(time) {
+
+                    var new_time;
+
+                    if (times_int.indexOf(time) !== times_int.length - 1) {
+
+                        //If an hour is set above 23 it indicates to other
+                        //components that it is for the next day
+                        new_time = time + 1200;
+
+                        new_int_index_value = times_int[times_int.length - 1];
+
+                    }
+
+                    else {
+    
+                        new_time = time;
+
+                    }
+
+                    return new_time;
+
+                });
+
+                new_times_int.sort();
+
+            }
+
+            else {
+
+                new_times_int = times_int;
+
+            }
+
+            next_nearest_times_recursion_counter++;
+
+            if (next_nearest_times_recursion_counter < 10) {
+
+                var new_int_index = new_times_int.indexOf(new_int_index_value);
+
+                self.findNextNearestTimes(
+                    nearest, new_times_int, new_int_index, aft
+                );
+
+            }
+
+            else {
+
+                throw new Error("Too many recursions: findNextNearestTimes.");
+
+            }
+
+        }
+
+        if (next_nearest_times_recursion_counter !== 0) {
+
+            next_nearest_times_recursion_counter--;
+
+        }
+
+    };
+
     this.getNearestTimes = function(time, times, bef, aft) {
 
         if (!bef) {
@@ -114,7 +280,8 @@ BCTAppServices.service('miniScheduleService', [ function() {
 
         });
 
-        var now_int = parseInt(time.replace(/:/,""));
+//        var now_int = parseInt(time.replace(/:/,""));
+        var now_int = 0;
 
         var nearest = {
             prev_times: [],
@@ -126,14 +293,9 @@ BCTAppServices.service('miniScheduleService', [ function() {
 
         var int_index = times_int.indexOf(now_int);
 
-        for (var b=0;b<bef;b++) {
-            if (!times_int[int_index - (1 + b)]) { break; }
-            nearest.prev_times.push(times_int[int_index - (1 + b)]);
-        }
-        for (var a=0;a<aft;a++) {
-            if (!times_int[int_index + (1 + a)]) { break; }
-            nearest.next_times.push(times_int[int_index + (1 + a)]);
-        }
+        self.findPrevNearestTimes(nearest, times_int, int_index, bef);
+
+        self.findNextNearestTimes(nearest, times_int, int_index, aft);
 
         nearest.prev_times = nearest.prev_times.map(self.convertToTime);
         nearest.next_times = nearest.next_times.map(self.convertToTime);
@@ -610,12 +772,11 @@ function($http, $q, miniScheduleService, generalServiceUtilities) {
         return $http({
             method: 'POST',
             url: 'http://174.94.153.48:7777/TransitApi/BusStop/',
-            data: { 
+            data: {
                 "AgencyId": "BCT",
                 "RouteId": route,
 		"Direction": "0",
 		"Date": formatted_date
-
             },
             transformResponse: function(res) {
 
@@ -628,30 +789,44 @@ function($http, $q, miniScheduleService, generalServiceUtilities) {
     };
 
     this.transformSchedule = function(output_type, s_times) {
+
         var date_time = new Date;
         var now = date_time.toTimeString().slice(0,5);
         var departures = [];
         var schedule_output = {};
 
         for (var i=0;i<s_times.length;i++) {
+
             departures.push(s_times[i].DepartureTime);
+
         }
+
         switch (output_type) {
+
             case "nearest":
-                schedule_output.nearest = miniScheduleService.getNearestTimes(
-                    now, departures);
+
+                schedule_output.nearest =
+                miniScheduleService.getNearestTimes(now, departures);
+
                 schedule_output.nearest.all = schedule_output.nearest.
-                    prev_times.concat(schedule_output.nearest.next_times);
+                prev_times.concat(schedule_output.nearest.next_times);
+
                 break;
+
             case "datepick":
+
                 schedule_output.date_pick = departures.slice();
+
                 break;
+
         }
+
         schedule_output.raw = s_times;
 
         return schedule_output;
+
     };
-    
+
     this.calculateTimeDifference = function(times_arr) {
 
         var diff_arr = [];
@@ -818,6 +993,9 @@ function(generalServiceUtilities) {
 
     this.convertToTwelveHourTime = function(twenty_four_hour_time) {
 
+        var next_day = false;
+        var prev_day = false;
+
         var twelve_hour_time;
 
         var am_pm = "AM";
@@ -826,11 +1004,19 @@ function(generalServiceUtilities) {
 
         var minute = twenty_four_hour_time.split(":")[1];
 
-        if (hour < 0 || hour > 23) {
+        if (hour < 0) {
 
-            console.log("Invalid time entered: " + twenty_four_hour_time);
+            hour += 12;
 
-            return false;
+            prev_day = true;
+
+        }
+
+        else if ( hour > 23) {
+
+            hour -= 12;
+
+            next_day = true;
 
         }
 

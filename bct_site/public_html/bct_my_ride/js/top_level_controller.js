@@ -2352,18 +2352,24 @@ function (
 
     };
 
-    $scope.addRouteStopToFavorites = function() {
+    $scope.addRouteStopToFavorites = function(route, stop) {
 
         var route_stop_add_promise =
-        profilePageService.addRouteStopToFavorites();
+        profilePageService.addRouteStopToFavorites(route, stop);
 
         route_stop_add_promise.then(function(res) {
 
-            if (!res.data.Type) {
+            if (!res.data.Type === "success") {
 
-                //favorites_data.arr.push();
+                var new_favorite = {
+                    //record_id: record_id,
+                    route: route,
+                    stop: stop
+                };
 
-                //favorites_data.obj;
+                favorites_data.arr.push(new_favorite);
+
+                //favorites_data.obj[record_id] = new_favorite;
 
             }
 
@@ -2385,14 +2391,14 @@ function (
 
     };
 
-    $scope.deleteFavoriteRouteStop = function() {
+    $scope.deleteFavoriteRouteStop = function(route, stop) {
 
         var route_stop_delete_promise =
-        profilePageService.deleteFavoriteRouteStop();
+        profilePageService.deleteFavoriteRouteStop(route, stop);
 
         route_stop_delete_promise.then(function() {
 
-            if (!res.data.Type) {
+            if (!res.data.Type === "success") {
 
                 //favorites_data.arr.splice();
 
