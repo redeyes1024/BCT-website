@@ -169,7 +169,31 @@ ISR.utils.highlightselectedtimerange = function(element) {
 
 ISR.utils.goToMyRideSchedule = function(route, stop) {
 
-    window.location = "index.html#routeschedules?route=" + route + "&" +
+    var location_prefix;
+
+//    if (window.location.toString().
+//        match(/\/index.html/)) {
+
+        location_prefix = "index.html";
+//
+//    }
+//
+//    else if(window.location.toString().
+//            match(/\/default.aspx/)) {
+//
+//        location_prefix = "default.aspx";
+//
+//    }
+//
+//    else if(window.location.toString().
+//            match(/\/myride_deployment_sample.html/)) {
+//
+//        location_prefix = "myride_deployment_sample.html";
+//
+//    }
+
+    window.location =
+    location_prefix + "#routeschedules?route=" + route + "&" +
     "stop=" + stop;
 
 };

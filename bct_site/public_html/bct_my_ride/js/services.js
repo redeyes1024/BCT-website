@@ -40,13 +40,31 @@ BCTAppServices.service('miniScheduleService', [ function() {
 
     var self = this;
 
-    this.convertToTime = function(time_int) {
+    this.convertToTime = function(time) {
 
-        var int_arr = String(time_int).split("");
+        var int_arr;
+
+        var day_flag = "";
+
+        if (typeof time === "string") {
+
+            var int_arr_with_flag = time.split(";");
+
+            int_arr = int_arr_with_flag[0].split("");
+
+            day_flag = int_arr_with_flag[1] ? ";" + int_arr_with_flag[1] : "";
+
+        }
+
+        else if (typeof time === "number") {
+
+            int_arr = String(time).split("");
+
+        }
 
         int_arr.splice(-2,0,":");
 
-        return int_arr.join("");
+        return int_arr.join("") + day_flag;
 
     };
 
@@ -97,167 +115,91 @@ BCTAppServices.service('miniScheduleService', [ function() {
 
     };
 
-    var prev_nearest_times_recursion_counter = 0;
-
     this.findPrevNearestTimes = function(nearest, times_int, int_index, bef) {
 
-        for (var b=0;b<bef;b++) {
+        var spliced_flag = false;
 
-            if (!times_int[int_index - (1 + b)]) { break; }
+        var first_day_schedule_index = 0;
 
-            nearest.prev_times.push(times_int[int_index - (1 + b)]);
+        var prev_day_schedule_index = times_int.length - 1;
 
-        }
+        var prev_time_index = int_index - first_day_schedule_index - 1;
 
-        if (nearest.prev_times.length < bef &&
-            times_int.length > prev_nearest_times_recursion_counter + 1) {
+        while (nearest.prev_times.length < bef) {
 
-            var new_times_int;
+            first_day_schedule_index = 0;
 
-            var new_int_index_value;
+            if (prev_time_index > -1 && times_int[prev_time_index]) {
 
-            if (prev_nearest_times_recursion_counter < 1) {
+                nearest.prev_times.push("" + times_int[prev_time_index]);
 
-                var new_times_int = times_int.map(function(time) {
-
-                    var new_time;
-
-                    if (times_int.indexOf(time) === 0) {
-
-                        //If an hour is set below 0 it indicates to other
-                        //components that it is for the previous day
-                        new_time = time + 2400;
-
-                        new_int_index_value = times_int[0];
-
-                    }
-
-                    else {
-    
-                        new_time = time;
-
-                    }
-
-                    return new_time;
-
-                });
-
-                new_times_int.sort();
+                prev_time_index--;
 
             }
 
             else {
 
-                new_times_int = times_int;
+                if (!spliced_flag) {
 
-            }
+                    times_int.splice(int_index, 1);
 
-            prev_nearest_times_recursion_counter++;
+                    spliced_flag = true;
 
-            if (prev_nearest_times_recursion_counter < 10) {
+                    prev_day_schedule_index--;
 
-                var new_int_index = new_times_int.indexOf(new_int_index_value);
+                }
 
-                self.findPrevNearestTimes(
-                    nearest, new_times_int, new_int_index, bef
+                nearest.prev_times.push(
+                    "" + times_int[prev_day_schedule_index] + ";prev"
                 );
 
-            }
-
-            else {
-
-                throw new Error("Too many recursions: findPrevNearestTimes.");
+                prev_day_schedule_index--;
 
             }
-
-        }
-
-        if (prev_nearest_times_recursion_counter !== 0) {
-
-            prev_nearest_times_recursion_counter--;
 
         }
 
     };
 
-    var next_nearest_times_recursion_counter = 0;
-
     this.findNextNearestTimes = function(nearest, times_int, int_index, aft) {
 
-        for (var a=0;a<aft;a++) {
+        var spliced_flag = false;
 
-            if (!times_int[int_index + (1 + a)]) { break; }
+        var first_day_schedule_index = 0;
 
-            nearest.next_times.push(times_int[int_index + (1 + a)]);
+        var next_day_schedule_index = 0;
 
-        }
+        var next_time_index = int_index + first_day_schedule_index + 1;
 
-        if (nearest.next_times.length < aft &&
-            times_int.length > next_nearest_times_recursion_counter + 1) {
+        while (nearest.next_times.length < aft) {
 
-            var new_times_int;
+            first_day_schedule_index = 0;
 
-            var new_int_index_value;
+            if (times_int[next_time_index]) {
 
-            if (next_nearest_times_recursion_counter < 1) {
+                nearest.next_times.push("" + times_int[next_time_index]);
 
-                var new_times_int = times_int.map(function(time) {
-
-                    var new_time;
-
-                    if (times_int.indexOf(time) !== times_int.length - 1) {
-
-                        //If an hour is set above 23 it indicates to other
-                        //components that it is for the next day
-                        new_time = time + 1200;
-
-                        new_int_index_value = times_int[times_int.length - 1];
-
-                    }
-
-                    else {
-    
-                        new_time = time;
-
-                    }
-
-                    return new_time;
-
-                });
-
-                new_times_int.sort();
+                next_time_index++;
 
             }
 
             else {
 
-                new_times_int = times_int;
+                if (!spliced_flag) {
 
-            }
+                    times_int.splice(int_index, 1);
 
-            next_nearest_times_recursion_counter++;
+                    spliced_flag = true;
 
-            if (next_nearest_times_recursion_counter < 10) {
+                }
 
-                var new_int_index = new_times_int.indexOf(new_int_index_value);
-
-                self.findNextNearestTimes(
-                    nearest, new_times_int, new_int_index, aft
+                nearest.next_times.push(
+                    "" + times_int[next_day_schedule_index] + ";next"
                 );
 
-            }
-
-            else {
-
-                throw new Error("Too many recursions: findNextNearestTimes.");
+                next_day_schedule_index++;
 
             }
-
-        }
-
-        if (next_nearest_times_recursion_counter !== 0) {
-
-            next_nearest_times_recursion_counter--;
 
         }
 
@@ -280,8 +222,7 @@ BCTAppServices.service('miniScheduleService', [ function() {
 
         });
 
-//        var now_int = parseInt(time.replace(/:/,""));
-        var now_int = 0;
+        var now_int = parseInt(time.replace(/:/,""));
 
         var nearest = {
             prev_times: [],
@@ -838,15 +779,39 @@ function($http, $q, miniScheduleService, generalServiceUtilities) {
 
         for (var i=0;i<times_arr.length;i++) {
 
-            var t1 = times_arr[i];
+            var day_flag = times_arr[i].split(";")[1];
+
+            var t1;
+
+            if (day_flag) {
+
+                t1 = times_arr[i].split(";")[0];
+
+            }
+
+            else {
+
+                t1 = times_arr[i];
+
+            }
+
             var t1_h = parseInt(t1.split(":")[0]);
             var t1_m = parseInt(t1.split(":")[1]);
             var min_t1 = t1_h * 60 + t1_m;
 
             var diff = min_t1 - min_t2;
+
+            if (day_flag) {
+
+                if (day_flag === "next") { diff += 1440; }
+                else if (day_flag === "prev") { diff -= 1440; }
+
+            }
+
             diff_arr.push(diff);
 
         }
+
         return diff_arr;
 
     };
@@ -993,9 +958,6 @@ function(generalServiceUtilities) {
 
     this.convertToTwelveHourTime = function(twenty_four_hour_time) {
 
-        var next_day = false;
-        var prev_day = false;
-
         var twelve_hour_time;
 
         var am_pm = "AM";
@@ -1004,23 +966,7 @@ function(generalServiceUtilities) {
 
         var minute = twenty_four_hour_time.split(":")[1];
 
-        if (hour < 0) {
-
-            hour += 12;
-
-            prev_day = true;
-
-        }
-
-        else if ( hour > 23) {
-
-            hour -= 12;
-
-            next_day = true;
-
-        }
-
-        else if (hour >= 13) {
+        if (hour >= 13) {
 
             am_pm = "PM";
 

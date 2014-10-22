@@ -2511,6 +2511,15 @@ function (
         var diff_msgs = unitConversionAndDataReporting.
         addTimeDiffMessages(diffs);
 
+        nearest_times =
+        reprocessed_schedule.nearest.all.map(function(time_with_day_label) {
+
+            var time = time_with_day_label.split(";")[0];
+
+            return time;
+
+        });
+
         for (var i=0;i<nearest_times.length;i++) {
 
             var time_12H =
@@ -2639,7 +2648,31 @@ function (
 
     $scope.goToMyRideSchedule = function(route, stop) {
 
-        window.location = "index.html#routeschedules?route=" + route + "&" +
+        var location_prefix;
+
+        if (window.location.toString().
+            match(/\/index.html/)) {
+
+            location_prefix = "index.html";
+
+        }
+
+        else if(window.location.toString().
+                match(/\/default.aspx/)) {
+
+            location_prefix = "default.aspx";
+
+        }
+        
+        else if(window.location.toString().
+                match(/\/myride_deployment_sample.html/)) {
+
+            location_prefix = "myride_deployment_sample.html";
+
+        }
+
+        window.location =
+        location_prefix + "#routeschedules?route=" + route + "&" +
         "stop=" + stop;
 
         $scope.goToScheduleFromProfilePage();
