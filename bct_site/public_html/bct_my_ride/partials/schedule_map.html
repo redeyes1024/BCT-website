@@ -19,10 +19,15 @@ ng-class="schedule_map_styles" class="fbox" ng-class="schedule_map_styles">
         <div id="schedule-map-info-bar" class="title-header"
         ng-show="show_schedule_map_info_bar">
 
-            <i class="fa fa-exclamation-circle text-shadow-hover-icon ptr"
+            <i class="fa fa-exclamation-circle text-shadow-hover-icon
+            exclamation-icon-red ptr"
             ng-click="toggleRouteAlertOverlay();"></i>
 
             {{ map_schedule_info.route }}
+
+            -
+
+            [ID #{{ stops[map_schedule_info.stop].Code }}]
 
             -
 

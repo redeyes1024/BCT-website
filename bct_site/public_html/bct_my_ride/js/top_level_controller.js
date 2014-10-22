@@ -3362,7 +3362,7 @@ function (
     }());
 
 }]).
-    
+
 config(function($routeProvider) {
 
     var site_root = window.myride.directories.site_roots.active;

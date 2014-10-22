@@ -1,8 +1,8 @@
 var BCTAppControllers = angular.module('BCTAppControllers', []);
 
 BCTAppControllers.controller('routeSchedulesController', ['$scope',
-'$timeout', 'profilePageService',
-function ($scope, $timeout, profilePageService) {
+'$timeout', 'profilePageService', 'marker_icon_options',
+function ($scope, $timeout, profilePageService, marker_icon_options) {
 
     //For ease of debugging (development only)
     window.rs_scope = $scope;
@@ -15,8 +15,42 @@ function ($scope, $timeout, profilePageService) {
 
     $scope.top_scope.rs_scope_loaded = true;
 
+    var schedule_map_zoom_out_listener = google.maps.event.addListener(
+
+        myride.dom_q.map.inst,
+        'zoom_changed',
+        function() {
+
+            marker_icon_options.schedule_map.default.scale =
+            myride.dom_q.map.inst.getZoom() / 16 * 8;
+
+            marker_icon_options.schedule_map.mouseover.scale =
+            myride.dom_q.map.inst.getZoom() / 16 * 12;
+
+            marker_icon_options.schedule_map.default.strokeWeight =
+            myride.dom_q.map.inst.getZoom() / 16 * 2;
+
+            marker_icon_options.schedule_map.mouseover.strokeWeight =
+            myride.dom_q.map.inst.getZoom() / 16 * 4;
+
+            for (var point in myride.dom_q.map.overlays.points) {
+
+                myride.dom_q.map.overlays.points[point].marker.setIcon(
+                    marker_icon_options.schedule_map.default
+                );
+
+            }
+
+        }
+
+    );
+
     $scope.$on("destroy", function() {
+
         $scope.top_scope.rs_scope_loaded = false;
+
+        google.maps.event.removeListener(schedule_map_zoom_out_listener);
+
     });
 
     $scope.loaded_results = {
@@ -146,24 +180,36 @@ function ($scope, $timeout, nearestStopsService) {
     //Currently, this Anonymous function is called only when $route service
     //directs to the "nearest stops" page
     (function() {
+
         for (var i=0;i<recent.trips.length;i++) {
-            recent.trips[i].name = recent.trips[i].start + " to " +
-                recent.trips[i].finish;
+
+            recent.trips[i].name =
+            recent.trips[i].start + " to " + recent.trips[i].finish;
+
         }
+
         for (var j=0;j<recent.stops.length;j++) {
+
             var cur_stop = recent.stops[j];
             cur_stop.name = "";
 
             for (var r_prop in cur_stop.route_info) {
+
                 cur_stop.name += cur_stop.route_info[r_prop];
                 cur_stop.name += " ";
+
             }
             for (var s_prop in cur_stop.bstop_info) {
+
                 cur_stop.name += cur_stop.bstop_info[s_prop];
                 cur_stop.name += " ";
+
             }
+
             cur_stop.name = cur_stop.name.trim();
+
         }
+
     })();
 
     //Init operations completed when the $scope.init flag is set to "true"

@@ -49,7 +49,7 @@ BCTAppValues.value('marker_icon_options', {
             path: google.maps.SymbolPath.CIRCLE,
             strokeWeight: 2,
             strokeColor: "#FFFFFF",
-            scale: 10,
+            scale: 8,
             fillColor: "",
             fillOpacity: 1
         },
@@ -58,7 +58,7 @@ BCTAppValues.value('marker_icon_options', {
             path: google.maps.SymbolPath.CIRCLE,
             strokeWeight: 4,
             strokeColor: "#FFFFFF",
-            scale: 14,
+            scale: 12,
             fillColor: "",
             fillOpacity: 1
         }

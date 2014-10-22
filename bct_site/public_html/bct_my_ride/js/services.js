@@ -1849,20 +1849,27 @@ marker_click_memory, selected_nearest_map_stop, nearest_map_stop_distances) {
 
                 '<div class="myride-info-box-contents">' +
 
-                    '<span>' +
-                        stops[bstops_names[i]].Name +
-                    '</span>' +
+                    '<div class="schedule-map-info-box-top">' +
 
-                    '<span>' +
-                        "[ID #" + stops[bstops_names[i]].Code + "]" +
-                    '</span>' +
+                        '<span>' +
+                            "[ID #" + stops[bstops_names[i]].Code + "]" +
+                        //'</span>' +
+                            " - " +
+                        //'<span>' +
+                            stops[bstops_names[i]].Name +
+                        '</span>' +
 
-                    '<hr>' +
+                    '</div>' +
 
-                    //The class name is needed for $compile step when opened
-                    '<span class="info-window-associated-routes"></span>' +
+                    '<div class="schedule-map-info-box-bottom">' +
 
-                    '<span class="schedule-map-info-window-schedule"></span>' +
+                        //The class name is needed for $compile step when opened
+                        '<span class="info-window-associated-routes"></span>' +
+
+                        '<span class="schedule-map-info-window-schedule">' +
+                        '</span>' +
+
+                    '</div>' +
 
                 '</div>';
 
@@ -1874,7 +1881,7 @@ marker_click_memory, selected_nearest_map_stop, nearest_map_stop_distances) {
                 pixelOffset: {
 
                     width: -99,
-                    height: -161
+                    height: -109
 
                 },
                 infoBoxClearance: {
