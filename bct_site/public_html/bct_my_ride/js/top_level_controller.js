@@ -514,18 +514,18 @@ function (
 
     });
 
-    $scope.$watch("show_schedule_map_stop_navigation_bar_contents",
-    function(new_val, old_val) {
-
-        if (new_val > old_val) {
-            $scope.show_schedule_map_info_bar = false;
-        }
-
-        else if (new_val < old_val) {
-            $scope.show_schedule_map_info_bar = true;
-        }
-
-    });
+//    $scope.$watch("show_schedule_map_stop_navigation_bar_contents",
+//    function(new_val, old_val) {
+//
+//        if (new_val > old_val) {
+//            $scope.show_schedule_map_info_bar = false;
+//        }
+//
+//        else if (new_val < old_val) {
+//            $scope.show_schedule_map_info_bar = true;
+//        }
+//
+//    });
 
     $scope.$watch("show_map_full_screen_modal",
     function(new_val, old_val) {
@@ -686,6 +686,17 @@ function (
     $scope.schedule_date_range = {
         start: "2014/06/08",
         end: "2014/09/13"
+    };
+
+    $scope.nearest_map_stops_instructions = {
+
+        default: "Select anywhere on the map to set the location pin.",
+
+        clicked: "Select a stop or drag the location pin to a different " +
+        "location on the map.",
+
+        selected: ""
+
     };
 
     //Values taken from BCT site on 14/09/19 12:20 PM EST
@@ -1826,6 +1837,7 @@ function (
         map_navigation_marker_indices.schedule = 
         myride.dom_q.map.overlays.ordered_stop_list.indexOf(bstop_id);
 
+        myride.dom_q.map.overlays.points[bstop_id].info.clicked = true;
         myride.dom_q.map.overlays.points[bstop_id].ShowWindow.func();
 
     };
@@ -2198,6 +2210,9 @@ function (
         var marker_instance = myride.dom_q.map.
         overlays[marker_instances][marker_index];
 
+        myride.dom_q.map.overlays[marker_instances][marker_index].
+        info.clicked = true;
+
         marker_instance.ShowWindow.func();
 
         var marker_position = marker_instance.marker.getPosition();
@@ -2314,6 +2329,7 @@ function (
 
         map_ready_promise.then(function() {
 
+            myride.dom_q.map.overlays.points[bstop_id].info.clicked = true;
             myride.dom_q.map.overlays.points[bstop_id].ShowWindow.func();
 
         });
@@ -2584,7 +2600,7 @@ function (
         scheduleDownloadAndTransformation.downloadSchedule(route, stop).
         then(function(res) {
 
-            if (!res.data.Today) {
+            if (!res.data.Today || res.data.Today.length < 1) {
 
                 console.log("Schedule loading error.");
 
@@ -2622,6 +2638,7 @@ function (
 
         $scope.populateScheduleMap(route, stop).then(function() {
 
+            myride.dom_q.map.overlays.points[stop].info.clicked = true;
             myride.dom_q.map.overlays.points[stop].ShowWindow.func();
 
         });
@@ -2692,62 +2709,7 @@ function (
 
         googleMapUtilities.setMapPosition(null, 10);
 
-        var position = { 
-            lat: default_demo_coords.LatLng.Latitude,
-            lng: default_demo_coords.LatLng.Longitude
-        };
-
         myride.dom_q.map.overlays.nearest_map_draggable.default = {};
-
-        var marker =
-        myride.dom_q.map.overlays.nearest_map_draggable.default.marker =
-        new google.maps.Marker({
-            map: myride.dom_q.map.inst,
-            position: position,
-            draggable: true
-        });
-
-        google.maps.event.addListener(
-            marker,
-            'dragend',
-            function() {
-
-                var lat = this.getPosition().lat();
-                var lng = this.getPosition().lng();
-
-                var coords = {
-
-                    LatLng: {
-                        Latitude: lat,
-                        Longitude: lng
-                    }
-
-                };
-
-                var nearest_stops_to_map_point =
-                nearestMapStopsService.showNearestStopsFromMapCoords(
-                    coords,
-                    $scope.stops_arr,
-                    $scope.stops
-                );
-
-                var stop_ids_and_dists = {};
-
-                for (var i=0;i<nearest_stops_to_map_point.length;i++) {
-
-                    var cur_stop_id = nearest_stops_to_map_point[i].Id;
-
-                    var cur_dist_to_stop =
-                    nearest_stops_to_map_point[i].distance;
-
-                    stop_ids_and_dists[cur_stop_id] = cur_dist_to_stop;
-
-                }
-
-                nearest_map_stop_distances.dists = stop_ids_and_dists;
-
-            }
-        );
 
     };
 

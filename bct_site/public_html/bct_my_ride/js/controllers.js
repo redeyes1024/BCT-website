@@ -1,8 +1,10 @@
 var BCTAppControllers = angular.module('BCTAppControllers', []);
 
 BCTAppControllers.controller('routeSchedulesController', ['$scope',
-'$timeout', 'profilePageService', 'marker_icon_options',
-function ($scope, $timeout, profilePageService, marker_icon_options) {
+'$timeout', 'profilePageService', 'marker_icon_options', 'base_marker_sizes',
+
+function ($scope, $timeout, profilePageService, marker_icon_options,
+base_marker_sizes) {
 
     //For ease of debugging (development only)
     window.rs_scope = $scope;
@@ -15,41 +17,11 @@ function ($scope, $timeout, profilePageService, marker_icon_options) {
 
     $scope.top_scope.rs_scope_loaded = true;
 
-    var schedule_map_zoom_out_listener = google.maps.event.addListener(
-
-        myride.dom_q.map.inst,
-        'zoom_changed',
-        function() {
-
-            marker_icon_options.schedule_map.default.scale =
-            myride.dom_q.map.inst.getZoom() / 16 * 8;
-
-            marker_icon_options.schedule_map.mouseover.scale =
-            myride.dom_q.map.inst.getZoom() / 16 * 12;
-
-            marker_icon_options.schedule_map.default.strokeWeight =
-            myride.dom_q.map.inst.getZoom() / 16 * 2;
-
-            marker_icon_options.schedule_map.mouseover.strokeWeight =
-            myride.dom_q.map.inst.getZoom() / 16 * 4;
-
-            for (var point in myride.dom_q.map.overlays.points) {
-
-                myride.dom_q.map.overlays.points[point].marker.setIcon(
-                    marker_icon_options.schedule_map.default
-                );
-
-            }
-
-        }
-
-    );
-
     $scope.$on("destroy", function() {
 
         $scope.top_scope.rs_scope_loaded = false;
 
-        google.maps.event.removeListener(schedule_map_zoom_out_listener);
+        //google.maps.event.removeListener(schedule_map_zoom_out_listener);
 
     });
 
@@ -116,6 +88,7 @@ function ($scope, $timeout, nearestStopsService) {
     $scope.nearest_bstops = $scope.nearest_bstops_loading;
 
     $scope.calculateAndShowNearestBusStops = function(location) {
+
         $scope.nearest_bstops = nearestStopsService.findNearestStops(
             location,
             $scope.stops_arr,
@@ -123,6 +96,7 @@ function ($scope, $timeout, nearestStopsService) {
         );
 
         $scope.show_index_nearest_stops_panels = true;
+
     };
 
     $scope.setNearestStopsLocationSpinner = function(new_state) {
@@ -891,8 +865,10 @@ unitConversionAndDataReporting, module_error_messages) {
 
 BCTAppControllers.controller('nearestMapStopsController', ['$scope',
 '$timeout', 'googleMapUtilities', 'selected_nearest_map_stop',
+'nearestMapStopsService', 'nearest_map_stop_distances',
 
-function ($scope, $timeout, googleMapUtilities, selected_nearest_map_stop) {
+function ($scope, $timeout, googleMapUtilities, selected_nearest_map_stop,
+nearestMapStopsService, nearest_map_stop_distances) {
 
     //For ease of debugging (development only)
     window.nms_scope = $scope;
@@ -905,7 +881,93 @@ function ($scope, $timeout, googleMapUtilities, selected_nearest_map_stop) {
 
     $scope.top_scope.show_nearest_map_stops_info_container = true;
 
+    $scope.top_scope.nearest_map_stops_instructions.selected =
+    $scope.top_scope.nearest_map_stops_instructions.default;
+
+    $scope.top_scope.nearestMapDragendDisplayStops = function(lat, lng) {
+
+        var coords = {
+
+            LatLng: {
+                Latitude: lat,
+                Longitude: lng
+            }
+
+        };
+
+        var nearest_stops_to_map_point =
+        nearestMapStopsService.showNearestStopsFromMapCoords(
+            coords,
+            $scope.top_scope.stops_arr,
+            $scope.top_scope.stops
+        );
+
+        var stop_ids_and_dists = {};
+
+        for (var i=0;i<nearest_stops_to_map_point.length;i++) {
+
+            var cur_stop_id = nearest_stops_to_map_point[i].Id;
+
+            var cur_dist_to_stop =
+            nearest_stops_to_map_point[i].distance;
+
+            stop_ids_and_dists[cur_stop_id] = cur_dist_to_stop;
+
+        }
+
+        nearest_map_stop_distances.dists = stop_ids_and_dists;
+
+    };
+
+    var add_drag_pin_dragend_listener;
+
+    var add_drag_pin_click_listener = google.maps.event.addListenerOnce(
+
+        myride.dom_q.map.inst,
+        'click',
+        function(e) {
+
+            $scope.top_scope.nearestMapDragendDisplayStops(
+                e.latLng.lat(), e.latLng.lng()
+            );
+
+            $scope.top_scope.nearest_map_stops_instructions.selected =
+            $scope.top_scope.nearest_map_stops_instructions.clicked;
+
+            var marker =
+            myride.dom_q.map.overlays.nearest_map_draggable.default.marker =
+            new google.maps.Marker({
+                map: myride.dom_q.map.inst,
+                position: e.latLng,
+                draggable: true
+            });
+
+            add_drag_pin_dragend_listener = google.maps.event.addListener(
+                marker,
+                'dragend',
+                function() {
+
+                    var lat = this.getPosition().lat();
+                    var lng = this.getPosition().lng();
+
+                    $scope.top_scope.nearestMapDragendDisplayStops(lat, lng);
+
+                }
+            );
+
+        }
+
+    );
+
     $scope.$on("$destroy", function() {
+
+        if (add_drag_pin_dragend_listener) {
+
+            google.maps.event.removeListener(add_drag_pin_dragend_listener);
+
+        }
+
+        google.maps.event.removeListener(add_drag_pin_click_listener);
 
         $scope.toggleMapSchedule("nearest");
 

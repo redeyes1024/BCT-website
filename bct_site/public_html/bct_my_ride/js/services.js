@@ -414,24 +414,32 @@ function(locationService) {
     };
 
     this.labelDistancesAndConvertFromDegrees = function (distance) {
+
         var units = "yards";
         var distance_in_degrees = distance;
         var reported_distance = "";
-        
-        if (distance > 0) {
-            var distance_in_meters = distance_in_degrees * 111111;
-            var distance_in_yards = distance_in_meters * 1.09361;
+
+        var distance_in_meters = distance_in_degrees * 111111;
+        var distance_in_yards = distance_in_meters * 1.09361;
+
+        if (distance_in_yards >= 10) {
 
             //Because distances were converted roughly to and from degrees
             //latitude and longitude, rounding is extensive
             var rounded_distance = (distance_in_yards / 10).toFixed(0) * 10;
 
             reported_distance = rounded_distance + " " + units;
+
         }
-        else if (distance === 0) {
+
+        else {
+
             reported_distance = "within 10 yards";
+
         }
+
         return reported_distance;
+
     };
 
     this.sortStopsByDistance = function(
@@ -1338,7 +1346,11 @@ marker_click_memory, selected_nearest_map_stop, nearest_map_stop_distances) {
 
             for (var nd in nearest_map_draggable) {
 
-                nearest_map_draggable[nd].marker.setMap(null);
+                if (nd === "default" && nearest_map_draggable.default.marker) {
+
+                    nearest_map_draggable[nd].marker.setMap(null);
+
+                }
 
             }
 
@@ -1490,7 +1502,8 @@ marker_click_memory, selected_nearest_map_stop, nearest_map_stop_distances) {
         //Prevent info box from opening from hover if already opened from click
         if (module === "schedule" && !!hovered) {
 
-            if (!!myride.dom_q.map.overlays["open_info"][0][id_type_name] &&
+            if (typeof myride.dom_q.map.
+                overlays["open_info"][0][id_type_name] !== "undefined" &&
                 point.info[id_type_name] ===
                 myride.dom_q.map.overlays["open_info"][0][id_type_name]) {
 
@@ -1880,8 +1893,8 @@ marker_click_memory, selected_nearest_map_stop, nearest_map_stop_distances) {
                 boxClass: "schedule-map-info-box",
                 pixelOffset: {
 
-                    width: -99,
-                    height: -109
+                    width: -103,
+                    height: -122
 
                 },
                 infoBoxClearance: {
@@ -2043,7 +2056,16 @@ marker_click_memory, selected_nearest_map_stop, nearest_map_stop_distances) {
                                     if (converted_nearest_times[0]) {
 
                                         schedule_el_cont.innerHTML =
-                                        converted_nearest_times.join(", ");
+                                        converted_nearest_times.map(
+                                            function(time) {
+
+                                                var time_no_flags =
+                                                time.replace(/;next|;prev/, "");
+
+                                                return time_no_flags;
+
+                                            }
+                                        ).join(", ");
 
                                     }
 

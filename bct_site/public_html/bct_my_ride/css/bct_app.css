@@ -593,8 +593,11 @@ em.maker-info-window-title {
     padding: 0.5em;
 }
 .schedule-map-info-box {
-    width: 200px !important;
+    width: 210px !important;
     height: 90px !important;
+}
+.schedule-map-info-box img {
+    z-index: 1;
 }
 .trip-planner-info-box {
     width: 200px !important;
@@ -604,14 +607,14 @@ em.maker-info-window-title {
 .schedule-map-info-box-top {
     background-color: #808080;
     height: 3.5em;
-    padding: 0.3em 0em 0em 0.5em;
+    padding: 0.3em 30px 0em 0.5em;
     border-radius: 0.5em 0.5em 0em 0em;
     text-align: left;
 }
 .schedule-map-info-box-bottom {
     background-color: lightgrey;
-    height: calc(100% - 22px);
-    padding: 0.5em 0em 0em;
+    height: calc(100% - 11px);
+    padding: 5px 0px 0px;
     border-radius: 0em 0em 0.5em 0.5em;
     overflow-y: auto;
 }
@@ -694,9 +697,9 @@ em.maker-info-window-title {
 
 .myride-info-box-contents {
     position: absolute;
-    height: calc(100% - 20px);
+    height: calc(100% - 32px);
     width: 100%;
-    top: 0px;
+    top: 2px;
     left: 0px;
 }
 .myride-info-box-contents span {
@@ -723,14 +726,13 @@ em.maker-info-window-title {
     position: relative;
     width: 160px;
     height: 42px;
-    padding: 4px 0px 0px;
     overflow-y: auto;
 }
-.schedule-map-info-box-route-icon:hover {
-    fill: yellow;
+.schedule-map-info-box-route-icon:hover,
+.schedule-map-info-box-route-icon:first-child {
+    fill: #017AC2;
 }
 .schedule-map-info-box-route-icon:first-child {
-    fill: yellow;
     margin: 0px 7px 0px 10px;
 }
 .schedule-map-info-box-route-icon:first-child svg {
@@ -752,8 +754,8 @@ em.maker-info-window-title {
 .schedule-map-info-window-schedule-contents {
     position: absolute;
     width: 100%;
-    padding: 0.5em;
-    top: calc(8.5em + 20px);
+    padding: 0.3em;
+    top: calc(10em + 18px);
     left: 0em;
     background-color: grey;
     border-radius: 0.5em;
@@ -1590,6 +1592,9 @@ iframe .trip-planner-dialog-finish {
     .map-full-screen-activate-button {
         display: none;
     }
+    trip-planner-navigation-bar {
+        border-width: 1px 0px;
+    }
 }
 
 @media (max-width: 600px), (min-width: 900px) and (max-width: 1500px) {
@@ -1713,9 +1718,6 @@ iframe .trip-planner-dialog-finish {
     .navigation-bar-directions {
         width: 1.5em;
         font-size: 2em;
-    }
-    trip-planner-navigation-bar {
-        border-width: 1px 0px;
     }
     #planner-top-inputs {
         display: block;
