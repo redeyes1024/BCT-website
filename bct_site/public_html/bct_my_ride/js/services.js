@@ -1864,13 +1864,17 @@ marker_click_memory, selected_nearest_map_stop, nearest_map_stop_distances) {
 
                     '<div class="schedule-map-info-box-top">' +
 
-                        '<span>' +
-                            "[ID #" + stops[bstops_names[i]].Code + "]" +
-                        //'</span>' +
-                            " - " +
-                        //'<span>' +
-                            stops[bstops_names[i]].Name +
-                        '</span>' +
+                        '<div class="schedule-map-info-box-top-contents">' +
+
+                            '<span>' +
+                                "[ID #" + stops[bstops_names[i]].Code + "]" +
+                            //'</span>' +
+                                " - " +
+                            //'<span>' +
+                                stops[bstops_names[i]].Name +
+                            '</span>' +
+
+                        '</div>' +
 
                     '</div>' +
 
@@ -3153,15 +3157,10 @@ function(nearestStopsService, locationService, latest_location, filterHelpers) {
                     return items;
                 };
 
-                if (input_simplified === "all routes") {
+                if (filter_type === "route" &&
+                    input_simplified === "all routes") {
 
-                    for (var j=0;j<items.length;j++) {
-
-                        if (items[j].Stops) {
-                            filtered.push(items[j]);
-                        }
-
-                    }
+                    filtered = items;
 
                 }
 
@@ -3284,11 +3283,13 @@ function($compile) {
 
             }
 
-            var panel_contents =
-            element.children().children()[1].childNodes[1].childNodes[3].
-            childNodes[1];
+            var sub_panel_already_exists = Boolean(
+                element.children().children()[1].childNodes[1].childNodes[3].
+                innerHTML.
+                match(/sub-panel-stops|sub-panel-landmarks|sub-panel-routes/)
+            );
 
-            if(!panel_contents) {
+            if(!sub_panel_already_exists) {
                 angular.element(
                     element[0].childNodes[0].childNodes[3].
                     childNodes[1].childNodes[3]

@@ -609,12 +609,17 @@ em.maker-info-window-title {
     height: 3.5em;
     padding: 0.3em 30px 0em 0.5em;
     border-radius: 0.5em 0.5em 0em 0em;
+    overflow-y: scroll;
+    direction: rtl;
     text-align: left;
+}
+.schedule-map-info-box-top-contents {
+    width: 100%;
+    direction: ltr;
 }
 .schedule-map-info-box-bottom {
     background-color: lightgrey;
     height: calc(100% - 11px);
-    padding: 5px 0px 0px;
     border-radius: 0em 0em 0.5em 0.5em;
     overflow-y: auto;
 }
@@ -714,9 +719,12 @@ em.maker-info-window-title {
     position: relative;
     width: 32px;
     height: 32px;
-    margin: 0em 0.5em;
+    margin: 6px;
     text-align: center;
     fill: #FFFFFF;
+}
+.schedule-map-info-box-route-icon:nth-last-child(-n+4) {
+    margin: 6px 6px 9px;
 }
 .schedule-map-info-box-route-icon svg {
     transform: scale(0.9);
@@ -733,7 +741,7 @@ em.maker-info-window-title {
     fill: #017AC2;
 }
 .schedule-map-info-box-route-icon:first-child {
-    margin: 0px 7px 0px 10px;
+    margin: 6px 7px 0px 10px;
 }
 .schedule-map-info-box-route-icon:first-child svg {
     transform: scale(1);
@@ -755,7 +763,7 @@ em.maker-info-window-title {
     position: absolute;
     width: 100%;
     padding: 0.3em;
-    top: calc(10em + 18px);
+    top: calc(10em + 22px);
     left: 0em;
     background-color: grey;
     border-radius: 0.5em;

@@ -1753,9 +1753,9 @@ function (
         $scope.show_trip_planner_step_navigation_bar =
         full_screen_on &&
         $scope.show_trip_planner_title &&
-        $scope.current_trip_plan_data_selection &&
+        Boolean($scope.current_trip_plan_data_selection) &&
         //TODO: "Stress test" this line (in case of server API issues)
-        $scope.current_trip_plan_data_selection.legsField[0];
+        Boolean($scope.current_trip_plan_data_selection.legsField[0]);
 
         var map_ready_promise = googleMapUtilities.touchMap();
 
