@@ -11,6 +11,7 @@ BCTAppTopController.controller('BCTController', [
     'routeAndStopFilters', 'module_error_messages', 'default_demo_coords',
     'nearestMapStopsService', 'selected_nearest_map_stop',
     'nearest_map_stop_distances', 'landmarkInfoService', 'favorites_data',
+    'svg_icon_paths',
 
 function (
 
@@ -21,7 +22,8 @@ function (
     map_navigation_marker_indices, legend_icon_list, all_alerts,
     profilePageService, routeAndStopFilters, module_error_messages,
     default_demo_coords, nearestMapStopsService, selected_nearest_map_stop,
-    nearest_map_stop_distances, landmarkInfoService, favorites_data
+    nearest_map_stop_distances, landmarkInfoService, favorites_data,
+    svg_icon_paths
 
 ) {
 
@@ -762,6 +764,11 @@ function (
     };
 
     /* END Data Object Templates */
+
+    $scope.cur_def_dir = window.myride.directories.site_roots.active;
+    $scope.cur_def_path = window.myride.directories.paths.active;
+
+    $scope.svg_icon_paths = svg_icon_paths;
 
     $scope.nearest_map_stop_distances = nearest_map_stop_distances;
 

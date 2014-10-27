@@ -117,15 +117,13 @@ em.hint-text {
     font-size: 1.5em;
     line-height: 1.5em;
     position: relative;
-    top: calc(50% - 3em);
+    height: calc(100% - 4em);
+}
+.myride-main-loading-modal-splash-graphic {
+    width: 100%;
+    height: 100;
 }
 .myride-main-loading-modal-text {
-    
-}
-.myride-main-loading-modal-text-A {
-    
-}
-.myride-main-loading-modal-text-B {
     
 }
 .myride-main-loading-modal-spinner {
@@ -489,10 +487,6 @@ em.hint-text {
     background-color: rgba(255, 255, 255, 0.6);
     z-index: 1030;
 }
-iframe #schedule-map-loading-modal {
-    position: fixed;
-    height: 60em;
-}
 #schedule-map-loading-modal-spinner {
     font-size: 3em;
     position: relative;
@@ -602,10 +596,10 @@ em.maker-info-window-title {
 .trip-planner-info-box {
     width: 200px !important;
     height: 85px !important;
-    background-color: lightgrey;
+    background-color: #888;
 }
 .schedule-map-info-box-top {
-    background-color: #808080;
+    background-color: #888;
     height: 3.5em;
     padding: 0.3em 30px 0em 0.5em;
     border-radius: 0.5em 0.5em 0em 0em;
@@ -618,7 +612,7 @@ em.maker-info-window-title {
     direction: ltr;
 }
 .schedule-map-info-box-bottom {
-    background-color: lightgrey;
+    background-color: #CCC;
     height: calc(100% - 11px);
     border-radius: 0em 0em 0.5em 0.5em;
     overflow-y: auto;
@@ -636,6 +630,9 @@ em.maker-info-window-title {
     border-top-color: lightgrey;
     border-width: 9px;
     margin-left: -10px;
+}
+.trip-planner-info-box:after {
+    border-top-color: #888;
 }
 .schedule-map-info-box a {
     color: yellow !important;
@@ -765,7 +762,7 @@ em.maker-info-window-title {
     padding: 0.3em;
     top: calc(10em + 22px);
     left: 0em;
-    background-color: grey;
+    background-color: #888;
     border-radius: 0.5em;
 }
 
@@ -1410,6 +1407,9 @@ iframe #trip-planner-itinerary-selector {
 .trip-planner-itinerary-transit-type-text-space {
     color: #FFF;
 }
+svg .destination-icon-fix {
+    transform: scale(2) translate(1px, 1px);
+}
 .trip-planner-transit-type-icon {
     
 }
@@ -1424,6 +1424,8 @@ iframe #trip-planner-itinerary-selector {
 }
 .trip-planner-transit-mode-icon-dest {
     width: 2.5em;
+    height: 36px;
+    transform: scale(2) translate(9px, 9px);
 }
 .trip-planner-itinerary-date {
     font-weight: bold;
@@ -1537,7 +1539,7 @@ iframe .trip-planner-dialog-finish {
     vertical-align: middle;
 }
 .nearest-map-stops-single-stop-display {
-    height: 100%;
+    height: 7.5em;
     width: 100%;
     display: table;
 }

@@ -1782,9 +1782,6 @@ marker_click_memory, selected_nearest_map_stop, nearest_map_stop_distances) {
             var lat = stops[bstops_names[i]].LatLng.Latitude;
             var lng = stops[bstops_names[i]].LatLng.Longitude;
 
-            var stop_svg = svg_icon_paths.stop;
-            var bus_svg = svg_icon_paths.bus;
-
             var raw_coords = new google.maps.LatLng(lat, lng);
 
             var coords = self.mapStopsToRoutePath(
@@ -1999,14 +1996,18 @@ marker_click_memory, selected_nearest_map_stop, nearest_map_stop_distances) {
 
                         self.pt.info.clicked = true;
 
-                        angular.element(document).ready(function() {
+                        scope.$evalAsync(function() {
 
-                            var schedule_el = self.pt.info.div_.
-                            getElementsByClassName(
-                                "schedule-map-info-window-schedule"
-                            )[0];
+                            angular.element(document).ready(function() {
 
-                            schedule_el.style.display = "block";
+                                var schedule_el = self.pt.info.div_.
+                                getElementsByClassName(
+                                    "schedule-map-info-window-schedule"
+                                )[0];
+
+                                schedule_el.style.display = "block";
+
+                            });
 
                         });
 
