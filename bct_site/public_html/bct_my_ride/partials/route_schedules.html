@@ -6,7 +6,14 @@
         <span class="title-header myride-title-shadow no-highlight"
         ng-show="show_schedule_results_module_title_normal">
 
-            Search schedules - MyRide
+            <span class="ptr text-shadow-hover"
+            ng-click="changeURLHash('bctappindex');">
+
+                <i class="fa fa-arrow-circle-left"></i>
+
+                Back to Index - MyRide
+
+            </span>
 
             <span class="info-corner-icon text-shadow-hover-icon ptr"
             ng-click="toggleIconLegendOverlay();">
@@ -35,15 +42,6 @@
         </span>
 
         <div class="search-area-contents">
-
-            <span id="schedule-search-back-button" class="search-top-buttons">
-
-                <span class="link-icon"
-                ng-click="changeURLHash('bctappindex');">
-                    <i class="fa fa-arrow-circle-left icon-lower-3 ptr"></i>
-                </span>
-
-            </span>
 
             <div>
 

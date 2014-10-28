@@ -1946,170 +1946,184 @@ marker_click_memory, selected_nearest_map_stop, nearest_map_stop_distances) {
 
                     if (window_already_open) { return true; }
 
-                    var scope = generalServiceUtilities.top_level_scope;
+                    google.maps.event.addListenerOnce(
+                        self.pt.info,
+                        'domready',
+                        function() {
 
-                    angular.element(document).ready(function() {
-
-                        try {
-
-                            var route_icons_el = self.pt.info.div_.
-                            getElementsByClassName(
-                                "info-window-associated-routes"
-                            )[0];
-
-                            var schedule_el = self.pt.info.div_.
-                            getElementsByClassName(
-                                "schedule-map-info-window-schedule"
-                            )[0];
-
-                            schedule_el.style.display = "none";
-
-                            var route_icons_el_ang_obj =
-                            angular.element(route_icons_el);
-
-                            var schedule_el_ang_obj =
-                            angular.element(schedule_el);
-
-                            route_icons_el_ang_obj.
-                            append(
-                                $compile(self.associated_routes_icons)(scope)
-                            );
-
-                            schedule_el_ang_obj.
-                            append(
-                                $compile(self.schedule_template)(scope)
-                            );
-
-                        }
-
-                        catch(e) {
-
-                            console.log(
-                                "Info box closed too quickly to load SVGs."
-                            );
-
-                        }
-
-                    });
-
-                    if (!hovered) {
-
-                        self.pt.info.clicked = true;
-
-                        scope.$evalAsync(function() {
-
-                            angular.element(document).ready(function() {
-
-                                var schedule_el = self.pt.info.div_.
-                                getElementsByClassName(
-                                    "schedule-map-info-window-schedule"
-                                )[0];
-
-                                schedule_el.style.display = "block";
-
-                            });
-
-                        });
-
-                        scope.show_info_window_schedule = true;
-
-                        //Request next arrivals for clicked route/stop
-                        scheduleDownloadAndTransformation.
-                        downloadSchedule(route, self.s_id).then(function(res) {
-
-                            if (!res.data.Today) {
-
-                                console.log(
-                                    "Problem communicating with server: " +
-                                    "InfoBox schedule."
-                                );
-
-                                return true;
-
-                            }
-
-                            var nearest_schedule =
-                            scheduleDownloadAndTransformation.
-                            transformSchedule("nearest", res.data.Today);
+                            var scope = generalServiceUtilities.top_level_scope;
 
                             angular.element(document).ready(function() {
 
                                 try {
 
-                                    var schedule_el_cont = self.pt.info.div_.
+                                    var route_icons_el = self.pt.info.div_.
                                     getElementsByClassName(
-                                        "schedule-map-info-" +
-                                        "window-schedule-contents"
+                                        "info-window-associated-routes"
                                     )[0];
 
-                                    var nearest_times =
-                                    nearest_schedule.nearest.next_times;
+                                    var schedule_el = self.pt.info.div_.
+                                    getElementsByClassName(
+                                        "schedule-map-info-window-schedule"
+                                    )[0];
 
-                                    var converted_nearest_times = [];
+                                    schedule_el.style.display = "none";
 
-                                    for (var i=0;i<nearest_times.length;i++) {
+                                    var route_icons_el_ang_obj =
+                                    angular.element(route_icons_el);
 
-                                        converted_nearest_times.push(
-                                            unitConversionAndDataReporting.
-                                            convertToTwelveHourTime(
-                                                nearest_times[i]
-                                            )
-                                        );
+                                    var schedule_el_ang_obj =
+                                    angular.element(schedule_el);
 
-                                    }
+                                    route_icons_el_ang_obj.
+                                    append(
+                                   $compile(self.associated_routes_icons)(scope)
+                                    );
 
-                                    if (converted_nearest_times[0]) {
-
-                                        schedule_el_cont.innerHTML =
-                                        converted_nearest_times.map(
-                                            function(time) {
-
-                                                var time_no_flags =
-                                                time.replace(/;next|;prev/, "");
-
-                                                return time_no_flags;
-
-                                            }
-                                        ).join(", ");
-
-                                    }
-
-                                    else {
-
-                                        schedule_el_cont.innerHTML =
-                                        "No more departures today.";
-
-                                    }
+                                    schedule_el_ang_obj.
+                                    append(
+                                        $compile(self.schedule_template)(scope)
+                                    );
 
                                 }
 
                                 catch(e) {
 
-                                    console.log("A Google Maps infowindow " +
-                                    "was closed before next times were fully " +
-                                    "loaded.");
+                                    console.log(
+                                    "Info box closed too quickly to load SVGs."
+                                    );
 
                                 }
 
                             });
 
-                        });
+                            if (!hovered) {
 
-                    }
+                                self.pt.info.clicked = true;
 
-                    angular.element(document).ready(function() {
+                                angular.element(document).ready(function() {
 
-                        var route_swap_button_holders =
-                        document.getElementsByClassName(
-                            "route-swap-button-holder"
-                        );
+                                    var schedule_el = self.pt.info.div_.
+                                    getElementsByClassName(
+                                        "schedule-map-info-window-schedule"
+                                    )[0];
 
-                        if (route_swap_button_holders[0]) {
-                            top_self.addRouteSwapButtons(
-                                route_swap_button_holders,
-                                self.s_id
-                            );
-                        }
+                                    schedule_el.style.display = "block";
+
+                                });
+
+                                scope.show_info_window_schedule = true;
+
+                                //Request next arrivals for clicked route/stop
+                                scheduleDownloadAndTransformation.
+                                downloadSchedule(
+                                    route, self.s_id
+                                ).then(function(res) {
+
+                                    if (!res.data.Today) {
+
+                                        console.log(
+                                            "Problem communicating with" +
+                                            "server: InfoBox schedule."
+                                        );
+
+                                        return true;
+
+                                    }
+
+                                    var nearest_schedule =
+                                    scheduleDownloadAndTransformation.
+                                    transformSchedule(
+                                        "nearest", res.data.Today
+                                    );
+
+                                    angular.element(document).ready(function() {
+
+                                        try {
+
+                                            var schedule_el_cont = self.pt.info.
+                                            div_.getElementsByClassName(
+                                                "schedule-map-info-" +
+                                                "window-schedule-contents"
+                                            )[0];
+
+                                            var nearest_times =
+                                            nearest_schedule.nearest.next_times;
+
+                                            var converted_nearest_times = [];
+
+                                            for (
+                                                var i=0;
+                                                i<nearest_times.length;
+                                                i++
+                                            ) {
+
+                                                converted_nearest_times.push(
+                                                 unitConversionAndDataReporting.
+                                                    convertToTwelveHourTime(
+                                                        nearest_times[i]
+                                                    )
+                                                );
+
+                                            }
+
+                                            if (converted_nearest_times[0]) {
+
+                                                schedule_el_cont.innerHTML =
+                                                converted_nearest_times.map(
+                                                    function(time) {
+
+                                                        var time_no_flags =
+                                                        time.
+                                                     replace(/;next|;prev/, "");
+
+                                                        return time_no_flags;
+
+                                                    }
+                                                ).join(", ");
+
+                                            }
+
+                                            else {
+
+                                                schedule_el_cont.innerHTML =
+                                                "No more departures today.";
+
+                                            }
+
+                                        }
+
+                                        catch(e) {
+
+                                            console.log(
+                                                "A Google Maps infowindow " +
+                                                "was closed before next " +
+                                                "times were fully loaded."
+                                            );
+
+                                        }
+
+                                    });
+
+                                });
+
+                            }
+
+                            angular.element(document).ready(function() {
+
+                                var route_swap_button_holders =
+                                document.getElementsByClassName(
+                                    "route-swap-button-holder"
+                                );
+
+                                if (route_swap_button_holders[0]) {
+                                    top_self.addRouteSwapButtons(
+                                        route_swap_button_holders,
+                                        self.s_id
+                                    );
+                                }
+
+                            });
 
                     });
 
@@ -2647,7 +2661,7 @@ marker_click_memory, selected_nearest_map_stop, nearest_map_stop_distances) {
 
                 trip_planner_info_box_contents = '' +
                     '<div class="trip-marker-info-window">' +
-                        "<span>" +
+                        "<span class='trip-marker-info-window-dest'>" +
                             "Arrived at destination." +
                         "</span>" +
                     '</div>';
@@ -2658,25 +2672,52 @@ marker_click_memory, selected_nearest_map_stop, nearest_map_stop_distances) {
 
                 trip_planner_info_box_contents = '' +
                     '<div class="trip-marker-info-window">' +
-                        "<span>" +
-                            "<em>" + (i+1) + ". </em> " +
-                            label + " " + route_text +
+
+                        "<span class='trip-marker-info-window-top'>" +
+
+                            "<span class='trip-marker-info-window-number'>" +
+
+                                "<span class=" +
+                                "'trip-marker-info-window-number-contents'>" +
+
+                                    (i+1) +
+
+                                "</span>" +
+
+                            "</span>" +
+
+                            "<span class='trip-marker-info-window-title'>" +
+                                label + " " + route_text +
+                            "</span>" +
+
                         "</span>" +
-                        "<span>" +
-                            "<em>Distance: </em>" +
-                            reported_distance + " " + reported_distance_unit +
+
+                        "<span class='trip-marker-info-window-bottom'>" +
+
+                            "<span>" +
+                                "Distance: " +
+                                reported_distance +
+                                " " +
+                                reported_distance_unit +
+                            "</span>" +
+
+                            "<span>" +
+                                "Time: " +
+                                legs[i].startTimeField.slice(11,16) +
+                                " - " +
+                                legs[i].endTimeField.slice(11,16) +
+                            "</span>" +
+
+                            "<span>" +
+                                "(" +
+                                    (legs[i].durationField / 1000 / 60).
+                                    toFixed(0) +
+                                " minutes" +
+                                ")" +
+                            "</span>";
+
                         "</span>" +
-                        "<span>" +
-                            "<em> Time: </em>" +
-                            legs[i].startTimeField.slice(11,16) +
-                            " - " +
-                            legs[i].endTimeField.slice(11,16) +
-                        "</span>" +
-                        "<span>" +
-                            "<em> Duration: </em>" +
-                            (legs[i].durationField / 1000 / 60).toFixed(0) +
-                            " minutes" +
-                        "</span>";
+
                     '</div>';
 
             }

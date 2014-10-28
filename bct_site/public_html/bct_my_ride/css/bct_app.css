@@ -117,11 +117,12 @@ em.hint-text {
     font-size: 1.5em;
     line-height: 1.5em;
     position: relative;
-    height: calc(100% - 4em);
+    height: 100%;
+    width: 100%;
 }
 .myride-main-loading-modal-splash-graphic {
     width: 100%;
-    height: 100;
+    height: calc(100% - 4em);
 }
 .myride-main-loading-modal-text {
     
@@ -584,6 +585,8 @@ em.maker-info-window-title {
     font-size: 12px;
     line-height: 1.5em;
     color: #FFFFFF;
+}
+.schedule-map-info-box {
     padding: 0.5em;
 }
 .schedule-map-info-box {
@@ -596,7 +599,7 @@ em.maker-info-window-title {
 .trip-planner-info-box {
     width: 200px !important;
     height: 85px !important;
-    background-color: #888;
+    pointer-events: none;
 }
 .schedule-map-info-box-top {
     background-color: #888;
@@ -1058,10 +1061,6 @@ inline-filter-icons {
 .agency-filter-icon-selected {
     box-shadow: 0px 0px 4px 1px #017AC2;
 }
-#schedule-search-back-button {
-    border-width: 0px 2px 0px 0px;
-    padding: 0em 0.3em;
-}
 #schedule-search-clear-button-top {
     border-width: 0px 2px 0px 1px;
 }
@@ -1263,15 +1262,52 @@ inline-filter-icons {
     max-height: 7.5em;
 }
 .trip-marker-info-window {
-    width: 14em;
+    width: 100%;
+}
+.trip-marker-info-window-top {
     display: table;
+    width: 100%;
+    background-color: #444;
+    border-radius: 4px 4px 0em 0em;
+    pointer-events: auto;
 }
-.trip-marker-info-window span {
-    display: table-row;
+.trip-marker-info-window-number,
+.trip-marker-info-window-title {
+    display: table-cell;
 }
-.trip-marker-info-window span em {
-    font-style: normal;
-    font-weight: bold;
+.trip-marker-info-window-number {
+    border-style: solid;
+    border-width: 0px 1px 1px 0px;
+    width: 30px;
+    display: table-cell;
+}
+.trip-marker-info-window-number-contents {
+    position: absolute;
+    font-size: 20px;
+    top: 5px;
+    left: 10px;
+}
+.trip-marker-info-window-title {
+    font-size: 16px;
+    display: table-cell;
+    height: 30px;
+    border-style: solid;
+    border-width: 0px 0px 1px;
+    vertical-align: middle;
+    padding: 0px 20px 0px 0px;
+}
+.trip-marker-info-window-bottom {
+    display: block;
+    height: 55px;
+    background-color: #888;
+    border-radius: 0px 0px 4px 4px;
+    pointer-events: auto;
+}
+.trip-marker-info-window-bottom span {
+    display: block;
+}
+.trip-marker-info-window-dest {
+    
 }
 #planner-option-optimization,
 #planner-option-transit-modes,
@@ -1678,9 +1714,6 @@ iframe .trip-planner-dialog-finish {
     }
     .schedule-results-icons-inline {
         display: none;
-    }
-    #schedule-search-back-button {
-        padding: 0em;
     }
     #schedule-search-clear-button-top {
         border-width: 0px 0px 0px 1px;

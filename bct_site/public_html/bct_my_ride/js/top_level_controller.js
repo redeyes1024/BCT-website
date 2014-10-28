@@ -2220,7 +2220,25 @@ function (
         myride.dom_q.map.overlays[marker_instances][marker_index].
         info.clicked = true;
 
-        marker_instance.ShowWindow.func();
+        if (map_type === "schedule") {
+
+            google.maps.event.addListenerOnce(
+                myride.dom_q.map.inst,
+                'idle',
+                function() {
+
+                    marker_instance.ShowWindow.func();
+
+                }
+            );
+
+        }
+
+        else {
+
+            marker_instance.ShowWindow.func();
+
+        }
 
         var marker_position = marker_instance.marker.getPosition();
 
@@ -2645,8 +2663,16 @@ function (
 
         $scope.populateScheduleMap(route, stop).then(function() {
 
-            myride.dom_q.map.overlays.points[stop].info.clicked = true;
-            myride.dom_q.map.overlays.points[stop].ShowWindow.func();
+            google.maps.event.addListenerOnce(
+                myride.dom_q.map.inst,
+                'idle',
+                function() {
+
+                    myride.dom_q.map.overlays.points[stop].info.clicked = true;
+                    myride.dom_q.map.overlays.points[stop].ShowWindow.func();
+
+                }
+            );
 
         });
 
