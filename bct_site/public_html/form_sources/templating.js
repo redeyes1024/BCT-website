@@ -102,19 +102,19 @@ ISR.templates.data.agency_icons = {
 
     broward: {
         agency: "broward-county",
-        icon_filename: "broward_100px.png",
+        icon_filename: "bct_logo.svg",
         selection_class: ""
     },
 
     miami: {
         agency: "miami-dade",
-        icon_filename: "miami_dade_100px.png",
+        icon_filename: "miami_dade_logo.svg",
         selection_class: ""
     },
 
     palm: {
         agency: "palm-beach",
-        icon_filename: "palm_100px.png",
+        icon_filename: "palm_tran_logo.svg",
         selection_class: ""
     }
 

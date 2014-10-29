@@ -2538,7 +2538,6 @@ marker_click_memory, selected_nearest_map_stop, nearest_map_stop_distances) {
 
             var leg_pline_config;
 
-
             if (legs[i].modeField === "WALK") {
 
                 leg_pline_config = {
@@ -2584,9 +2583,19 @@ marker_click_memory, selected_nearest_map_stop, nearest_map_stop_distances) {
 
             var icon_color = "";
 
+            var start_date;
+            var end_date;
+
+            var start_date_day;
+
             switch (legs[i].modeField) {
 
                 case "WALK":
+
+                    start_date = legs[i].startTimeField.slice(0,10);
+                    end_date = legs[i].endTimeField.slice(0,10);
+
+                    start_date_day = Number(start_date.slice(8,10));
 
                     icon_svg_path = walking_svg;
 
@@ -2598,6 +2607,11 @@ marker_click_memory, selected_nearest_map_stop, nearest_map_stop_distances) {
                     break;
 
                 case "BUS":
+
+                    start_date = legs[i].startTimeField.slice(0,10);
+                    end_date = legs[i].endTimeField.slice(0,10);
+
+                    start_date_day = Number(start_date.slice(8,10));
 
                     icon_svg_path = bus_svg;
 
@@ -2657,70 +2671,126 @@ marker_click_memory, selected_nearest_map_stop, nearest_map_stop_distances) {
 
             var trip_planner_info_box_contents;
 
-            if (i === orig_legs_count) {
+            var start_seperate_span = "";
+            var end_seperate_span = "";
+            var close_seperate_span = "";
 
-                trip_planner_info_box_contents = '' +
-                    '<div class="trip-marker-info-window">' +
-                        "<span class='trip-marker-info-window-dest'>" +
-                            "Arrived at destination." +
-                        "</span>" +
-                    '</div>';
+            var cur_date_num = (new Date).getDate();
+
+            var reported_start_date = "";
+            var reported_end_date = "";
+
+            if (legs[i].modeField !== "DEST" &&
+                start_date_day !== cur_date_num) {
+
+                reported_start_date = "(" + start_date + ")";
+                reported_end_date = "(" +  end_date + ")";
+
+                start_seperate_span =
+                "<span class='trip-marker-info-window-start-time-top'>";
+
+                end_seperate_span =
+                "<span class='trip-marker-info-window-start-time-bottom'>";
+
+                close_seperate_span = "</span>";
+
+            }
+
+            var trip_marker_info_window_bottom_contents;
+
+                if (legs[i].modeField !== "DEST") {
+
+                    trip_marker_info_window_bottom_contents = '' +
+
+                    "<span>" +
+
+                        reported_distance +
+                        " " +
+                        reported_distance_unit +
+
+                    "</span>" +
+
+                    "<span>" +
+
+                        start_seperate_span +
+
+                            reported_start_date + " " +
+
+                            unitConversionAndDataReporting.
+                            convertToTwelveHourTime(
+                                legs[i].startTimeField.slice(11,16)
+                            ) +
+
+                            " - " +
+
+                        close_seperate_span +
+
+                        end_seperate_span +
+
+                            reported_end_date + " " +
+
+                            unitConversionAndDataReporting.
+                            convertToTwelveHourTime(
+                                legs[i].endTimeField.slice(11,16)
+                            ) +
+
+                        close_seperate_span +
+
+                    "</span>" +
+
+                    "<span>" +
+
+                        "(" +
+                            (legs[i].durationField / 1000 / 60).
+                            toFixed(0) +
+                            " minutes" +
+                        ")" +
+
+                    "</span>" +
+
+                "</span>";
 
             }
 
             else {
 
-                trip_planner_info_box_contents = '' +
-                    '<div class="trip-marker-info-window">' +
+                trip_marker_info_window_bottom_contents = '' +
+                "<span class='trip-marker-info-window-dest'>" +
 
-                        "<span class='trip-marker-info-window-top'>" +
+                    "Arrived at destination." +
 
-                            "<span class='trip-marker-info-window-number'>" +
-
-                                "<span class=" +
-                                "'trip-marker-info-window-number-contents'>" +
-
-                                    (i+1) +
-
-                                "</span>" +
-
-                            "</span>" +
-
-                            "<span class='trip-marker-info-window-title'>" +
-                                label + " " + route_text +
-                            "</span>" +
-
-                        "</span>" +
-
-                        "<span class='trip-marker-info-window-bottom'>" +
-
-                            "<span>" +
-                                "Distance: " +
-                                reported_distance +
-                                " " +
-                                reported_distance_unit +
-                            "</span>" +
-
-                            "<span>" +
-                                "Time: " +
-                                legs[i].startTimeField.slice(11,16) +
-                                " - " +
-                                legs[i].endTimeField.slice(11,16) +
-                            "</span>" +
-
-                            "<span>" +
-                                "(" +
-                                    (legs[i].durationField / 1000 / 60).
-                                    toFixed(0) +
-                                " minutes" +
-                                ")" +
-                            "</span>";
-
-                        "</span>" +
-
-                    '</div>';
+                "<span>";
 
             }
+
+            trip_planner_info_box_contents = '' +
+                '<div class="trip-marker-info-window">' +
+
+                    "<span class='trip-marker-info-window-top'>" +
+
+                        "<span class='trip-marker-info-window-number'>" +
+
+                            "<span class=" +
+                            "'trip-marker-info-window-number-contents'>" +
+
+                                (i+1) +
+
+                            "</span>" +
+
+                        "</span>" +
+
+                        "<span class='trip-marker-info-window-title'>" +
+                            label + " " + route_text +
+                        "</span>" +
+
+                    "</span>" +
+
+                    "<span class='trip-marker-info-window-bottom'>" +
+
+                        trip_marker_info_window_bottom_contents +
+
+                '</div>';
+
 
             var info_window =
             new InfoBox({
@@ -2729,8 +2799,8 @@ marker_click_memory, selected_nearest_map_stop, nearest_map_stop_distances) {
                 boxClass: "trip-planner-info-box",
                 pixelOffset: {
 
-                    width: -100,
-                    height: -101
+                    width: -99,
+                    height: -120
 
                 },
                 infoBoxClearance: {

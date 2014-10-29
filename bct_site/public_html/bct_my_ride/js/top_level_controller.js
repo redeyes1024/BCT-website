@@ -34,7 +34,7 @@ function (
 
     /* START CSS class expressions to be used to ng-class, with defaults */
 
-    /* 
+    /*
         N.B.: Using the ng-class directive, the positioning of map-related DOM 
         elements is altered significantly, in order for only one map only to be
         loaded throughout the life of the app.
