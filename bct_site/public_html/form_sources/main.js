@@ -21,7 +21,7 @@ ISR.directories = {
 };
 
 ISR.directories.site_roots.active =
-ISR.directories.site_roots.remote;
+ISR.directories.site_roots.local;
 
 ISR.directories.paths.active =
 ISR.directories.paths.form_sources;

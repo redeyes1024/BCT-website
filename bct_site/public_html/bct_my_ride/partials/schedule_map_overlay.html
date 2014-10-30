@@ -42,82 +42,11 @@
 
         <div id="schedule-full-result-dialog-all-days">
 
-            <div>
+            <div class="panel-group" id="full-schedule-accordion">
 
-                <div class="schedule-full-result-day">
-
-                    Choose Date:
-
-                    <quick-datepicker ng-model="full_schedule_date"
-                    disable-timepicker="true">
-                    </quick-datepicker>
-
-                </div>
-
-                <div class="schedule-full-result-loading-modal"
-                ng-show="show_schedule_result_date_pick_row_loading">
-
-                    <span class="schedule-full-result-loading-modal-spinner
-                    no-highlight">
-
-                        <i class="fa fa-spinner fa-spin"></i>
-
-                    </span>
-
-                </div>
-
-                <div class="schedule-full-result-no-data-modal"
-                ng-show="show_schedule_result_date_pick_row_no_data">
-                </div>
-
-                <div class="horizontal-scroll">
-
-                    <div class="schedule-full-result-row">
-
-                        <div class="schedule-full-result-time"
-                        ng-repeat="time in schedule.date_pick track by $index">
-
-                            <span class="schedule-full-result-time-text">
-
-                                {{ time }}
-
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div ng-repeat="day in all_days">
-
-                <div class="schedule-full-result-day">
-
-                    {{ day }}
-
-                </div>
-
-                <div class="horizontal-scroll">
-
-                    <div class="schedule-full-result-row">
-
-                        <div class="schedule-full-result-time"
-                        ng-repeat="time in schedule[day.toLowerCase()]
-                        track by $index">
-
-                            <span class="schedule-full-result-time-text">
-
-                                {{ time }}
-
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                </div>
+                <full-schedule-panel
+                ng-repeat="category in full_schedule_categories">
+                </full-schedule-panel>
 
             </div>
 

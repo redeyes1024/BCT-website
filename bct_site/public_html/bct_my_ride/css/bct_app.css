@@ -923,21 +923,6 @@ schedule-map-navigation-bar {
 #schedule-full-result-dialog-all-days {
     padding: 1em;
 }
-.schedule-full-result-day {
-    font-size: 1.1em;
-    text-align: left;
-    height: 1.6em;
-    display: table-cell;
-    vertical-align: middle;
-    font-weight: 700;
-    position: relative;
-}
-.schedule-full-result-day .quickdate-popup {
-    z-index: 3;
-    top: auto;
-    margin: 0em 0em 0px -5em;
-    width: 16em;
-}
 .quickdate-button {
     padding: 0.1em 0.3em;
 }
@@ -954,31 +939,37 @@ schedule-map-navigation-bar {
     position: relative;
     font-size: 1.2em;
 }
-.schedule-full-result-loading-modal,
 .schedule-full-result-no-data-modal {
     position: absolute;
     width: calc(100% - 2em);
     height: calc(5em + 2px);
     z-index: 1;
 }
-.schedule-full-result-loading-modal {
-    background-color: rgba(255, 255, 255, 0.7);
-}
-.schedule-full-result-loading-modal-spinner {
-    font-size: 2em;
-    line-height: 2.4em;
-}
 .schedule-full-result-no-data-modal {
     background-color: rgba(220, 220, 220, 0.7);
 }
-.schedule-full-result-time {
-    background-color: white;
-    border-style: solid;
-    border-width: 1px;
-    height: 3.3em;
-    width: 4em;
+
+#full-schedule-accordion {
+    
+}
+.full-schedule-panel-contents {
+    display: table;
+}
+.full-schedule-title {
+    
+}
+.full-schedule-hour {
+    display: table-row;
+}
+.full-schedule-hour-title,
+.full-schedule-minute {
     display: table-cell;
-    vertical-align: middle;
+}
+.full-schedule-hour-title {
+    
+}
+.full-schedule-minute {
+    
 }
 
 .icon-lower-1,
@@ -1318,7 +1309,7 @@ inline-filter-icons {
     height: 73px;
     border-radius: 4px;
     background-color: #888;
-    padding: 28px 0px 0px;
+    padding: 27px 0px 0px;
 }
 #planner-option-optimization,
 #planner-option-transit-modes,
@@ -1472,7 +1463,8 @@ svg .destination-icon-fix {
 .trip-planner-transit-mode-icon-dest {
     width: 2.5em;
     height: 36px;
-    transform: scale(2) translate(9px, 9px);
+    transform: scale(2) translate(10px, -2px) !important;
+    padding: 11px 0px 0px 0px;
 }
 .trip-planner-itinerary-date {
     font-weight: bold;

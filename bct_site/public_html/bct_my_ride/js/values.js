@@ -4,6 +4,41 @@ var BCTAppValues = angular.module('BCTAppValues', []);
 //BCTAppValues.value('scheduleWebSocket',
 //new WebSocket("ws://echo.websocket.org"));
 
+BCTAppValues.value('full_schedule_categories', [
+
+    {
+
+        id: "full-schedule-accordion-choose-date",
+        title: "Choose Date",
+        hours: []
+
+    },
+
+    {
+        id: "full-schedule-accordion-weekdays",
+        title: "Weekdays",
+        hours: {}
+
+    },
+
+    {
+
+        id: "full-schedule-accordion-choose-saturday",
+        title: "Saturday",
+        hours: {}
+
+    },
+
+    {
+
+        id: "full-schedule-accordion-choose-sunday",
+        title: "Sunday",
+        hours: {}
+
+    }
+
+]);
+
 BCTAppValues.value('base_marker_sizes', {
     scaling_weight: 16,
     default: {

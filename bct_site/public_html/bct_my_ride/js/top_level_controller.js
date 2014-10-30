@@ -11,7 +11,7 @@ BCTAppTopController.controller('BCTController', [
     'routeAndStopFilters', 'module_error_messages', 'default_demo_coords',
     'nearestMapStopsService', 'selected_nearest_map_stop',
     'nearest_map_stop_distances', 'landmarkInfoService', 'favorites_data',
-    'svg_icon_paths',
+    'svg_icon_paths', 'full_schedule_categories',
 
 function (
 
@@ -23,7 +23,7 @@ function (
     profilePageService, routeAndStopFilters, module_error_messages,
     default_demo_coords, nearestMapStopsService, selected_nearest_map_stop,
     nearest_map_stop_distances, landmarkInfoService, favorites_data,
-    svg_icon_paths
+    svg_icon_paths, full_schedule_categories
 
 ) {
 
@@ -516,19 +516,6 @@ function (
 
     });
 
-//    $scope.$watch("show_schedule_map_stop_navigation_bar_contents",
-//    function(new_val, old_val) {
-//
-//        if (new_val > old_val) {
-//            $scope.show_schedule_map_info_bar = false;
-//        }
-//
-//        else if (new_val < old_val) {
-//            $scope.show_schedule_map_info_bar = true;
-//        }
-//
-//    });
-
     $scope.$watch("show_map_full_screen_modal",
     function(new_val, old_val) {
 
@@ -764,6 +751,8 @@ function (
     };
 
     /* END Data Object Templates */
+
+    $scope.full_schedule_categories = full_schedule_categories;
 
     $scope.cur_def_dir = window.myride.directories.site_roots.active;
     $scope.cur_def_path = window.myride.directories.paths.active;

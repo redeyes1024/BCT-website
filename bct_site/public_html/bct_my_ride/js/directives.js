@@ -469,3 +469,14 @@ BCTApp.directive('nearestMapStopsInfoContainer', [ function() {
     };
 
 }]);
+
+BCTApp.directive('fullSchedulePanel', [ function() {
+
+    return {
+        restrict: 'E',
+        templateUrl: window.myride.directories.site_roots.active +
+        window.myride.directories.paths.active +
+        'partials/full_schedule_panel.html'
+    };
+
+}]);

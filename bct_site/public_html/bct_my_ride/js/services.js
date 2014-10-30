@@ -606,9 +606,10 @@ function($http, $q, generalServiceUtilities) {
 }]);
 
 BCTAppServices.service('scheduleDownloadAndTransformation', ['$http', '$q',
-'miniScheduleService', 'generalServiceUtilities',
+'miniScheduleService', 'generalServiceUtilities', 'full_schedule_categories',
 
-function($http, $q, miniScheduleService, generalServiceUtilities) {
+function($http, $q, miniScheduleService, generalServiceUtilities,
+full_schedule_categories) {
 
     //TO DO: Backend will create "booking version" string for all data sets;
     //It will be requested and compared to see if and what data must be updated
@@ -737,6 +738,93 @@ function($http, $q, miniScheduleService, generalServiceUtilities) {
 
     };
 
+    /*
+
+        Converts an array of 24-hour time strings into "tabular" form. e.g.:
+
+        Input:
+
+        ["15:00", "15:10", "15:20", "15:30", "17:50"]
+
+        Output:
+
+        hours: [
+            ...
+            {
+                hour_label: 15,
+                minutes: ["00", "10", "20", "30"]
+            },
+            {
+                hour_label: 16,
+                minutes: []
+            },
+            {
+                hour_label: 17,
+                minutes: ["50"]
+            }
+            ...
+        ]
+
+        Note that the function first creates an intermediate data structure
+        that labels the indices of the "hours" array as strings of an object,
+        so that "minute" strings can be added more easily in the loop. The
+        output structure is finalized by the last loop.
+
+    */
+
+    this.tabularizeDepartures = function(departures) {
+
+        var hour_obj_list_labelled = {};
+
+        var hours_in_day = 24;
+
+        for (var i=0;i<hours_in_day;i++) {
+
+            var hour_obj = {
+
+                hour_label: String(i),
+                minutes: []
+
+            };
+
+            if (i < 10) {
+
+                i = "0" + i;
+
+            }
+
+            hour_obj_list_labelled[String(i)] = hour_obj;
+
+        }
+
+        for (var d=0;d<departures.length;d++) {
+
+            var departure_split = departures[d].split(":");
+
+            var hour = departure_split[0];
+            var minute = departure_split[1]; 
+
+            hour_obj_list_labelled[hour].minutes.push(minute);
+
+        }
+
+        var hour_obj_list_numerically_indexed = [];
+
+        for (var h_obj in hour_obj_list_labelled) {
+
+            hour_obj_list_numerically_indexed.
+            push(hour_obj_list_labelled[h_obj]);
+
+        }
+
+        hour_obj_list_numerically_indexed.sort(function(hour_1, hour_2) {
+            return Number(hour_1.hour_label) - Number(hour_2.hour_label);
+        });
+
+        return hour_obj_list_numerically_indexed;
+
+    };
+
     this.transformSchedule = function(output_type, s_times) {
 
         var date_time = new Date;
@@ -764,7 +852,8 @@ function($http, $q, miniScheduleService, generalServiceUtilities) {
 
             case "datepick":
 
-                schedule_output.date_pick = departures.slice();
+                full_schedule_categories[0].hours =
+                self.tabularizeDepartures(departures.slice());
 
                 break;
 

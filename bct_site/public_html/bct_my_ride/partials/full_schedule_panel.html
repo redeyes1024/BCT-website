@@ -1,0 +1,30 @@
+<div id="{{ category.id }}" class="panel panel-default">
+
+    <span class="full-schedule-title">
+
+        {{ category.title }}
+
+    </span>
+
+    <div class="full-schedule-panel-contents">
+
+        <div class="full-schedule-hour" ng-repeat="hour in category.hours">
+
+            <div class="full-schedule-hour-title">
+
+                {{ hour.hour_label }}
+
+            </div>
+
+            <div class="full-schedule-minute"
+            ng-repeat="minute in hour.minutes">
+
+                {{ minute }}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
