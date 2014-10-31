@@ -1,14 +1,21 @@
-<div id="{{ category.id }}" class="panel panel-default">
+<div id="{{ category.id }}" class="panel panel-default
+full-schedule-category-panel-main-container">
 
-    <span class="full-schedule-title">
+    <span class="full-schedule-title panel-heading panel-title ptr" toggle
+    target="{{ category.id }}-collapse">
 
         {{ category.title }}
 
     </span>
+    
+    <div id="{{ category.id }}-collapse" toggleable active-class="in"
+    class="full-schedule-panel-contents panel-collapse collapse"
+    exclusion-group="full_schedule_categories">
 
-    <div class="full-schedule-panel-contents">
+        <quick-datepicker ng-model="full_schedule_date"></quick-datepicker>
 
-        <div class="full-schedule-hour" ng-repeat="hour in category.hours">
+        <div class="full-schedule-hour" ng-repeat="hour in category.hours"
+        >
 
             <div class="full-schedule-hour-title">
 
