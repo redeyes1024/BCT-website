@@ -379,11 +379,14 @@ em.hint-text {
     font-weight: 700;
     margin: 0.2em;
 }
-#bct-app .quickdate-popup {
-    line-height: 1em;
+#bct-app .quickdate input {
+    font-size: inherit !important;
 }
 #bct-app .quickdate-popup {
+    line-height: 1em;
     font-weight: normal;
+    font-size: inherit !important;
+    z-index: 1;
 }
 
 .error-dialog-centered {
@@ -882,7 +885,9 @@ schedule-map-navigation-bar {
     overflow: auto;
 }
 #schedule-full-result-dialog-title {
+    display: table;
     position: relative;
+    font-size: 0.8em;
     height: 5em;
     width: 100%;
     background: white;
@@ -890,7 +895,6 @@ schedule-map-navigation-bar {
     border-style: dotted;
     margin-bottom: -0.9em;
     border-width: 0px 0px 1px;
-    display: table;
 }
 #schedule-full-result-dialog-pdf,
 #schedule-full-result-dialog-info,
@@ -909,7 +913,7 @@ schedule-map-navigation-bar {
     border-style: dotted;
     border-width: 0px 3px;
     overflow: auto;
-    padding: 0em 0.5em;
+    padding: 0em 0.2em;
 }
 .schedule-full-result-dialog-icon {
     font-size: 3em;
@@ -955,27 +959,68 @@ schedule-map-navigation-bar {
     border-width: 1px 0px 0px;
     margin: 0.5em 0em 0em 0em;
 }
+.full-schedule-title {
+    display: block;
+    text-align: left;
+    font-size: 1.2em !important;
+}
 .full-schedule-category-panel-main-container {
     border-style: solid;
     border-width: 0px 1px 1px 1px;
 }
-.full-schedule-panel-contents {
+.full-schedule-panel-contents,
+.full-schedule-panel-times {
     -webkit-column-count: 3;
     -moz-column-count: 3;
     column-count: 3;
     -webkit-column-rule: 0.3em outset #BBB;
     -moz-column-rule: 0.3em outset #BBB;
     column-rule: 0.3em outset #BBB;
-    max-height: 19em;
-    overflow-y: auto;
+    overflow: auto;
+}
+.full-schedule-panel-contents-with-datepicker,
+.full-schedule-panel-contents {
     padding: 1px;
     border-style: dashed;
     border-width: 1px 0px 0px;
 }
-.full-schedule-title {
-    display: block;
-    text-align: left;
-    font-size: 1.2em !important;
+.full-schedule-panel-contents {
+    max-height: 17.5em;
+}
+.full-schedule-panel-times {
+    font-size: 0.9em;
+    max-height: 18.5em;
+}
+/* Webkit handles column content differently */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+    .full-schedule-panel-times {
+        max-height: none !important;
+        height: calc(18em + 16px) !important;
+    }
+}
+.full-schedule-category-loading-modal-datepick {
+    position: absolute;
+    font-size: 2em;
+    padding: 6.8em;
+    top: 2em;
+    left: 0px;
+    height: calc(100% - 2em);
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.7);
+}
+.full-schedule-panel-contents-with-datepicker {
+    
+}
+.full-schedule-datepicker-container {
+    background-color: #AAA;
+    border-style: solid;
+    border-width: 0px 0px 2px 0px;
+    border-color: #777;
+    margin: 0px 0px 1px 0px;
+    padding: 0.15em 0px 0px 0px;
+}
+.full-schedule-datepicker-container .quickdate-popup {
+    top: 134px;
 }
 .full-schedule-hour {
     display: block;
@@ -1729,19 +1774,33 @@ iframe .trip-planner-dialog-finish {
     }
     #schedule-full-result-dialog-title {
         height: 4em;
+        font-size: 1em;
     }
-    .full-schedule-panel-contents {
+    .full-schedule-panel-times {
         -webkit-column-count: auto;
         -moz-column-count: auto;
         column-count: auto;
-        font-size: 1.1em;
-        max-height: 11em;
+        font-size: 1em;
+        max-height: 9em;
     }
-    .full-schedule-panel-contents quick-datepicker {
-        
+    @media screen and (-webkit-min-device-pixel-ratio:0) {
+        .full-schedule-panel-times {
+            height: 9em !important;
+        }
+    }
+    .full-schedule-category-loading-modal-datepick {
+        padding: 5.2em;
+    }
+    .full-schedule-datepicker-container .quickdate-popup {
+        top: 113px;
     }
     #bct-app .quickdate-popup {
-        line-height: 0.7em;
+        line-height: 0.65em;
+        width: 220px;
+    }
+    #bct-app .quickdate-popup quickdate-date-input,
+    #bct-app .quickdate-popup quickdate-time-input {
+        width: 85px;
     }
     #planner-option-date .quickdate-popup {
         margin: 6em 0em 0em -9em;

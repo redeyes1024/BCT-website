@@ -1,0 +1,53 @@
+<div id="{{ category.id }}" class="panel panel-default
+full-schedule-category-panel-main-container">
+
+    <span class="full-schedule-title panel-heading panel-title ptr" toggle
+    target="{{ category.id }}-collapse">
+
+        {{ category.title }}
+
+    </span>
+
+    <div id="{{ category.id }}-collapse" toggleable active-class="in"
+    class="full-schedule-panel-contents-with-datepicker panel-collapse collapse"
+    exclusion-group="full_schedule_categories">
+
+        <div class="full-schedule-datepicker-container">
+
+            <quick-datepicker ng-model="full_schedule_date.datepick">
+            </quick-datepicker>
+
+        </div>
+
+        <div class="full-schedule-panel-times">
+
+            <div class="full-schedule-hour" ng-repeat="hour in category.hours"
+            ng-show="hour.minutes[0]">
+
+                <div class="full-schedule-hour-title">
+
+                    {{ hour.hour_label }}
+
+                </div>
+
+                <div class="full-schedule-minute"
+                ng-repeat="minute in hour.minutes">
+
+                    {{ minute }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="full-schedule-category-loading-modal-datepick"
+        ng-show="show_full_schedule_category_loading_modal_datepick">
+
+            <i class="fa fa-spinner fa-spin"></i>
+
+        </div>
+
+    </div>
+
+</div>

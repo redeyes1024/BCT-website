@@ -44,11 +44,18 @@
 
             <div id="full-schedule-accordion" class="panel-group no-highlight">
 
+                <full-schedule-panel-with-datepicker
+                ng-repeat="category in full_schedule_category_with_datepicker">
+                </full-schedule-panel-with-datepicker>
+
                 <full-schedule-panel
                 ng-repeat="category in full_schedule_categories">
                 </full-schedule-panel>
 
             </div>
+
+            <div class="full-schedule-category-panel-loading-modal"
+            ng-show="show_full_schedule_category_panel_loading_modal"></div>
 
         </div>
 

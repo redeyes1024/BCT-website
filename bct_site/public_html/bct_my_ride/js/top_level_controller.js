@@ -12,6 +12,7 @@ BCTAppTopController.controller('BCTController', [
     'nearestMapStopsService', 'selected_nearest_map_stop',
     'nearest_map_stop_distances', 'landmarkInfoService', 'favorites_data',
     'svg_icon_paths', 'full_schedule_categories',
+    'full_schedule_category_with_datepicker',
 
 function (
 
@@ -23,7 +24,8 @@ function (
     profilePageService, routeAndStopFilters, module_error_messages,
     default_demo_coords, nearestMapStopsService, selected_nearest_map_stop,
     nearest_map_stop_distances, landmarkInfoService, favorites_data,
-    svg_icon_paths, full_schedule_categories
+    svg_icon_paths, full_schedule_categories,
+    full_schedule_category_with_datepicker
 
 ) {
 
@@ -229,6 +231,9 @@ function (
 
     $scope.show_nearest_map_stops_info_container = false;
 
+    $scope.show_full_schedule_category_panel_loading_modal = false;
+    $scope.show_full_schedule_category_loading_modal_datepick = false;
+
     (function() {
 
         for (icon in location_icons) {
@@ -267,9 +272,11 @@ function (
             );
 
             if ($scope.query_data.schedule_search.length < 3) {
+
                 $scope.show_empty_result_message_search_too_short = true;
                 $scope.show_empty_result_message_no_results = false;
                 $scope.show_schedule_results_result_panels = false;
+
             }
 
             else {
@@ -343,14 +350,16 @@ function (
 
     angular.element(document).ready(function() {
 
-        $scope.$watch("full_schedule_date", function(new_val, old_val) {
+        $scope.$watch("full_schedule_date.datepick",
+        function(new_val, old_val) {
 
             if (new_val !== old_val) {
 
                 $scope.schedule.date_pick =
                 $scope.full_schedule_loading_placeholder;
 
-                $scope.show_schedule_result_date_pick_row_loading = true;
+                $scope.show_full_schedule_category_loading_modal_datepick =
+                true;
 
                 $scope.show_schedule_result_date_pick_row_no_data = false;
 
@@ -358,12 +367,12 @@ function (
 
                     $scope.map_schedule_info.route,
                     $scope.map_schedule_info.stop,
-                    $scope.full_schedule_date
+                    $scope.full_schedule_date.datepick
 
                 ).
                 then(function(res) {
 
-                    $scope.show_schedule_result_date_pick_row_loading =
+                    $scope.show_full_schedule_category_loading_modal_datepick =
                     false;
 
                     if (res.data.Today) {
@@ -389,6 +398,9 @@ function (
                     console.log("Server communication error: full schedule.");
 
                     $scope.alertUserToFullScheduleErrors();
+
+                    $scope.show_full_schedule_category_loading_modal_datepick =
+                    false;
 
                 });
 
@@ -654,7 +666,9 @@ function (
     $scope.bstopFilter = { f: "" };
     $scope.landmarkBstopFilter = { f: "" };
 
-    $scope.full_schedule_date = new Date;
+    $scope.full_schedule_date = {
+        datepick: new Date
+    };
 
     //Defaults are for demonstration purposes only
     $scope.trip_inputs = {
@@ -753,6 +767,9 @@ function (
     /* END Data Object Templates */
 
     $scope.full_schedule_categories = full_schedule_categories;
+
+    $scope.full_schedule_category_with_datepicker =
+    full_schedule_category_with_datepicker;
 
     $scope.cur_def_dir = window.myride.directories.site_roots.active;
     $scope.cur_def_path = window.myride.directories.paths.active;
@@ -2849,7 +2866,7 @@ function (
 
         else {
 
-            $scope.full_schedule_date = new Date;
+            $scope.full_schedule_date.datepick = new Date;
             $scope.show_full_schedule_module = true;
             $scope.schedule_map_styles["hide-scroll"] = true;
 

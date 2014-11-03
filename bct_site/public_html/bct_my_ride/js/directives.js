@@ -480,3 +480,14 @@ BCTApp.directive('fullSchedulePanel', [ function() {
     };
 
 }]);
+
+BCTApp.directive('fullSchedulePanelWithDatepicker', [ function() {
+
+    return {
+        restrict: 'E',
+        templateUrl: window.myride.directories.site_roots.active +
+        window.myride.directories.paths.active +
+        'partials/full_schedule_panel_with_datepicker.html'
+    };
+
+}]);

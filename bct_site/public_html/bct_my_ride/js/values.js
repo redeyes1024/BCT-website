@@ -4,7 +4,7 @@ var BCTAppValues = angular.module('BCTAppValues', []);
 //BCTAppValues.value('scheduleWebSocket',
 //new WebSocket("ws://echo.websocket.org"));
 
-BCTAppValues.value('full_schedule_categories', [
+BCTAppValues.value('full_schedule_category_with_datepicker', [
 
     {
 
@@ -12,7 +12,11 @@ BCTAppValues.value('full_schedule_categories', [
         title: "Choose Date",
         hours: []
 
-    },
+    }
+
+]);
+
+BCTAppValues.value('full_schedule_categories', [
 
     {
         id: "full-schedule-accordion-weekdays",

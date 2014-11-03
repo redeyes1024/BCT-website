@@ -606,10 +606,11 @@ function($http, $q, generalServiceUtilities) {
 }]);
 
 BCTAppServices.service('scheduleDownloadAndTransformation', ['$http', '$q',
-'miniScheduleService', 'generalServiceUtilities', 'full_schedule_categories',
+'miniScheduleService', 'generalServiceUtilities',
+'full_schedule_category_with_datepicker',
 
 function($http, $q, miniScheduleService, generalServiceUtilities,
-full_schedule_categories) {
+full_schedule_category_with_datepicker) {
 
     //TO DO: Backend will create "booking version" string for all data sets;
     //It will be requested and compared to see if and what data must be updated
@@ -852,7 +853,7 @@ full_schedule_categories) {
 
             case "datepick":
 
-                full_schedule_categories[0].hours =
+                full_schedule_category_with_datepicker[0].hours =
                 self.tabularizeDepartures(departures.slice());
 
                 break;
