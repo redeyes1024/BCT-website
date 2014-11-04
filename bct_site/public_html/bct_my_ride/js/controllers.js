@@ -106,11 +106,13 @@ function ($scope, $timeout, nearestStopsService) {
     };
 
     $scope.$on('$destroy', function() {
+
         $scope.setLocationSpinnerAnimation(
             "nearest_bstops", "inactive"
         );
 
         $timeout.cancel($scope.nearest_stops_location_timeout);
+
     });
 
     $scope.getLocationAndDisplayNearestStops = function() {
@@ -120,71 +122,6 @@ function ($scope, $timeout, nearestStopsService) {
             $scope.calculateAndShowNearestBusStops
         );
     };
-
-    $scope.recently_viewed = {
-        trips: [
-            {
-                start: "Coming soon",
-                finish: "BCT - My Ride"
-            },
-            {
-                start: "Coming soon",
-                finish: "BCT - My Ride"
-            }
-        ],
-        stops: [
-            {
-                stop_id: "123ABC",
-                route_id: "ABC123",
-                route_info: {
-                    number: "Coming",
-                    name: "soon",
-                    direction: "to"
-                },
-                bstop_info: {
-                    stop_id: "BCT",
-                    inter: "- My Ride"
-                }
-            }
-        ]
-    };
-
-    var recent = $scope.recently_viewed;
-
-    //Currently, this Anonymous function is called only when $route service
-    //directs to the "nearest stops" page
-    (function() {
-
-        for (var i=0;i<recent.trips.length;i++) {
-
-            recent.trips[i].name =
-            recent.trips[i].start + " to " + recent.trips[i].finish;
-
-        }
-
-        for (var j=0;j<recent.stops.length;j++) {
-
-            var cur_stop = recent.stops[j];
-            cur_stop.name = "";
-
-            for (var r_prop in cur_stop.route_info) {
-
-                cur_stop.name += cur_stop.route_info[r_prop];
-                cur_stop.name += " ";
-
-            }
-            for (var s_prop in cur_stop.bstop_info) {
-
-                cur_stop.name += cur_stop.bstop_info[s_prop];
-                cur_stop.name += " ";
-
-            }
-
-            cur_stop.name = cur_stop.name.trim();
-
-        }
-
-    })();
 
     //Init operations completed when the $scope.init flag is set to "true"
     if (!$scope.init) {
@@ -198,9 +135,10 @@ function ($scope, $timeout, nearestStopsService) {
 BCTAppControllers.controller('tripPlannerController', ['$scope',
 'googleMapUtilities', '$timeout', 'tripPlannerService',
 'unitConversionAndDataReporting', 'module_error_messages',
+'recentlyViewedService',
 
 function ($scope, googleMapUtilities, $timeout, tripPlannerService,
-unitConversionAndDataReporting, module_error_messages) {
+unitConversionAndDataReporting, module_error_messages, recentlyViewedService) {
 
     //For ease of debugging (development only)
     window.trip_scope = $scope;
@@ -670,6 +608,11 @@ unitConversionAndDataReporting, module_error_messages) {
                     return false;
 
                 }
+
+                recentlyViewedService.saveRecentlyViewedItem("trip_planner", {
+                    start: $scope.top_scope.trip_inputs.start,
+                    finish: $scope.top_scope.trip_inputs.finish
+                }, $scope.stops);
 
                 if ($scope.top_scope.show_trip_planner_title) {
 

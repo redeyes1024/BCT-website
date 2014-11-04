@@ -4,6 +4,13 @@ var BCTAppValues = angular.module('BCTAppValues', []);
 //BCTAppValues.value('scheduleWebSocket',
 //new WebSocket("ws://echo.websocket.org"));
 
+BCTAppValues.value('recently_viewed_items', {
+
+    schedule_map: [],
+    trip_planner: []
+
+});
+
 BCTAppValues.value('full_schedule_category_with_datepicker', [
 
     {

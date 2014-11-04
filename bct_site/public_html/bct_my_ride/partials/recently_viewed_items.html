@@ -1,0 +1,82 @@
+<div class="panel-group" id="recent-accordion">
+
+    <!-- Recently Viewed Schedules -->
+
+    <div class="panel panel-default">
+
+        <h2 class="panel-heading panel-title no-highlight ptr" toggle
+        target="recent-stops" ng-click="foldOptions($event);">
+
+            <span class="collapse-button">
+
+                <i class="fa fa-plus-circle collapse-icon"></i>
+
+            </span>
+
+            Recently Viewed Schedules
+
+        </h2>
+
+        <div id="recent-stops" toggleable active-class="in"
+        exclusion-group="accordion1" class="panel-collapse collapse">
+
+            <div class="panel-body">
+
+                <input type="text" id="recent-stop-filter"
+                class="result-filter" ng-model="recentStopFilter"
+                placeholder="Filter stops...">
+
+                <div class="list-group scrollable-content stops-list
+                no-highlight">
+
+                    <sub-panel-recent-route-stop></sub-panel-recent-route-stop>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Recently Viewed Trips -->
+
+    <div class="panel panel-default">
+
+        <h2 class="panel-heading panel-title no-highlight ptr" toggle
+        target="recent-trips" ng-click="foldOptions($event);">
+
+            <span class="collapse-button">
+
+                <i class="fa fa-plus-circle collapse-icon"></i>
+
+            </span>
+
+            Recently Viewed Trips
+
+        </h2>
+
+        <div id="recent-trips" toggleable active-class="in"
+        exclusion-group="accordion1"
+        class="panel-collapse collapse">
+
+            <div class="panel-body">
+
+                <input type="text" id="recent-trip-filter"
+                class="result-filter" ng-model="recentTripFilter"
+                placeholder="Filter trips...">
+
+                <div class="list-group scrollable-content stops-list
+                no-highlight">
+
+                    <sub-panel-recent-trip></sub-panel-recent-trip>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

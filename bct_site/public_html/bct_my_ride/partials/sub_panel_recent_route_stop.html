@@ -1,0 +1,24 @@
+<div class="list-group-item list-group-item-responsive"
+ng-repeat="recent_route_stop in recently_viewed_items.schedule_map
+| filter:{name:recentStopFilter}">
+
+    <div class="result-icon-container link-icon ptr">
+
+        <i class="fa fa-star-o fa-lg"></i>
+
+    </div>
+
+    <div class="result-list-text">
+
+        {{ recent_route_stop.name }}
+
+    </div>
+
+    <div class="result-icon-container link-icon ptr"
+    ng-click="toggleMapSchedule();">
+
+        <i class="fa fa-chevron-right fa-lg arrow-right-icon ptr"></i>
+
+    </div>
+
+</div>

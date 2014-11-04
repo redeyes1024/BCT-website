@@ -9,7 +9,7 @@ ISR.directories = {
 
     site_roots: {
         local: '',
-        remote: 'https://webapps.appdev.cty/BctMyRide',
+        remote: 'https://webapps.appdev.cty/BctMyRide/',
         active: ''
     },
     paths: {

@@ -3591,3 +3591,154 @@ function(nearestStopsService, googleMapUtilities) {
     };
 
 }]);
+
+BCTAppServices.service('recentlyViewedService', [ 'recently_viewed_items',
+function(recently_viewed_items) {
+
+    var self = this;
+
+    this.MAXIMUM_RECENTLY_VIEWED_ITEM_NUMBER = 5;
+
+    this.loadRecentlyViewedList = function() {
+
+        if (!localStorage) {
+
+            console.log(
+                "Unable to store recently viewed items (no localStorage)"
+            );
+
+            return false;
+
+        }
+
+        else if (!localStorage.recently_viewed_items) {
+
+            localStorage.setItem(
+                'recently_viewed_items',
+                JSON.stringify(recently_viewed_items)
+            );
+
+        }
+
+        else {
+
+            var stored_recently_viewed_items =
+            JSON.parse(localStorage.recently_viewed_items);
+
+            //Properties are added individually to ensure the the value is
+            //changed, not just the local reference to it
+            for (var prop in recently_viewed_items) {
+
+                recently_viewed_items[prop] =
+                stored_recently_viewed_items[prop];
+
+            }
+
+        }
+
+    };
+
+    this.saveRecentlyViewedItem = function(type, data_obj, stops_dictionary) {
+
+        if (!localStorage) {
+
+            console.log(
+                "Unable to store recently viewed items (no localStorage)"
+            );
+
+            return false;
+
+        }
+
+        var new_recently_viewed_item;
+
+        var prop_names;
+
+        var search_name;
+
+        if (type === "schedule_map") {
+
+            prop_names = ["route", "stop", "name"];
+
+            var bstop_code = stops_dictionary[data_obj.stop].Code;
+            var bstop_desc = stops_dictionary[data_obj.stop].Name;
+
+            search_name =
+            data_obj.route + "- [ID #" + bstop_code + " - " + bstop_desc;
+
+            new_recently_viewed_item = {
+
+                route: data_obj.route,
+                stop: data_obj.stop,
+                name: search_name
+
+            };
+
+        }
+
+        else if (type === "trip_planner") {
+
+            prop_names = ["start", "finish", "name"];
+
+            search_name = data_obj.start + " to " + data_obj.finish;
+
+            new_recently_viewed_item = {
+
+                start: data_obj.start,
+                finish: data_obj.finish,
+                name: search_name
+
+            };
+
+        }
+
+        var recently_viewed_list =
+        JSON.parse(localStorage.recently_viewed_items);
+
+        for (var i=0;i<recently_viewed_list[type].length;i++) {
+
+            var same_prop_counter = 0;
+
+            for (var j=0;j<prop_names.length;j++) {
+
+                if (recently_viewed_list[type][i][prop_names[j]] ===
+                    new_recently_viewed_item[prop_names[j]]) {
+
+                    same_prop_counter++;
+
+                }
+
+            }
+
+            if (same_prop_counter === prop_names.length) {
+ 
+                return true;
+
+            }
+
+        }
+
+        recently_viewed_list[type].push(new_recently_viewed_item);
+
+        if (recently_viewed_list[type].length >=
+            self.MAXIMUM_RECENTLY_VIEWED_ITEM_NUMBER) {
+
+            recently_viewed_list[type].splice(0,1);
+
+        }
+
+        for (var prop in recently_viewed_list) {
+
+            recently_viewed_items[prop] =
+            recently_viewed_list[prop];
+
+        }
+
+        localStorage.setItem(
+            'recently_viewed_items',
+            JSON.stringify(recently_viewed_list)
+        );
+
+    };
+
+}]);

@@ -491,3 +491,36 @@ BCTApp.directive('fullSchedulePanelWithDatepicker', [ function() {
     };
 
 }]);
+
+BCTApp.directive('recentlyViewedItems', [ function() {
+
+    return {
+        restrict: 'E',
+        templateUrl: window.myride.directories.site_roots.active +
+        window.myride.directories.paths.active +
+        'partials/recently_viewed_items.html'
+    };
+
+}]);
+
+BCTApp.directive('subPanelRecentTrip', [ function() {
+
+    return {
+        restrict: 'E',
+        templateUrl: window.myride.directories.site_roots.active +
+        window.myride.directories.paths.active +
+        'partials/sub_panel_recent_trip.html'
+    };
+
+}]);
+
+BCTApp.directive('subPanelRecentRouteStop', [ function() {
+
+    return {
+        restrict: 'E',
+        templateUrl: window.myride.directories.site_roots.active +
+        window.myride.directories.paths.active +
+        'partials/sub_panel_recent_route_stop.html'
+    };
+
+}]);

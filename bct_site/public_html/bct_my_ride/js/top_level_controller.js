@@ -12,7 +12,8 @@ BCTAppTopController.controller('BCTController', [
     'nearestMapStopsService', 'selected_nearest_map_stop',
     'nearest_map_stop_distances', 'landmarkInfoService', 'favorites_data',
     'svg_icon_paths', 'full_schedule_categories',
-    'full_schedule_category_with_datepicker',
+    'full_schedule_category_with_datepicker', 'recentlyViewedService',
+    'recently_viewed_items',
 
 function (
 
@@ -25,7 +26,8 @@ function (
     default_demo_coords, nearestMapStopsService, selected_nearest_map_stop,
     nearest_map_stop_distances, landmarkInfoService, favorites_data,
     svg_icon_paths, full_schedule_categories,
-    full_schedule_category_with_datepicker
+    full_schedule_category_with_datepicker, recentlyViewedService,
+    recently_viewed_items
 
 ) {
 
@@ -765,6 +767,10 @@ function (
     };
 
     /* END Data Object Templates */
+
+    recentlyViewedService.loadRecentlyViewedList();
+
+    $scope.recently_viewed_items = recently_viewed_items;
 
     $scope.full_schedule_categories = full_schedule_categories;
 
@@ -2658,6 +2664,11 @@ function (
     };
 
     $scope.openMapSchedule = function(route, stop) {
+
+        recentlyViewedService.saveRecentlyViewedItem("schedule_map", {
+            route: route,
+            stop: stop
+        }, $scope.stops);
 
         map_navigation_marker_indices.schedule_named = stop;
 
