@@ -1644,7 +1644,7 @@ function (
     window.myride.directories.paths.active;
 
     $scope.submitRouteStopSearch = function(
-        e, input,externally_specified_stop
+        e, input, externally_specified_stop
     ) {
 
         var input_el;
@@ -3241,6 +3241,15 @@ function (
         }
 
         window.location.hash = "/" + new_hash;
+
+    };
+
+    $scope.submitSpecifiedTrip = function(start, finish) {
+
+        $scope.trip_inputs.start = start;
+        $scope.trip_inputs.finish = finish;
+
+        $scope.trip_scope.submitTrip();
 
     };
 

@@ -437,6 +437,10 @@ em.hint-text {
 #recent-accordion .panel-body .stops-list {
     height: 10em;
 }
+.recent-trip-submit-trip {
+    border-style: dotted;
+    border-width: 0px 0px 0px 1px;
+}
 #nearest-stops-module {
     text-align: left;
     margin: 1em 0em;

@@ -3658,13 +3658,10 @@ function(recently_viewed_items) {
 
         if (type === "schedule_map") {
 
-            prop_names = ["route", "stop", "name"];
+            prop_names = ["route", "stop"];
 
             var bstop_code = stops_dictionary[data_obj.stop].Code;
             var bstop_desc = stops_dictionary[data_obj.stop].Name;
-
-            search_name =
-            data_obj.route + "- [ID #" + bstop_code + " - " + bstop_desc;
 
             new_recently_viewed_item = {
 
@@ -3678,15 +3675,12 @@ function(recently_viewed_items) {
 
         else if (type === "trip_planner") {
 
-            prop_names = ["start", "finish", "name"];
-
-            search_name = data_obj.start + " to " + data_obj.finish;
+            prop_names = ["start", "finish"];
 
             new_recently_viewed_item = {
 
                 start: data_obj.start,
-                finish: data_obj.finish,
-                name: search_name
+                finish: data_obj.finish
 
             };
 

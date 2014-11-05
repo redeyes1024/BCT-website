@@ -1,23 +1,18 @@
 <div class="list-group-item list-group-item-responsive"
 ng-repeat="recent_trip in recently_viewed_items.trip_planner
-| filter:{name:recentTripFilter}">
-
-    <div class="result-icon-container link-icon ptr">
-
-        <i class="fa fa-star-o fa-lg"></i>
-
-    </div>
+| filter:recentTripFilter">
 
     <div class="result-list-text">
 
-            {{ recent_trip.name }}
+            {{ recent_trip.start }} to {{ recent_trip.finish }}
 
     </div>
 
-    <div class="result-icon-container link-icon link-icon ptr"
-    ng-click="changeURLHash('tripplanner')">
+    <div class="recent-trip-submit-trip result-icon-container link-icon
+    link-icon ptr"
+    ng-click="submitSpecifiedTrip(recent_trip.start, recent_trip.finish);">
 
-        <i class="fa fa-chevron-right fa-lg arrow-right-icon ptr"></i>
+        <i class="fa fa-lg fa-map-marker ptr"></i>
 
     </div>
 

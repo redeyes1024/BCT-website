@@ -1,6 +1,6 @@
 <div class="list-group-item list-group-item-responsive"
 ng-repeat="recent_route_stop in recently_viewed_items.schedule_map
-| filter:{name:recentStopFilter}">
+| filter:recentRouteStopFilter">
 
     <div class="result-icon-container link-icon ptr">
 
@@ -10,12 +10,23 @@ ng-repeat="recent_route_stop in recently_viewed_items.schedule_map
 
     <div class="result-list-text">
 
-        {{ recent_route_stop.name }}
+        {{ recent_route_stop.route }} -
+        [ID #{{ stops[recent_route_stop.stop].Code }}] -
+        {{ stops[recent_route_stop.stop].Name }}
 
     </div>
 
-    <div class="result-icon-container link-icon ptr"
-    ng-click="toggleMapSchedule();">
+    <div class="result-icon-container result-icon-container-right link-icon ptr"
+    ng-click="addRouteStopToTripPlanner(recent_route_stop.stop);">
+
+        <i class="fa fa-lg fa-map-marker ptr"></i>
+
+    </div>
+
+    <div class="result-icon-container result-icon-container-right link-icon ptr"
+    ng-click="toggleMapSchedule(
+        'schedule', recent_route_stop.route, recent_route_stop.stop
+    );">
 
         <i class="fa fa-chevron-right fa-lg arrow-right-icon ptr"></i>
 
