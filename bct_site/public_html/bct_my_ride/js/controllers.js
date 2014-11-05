@@ -818,6 +818,8 @@ nearestMapStopsService, nearest_map_stop_distances) {
 
     googleMapUtilities.clearMap();
 
+    $scope.top_scope.show_schedule_result_top_bar = false;
+
     $scope.toggleMapSchedule("nearest");
 
     $scope.top_scope.show_trip_planner_title = false;

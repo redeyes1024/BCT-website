@@ -2898,7 +2898,11 @@ function (
 
     $scope.foldOptions = function(event) {
 
-        var c_buttons = document.getElementsByClassName("collapse-button");
+        var accordion_container =
+        event.target.parentNode.parentNode.parentNode.parentNode;
+
+        var c_buttons =
+        accordion_container.getElementsByClassName("collapse-button");
 
         var targ_cl = event.target.children[0].children[0].classList;
         var list = event.target.parentNode.children[1].classList.contains("in");

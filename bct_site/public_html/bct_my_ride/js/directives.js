@@ -42,6 +42,44 @@ function(googleMapUtilities, marker_icon_options, base_marker_sizes) {
 
         }
 
+        function resetMarkerSizes() {
+
+            if (scope.top_scope.show_schedule_result_top_bar) {
+
+                var schedule_map_points =
+                myride.dom_q.map.overlays.points;
+
+                for (var point in schedule_map_points) {
+
+                    schedule_map_points[point].marker.setIcon(
+                        marker_icon_options.schedule_map.default
+                    );
+
+                }
+
+            }
+
+            else if (scope.top_scope.show_nearest_map_stops_title) {
+
+                var nearest_map_points =
+                myride.dom_q.map.overlays.nearest_map_points;
+
+                for (var point in nearest_map_points) {
+
+                    if (!nearest_map_points[point].clicked) {
+
+                        nearest_map_points[point].marker.setIcon(
+                            marker_icon_options.schedule_map.default
+                        );
+
+                    }
+
+                }
+
+            }
+
+        }
+
         scope.top_scope.$evalAsync(function() {
 
             scope.top_scope.schedule_map_zoom_out_listener =
@@ -63,34 +101,32 @@ function(googleMapUtilities, marker_icon_options, base_marker_sizes) {
                     marker_icon_options.schedule_map.mouseover.strokeWeight =
                     getNewMarkerIconProperty("mouseover", "strokeWeight");
 
-                    if (scope.top_scope.show_schedule_result_top_bar) {
+                    if (scope.top_scope.show_schedule_result_top_bar ||
+                        scope.top_scope.show_nearest_map_stops_title) {
 
-                        var schedule_map_points = myride.dom_q.map.overlays.
-                        points;
-
-                        for (var point in schedule_map_points) {
-
-                            schedule_map_points[point].marker.setIcon(
-                                marker_icon_options.schedule_map.default
-                            );
-
-                        }
+                        resetMarkerSizes();
 
                     }
 
-                    else if (scope.top_scope.
-                            show_nearest_map_stops_title_header) {
+                    else if (scope.top_scope.show_trip_planner_title) {
+     
+                        return true;
 
-                        var nearest_map_points =
-                        myride.dom_q.map.overlays.nearest_map_points;
+                    }
 
-                        for (var point in nearest_map_points) {
+                    else {
 
-                            nearest_map_points[point].marker.setIcon(
-                                marker_icon_options.schedule_map.default
-                            );
+                        google.maps.event.addListenerOnce(
 
-                        }
+                            myride.dom_q.map.inst,
+                            'idle',
+                            function() {
+
+                                resetMarkerSizes();
+
+                            }
+
+                        );
 
                     }
 

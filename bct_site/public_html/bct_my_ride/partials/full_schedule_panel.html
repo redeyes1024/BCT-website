@@ -1,12 +1,18 @@
 <div id="{{ category.id }}" class="panel panel-default
 full-schedule-category-panel-main-container">
 
-    <span class="full-schedule-title panel-heading panel-title ptr" toggle
-    target="{{ category.id }}-collapse">
+    <h2 class="full-schedule-title panel-heading panel-title ptr" toggle
+    target="{{ category.id }}-collapse" ng-click="foldOptions($event);">
+
+        <span class="collapse-button">
+
+            <i class="fa fa-plus-circle collapse-icon"></i>
+
+        </span>
 
         {{ category.title }}
 
-    </span>
+    </h2>
 
     <div id="{{ category.id }}-collapse" toggleable active-class="in"
     class="full-schedule-panel-contents panel-collapse collapse"
