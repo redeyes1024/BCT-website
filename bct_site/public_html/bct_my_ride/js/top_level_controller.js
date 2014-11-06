@@ -4,30 +4,28 @@ BCTAppTopController.controller('BCTController', [
 
     '$scope', '$timeout', //'scheduleWebSocket', 'scheduleSocketService',
     'scheduleDownloadAndTransformation', 'googleMapUtilities', '$q',
-    '$interval', 'unitConversionAndDataReporting', 'miniScheduleService',
+    'unitConversionAndDataReporting', 'miniScheduleService',
     'placeholderService', 'locationService', 'location_icons',
     'agency_filter_icons', 'results_exist', 'map_navigation_marker_indices',
     'legend_icon_list', 'all_alerts', 'profilePageService',
-    'routeAndStopFilters', 'module_error_messages', 'default_demo_coords',
-    'nearestMapStopsService', 'selected_nearest_map_stop',
+    'routeAndStopFilters', 'module_error_messages', 'selected_nearest_map_stop',
     'nearest_map_stop_distances', 'landmarkInfoService', 'favorites_data',
     'svg_icon_paths', 'full_schedule_categories',
     'full_schedule_category_with_datepicker', 'recentlyViewedService',
-    'recently_viewed_items',
+    'full_schedule_availabilities', 'generalUIUtilities',
 
 function (
 
     $scope, $timeout, //scheduleWebSocket, scheduleSocketService,
-    scheduleDownloadAndTransformation, googleMapUtilities, $q, $interval,
+    scheduleDownloadAndTransformation, googleMapUtilities, $q,
     unitConversionAndDataReporting, miniScheduleService, placeholderService,
     locationService, location_icons, agency_filter_icons, results_exist,
     map_navigation_marker_indices, legend_icon_list, all_alerts,
     profilePageService, routeAndStopFilters, module_error_messages,
-    default_demo_coords, nearestMapStopsService, selected_nearest_map_stop,
-    nearest_map_stop_distances, landmarkInfoService, favorites_data,
-    svg_icon_paths, full_schedule_categories,
+    selected_nearest_map_stop, nearest_map_stop_distances, landmarkInfoService,
+    favorites_data, svg_icon_paths, full_schedule_categories,
     full_schedule_category_with_datepicker, recentlyViewedService,
-    recently_viewed_items
+    full_schedule_availabilities, generalUIUtilities
 
 ) {
 
@@ -540,6 +538,7 @@ function (
         else if (new_val < old_val) {
             $scope.schedule_map_styles["schedule-map-full-screen"] = false;
         }
+
     });
 
     $scope.$watch("bstopFilter.f",
@@ -693,46 +692,8 @@ function (
         end: "2014/09/13"
     };
 
-    $scope.nearest_map_stops_instructions = {
-
-        default: "Select anywhere on the map to set the location pin.",
-
-        clicked: "Select a stop or drag the location pin to a different " +
-        "location on the map.",
-
-        selected: ""
-
-    };
-
     //Values taken from BCT site on 14/09/19 12:20 PM EST
-    $scope.full_schedule_availabilities = {
-
-        one_file: [4, 5, 7, 9, 12, 14, 15, 16, 18, 19, 20, 23, 30, 31, 34, 36,
-        40, 42, 48, 50, 55, 56, 60, 62, 72, 81, 83, 88],
-
-        two_files: [1, 2, 6, 10, 11, 22, 28],
-
-        breeze: {
-
-            101: 1,
-            102: 2,
-            441: 441
-
-        },
-
-        express: {
-
-            110: "595X110",
-            112: "595X112",
-            114: "595X114",
-            106: "95X106",
-            107: "95X107",
-            108: "95X108",
-            109: "95X109"
-
-        }
-
-    };
+    $scope.full_schedule_availabilities = full_schedule_availabilities;
 
     (function() {
 
@@ -769,8 +730,6 @@ function (
     /* END Data Object Templates */
 
     recentlyViewedService.loadRecentlyViewedList();
-
-    $scope.recently_viewed_items = recently_viewed_items;
 
     $scope.full_schedule_categories = full_schedule_categories;
 
@@ -856,7 +815,7 @@ function (
         schedule_layout, route_id_short, schedule_type
     ) {
 
-        var url_base = "http://www.broward.org/BCT/MapsAndSchedules/Documents/";
+        var url_base = "http://www.broward.org/BCT/Schedules/Documents/";
         var file_prefix = "rt";
         var file_middle = "web";
         var file_ext = ".pdf";
@@ -2159,40 +2118,7 @@ function (
 
     };
 
-    $scope.cycleMarkerInfoWindows = function(
-        original_index,
-        counter_name
-    ) {
-
-        var new_index = original_index;
-
-        var marker_list_length = 0;
-
-        if (counter_name === "planner") {
-            marker_list_length = myride.dom_q.map.overlays.trip_points.length;
-        }
-        else if (counter_name === "schedule") {
-            marker_list_length =
-            myride.dom_q.map.overlays.ordered_stop_list.length;
-        }
-
-        if (map_navigation_marker_indices[counter_name] < 0) {
-
-            new_index =
-            map_navigation_marker_indices[counter_name] =
-            marker_list_length - 1;
-
-        }
-        else if (map_navigation_marker_indices[counter_name] ===
-        marker_list_length) {
-
-            new_index = map_navigation_marker_indices[counter_name] = 0;
-
-        }
-
-        return new_index;
-
-    };
+    $scope.cycleMarkerInfoWindows = generalUIUtilities.cycleMarkerInfoWindows;
 
     $scope.openMarkerInfoWindow = function(map_type, marker_index) {
 
@@ -2258,6 +2184,7 @@ function (
             lat: marker_position.lat(),
             lng: marker_position.lng()
         });
+
     };
 
 
@@ -2269,6 +2196,7 @@ function (
             console.log("Schedule stop navigator not yet loaded.");
 
             return false;
+
         }
 
     };
@@ -2284,6 +2212,7 @@ function (
 
         }
         else if (map_type === "schedule") {
+
             if (!$scope.checkIfScheduleMapNavigatorLoaded) { return false; }
 
             map_navigation_marker_indices.schedule++;
@@ -2291,6 +2220,7 @@ function (
             $scope.openMarkerInfoWindow(
                 map_type, map_navigation_marker_indices.schedule
             );
+
         }
 
     };
@@ -2298,6 +2228,7 @@ function (
     $scope.goToPrevInfoWindow = function(map_type) {
 
         if (map_type === "planner") {
+
             map_navigation_marker_indices.planner--;
 
             $scope.openMarkerInfoWindow(
@@ -2306,6 +2237,7 @@ function (
 
         }
         else if (map_type === "schedule") {
+
             if (!$scope.checkIfScheduleMapNavigatorLoaded) { return false; }
 
             map_navigation_marker_indices.schedule--;
@@ -2313,6 +2245,7 @@ function (
             $scope.openMarkerInfoWindow(
                 map_type, map_navigation_marker_indices.schedule
             );
+
         }
 
     };
@@ -2320,20 +2253,31 @@ function (
     $scope.goToMarkerInfoWindow = function(map_type, point_choice, new_index) {
 
         switch (point_choice) {
+
             case "next":
+
                 $scope.goToNextInfoWindow(map_type);
+
                 break;
+
             case "prev":
+
                 $scope.goToPrevInfoWindow(map_type);
+
                 break;
-            //Trip planner only; not currently useful for schedule map stops
+
+            //Trip planner only
             case "planner_step":
+
                 map_navigation_marker_indices.planner = new_index;
 
                 $scope.openMarkerInfoWindow(
                     map_type,
                     new_index
                 );
+
+            break;
+
         }
 
     };
@@ -2376,12 +2320,17 @@ function (
     $scope.displayResultsIfExist = function() {
 
         if ($scope.results_exist.main) {
+
             $scope.show_empty_result_message_no_results = false;
             $scope.show_schedule_results_result_panels = true;
+
         }
+
         else {
+
             $scope.show_empty_result_message_no_results = true;
             $scope.show_schedule_results_result_panels = false;
+
         }
 
     };
@@ -2393,14 +2342,21 @@ function (
     $scope.setLocationSpinnerAnimation = function(context, new_state) {
 
         switch (new_state) {
+
             case "active":
+
                 $scope[location_icons[context].spinning_icon] = true;
                 $scope[location_icons[context].regular_icon] = false;
+
                 break;
+
             case "inactive":
+
                 $scope[location_icons[context].spinning_icon] = false;
                 $scope[location_icons[context].regular_icon]= true;
+
                 break;
+
         }
 
     };
@@ -2715,32 +2671,8 @@ function (
 
     $scope.goToMyRideSchedule = function(route, stop) {
 
-        var location_prefix;
-
-        if (window.location.toString().
-            match(/\/index.html/)) {
-
-            location_prefix = "index.html";
-
-        }
-
-        else if(window.location.toString().
-                match(/\/default.aspx/)) {
-
-            location_prefix = "default.aspx";
-
-        }
-        
-        else if(window.location.toString().
-                match(/\/myride_deployment_sample.html/)) {
-
-            location_prefix = "myride_deployment_sample.html";
-
-        }
-
         window.location =
-        location_prefix + "#routeschedules?route=" + route + "&" +
-        "stop=" + stop;
+        generalUIUtilities.addRouteAndStopParamsToUrl(route, stop);
 
         $scope.goToScheduleFromProfilePage();
 
@@ -2837,12 +2769,7 @@ function (
 
         var cur_center = {};
 
-//        if (module === "schedule") {
-            cur_center = $scope.initial_schedule_map_data.coords;
-//        }
-//        else if (module === "planner") {
-//            cur_center = $scope.initial_schedule_map_data.coords;
-//        }
+        cur_center = $scope.initial_schedule_map_data.coords;
         
         myride.dom_q.map.inst.setZoom(18);
         myride.dom_q.map.inst.setCenter(cur_center);
@@ -2850,13 +2777,17 @@ function (
     };
 
     $scope.hideMiniScheduleAndAlertBars = function() {
+
         $scope.show_schedule_result_top_info_bar = false;
         $scope.show_schedule_result_top_alert_bar = false;
+
     };
 
     $scope.showMiniScheduleAndAlertBars = function() {
+
         $scope.show_schedule_result_top_info_bar = true;
         $scope.show_schedule_result_top_alert_bar = true;
+
     };
 
     $scope.toggleFullSchedule = function() {
@@ -2888,37 +2819,20 @@ function (
     };
 
     $scope.clearFilters = function() {
+
         $scope.bstopFilter.f = "";
         $scope.routeFilter.f = "";
         $scope.landmarkBstopFilter.f = "";
+
     };
 
     $scope.getCurrentLocationAndDisplayData = locationService.
     getCurrentLocationAndDisplayData;
 
-    $scope.foldOptions = function(event) {
+    $scope.setAccordionPlusMinusIcons = function(event) {
 
-        var accordion_container =
-        event.target.parentNode.parentNode.parentNode.parentNode;
+        generalUIUtilities.setAccordionPlusMinusIcons(event);
 
-        var c_buttons =
-        accordion_container.getElementsByClassName("collapse-button");
-
-        var targ_cl = event.target.children[0].children[0].classList;
-        var list = event.target.parentNode.children[1].classList.contains("in");
-
-        for (var i=0;i<c_buttons.length;i++) {
-            c_buttons[i].children[0].classList.remove("fa-minus-circle");
-            c_buttons[i].children[0].classList.add("fa-plus-circle");
-        }
-        if (list) {
-            targ_cl.remove("fa-plus-circle");
-            targ_cl.add("fa-minus-circle");
-        }
-        else {
-            targ_cl.remove("fa-minus-circle");
-            targ_cl.add("fa-plus-circle");
-        }
         $scope.clearFilters();
 
     };

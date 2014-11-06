@@ -76,8 +76,8 @@ base_marker_sizes) {
 }]);
 
 BCTAppControllers.controller('indexController', ['$scope', '$timeout',
-'nearestStopsService',
-function ($scope, $timeout, nearestStopsService) {
+'nearestStopsService', 'recently_viewed_items',
+function ($scope, $timeout, nearestStopsService, recently_viewed_items) {
 
     //For ease of debugging (development only)
     window.index_scope = $scope;
@@ -122,6 +122,8 @@ function ($scope, $timeout, nearestStopsService) {
             $scope.calculateAndShowNearestBusStops
         );
     };
+
+    $scope.top_scope.recently_viewed_items = recently_viewed_items;
 
     //Init operations completed when the $scope.init flag is set to "true"
     if (!$scope.init) {
@@ -652,6 +654,10 @@ unitConversionAndDataReporting, module_error_messages, recentlyViewedService) {
 
                 }
 
+                tripPlannerService.addAlternateRouteIds(
+                    $scope.top_scope.current_trip_plan_data
+                );
+
                 $scope.top_scope.show_trip_planner_itinerary_labels = true;
 
                 $scope.top_scope.show_schedule_map_loading_modal = false;
@@ -809,9 +815,11 @@ unitConversionAndDataReporting, module_error_messages, recentlyViewedService) {
 BCTAppControllers.controller('nearestMapStopsController', ['$scope',
 '$timeout', 'googleMapUtilities', 'selected_nearest_map_stop',
 'nearestMapStopsService', 'nearest_map_stop_distances',
+'nearest_map_stops_instructions',
 
 function ($scope, $timeout, googleMapUtilities, selected_nearest_map_stop,
-nearestMapStopsService, nearest_map_stop_distances) {
+nearestMapStopsService, nearest_map_stop_distances,
+nearest_map_stops_instructions) {
 
     //For ease of debugging (development only)
     window.nms_scope = $scope;
@@ -826,8 +834,11 @@ nearestMapStopsService, nearest_map_stop_distances) {
 
     $scope.top_scope.show_nearest_map_stops_info_container = true;
 
-    $scope.top_scope.nearest_map_stops_instructions.selected =
-    $scope.top_scope.nearest_map_stops_instructions.default;
+    $scope.top_scope.nearest_map_stops_instructions =
+    nearest_map_stops_instructions;
+
+    nearest_map_stops_instructions.selected =
+    nearest_map_stops_instructions.default;
 
     $scope.top_scope.nearestMapDragendDisplayStops = function(lat, lng) {
 
@@ -876,8 +887,8 @@ nearestMapStopsService, nearest_map_stop_distances) {
                 e.latLng.lat(), e.latLng.lng()
             );
 
-            $scope.top_scope.nearest_map_stops_instructions.selected =
-            $scope.top_scope.nearest_map_stops_instructions.clicked;
+            nearest_map_stops_instructions.selected =
+            nearest_map_stops_instructions.clicked;
 
             var marker =
             myride.dom_q.map.overlays.nearest_map_draggable.default.marker =

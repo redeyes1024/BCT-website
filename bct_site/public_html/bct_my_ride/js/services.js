@@ -546,6 +546,7 @@ function(locationService) {
 }]);
 
 BCTAppServices.service('placeholderService', [ function() {
+
     this.createLoadingPlaceholder = function(length, content) {
         var placeholder_arr = [];
         var placeholder_length = length;
@@ -557,6 +558,7 @@ BCTAppServices.service('placeholderService', [ function() {
 
         return placeholder_arr;
     };
+
 }]);
 
 BCTAppServices.service('landmarkInfoService', ['$http', '$q',
@@ -1153,6 +1155,110 @@ BCTAppServices.service('generalServiceUtilities', [ function() {
             return false;
 
         }
+
+    };
+
+}]);
+
+BCTAppServices.service('generalUIUtilities', [ 'map_navigation_marker_indices',
+function(map_navigation_marker_indices) {
+
+    this.setAccordionPlusMinusIcons = function(event) {
+
+        var accordion_container =
+        event.target.parentNode.parentNode.parentNode.parentNode;
+
+        var c_buttons =
+        accordion_container.getElementsByClassName("collapse-button");
+
+        var targ_cl = event.target.children[0].children[0].classList;
+        var list = event.target.parentNode.children[1].classList.contains("in");
+
+        for (var i=0;i<c_buttons.length;i++) {
+
+            c_buttons[i].children[0].classList.remove("fa-minus-circle");
+            c_buttons[i].children[0].classList.add("fa-plus-circle");
+
+        }
+
+        if (list) {
+
+            targ_cl.remove("fa-plus-circle");
+            targ_cl.add("fa-minus-circle");
+
+        }
+
+        else {
+
+            targ_cl.remove("fa-minus-circle");
+            targ_cl.add("fa-plus-circle");
+
+        }
+
+    };
+
+    this.addRouteAndStopParamsToUrl = function(route, stop) {
+
+        var location_prefix;
+
+        if (window.location.toString().
+            match(/\/index.html/)) {
+
+            location_prefix = "index.html";
+
+        }
+
+        else if(window.location.toString().
+                match(/\/default.aspx/)) {
+
+            location_prefix = "default.aspx";
+
+        }
+        
+        else if(window.location.toString().
+                match(/\/myride_deployment_sample.html/)) {
+
+            location_prefix = "myride_deployment_sample.html";
+
+        }
+
+        var new_url =
+        location_prefix + "#routeschedules?route=" + route + "&" +
+        "stop=" + stop;
+
+        return new_url;
+
+    };
+
+    this.cycleMarkerInfoWindows = function(original_index, counter_name) {
+
+        var new_index = original_index;
+
+        var marker_list_length = 0;
+
+        if (counter_name === "planner") {
+            marker_list_length = myride.dom_q.map.overlays.trip_points.length;
+        }
+        else if (counter_name === "schedule") {
+            marker_list_length =
+            myride.dom_q.map.overlays.ordered_stop_list.length;
+        }
+
+        if (map_navigation_marker_indices[counter_name] < 0) {
+
+            new_index =
+            map_navigation_marker_indices[counter_name] =
+            marker_list_length - 1;
+
+        }
+        else if (map_navigation_marker_indices[counter_name] ===
+        marker_list_length) {
+
+            new_index = map_navigation_marker_indices[counter_name] = 0;
+
+        }
+
+        return new_index;
 
     };
 
@@ -3154,6 +3260,30 @@ trip_planner_constants) {
         }
 
         return filtered_trip_itineraries;
+
+    };
+
+    this.addAlternateRouteIds = function(all_itineraries) {
+
+        for (var i=0;i<all_itineraries.length;i++) {
+
+            for (var j=0;j<all_itineraries[i].legsField.length;j++) {
+
+                var legs = all_itineraries[i].legsField;
+
+                switch(legs[j].routeField) {
+
+                    case "US1 Breeze":
+
+                        legs[j].routeField = "US1";
+
+                        break;
+
+                }
+
+            }
+
+        }
 
     };
 

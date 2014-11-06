@@ -4,6 +4,48 @@ var BCTAppValues = angular.module('BCTAppValues', []);
 //BCTAppValues.value('scheduleWebSocket',
 //new WebSocket("ws://echo.websocket.org"));
 
+
+
+BCTAppValues.value('nearest_map_stops_instructions', {
+
+    default: "Select anywhere on the map to set the location pin.",
+
+    clicked: "Select a stop or drag the location pin to a different " +
+    "location on the map.",
+
+    selected: ""
+
+});
+
+BCTAppValues.value('full_schedule_availabilities', {
+
+    one_file: [4, 5, 7, 9, 12, 14, 15, 16, 18, 19, 20, 23, 30, 31, 34, 36,
+    40, 42, 48, 50, 55, 56, 60, 62, 72, 81, 83, 88],
+
+    two_files: [1, 2, 6, 10, 11, 22, 28],
+
+    breeze: {
+
+        101: 1,
+        102: 2,
+        441: 441
+
+    },
+
+    express: {
+
+        110: "595X110",
+        112: "595X112",
+        114: "595X114",
+        106: "95X106",
+        107: "95X107",
+        108: "95X108",
+        109: "95X109"
+
+    }
+
+});
+
 BCTAppValues.value('recently_viewed_items', {
 
     schedule_map: [],

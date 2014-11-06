@@ -44,8 +44,11 @@ window.myride.directories.site_roots.whitelist_regexps = {
 
 //Initial DOM queries
 window.myride.dom_q = {
+
     map: {
+
         overlays: {
+
             trip_pline: [],
             trip_points: [],
             //Dummy properties for first-time function calls
@@ -65,12 +68,16 @@ window.myride.dom_q = {
             points: {},
             nearest_map_points: {},
             nearest_map_draggable: {}
+
         }
+     
     },
+
     inputs: {
         input_labels: [],
         elements: {}
     }
+
 };
 
 angular.element(document).ready(function() {
@@ -94,4 +101,5 @@ angular.element(document).ready(function() {
     if (checkLocationHash()) {
         window.location.hash = "#/bctappindex";
     }
+
 });
