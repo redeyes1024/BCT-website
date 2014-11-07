@@ -2,7 +2,9 @@ var BCTAppTopController = angular.module('BCTAppTopController', []);
 
 BCTAppTopController.controller('BCTController', [
 
-    '$scope', '$timeout', //'scheduleWebSocket', 'scheduleSocketService',
+    '$scope', '$timeout', 'full_bstop_data', 'full_route_data',
+    'full_landmark_data',
+    //'scheduleWebSocket', 'scheduleSocketService',
     'scheduleDownloadAndTransformation', 'googleMapUtilities', '$q',
     'unitConversionAndDataReporting', 'miniScheduleService',
     'placeholderService', 'locationService', 'location_icons',
@@ -13,10 +15,13 @@ BCTAppTopController.controller('BCTController', [
     'svg_icon_paths', 'full_schedule_categories',
     'full_schedule_category_with_datepicker', 'recentlyViewedService',
     'full_schedule_availabilities', 'generalUIUtilities',
+    'routeStopLandmarkTransformationService',
 
 function (
 
-    $scope, $timeout, //scheduleWebSocket, scheduleSocketService,
+    $scope, $timeout, full_bstop_data, full_route_data,
+    full_landmark_data,
+    //scheduleWebSocket, scheduleSocketService,
     scheduleDownloadAndTransformation, googleMapUtilities, $q,
     unitConversionAndDataReporting, miniScheduleService, placeholderService,
     locationService, location_icons, agency_filter_icons, results_exist,
@@ -25,7 +30,8 @@ function (
     selected_nearest_map_stop, nearest_map_stop_distances, landmarkInfoService,
     favorites_data, svg_icon_paths, full_schedule_categories,
     full_schedule_category_with_datepicker, recentlyViewedService,
-    full_schedule_availabilities, generalUIUtilities
+    full_schedule_availabilities, generalUIUtilities,
+    routeStopLandmarkTransformationService
 
 ) {
 
@@ -254,19 +260,16 @@ function (
         if (new_val !== old_val) {
 
             $scope.filtered_routes_arr = $scope.routeFilterFunc(
-                $scope.routes_arr,
                 $scope.query_data.schedule_search,
                 false
             );
 
             $scope.filtered_stops_arr = $scope.stopFilterFunc(
-                $scope.stops_arr,
                 $scope.query_data.schedule_search,
                 $scope.sort_bstops_by_distance
             );
 
             $scope.filtered_landmarks_arr = $scope.landmarkFilterFunc(
-                $scope.landmarks_arr,
                 $scope.query_data.schedule_search,
                 false
             );
@@ -547,9 +550,9 @@ function (
         if (new_val !== old_val) {
 
             $scope.filtered_sub_routes_arr = $scope.stopSubFilterFunc(
-                $scope.route_stop_list,
                 $scope.bstopFilter.f,
-                false
+                false,
+                $scope.route_stop_list
             );
 
         }
@@ -562,9 +565,9 @@ function (
         if (new_val !== old_val) {
 
             $scope.filtered_sub_landmarks_arr = $scope.stopSubFilterFunc(
-                $scope.landmark_stop_list,
                 $scope.landmarkBstopFilter.f,
-                false
+                false,
+                $scope.landmark_stop_list
             );
 
         }
@@ -577,9 +580,9 @@ function (
         if (new_val !== old_val) {
 
             $scope.filtered_sub_stops_arr = $scope.routeSubFilterFunc(
-                $scope.stop_route_list,
                 $scope.routeFilter.f,
-                false
+                false,
+                $scope.stop_route_list
             );
 
         }
@@ -1060,7 +1063,7 @@ function (
         $scope.cycleThroughRouteAlerts = function(old_index) {
 
             var number_of_alerts =
-            $scope.routes[$scope.map_schedule_info.route].alerts.length;
+            full_route_data.dict[$scope.map_schedule_info.route].alerts.length;
 
             var new_index = old_index;
 
@@ -1630,7 +1633,8 @@ function (
 
             input_el = myride.dom_q.inputs.elements.rs_search_input;
 
-            new_input_value = $scope.stops[externally_specified_stop].Name;
+            new_input_value =
+            full_bstop_data.dict[externally_specified_stop].Name;
 
         }
 
@@ -2435,7 +2439,7 @@ function (
 
     $scope.addRouteStopToTripPlanner = function(stop) {
 
-        var bstop_coords = $scope.stops[stop].LatLng;
+        var bstop_coords = full_bstop_data.dict[stop].LatLng;
         var bstop_coords_str = "";
 
         bstop_coords_str += bstop_coords.Latitude + ",";
@@ -2554,17 +2558,17 @@ function (
 
     };
 
-    $scope.populateScheduleMap = function(route, stop) {
+    $scope.populateScheduleMap = function(route_id, stop) {
 
-        $scope.map_schedule_info.route = route;
+        $scope.map_schedule_info.route = route_id;
         $scope.map_schedule_info.stop = stop;
 
-        $scope.initial_schedule_map_data.route_id = route;
+        $scope.initial_schedule_map_data.route_id = route_id;
         $scope.initial_schedule_map_data.bstop_id = stop;
 
         var coords = {
-            lat: $scope.stops[stop].LatLng.Latitude,
-            lng:  $scope.stops[stop].LatLng.Longitude
+            lat: full_bstop_data.dict[stop].LatLng.Latitude,
+            lng:  full_bstop_data.dict[stop].LatLng.Longitude
         };
 
         $scope.initial_schedule_map_data.coords = coords;
@@ -2572,11 +2576,9 @@ function (
         googleMapUtilities.clearMap();
 
         $scope.cur_route_path =
-        googleMapUtilities.displayRoute(route, $scope.routes);
+        googleMapUtilities.displayRoute(route_id);
 
-        googleMapUtilities.displayStops(
-            route, $scope.routes, $scope.stops, $scope.cur_route_path
-        );
+        googleMapUtilities.displayStops(route_id, $scope.cur_route_path);
 
         var projected_coords = 
         googleMapUtilities.mapStopsToRoutePath(coords, $scope.cur_route_path);
@@ -2624,7 +2626,7 @@ function (
         recentlyViewedService.saveRecentlyViewedItem("schedule_map", {
             route: route,
             stop: stop
-        }, $scope.stops);
+        });
 
         map_navigation_marker_indices.schedule_named = stop;
 
@@ -2851,52 +2853,6 @@ function (
 
         }
 
-        function transformLandmarks() {
-
-            var landmarks = $scope.landmarks = [];
-
-            for (var l_i=0;l_i<$scope.landmark_data.length;l_i++) {
-
-                var cur_landmark = $scope.landmark_data[l_i];
-
-                for (var j=0;j<cur_landmark.POIS.length;j++) {
-
-                    landmarks.push(cur_landmark.POIS[j]);
-
-                }
-
-            }
-
-        }
-
-        function transformRoutes() {
-
-            var routes = $scope.routes = {};
-
-            for (var r_i=0;r_i<$scope.route_data.length;r_i++) {
-
-                var cur_route = $scope.route_data[r_i];
-
-                routes[cur_route.Id] = cur_route;
-
-            }
-
-        }
-
-        function transformStops() {
-
-            var bstops = $scope.stops = {};
-
-            for (var s_i=0;s_i<$scope.bstop_data.length;s_i++) {
-
-                var cur_bstop = $scope.bstop_data[s_i];
-
-                bstops[cur_bstop.Id] = cur_bstop;
-
-            }
-
-        }
-
         //N.B. "catch" mathod is not used with the dot operator due to
         //YUI Compressor (Rhino Engine) reserving the word for try/catch
         //statement
@@ -2922,9 +2878,7 @@ function (
             landmarkInfoService.downloadLandmarkInfo().
             then(function(res) {
 
-                $scope.landmark_data = res.data;
-
-                transformLandmarks();
+                full_landmark_data.orig = res.data;
 
             })["catch"](function() {
 
@@ -2935,9 +2889,7 @@ function (
             scheduleDownloadAndTransformation.downloadRouteInfo().
             then(function(res) {
 
-                $scope.route_data = res.data;
-
-                transformRoutes();
+                full_route_data.list = res.data;
 
             })["catch"](function() {
 
@@ -2948,9 +2900,7 @@ function (
             scheduleDownloadAndTransformation.downloadStopInfo().
             then(function(res) {
 
-                $scope.bstop_data= res.data;
-
-                transformStops();
+                full_bstop_data.list = res.data;
 
             })["catch"](function() {
 
@@ -2990,7 +2940,7 @@ function (
         angular.element(document).ready(function() {
 
             $scope.query_data.schedule_search =
-            $scope.stops[stop].Name;
+            full_bstop_data.dict[stop].Name;
 
             if (myride.dom_q.inputs.elements.rs_search_input) {
 
@@ -3003,114 +2953,16 @@ function (
 
     };
 
-    var route_props = ["Id", "LName"];
-    var bstop_props = ["Id", "Name", "Code"];
-
-    //After all main data is downloaded (or retrived from Local Storage),
-    //the following callback performs data transformation
     fullDataDownloadPromise.then(function() {
 
-        $scope.show_main_loading_modal = false;
-
-        var full_data = $scope.all_transit_agency_data;
-        var BCT_partial_label_obj = full_data.BCT.indexers.partial_labels;
-
-        var all_stops = $scope.stops;
-        var all_routes = $scope.routes;
-        var all_landmarks = $scope.landmarks;
-
-        var all_stops_arr = [];
-        var all_routes_arr = [];
-        var all_landmarks_arr = [];
-
-        for (var route in all_routes) {
-
-            BCT_partial_label_obj[route] = route.slice(3);
-
-            //The following property is a placeholder
-            all_routes[route].alerts = all_alerts.schedule_map;
-
-            all_routes[route].bstop_refs = [];
-
-            var bstops = all_routes[route].Stops;
-
-            for (var bstop in bstops) {
-
-                var s_res = {};
-
-                for (var i=0;i<bstop_props.length;i++) {
-
-                    s_res[bstop_props[i]] =
-                    all_stops[bstops[bstop]][bstop_props[i]];
-
-                }
-
-                all_routes[route].bstop_refs.push(s_res);
-
-            }
-
-            all_routes_arr.push(all_routes[route]);
-
-        }
-
-        for (var bstop in all_stops) {
-
-            all_stops[bstop].route_refs = [];
-
-            var routes = all_stops[bstop].Routes;
-
-            for (var route in routes) {
-
-                var r_res = {};
-
-                for (var i=0;i<route_props.length;i++) {
-
-                    r_res[route_props[i]] =
-                    all_routes[routes[route]][route_props[i]];
-
-                }
-
-                all_stops[bstop].route_refs.push(r_res);
-
-            }
-
-            all_stops_arr.push(all_stops[bstop]);
-
-        }
-
-        for (var lmk=0;lmk<all_landmarks.length;lmk++) {
-
-            //The following property is a placeholder
-            all_landmarks[lmk].alerts = all_alerts.schedule_map;
-
-            all_landmarks[lmk].bstop_refs = [];
-
-            var lmk_bstops = all_landmarks[lmk].Stops;
-
-            for (var lmk_s=0;lmk_s<lmk_bstops.length;lmk_s++) {
-
-                var lmk_s_res = {};
-
-                for (var i=0;i<bstop_props.length;i++) {
-
-                    lmk_s_res[bstop_props[i]] =
-                    all_stops[lmk_bstops[lmk_s]][bstop_props[i]];
-
-                }
-
-                all_landmarks[lmk].bstop_refs.push(lmk_s_res);
-
-            }
-
-            all_landmarks_arr.push(all_landmarks[lmk]);
-
-        }
-
-        $scope.routes_arr = all_routes_arr;
-        $scope.stops_arr = all_stops_arr;
-        $scope.landmarks_arr = all_landmarks_arr;
+        routeStopLandmarkTransformationService.linkRouteAndStopReferences();
 
         $scope.goToScheduleFromProfilePage();
+
+        $scope.stops = full_bstop_data.dict;
+        $scope.routes = full_route_data.dict;
+
+        $scope.show_main_loading_modal = false;
 
     });
 

@@ -389,7 +389,7 @@ out_of_region_cutoff_coords) {
 }]);
 
 BCTAppServices.service('nearestStopsService', [ 'locationService',
-function(locationService) {
+'full_bstop_data', function(locationService, full_bstop_data) {
 
     var self = this;
 
@@ -476,8 +476,6 @@ function(locationService) {
 
     this.findNearestStops = function(
         current_location,
-        full_bstop_list,
-        bus_stop_dictionary,
         return_full_list,
         disable_location_check
     ) {
@@ -492,12 +490,12 @@ function(locationService) {
 
         var full_bstop_list_ids_coords = [];
 
-        for (var i=0;i<full_bstop_list.length;i++) {
+        for (var i=0;i<full_bstop_data.list.length;i++) {
 
             full_bstop_list_ids_coords.push({
-                Id: full_bstop_list[i].Id,
-                LatLng: full_bstop_list[i].LatLng,
-                Code: full_bstop_list[i].Code
+                Id: full_bstop_data.list[i].Id,
+                LatLng: full_bstop_data.list[i].LatLng,
+                Code: full_bstop_data.list[i].Code
             });
 
         }
@@ -534,7 +532,7 @@ function(locationService) {
             labelDistancesAndConvertFromDegrees(nearest_bstops[j].distance);
 
             nearest_bstops[j].Name =
-            bus_stop_dictionary[nearest_bstops[j].Id].Name;
+            full_bstop_data.dict[nearest_bstops[j].Id].Name;
             
             nearest_bstops[j].show_dist = true;
 
@@ -1267,45 +1265,55 @@ function(map_navigation_marker_indices) {
 BCTAppServices.service('googleMapUtilities', [ '$compile', '$q',
 'scheduleDownloadAndTransformation', 'unitConversionAndDataReporting',
 'locationService', 'map_navigation_marker_indices',
-'generalServiceUtilities', 'default_demo_coords', 'svg_icon_paths',
-'map_clusterer', 'marker_icon_options', 'marker_click_memory',
-'selected_nearest_map_stop', 'nearest_map_stop_distances',
+'generalServiceUtilities', 'svg_icon_paths', 'map_clusterer',
+'marker_icon_options', 'marker_click_memory', 'selected_nearest_map_stop',
+'nearest_map_stop_distances', 'full_route_data', 'full_bstop_data',
 
 function($compile, $q, scheduleDownloadAndTransformation,
 unitConversionAndDataReporting, locationService,
 map_navigation_marker_indices, generalServiceUtilities,
-default_demo_coords, svg_icon_paths, map_clusterer, marker_icon_options,
-marker_click_memory, selected_nearest_map_stop, nearest_map_stop_distances) {
+svg_icon_paths, map_clusterer, marker_icon_options, marker_click_memory,
+selected_nearest_map_stop, nearest_map_stop_distances, full_route_data,
+full_bstop_data) {
 
     var self = this;
 
     var top_self = this;
 
     this.palette = {
+
         colors: {
             blue: "#017AC2",
             red: "#C14E4E",
             black: "#000000"
         },
+
         weights: {
+
             markers: {
                 thick: 8,
                 mid: 7,
                 thin: 6
             },
+
             lines: {
                 thick: 5,
                 mid: 4,
                 thin: 3
             }
+
         },
+
         scales: {
+
             markers: {
                 big: 10,
                 mid: 5,
                 small: 3
             }
+
         }
+
     };
 
     this.initializeMarkerClusterer = function() {
@@ -1562,9 +1570,9 @@ marker_click_memory, selected_nearest_map_stop, nearest_map_stop_distances) {
 
     };
 
-    this.displayRoute = function(route, routes) {
+    this.displayRoute = function(route) {
 
-        var route_coords = self.decodePath(routes[route].Shp);
+        var route_coords = self.decodePath(full_route_data.dict[route].Shp);
         var route_coords_cor = [];
 
         for (var i=0;i<route_coords.length;i++) {
@@ -1578,7 +1586,7 @@ marker_click_memory, selected_nearest_map_stop, nearest_map_stop_distances) {
 
         }
 
-        var route_color = "#" + routes[route].Color;
+        var route_color = "#" + full_route_data.dict[route].Color;
 
         myride.dom_q.map.overlays.pline = new google.maps.Polyline({
             map: myride.dom_q.map.inst,
@@ -1948,7 +1956,10 @@ marker_click_memory, selected_nearest_map_stop, nearest_map_stop_distances) {
 
     };
 
-    this.displayStops = function(route, routes, stops, route_path) {
+    this.displayStops = function(route, route_path) {
+
+        var stops = full_bstop_data.dict;
+        var routes = full_route_data.dict;
 
         var cur_route = routes[route];
         var bstops_names = cur_route.Stops;
@@ -2061,9 +2072,7 @@ marker_click_memory, selected_nearest_map_stop, nearest_map_stop_distances) {
 
                             '<span>' +
                                 "[ID #" + stops[bstops_names[i]].Code + "]" +
-                            //'</span>' +
                                 " - " +
-                            //'<span>' +
                                 stops[bstops_names[i]].Name +
                             '</span>' +
 
@@ -2432,10 +2441,7 @@ marker_click_memory, selected_nearest_map_stop, nearest_map_stop_distances) {
 
     };
 
-    this.displayNearestMapStops = function(
-        nearest_stops,
-        stops
-    ) {
+    this.displayNearestMapStops = function(nearest_stops) {
 
         for (var i=0; i<nearest_stops.length;i++) {
 
@@ -2462,7 +2468,7 @@ marker_click_memory, selected_nearest_map_stop, nearest_map_stop_distances) {
             };
 
             top_self.addNearestMapMarkerClickAndHoverListeners(
-                cur_point,nearest_stops[i].Id
+                cur_point, nearest_stops[i].Id
             );
 
         }
@@ -2470,46 +2476,61 @@ marker_click_memory, selected_nearest_map_stop, nearest_map_stop_distances) {
     };
 
     //TODO: Request API modification to return GTFS route colors directly
-    this.formatTransitModeResult = function(
-        all_routes,
-        mode_field,
-        route_field
-    ) {
+    this.formatTransitModeResult = function(mode_field, route_field) {
 
         var leg_color = "";
         var route_text = "";
         var label = "";
 
         switch (mode_field) {
+
             case "BUS":
-                leg_color = "#" + all_routes["BCT" + route_field].Color;
+
+                var route_dict = full_route_data.dict;
+
+                leg_color = "#" + route_dict["BCT" + route_field].Color;
                 route_text = "BCT" + route_field;
                 label = "Bus route";
+
                 break;
+
             case "WALK":
+
                 leg_color = self.palette.colors.black;
                 route_text = "";
                 label = "Walk";
+
                 break;
+
             case "TRAIN":
+
                 leg_color = "#009933";
                 route_text = "";
                 label = "Train";
+
                 break;
+
             case "DEST":
+
                 leg_color = "#000000",
                 route_text = "",
                 label = "Destination";
+
                 break;
+
             default:
+
                 throw (new Error).message = "" +
                 "Invalid transit mode setting: " + mode_field;
+
         }
 
         return {
+
             leg_color: leg_color,
             route_text: route_text,
             label: label
+
         };
 
     };
@@ -2649,11 +2670,12 @@ marker_click_memory, selected_nearest_map_stop, nearest_map_stop_distances) {
         };
     };
 
-    this.displayTripPath = function(all_routes, line_data) {
+    this.displayTripPath = function(line_data) {
 
         self.clearMap();
 
         var legs = line_data;
+
         var all_path_coords_divided = {
             lats: [],
             lngs: []
@@ -2716,7 +2738,6 @@ marker_click_memory, selected_nearest_map_stop, nearest_map_stop_distances) {
             }
 
             var formattedModeResult = self.formatTransitModeResult(
-                all_routes,
                 legs[i].modeField,
                 legs[i].routeField
             );
@@ -2937,9 +2958,11 @@ marker_click_memory, selected_nearest_map_stop, nearest_map_stop_distances) {
                     "<span>" +
 
                         "(" +
-                            (legs[i].durationField / 1000 / 60).
-                            toFixed(0) +
-                            " minutes" +
+                            unitConversionAndDataReporting.
+                            splitHoursMinutes(
+                                (legs[i].durationField / 1000 / 60).
+                                toFixed(0)
+                            ) +
                         ")" +
 
                     "</span>" +
@@ -3409,20 +3432,20 @@ function(results_exist, filter_buffer_data) {
 }]);
 
 BCTAppServices.factory('routeAndStopFilters', [ 'nearestStopsService',
-'locationService', 'latest_location', 'filterHelpers',
-function(nearestStopsService, locationService, latest_location, filterHelpers) {
+'locationService', 'latest_location', 'filterHelpers', 'full_bstop_data',
+'full_route_data', 'full_landmark_data',
+function(nearestStopsService, locationService, latest_location, filterHelpers,
+full_bstop_data, full_route_data, full_landmark_data) {
 
     return {
 
-        RouteAndStopFilterMaker: function(
-            filter_type,
-            use_minimum_length
-        ) {
+        RouteAndStopFilterMaker: function(filter_type, use_minimum_length) {
 
             var self = this;
 
             if (filter_type === "stop") {
 
+                this.full_item_list = full_bstop_data;
                 this.property_name = "Name";
                 this.id_or_code = "Code";
 
@@ -3430,6 +3453,7 @@ function(nearestStopsService, locationService, latest_location, filterHelpers) {
 
             else if (filter_type === "route") {
 
+                this.full_item_list = full_route_data;
                 this.property_name = "LName";
                 this.id_or_code = "Id";
 
@@ -3437,6 +3461,7 @@ function(nearestStopsService, locationService, latest_location, filterHelpers) {
 
             else if (filter_type === "landmark") {
 
+                this.full_item_list = full_landmark_data;
                 this.property_name = "Description";
                 this.id_or_code = false;
 
@@ -3469,10 +3494,14 @@ function(nearestStopsService, locationService, latest_location, filterHelpers) {
             }
 
             this.filter = function(
-                items,
                 search_string,
-                sort_bstops_by_distance
+                sort_bstops_by_distance,
+                items
             ) {
+
+                if (!items) {
+                    var items = self.full_item_list.list;
+                }
 
                 var filtered = [];
 
@@ -3552,9 +3581,10 @@ function(nearestStopsService, locationService, latest_location, filterHelpers) {
 
 }]);
 
-BCTAppServices.service('linkFunctions', [ '$compile',
+BCTAppServices.service('linkFunctions', [ '$compile', 'full_route_data',
+'full_bstop_data', 'full_landmark_data',
 
-function($compile) {
+function($compile, full_route_data, full_bstop_data, full_landmark_data) {
 
     this.dynamicPanelContentsLoader = function(
         scope, element, type
@@ -3575,7 +3605,7 @@ function($compile) {
 
                 data_id = element[0].childNodes[0].getAttribute("id");
 
-                scope.cur_route = scope.routes[data_id];
+                scope.cur_route = full_route_data.dict[data_id];
 
                 scope.top_scope.filtered_sub_routes_arr = 
                 scope.top_scope.route_stop_list =
@@ -3587,7 +3617,7 @@ function($compile) {
 
                 data_id = element[0].childNodes[0].getAttribute("id");
 
-                scope.cur_stop = scope.stops[data_id];
+                scope.cur_stop = full_bstop_data.dict[data_id];
 
                 scope.top_scope.filtered_sub_stops_arr = 
                 scope.top_scope.stop_route_list =
@@ -3599,15 +3629,17 @@ function($compile) {
 
                 var landmark_id = element[0].childNodes[0].getAttribute("id");
 
-                for (var lmk_idx=0;lmk_idx<scope.landmarks.length;lmk_idx++) {
+                var all_landmarks = full_landmark_data.list;
 
-                    if (scope.landmarks[lmk_idx].Id === landmark_id) {
+                for (var lmk_idx=0;lmk_idx<all_landmarks.length;lmk_idx++) {
+
+                    if (all_landmarks[lmk_idx].Id === landmark_id) {
                         break;
                     }
 
                 }
 
-                scope.cur_landmark = scope.landmarks[lmk_idx];
+                scope.cur_landmark = all_landmarks[lmk_idx];
 
                 scope.top_scope.filtered_sub_landmarks_arr = 
                 scope.top_scope.landmark_stop_list =
@@ -3695,18 +3727,10 @@ BCTAppServices.service('nearestMapStopsService', [ 'nearestStopsService',
 
 function(nearestStopsService, googleMapUtilities) {
 
-    this.showNearestStopsFromMapCoords = function(
-        coords,
-        full_bstop_list,
-        bus_stop_dictionary
-    ) {
+    this.showNearestStopsFromMapCoords = function(coords) {
 
         var nearest_stops_to_map_point = nearestStopsService.findNearestStops(
-            coords,
-            full_bstop_list,
-            bus_stop_dictionary,
-            true,
-            true
+            coords, true, true
         );
 
         googleMapUtilities.clearMap(true);
@@ -3723,7 +3747,7 @@ function(nearestStopsService, googleMapUtilities) {
 }]);
 
 BCTAppServices.service('recentlyViewedService', [ 'recently_viewed_items',
-function(recently_viewed_items) {
+'full_bstop_data', function(recently_viewed_items, full_bstop_data) {
 
     var self = this;
 
@@ -3768,7 +3792,7 @@ function(recently_viewed_items) {
 
     };
 
-    this.saveRecentlyViewedItem = function(type, data_obj, stops_dictionary) {
+    this.saveRecentlyViewedItem = function(type, data_obj) {
 
         if (!localStorage) {
 
@@ -3789,9 +3813,6 @@ function(recently_viewed_items) {
         if (type === "schedule_map") {
 
             prop_names = ["route", "stop"];
-
-            var bstop_code = stops_dictionary[data_obj.stop].Code;
-            var bstop_desc = stops_dictionary[data_obj.stop].Name;
 
             new_recently_viewed_item = {
 
@@ -3862,6 +3883,151 @@ function(recently_viewed_items) {
             'recently_viewed_items',
             JSON.stringify(recently_viewed_list)
         );
+
+    };
+
+}]);
+
+BCTAppServices.service('routeStopLandmarkTransformationService', [
+'full_bstop_data', 'full_route_data', 'full_landmark_data', 'all_alerts',
+function(full_bstop_data, full_route_data, full_landmark_data, all_alerts) {
+
+    var self = this;
+
+    this.transformLandmarks = function() {
+
+        for (var i=0;i<full_landmark_data.orig.length;i++) {
+
+            var cur_landmark = full_landmark_data.orig[i];
+
+            for (var j=0;j<cur_landmark.POIS.length;j++) {
+
+                full_landmark_data.list.push(cur_landmark.POIS[j]);
+
+            }
+
+        }
+
+    };
+
+    this.transformRoutes = function() {
+
+        for (var i=0;i<full_route_data.list.length;i++) {
+
+            var cur_route = full_route_data.list[i];
+
+            full_route_data.dict[cur_route.Id] = cur_route;
+
+        }
+
+    };
+
+    this.transformStops = function() {
+
+        for (var i=0;i<full_bstop_data.list.length;i++) {
+
+            var cur_bstop = full_bstop_data.list[i];
+
+            full_bstop_data.dict[cur_bstop.Id] = cur_bstop;
+
+        }
+
+    };
+
+    this.linkRouteAndStopReferences = function() {
+
+        var route_props = ["Id", "LName"];
+        var bstop_props = ["Id", "Name", "Code"];
+
+        var all_stops = full_bstop_data.list;
+        var all_routes = full_route_data.list;
+        var all_landmarks = full_landmark_data.list;
+
+        self.transformStops();
+        self.transformRoutes();
+
+        self.transformLandmarks();
+
+        var bstop_dict = full_bstop_data.dict;
+        var route_dict = full_route_data.dict;
+
+        for (var r_i=0;r_i<all_routes.length;r_i++) {
+
+            var route = all_routes[r_i];
+
+            //The following property contains mock data
+            route.alerts = all_alerts.schedule_map;
+
+            route.bstop_refs = [];
+
+            for (var b_i_ref=0;b_i_ref<route.Stops.length;b_i_ref++) {
+
+                var ref_bstop_id = route.Stops[b_i_ref];
+
+                var bstop_reference = {};
+
+                for (var stop_p=0;stop_p<bstop_props.length;stop_p++) {
+
+                    bstop_reference[bstop_props[stop_p]] =
+                    bstop_dict[ref_bstop_id][bstop_props[stop_p]];
+
+                }
+
+                route.bstop_refs.push(bstop_reference);
+
+            }
+
+        }
+
+        for (var s_i=0;s_i<all_stops.length;s_i++) {
+
+            var bstop = all_stops[s_i];
+
+            bstop.route_refs = [];
+
+            for (var b_i_ref=0;b_i_ref<bstop.Routes.length;b_i_ref++) {
+
+                var ref_route_id = bstop.Routes[b_i_ref];
+
+                var route_reference = {};
+
+                for (var route_p=0;route_p<route_props.length;route_p++) {
+
+                    route_reference[route_props[route_p]] =
+                    route_dict[ref_route_id][route_props[route_p]];
+
+                }
+
+                bstop.route_refs.push(route_reference);
+
+            }
+
+        }
+
+        for (var l_i=0;l_i<all_landmarks.length;l_i++) {
+
+            var landmark = all_landmarks[l_i];
+
+            landmark.bstop_refs = [];
+
+            for (var lmk_s=0;lmk_s<landmark.Stops.length;lmk_s++) {
+
+                var lmk_stop_id = landmark.Stops[lmk_s];
+
+                var lmk_stop_reference = {};
+
+                for (var stop_p=0;stop_p<bstop_props.length;stop_p++) {
+
+                    lmk_stop_reference[bstop_props[stop_p]] =
+                    bstop_dict[lmk_stop_id][bstop_props[stop_p]];
+
+                }
+
+                landmark.bstop_refs.push(lmk_stop_reference);
+
+            }
+
+        }
 
     };
 

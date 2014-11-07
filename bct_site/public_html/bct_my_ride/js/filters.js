@@ -1,1 +1,0 @@
-var BCTAppFilters = angular.module('BCTAppFilters', []);

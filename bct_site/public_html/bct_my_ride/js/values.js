@@ -4,8 +4,6 @@ var BCTAppValues = angular.module('BCTAppValues', []);
 //BCTAppValues.value('scheduleWebSocket',
 //new WebSocket("ws://echo.websocket.org"));
 
-
-
 BCTAppValues.value('nearest_map_stops_instructions', {
 
     default: "Select anywhere on the map to set the location pin.",
@@ -586,22 +584,47 @@ BCTAppValues.value('latest_location', {
 });
 
 BCTAppValues.value('location_icons', {
+
     nearest_bstops: {
-        regular_icon:
-        "show_nearest_bstops_location_icon",
-        spinning_icon:
-        "show_nearest_bstops_location_icon_with_spin"
+
+        regular_icon: "show_nearest_bstops_location_icon",
+        spinning_icon: "show_nearest_bstops_location_icon_with_spin"
+
     },
+
     trip_planner: {
-        regular_icon:
-        "show_planner_location_icon",
-        spinning_icon:
-        "show_planner_location_icon_with_spin"
+
+        regular_icon: "show_planner_location_icon",
+        spinning_icon: "show_planner_location_icon_with_spin"
+
     },
+
     nearest_results_bstops: {
-        regular_icon: 
-        "show_nearest_results_bstops_location_icon",
-        spinning_icon: 
-        "show_nearest_results_bstops_location_icon_with_spin"
+
+        regular_icon: "show_nearest_results_bstops_location_icon",
+        spinning_icon: "show_nearest_results_bstops_location_icon_with_spin"
+
     }
+
+});
+
+BCTAppValues.value('full_bstop_data', {
+
+    list: [],
+    dict: {}
+
+});
+
+BCTAppValues.value('full_route_data', {
+
+    list: [],
+    dict: {}
+
+});
+
+BCTAppValues.value('full_landmark_data', {
+
+    orig: [],
+    list: []
+
 });

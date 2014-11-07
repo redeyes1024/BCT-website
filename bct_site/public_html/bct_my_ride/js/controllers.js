@@ -37,7 +37,6 @@ base_marker_sizes) {
         $scope.top_scope.sort_bstops_by_distance = true;
 
         $scope.top_scope.filtered_stops_arr = $scope.stopFilterFunc(
-            $scope.stops_arr,
             $scope.query_data.schedule_search,
             $scope.top_scope.sort_bstops_by_distance
         );
@@ -89,11 +88,7 @@ function ($scope, $timeout, nearestStopsService, recently_viewed_items) {
 
     $scope.calculateAndShowNearestBusStops = function(location) {
 
-        $scope.nearest_bstops = nearestStopsService.findNearestStops(
-            location,
-            $scope.stops_arr,
-            $scope.stops
-        );
+        $scope.nearest_bstops = nearestStopsService.findNearestStops(location);
 
         $scope.show_index_nearest_stops_panels = true;
 
@@ -614,7 +609,7 @@ unitConversionAndDataReporting, module_error_messages, recentlyViewedService) {
                 recentlyViewedService.saveRecentlyViewedItem("trip_planner", {
                     start: $scope.top_scope.trip_inputs.start,
                     finish: $scope.top_scope.trip_inputs.finish
-                }, $scope.stops);
+                });
 
                 if ($scope.top_scope.show_trip_planner_title) {
 
@@ -694,7 +689,6 @@ unitConversionAndDataReporting, module_error_messages, recentlyViewedService) {
     $scope.displayTripPlan = function(selection) {
 
         googleMapUtilities.displayTripPath(
-            $scope.routes,
             $scope.current_trip_plan_data[selection].legsField
         );
 
@@ -710,8 +704,8 @@ unitConversionAndDataReporting, module_error_messages, recentlyViewedService) {
 
             first_LatLng: {
 
-                lat: cur_trip_data.legsField[0].stepsField[0].latField,
-                lng: cur_trip_data.legsField[0].stepsField[0].lonField
+                lat: cur_trip_data.legsField[0].fromField.latField,
+                lng: cur_trip_data.legsField[0].fromField.lonField
 
             },
 
@@ -852,11 +846,7 @@ nearest_map_stops_instructions) {
         };
 
         var nearest_stops_to_map_point =
-        nearestMapStopsService.showNearestStopsFromMapCoords(
-            coords,
-            $scope.top_scope.stops_arr,
-            $scope.top_scope.stops
-        );
+        nearestMapStopsService.showNearestStopsFromMapCoords(coords);
 
         var stop_ids_and_dists = {};
 

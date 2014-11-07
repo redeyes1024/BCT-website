@@ -5,7 +5,7 @@
 
 var BCTApp = angular.module('BCTApp', ['ngRoute', 'mobile-angular-ui',
     'BCTAppServices', 'BCTAppControllers', 'BCTAppDirectives', 'ngQuickDate',
-    'BCTAppFilters', 'BCTAppTopController', 'BCTAppValues'])
+    'BCTAppTopController', 'BCTAppValues'])
         
 .config(function($sceProvider) {
     $sceProvider.enabled(false);
