@@ -130,11 +130,11 @@ function ($scope, $timeout, nearestStopsService, recently_viewed_items) {
 }]);
 
 BCTAppControllers.controller('tripPlannerController', ['$scope',
-'googleMapUtilities', '$timeout', 'tripPlannerService',
+'googleMapsUtilities', '$timeout', 'tripPlannerService',
 'unitConversionAndDataReporting', 'module_error_messages',
 'recentlyViewedService',
 
-function ($scope, googleMapUtilities, $timeout, tripPlannerService,
+function ($scope, googleMapsUtilities, $timeout, tripPlannerService,
 unitConversionAndDataReporting, module_error_messages, recentlyViewedService) {
 
     //For ease of debugging (development only)
@@ -688,7 +688,7 @@ unitConversionAndDataReporting, module_error_messages, recentlyViewedService) {
 
     $scope.displayTripPlan = function(selection) {
 
-        googleMapUtilities.displayTripPath(
+        googleMapsUtilities.displayTripPath(
             $scope.current_trip_plan_data[selection].legsField
         );
 
@@ -741,7 +741,7 @@ unitConversionAndDataReporting, module_error_messages, recentlyViewedService) {
 
         if ( !$scope.tripPlannerInputsEmpty() ) { return true; }
 
-        googleMapUtilities.clearMap();
+        googleMapsUtilities.clearMap();
         $scope.getTripPlan();
 
         $scope.trip_planner_styles["trip-planner-module-active"] = true;
@@ -782,7 +782,7 @@ unitConversionAndDataReporting, module_error_messages, recentlyViewedService) {
             $scope.toggleMapSchedule("planner");
         }
 
-        googleMapUtilities.createDummyInfoWindow("trip_points");
+        googleMapsUtilities.createDummyInfoWindow("trip_points");
 
         $scope.top_scope.show_trip_planner_title = false;
 
@@ -792,7 +792,7 @@ unitConversionAndDataReporting, module_error_messages, recentlyViewedService) {
 
     $scope.top_scope.closeMapAndResetScheduleMap = function() {
 
-        googleMapUtilities.createDummyInfoWindow("points");
+        googleMapsUtilities.createDummyInfoWindow("points");
 
         $scope.toggleMapSchedule("schedule");
 
@@ -807,18 +807,18 @@ unitConversionAndDataReporting, module_error_messages, recentlyViewedService) {
 }]);
 
 BCTAppControllers.controller('nearestMapStopsController', ['$scope',
-'$timeout', 'googleMapUtilities', 'selected_nearest_map_stop',
+'$timeout', 'googleMapsUtilities', 'selected_nearest_map_stop',
 'nearestMapStopsService', 'nearest_map_stop_distances',
 'nearest_map_stops_instructions',
 
-function ($scope, $timeout, googleMapUtilities, selected_nearest_map_stop,
+function ($scope, $timeout, googleMapsUtilities, selected_nearest_map_stop,
 nearestMapStopsService, nearest_map_stop_distances,
 nearest_map_stops_instructions) {
 
     //For ease of debugging (development only)
     window.nms_scope = $scope;
 
-    googleMapUtilities.clearMap();
+    googleMapsUtilities.clearMap();
 
     $scope.top_scope.show_schedule_result_top_bar = false;
 

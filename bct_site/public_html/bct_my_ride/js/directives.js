@@ -18,15 +18,15 @@ BCTApp.directive('bctMyRideTopLevelOverlays', [ function() {
     };
 }]);
 
-BCTApp.directive('scheduleMap', [ 'googleMapUtilities', 'marker_icon_options',
+BCTApp.directive('scheduleMap', [ 'googleMapsUtilities', 'marker_icon_options',
 'base_marker_sizes',
 
-function(googleMapUtilities, marker_icon_options, base_marker_sizes) {
+function(googleMapsUtilities, marker_icon_options, base_marker_sizes) {
 
     function link(scope) {
 
         myride.dom_q.map.cont = document.getElementById("map-canvas");
-        googleMapUtilities.mapMaker(myride.dom_q.map.cont);
+        googleMapsUtilities.mapMaker(myride.dom_q.map.cont);
 
         function getNewMarkerIconProperty(event, prop) {
 

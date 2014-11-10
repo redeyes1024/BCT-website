@@ -10,6 +10,7 @@ ISR.directories = {
     site_roots: {
         local: '',
         remote: 'https://webapps.appdev.cty/BctMyRide/',
+        remote_isr: 'http://www.isrtransit.com/files/bct/webapp/',
         active: ''
     },
     paths: {
@@ -21,7 +22,7 @@ ISR.directories = {
 };
 
 ISR.directories.site_roots.active =
-ISR.directories.site_roots.local;
+ISR.directories.site_roots.remote_isr;
 
 ISR.directories.paths.active =
 ISR.directories.paths.form_sources;

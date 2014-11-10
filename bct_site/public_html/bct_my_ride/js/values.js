@@ -4,6 +4,85 @@ var BCTAppValues = angular.module('BCTAppValues', []);
 //BCTAppValues.value('scheduleWebSocket',
 //new WebSocket("ws://echo.websocket.org"));
 
+BCTAppValues.value('clusterer_options', {
+
+    styles: [
+
+        {
+            url: window.myride.directories.site_roots.active +
+            window.myride.directories.paths.active +
+            'css/ico/' +
+            "button_green.svg",
+            width: 50,
+            height: 50,
+            textColor: "#FFFFFF",
+            textSize: 18
+        },
+
+        {
+            url: window.myride.directories.site_roots.active +
+            window.myride.directories.paths.active +
+            'css/ico/' +
+            "button_yellow.svg",
+            width: 50,
+            height: 50,
+            textColor: "#FFFFFF",
+            textSize: 16
+        },
+
+        {
+            url: window.myride.directories.site_roots.active +
+            window.myride.directories.paths.active +
+            'css/ico/' +
+            "button_red.svg",
+            width: 50,
+            height: 50,
+            textColor: "#FFFFFF",
+            textSize: 14
+        }
+
+    ],
+
+    maxZoom: 14
+
+});
+
+BCTAppValues.value('map_palette', {
+
+    colors: {
+        blue: "#017AC2",
+        red: "#C14E4E",
+        black: "#000000"
+    },
+
+    weights: {
+
+        markers: {
+            thick: 8,
+            mid: 7,
+            thin: 6
+        },
+
+        lines: {
+            thick: 5,
+            mid: 4,
+            thin: 3
+        }
+
+    },
+
+    scales: {
+
+        markers: {
+            big: 10,
+            mid: 5,
+            small: 3
+        }
+
+    }
+
+});
+
 BCTAppValues.value('nearest_map_stops_instructions', {
 
     default: "Select anywhere on the map to set the location pin.",

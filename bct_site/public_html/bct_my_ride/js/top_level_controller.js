@@ -5,7 +5,7 @@ BCTAppTopController.controller('BCTController', [
     '$scope', '$timeout', 'full_bstop_data', 'full_route_data',
     'full_landmark_data',
     //'scheduleWebSocket', 'scheduleSocketService',
-    'scheduleDownloadAndTransformation', 'googleMapUtilities', '$q',
+    'scheduleDownloadAndTransformation', 'googleMapsUtilities', '$q',
     'unitConversionAndDataReporting', 'miniScheduleService',
     'placeholderService', 'locationService', 'location_icons',
     'agency_filter_icons', 'results_exist', 'map_navigation_marker_indices',
@@ -22,7 +22,7 @@ function (
     $scope, $timeout, full_bstop_data, full_route_data,
     full_landmark_data,
     //scheduleWebSocket, scheduleSocketService,
-    scheduleDownloadAndTransformation, googleMapUtilities, $q,
+    scheduleDownloadAndTransformation, googleMapsUtilities, $q,
     unitConversionAndDataReporting, miniScheduleService, placeholderService,
     locationService, location_icons, agency_filter_icons, results_exist,
     map_navigation_marker_indices, legend_icon_list, all_alerts,
@@ -1713,11 +1713,11 @@ function (
 
             point.info.close();
 
-            googleMapUtilities.createDummyInfoWindow(marker_list_name);
+            googleMapsUtilities.createDummyInfoWindow(marker_list_name);
 
         }
 
-        point.ShowWindow.func(true);
+        point.info_opener.open(true);
 
     };
 
@@ -1739,7 +1739,7 @@ function (
         //TODO: "Stress test" this line (in case of server API issues)
         Boolean($scope.current_trip_plan_data_selection.legsField[0]);
 
-        var map_ready_promise = googleMapUtilities.touchMap();
+        var map_ready_promise = googleMapsUtilities.touchMap();
 
         var map_type = "";
 
@@ -1784,7 +1784,7 @@ function (
 
         }
 
-        googleMapUtilities.setMapPosition(
+        googleMapsUtilities.setMapPosition(
             first_stop_or_step_coords, new_zoom
         );
 
@@ -1820,7 +1820,7 @@ function (
         myride.dom_q.map.overlays.ordered_stop_list.indexOf(bstop_id);
 
         myride.dom_q.map.overlays.points[bstop_id].info.clicked = true;
-        myride.dom_q.map.overlays.points[bstop_id].ShowWindow.func();
+        myride.dom_q.map.overlays.points[bstop_id].info_opener.open();
 
     };
 
@@ -2091,7 +2091,7 @@ function (
 
         var cur_route = $scope.initial_schedule_map_data.route_id;
 
-        googleMapUtilities.getOrderedStopListForCurrentRoute(cur_route).
+        googleMapsUtilities.getOrderedStopListForCurrentRoute(cur_route).
         then(function(stop_list) {
 
             if (!$scope.schedule_map_navigation_bar_same_stop_open) {
@@ -2169,7 +2169,7 @@ function (
                 'idle',
                 function() {
 
-                    marker_instance.ShowWindow.func();
+                    marker_instance.info_opener.open();
 
                 }
             );
@@ -2178,7 +2178,7 @@ function (
 
         else {
 
-            marker_instance.ShowWindow.func();
+            marker_instance.info_opener.open();
 
         }
 
@@ -2304,7 +2304,7 @@ function (
         $scope.resetScheduleMapNavigationBar();
         $scope.show_schedule_map_stop_navigation_bar = true;
 
-        googleMapUtilities.createDummyInfoWindow("points", false);
+        googleMapsUtilities.createDummyInfoWindow("points", false);
 
         $timeout.cancel($scope.schedule_update_timer);
 
@@ -2315,7 +2315,7 @@ function (
         map_ready_promise.then(function() {
 
             myride.dom_q.map.overlays.points[bstop_id].info.clicked = true;
-            myride.dom_q.map.overlays.points[bstop_id].ShowWindow.func();
+            myride.dom_q.map.overlays.points[bstop_id].info_opener.open();
 
         });
 
@@ -2573,17 +2573,14 @@ function (
 
         $scope.initial_schedule_map_data.coords = coords;
 
-        googleMapUtilities.clearMap();
+        googleMapsUtilities.clearMap();
 
         $scope.cur_route_path =
-        googleMapUtilities.displayRoute(route_id);
+        googleMapsUtilities.displayRoute(route_id);
 
-        googleMapUtilities.displayStops(route_id, $scope.cur_route_path);
+        googleMapsUtilities.displayStopsForRoute(route_id);
 
-        var projected_coords = 
-        googleMapUtilities.mapStopsToRoutePath(coords, $scope.cur_route_path);
-
-        return googleMapUtilities.setMapPosition(projected_coords);
+        return googleMapsUtilities.setMapPosition(coords);
 
     };
 
@@ -2644,7 +2641,7 @@ function (
                 function() {
 
                     myride.dom_q.map.overlays.points[stop].info.clicked = true;
-                    myride.dom_q.map.overlays.points[stop].ShowWindow.func();
+                    myride.dom_q.map.overlays.points[stop].info_opener.open();
 
                 }
             );
@@ -2664,7 +2661,7 @@ function (
 
         $scope.enableMapToggleOnTitles();
 
-        googleMapUtilities.setMapPosition(null, 10);
+        googleMapsUtilities.setMapPosition(null, 10);
 
         $scope.show_schedule_result_top_bar = false;
         $scope.show_trip_planner_title = true;
@@ -2691,7 +2688,7 @@ function (
 
         $scope.show_nearest_map_stops_title_with_back_function = true;
 
-        googleMapUtilities.setMapPosition(null, 10);
+        googleMapsUtilities.setMapPosition(null, 10);
 
         myride.dom_q.map.overlays.nearest_map_draggable.default = {};
 
@@ -2800,7 +2797,7 @@ function (
 
             $scope.show_full_schedule_module = false;
             $scope.schedule_map_styles["hide-scroll"] = false;
-            googleMapUtilities.touchMap();
+            googleMapsUtilities.touchMap();
 
             $scope.showMiniScheduleAndAlertBars();
 

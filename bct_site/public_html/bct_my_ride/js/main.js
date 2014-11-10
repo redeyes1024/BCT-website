@@ -20,6 +20,7 @@ window.myride.directories = {
     site_roots: {
         local: '',
         remote: 'https://webapps.appdev.cty/BctMyRide/',
+        remote_isr: 'http://www.isrtransit.com/files/bct/webapp/',
         active: ''
     },
 
