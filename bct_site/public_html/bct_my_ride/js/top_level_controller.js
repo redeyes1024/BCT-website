@@ -10,7 +10,7 @@ BCTAppTopController.controller('BCTController', [
     'placeholderService', 'locationService', 'location_icons',
     'agency_filter_icons', 'results_exist', 'map_navigation_marker_indices',
     'legend_icon_list', 'all_alerts', 'profilePageService',
-    'routeAndStopFilters', 'module_error_messages', 'selected_nearest_map_stop',
+    'routeAndStopFilters', 'warning_messages', 'selected_nearest_map_stop',
     'nearest_map_stop_distances', 'landmarkInfoService', 'favorites_data',
     'svg_icon_paths', 'full_schedule_categories',
     'full_schedule_category_with_datepicker', 'recentlyViewedService',
@@ -26,7 +26,7 @@ function (
     unitConversionAndDataReporting, miniScheduleService, placeholderService,
     locationService, location_icons, agency_filter_icons, results_exist,
     map_navigation_marker_indices, legend_icon_list, all_alerts,
-    profilePageService, routeAndStopFilters, module_error_messages,
+    profilePageService, routeAndStopFilters, warning_messages,
     selected_nearest_map_stop, nearest_map_stop_distances, landmarkInfoService,
     favorites_data, svg_icon_paths, full_schedule_categories,
     full_schedule_category_with_datepicker, recentlyViewedService,
@@ -295,14 +295,20 @@ function (
     });
 
     $scope.$watch("results_exist.main", function(new_val, old_val) {
+
         if (new_val < old_val) {
+
             $scope.show_empty_result_message_no_results = true;
             $scope.show_schedule_results_result_panels = false;
+
         }
         else if (new_val > old_val) {
+
             $scope.show_empty_result_message_no_results = false;
             $scope.show_schedule_results_result_panels = true;
+
         }
+
     });
 
     $scope.$watch("show_schedule_result_top_bar", function(new_val, old_val) {
@@ -1915,9 +1921,8 @@ function (
 
         if (!error_field) {
 
-            full_schedule_error_dialog_text  =
-            module_error_messages.full_schedule.
-            FULL_SCHEDULE_ERROR_NO_DATA_ERROR_MESSAGE;
+            full_schedule_error_dialog_text =
+            warning_messages.full_schedule.no_error_data;
 
             console.log(
                 "Full Schedule error: problem communicating with server."
@@ -1974,8 +1979,7 @@ function (
         if (!error_field) {
 
             schedule_map_error_dialog_text =
-            module_error_messages.schedule_map.
-            SCHEDULE_MAP_ERROR_NO_DATA_ERROR_MESSAGE;
+            warning_messages.schedule_map.no_error_data;
 
             console.log(
                 "Schedule Map error: problem communicating with server"
@@ -1986,8 +1990,7 @@ function (
         else if (error_field === "stop_seeker") {
 
             schedule_map_error_dialog_text =
-            module_error_messages.schedule_map.
-            SCHEDULE_MAP_ERROR_STOP_SEEKER ;
+            warning_messages.schedule_map.stop_seeker;
 
             console.log(
                 "Schedule Map error: Stop Seeker."
@@ -1998,8 +2001,7 @@ function (
         else if (error_field === "main_schedule") {
 
             schedule_map_error_dialog_text =
-            module_error_messages.schedule_map.
-            SCHEDULE_MAP_ERROR_MAIN_SCHEDULE;
+            warning_messages.schedule_map.main_schedule;
 
             console.log(
                 "Schedule Map error: Main Schedule."
@@ -2071,11 +2073,10 @@ function (
     $scope.full_schedule_error_dialog_hide_in_progress = false;
 
     $scope.SCHEDULE_MAP_ERROR_STOP_SEEKER =
-    "There was a problem with the Stop Seeker. Please try again later.";
+    warning_messages.schedule_map.stop_seeker;
 
     $scope.SCHEDULE_MAP_ERROR_MAIN_SCHEDULE =
-    "There was a problem downloading the main schedule. " +
-    "Please try again later.";
+    warning_messages.schedule_map.main_schedule;
 
     $scope.full_schedule_error_dialog_hide_in_progress = false;
 
@@ -2286,15 +2287,6 @@ function (
 
     };
 
-    $scope.SCHEDULE_RESULTS_MESSAGE_TEXT_SEARCH_TOO_SHORT = '' +
-        'Enter a search term with at least 3 characters. ' +
-        'For example, if you are searching for “BCT Route 10” ' +
-        'enter "BCT10" instead of "10"';
-
-    $scope.SCHEDULE_RESULTS_MESSAGE_TEXT_NO_RESULTS = '' +
-        'Sorry, there are no results for your entry. Check spelling ' +
-        'or broaden your search by entering fewer characters.';
-
     $scope.switchRoutes = function(new_route, bstop_id) {
 
         map_navigation_marker_indices.schedule_named = bstop_id;
@@ -2365,19 +2357,20 @@ function (
 
     };
 
-    $scope.addRouteStopToFavorites = function(route, stop) {
+    $scope.addFavoriteRouteStop = function(route, stop) {
 
         var route_stop_add_promise =
-        profilePageService.addRouteStopToFavorites(route, stop);
+        profilePageService.addFavoriteRouteStop(route, stop);
 
         route_stop_add_promise.then(function(res) {
 
-            if (!res.data.Type === "success") {
+            if (res.data.Type === "success") {
 
                 var new_favorite = {
-                    //record_id: record_id,
+
                     route: route,
                     stop: stop
+
                 };
 
                 favorites_data.arr.push(new_favorite);
@@ -2449,9 +2442,19 @@ function (
 
     };
 
-    $scope.schedule.weekdays = $scope.full_schedule_loading_placeholder;
-    $scope.schedule.saturday = $scope.full_schedule_loading_placeholder;
-    $scope.schedule.sunday = $scope.full_schedule_loading_placeholder;
+    (function() {
+
+        for (var i=0;i<full_schedule_categories.length;i++) {
+
+            var full_schedule_category_title =
+            full_schedule_categories[i].title;
+
+            $scope.schedule[full_schedule_category_title] =
+            $scope.full_schedule_loading_placeholder;
+
+        }
+
+    })();
 
     $scope.disableMapToggleOnTitles = function() {
 
@@ -2503,7 +2506,10 @@ function (
     $scope.mini_schedule_loading_error_template =
     miniScheduleService.makeMiniScheduleLoadingTemplate(true);
 
-    $scope.schedule.nearest.times_and_diffs = $scope.mini_schedule_loading_template;
+    $scope.schedule.nearest.times_and_diffs =
+    $scope.mini_schedule_loading_template;
+
+    $scope.MINI_SCHEDULE_UPDATE_TIME_INTERVAL = 20000;
 
     $scope.updateAndPushSchedule = function (transformed_schedule) {
 
@@ -2512,49 +2518,13 @@ function (
 
         $scope.schedule.nearest = reprocessed_schedule.nearest;
 
-        var nearest_full = {
-            times_and_diffs: []
-        };
-
-        var nearest_times = reprocessed_schedule.nearest.all;
-
-        var diffs = scheduleDownloadAndTransformation.
-        calculateTimeDifference(nearest_times);
-
-        var diff_msgs = unitConversionAndDataReporting.
-        addTimeDiffMessages(diffs);
-
-        nearest_times =
-        reprocessed_schedule.nearest.all.map(function(time_with_day_label) {
-
-            var time = time_with_day_label.split(";")[0];
-
-            return time;
-
-        });
-
-        for (var i=0;i<nearest_times.length;i++) {
-
-            var time_12H =
-            unitConversionAndDataReporting.convertToTwelveHourTime(
-                nearest_times[i]
-            );
-
-            var time_and_diff = {
-                time: nearest_times[i],
-                diff: diff_msgs[i],
-                time_12H: time_12H
-            };
-
-            nearest_full.times_and_diffs.push(time_and_diff);
-
-        }
-
-        $scope.schedule.nearest.times_and_diffs = nearest_full.times_and_diffs;
+        $scope.schedule.nearest.times_and_diffs =
+        unitConversionAndDataReporting.
+        formatTimeDifferences(reprocessed_schedule);
 
         $scope.schedule_update_timer = $timeout(function() {
             $scope.updateAndPushSchedule(reprocessed_schedule);
-        }, 20000);
+        }, $scope.MINI_SCHEDULE_UPDATE_TIME_INTERVAL);
 
     };
 
@@ -2859,8 +2829,7 @@ function (
             profilePageService.downloadUserFavorites().
             then(function(res) {
 
-                favorites_data.obj =
-                res.data;
+                favorites_data.obj = res.data;
 
                 transformFavorites();
 

@@ -916,10 +916,10 @@ full_schedule_category_with_datepicker) {
 
 }]);
 
-BCTAppServices.service('unitConversionAndDataReporting', [
-'generalServiceUtilities',
+BCTAppServices.service('unitConversionAndDataReporting', [ 
+'scheduleDownloadAndTransformation',
 
-function(generalServiceUtilities) {
+function(scheduleDownloadAndTransformation) {
 
     var self = this;
 
@@ -1087,6 +1087,47 @@ function(generalServiceUtilities) {
         twelve_hour_time = "" + hour + ":" + minute + " " + am_pm;
 
         return twelve_hour_time;
+
+    };
+
+    this.formatTimeDifferences = function(reprocessed_schedule) {
+
+        var nearest_times = reprocessed_schedule.nearest.all;
+
+        var diffs = scheduleDownloadAndTransformation.calculateTimeDifference(
+            nearest_times
+        );
+
+        var diff_msgs = self.addTimeDiffMessages(diffs);
+
+        nearest_times =
+        reprocessed_schedule.nearest.all.map(function(time_with_day_label) {
+
+            var time = time_with_day_label.split(";")[0];
+
+            return time;
+
+        });
+
+        var times_and_diffs = [];
+
+        for (var i=0;i<nearest_times.length;i++) {
+
+            var time_12H = self.convertToTwelveHourTime(
+                nearest_times[i]
+            );
+
+            var time_and_diff = {
+                time: nearest_times[i],
+                diff: diff_msgs[i],
+                time_12H: time_12H
+            };
+
+            times_and_diffs.push(time_and_diff);
+
+        }
+
+        return times_and_diffs;
 
     };
 
@@ -1264,9 +1305,10 @@ function(map_navigation_marker_indices) {
 
 BCTAppServices.service('tripPlannerService', [ '$http', '$q',
 'generalServiceUtilities', 'unitConversionAndDataReporting',
-'trip_planner_constants',
+'trip_planner_constants', 'bct_routes_alt_names',
+
 function($http, $q, generalServiceUtilities, unitConversionAndDataReporting,
-trip_planner_constants) {
+trip_planner_constants, bct_routes_alt_names) {
 
     var self = this;
     var geocoder = new google.maps.Geocoder;
@@ -1279,26 +1321,34 @@ trip_planner_constants) {
         match(/-?[0-9]*\.[0-9]*,-?[0-9]*\.[0-9]*/);
 
         if (lat_lng_input) {
+
             var bstop_coords_arr = lat_lng_input[0].split(",");
+
             var bstop_coords_obj = {
                 Latitude: Number(bstop_coords_arr[0]),
                 Longitude: Number(bstop_coords_arr[1])
             };
 
             deferred.resolve(bstop_coords_obj);
+
         }
+
         else {
+
             geocoder.geocode(
                 { 'address': query_address },
                 function(results, status) {
+
                     if (status === google.maps.GeocoderStatus.OK) {
                         deferred.resolve(results);
                     }
                     else {
                         deferred.resolve(status);
                     }
+
                 }
             );
+
         }
         return deferred.promise;
     };
@@ -1313,6 +1363,7 @@ trip_planner_constants) {
     };
 
     this.transformGeocodeCoords = function(coords_object) {
+
         var lat = coords_object.lat();
         var lng = coords_object.lng();
 
@@ -1320,6 +1371,7 @@ trip_planner_constants) {
             Latitude: lat,
             Longitude: lng
         };
+
     };
 
     this.getTripPlanPromise = function(trip_opts, start, finish) {
@@ -1332,7 +1384,6 @@ trip_planner_constants) {
         var time = trip_opts.datepick.toTimeString().slice(0,5);
         var optimize = "";
         var modearr = ["WALK"];
-        var coord_objs = [start, finish];
 
         if (trip_opts.datetarg === "arrive_by") {
             arrdep = true;
@@ -1429,13 +1480,13 @@ trip_planner_constants) {
 
                 var legs = all_itineraries[i].legsField;
 
-                switch(legs[j].routeField) {
+                for (var route_name in bct_routes_alt_names) {
 
-                    case "US1 Breeze":
+                    if (legs[j].routeField === route_name) {
 
-                        legs[j].routeField = "US1";
+                        legs[j].routeField = bct_routes_alt_names[route_name];
 
-                        break;
+                    }
 
                 }
 
@@ -1460,8 +1511,8 @@ function($http, favorites_data, generalServiceUtilities) {
             method: 'POST',
             url: 'http://174.94.153.48:7777/TransitAPI/Favorites',
             data: {
-                UserId: 777,
-                Action: "GET",
+                "UserId": 777,
+                "Action": "GET",
                 "Favorite": null
             },
             transformResponse: function(res) {
@@ -1474,7 +1525,7 @@ function($http, favorites_data, generalServiceUtilities) {
 
     };
 
-    this.addRouteStopToFavorites = function(route, stop) {
+    this.addFavoriteRouteStop = function(route, stop) {
 
         return $http({
             method: 'POST',

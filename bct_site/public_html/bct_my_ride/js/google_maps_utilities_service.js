@@ -4,14 +4,14 @@ BCTAppServices.service('googleMapsUtilities', [ '$compile', '$q',
 'generalServiceUtilities', 'svg_icon_paths', 'map_clusterer',
 'marker_icon_options', 'marker_click_memory', 'selected_nearest_map_stop',
 'nearest_map_stop_distances', 'full_route_data', 'full_bstop_data',
-'map_palette', 'clusterer_options',
+'map_palette', 'clusterer_options', 'map_zoom_span_breakpoints',
 
 function($compile, $q, scheduleDownloadAndTransformation,
 unitConversionAndDataReporting, locationService,
 map_navigation_marker_indices, generalServiceUtilities,
 svg_icon_paths, map_clusterer, marker_icon_options, marker_click_memory,
 selected_nearest_map_stop, nearest_map_stop_distances, full_route_data,
-full_bstop_data, map_palette, clusterer_options) {
+full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
 
     var self = this;
 
@@ -321,6 +321,7 @@ full_bstop_data, map_palette, clusterer_options) {
         if (marker_list_name === "trip_points") {
             open_info_name = "trip_open_info";
         }
+
         else if (marker_list_name === "points") {
 
             if (hovered) {
@@ -609,7 +610,8 @@ full_bstop_data, map_palette, clusterer_options) {
 
             try {
 
-                var schedule_el_cont = self.trip_step.info.div_.getElementsByClassName(
+                var schedule_el_cont =
+                self.trip_step.info.div_.getElementsByClassName(
                     "schedule-map-info-window-schedule-contents"
                 )[0];
 
@@ -820,7 +822,7 @@ full_bstop_data, map_palette, clusterer_options) {
             if (window_already_open) { return true; }
 
             if (e) {
-                //Digest not being called despite planner index changing
+                //Digest needs to be called manually
                 generalServiceUtilities.forceDigest();
             }
 
@@ -1224,55 +1226,27 @@ full_bstop_data, map_palette, clusterer_options) {
 
     this.inferZoomFromMaxCoordSpan = function(max_coord_span) {
 
-        /* Force zoom level break points manually here */
+        /* 
+            Force zoom level break points manually via the
+            map_zoom_span_breakpoints array in values.js
+        */
 
-        var span_breakpoints = [
-            {
-                needed_zoom: 16,
-                manual_breakpoint: null
-            },
-            {
-                needed_zoom: 15,
-                manual_breakpoint: null
-            },
-            {
-                needed_zoom: 14,
-                manual_breakpoint: null
-            },
-            {
-                needed_zoom: 13,
-                manual_breakpoint: null
-            },
-            {
-                needed_zoom: 12,
-                manual_breakpoint: null
-            },
-            {
-                needed_zoom: 11,
-                manual_breakpoint: null
-            },
-            {
-                needed_zoom: 10,
-                manual_breakpoint: null
-            },
-            {
-                needed_zoom: 9,
-                manual_breakpoint: null
-            }
-        ];
-
-        /* Calculate zoom level break points automatically
-           Assumes log(2) relationship between breakpoints and zoom levels */
+        /*
+            Calculate zoom level break points automatically
+            Assumes log(2) relationship between breakpoints and zoom levels
+        */
 
         //Start of breakpoint calculation with lowest zoom (16 in this case)
         //Increase this slightly if you need more room on edges of plan path
         var ZOOM_16_BREAKPOINT = 0.01200;
 
-        for (var i=0;i<span_breakpoints.length;i++) {
+        for (var i=0;i<map_zoom_span_breakpoints.length;i++) {
+
             var power = i;
 
-            span_breakpoints[i].calculated_breakpoint = ZOOM_16_BREAKPOINT *
-                Math.pow(2, power);
+            map_zoom_span_breakpoints[i].calculated_breakpoint =
+            ZOOM_16_BREAKPOINT * (2 << (power - 1));
+
         }
 
         //Factor in map canvas width into required zoom breakpoint calculation
@@ -1282,29 +1256,41 @@ full_bstop_data, map_palette, clusterer_options) {
         var ZOOM_14_SPAN_0_5_MAP_WIDTH = 600;
 
         var map_width = myride.dom_q.map.cont.clientWidth;
+
         var map_width_calibration_ratio = Number(
                 map_width / ZOOM_14_SPAN_0_5_MAP_WIDTH
-            ).toFixed(1);
+        ).toFixed(1);
 
-        for (var j=0;j<span_breakpoints.length;j++) {
-            var old_breakpoint = span_breakpoints[j].calculated_breakpoint;
+        for (var j=0;j<map_zoom_span_breakpoints.length;j++) {
 
-            span_breakpoints[j].calculated_breakpoint = old_breakpoint *
-                map_width_calibration_ratio;
+            var old_breakpoint =
+            map_zoom_span_breakpoints[j].calculated_breakpoint;
+
+            map_zoom_span_breakpoints[j].calculated_breakpoint =
+            old_breakpoint * map_width_calibration_ratio;
+
         }
 
         //Use manual breakpoint if one was chosen, otherwise use calculated
-        for (var i=0;i<span_breakpoints.length;i++) {
-            var cur_zoom_breakpoint = span_breakpoints[i].manual_breakpoint ||
-                                      span_breakpoints[i].calculated_breakpoint;
+        for (var i=0;i<map_zoom_span_breakpoints.length;i++) {
+
+            var cur_zoom_breakpoint =
+            map_zoom_span_breakpoints[i].manual_breakpoint ||
+            map_zoom_span_breakpoints[i].calculated_breakpoint;
 
             if (max_coord_span <= cur_zoom_breakpoint) {
-                return span_breakpoints[i].needed_zoom;
+
+                return map_zoom_span_breakpoints[i].needed_zoom;
+
             }
+
         }
+
         //Default if coordinate span is too large, as it covers
         //Broward, Miami-Dade and Palm Beach
+
         return 8;
+
     };
 
     this.findBestZoomAndCenter = function(all_path_coords_divided) {

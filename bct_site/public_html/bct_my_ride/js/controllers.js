@@ -130,12 +130,11 @@ function ($scope, $timeout, nearestStopsService, recently_viewed_items) {
 }]);
 
 BCTAppControllers.controller('tripPlannerController', ['$scope',
-'googleMapsUtilities', '$timeout', 'tripPlannerService',
-'unitConversionAndDataReporting', 'module_error_messages',
+'googleMapsUtilities', '$timeout', 'tripPlannerService', 'warning_messages',
 'recentlyViewedService',
 
 function ($scope, googleMapsUtilities, $timeout, tripPlannerService,
-unitConversionAndDataReporting, module_error_messages, recentlyViewedService) {
+warning_messages, recentlyViewedService) {
 
     //For ease of debugging (development only)
     window.trip_scope = $scope;
@@ -201,11 +200,10 @@ unitConversionAndDataReporting, module_error_messages, recentlyViewedService) {
 
         var trip_planner_error_dialog_text = "";
 
-        if (!error_field) {
+        if (!error_field || error_field.idField) {
 
             trip_planner_error_dialog_text =
-            module_error_messages.trip_planner.
-            TRIP_PLANNER_ERROR_NO_DATA_ERROR_MESSAGE;
+            warning_messages.trip_planner.no_error_data;
 
             console.log(
                 "Trip planner error: problem communicating with server."
@@ -216,8 +214,7 @@ unitConversionAndDataReporting, module_error_messages, recentlyViewedService) {
         else if (error_field === "plan_start_late") {
 
             trip_planner_error_dialog_text =
-            module_error_messages.trip_planner.
-            TRIP_PLANNER_ERROR_DEPART_TIME_PASSED;
+            warning_messages.trip_planner.departure_time_passed;
 
             console.log(
                 "Trip planner error: plan start time already passed"
@@ -228,23 +225,10 @@ unitConversionAndDataReporting, module_error_messages, recentlyViewedService) {
         else if (error_field === "all_trips_filtered_out") {
 
             trip_planner_error_dialog_text =
-            module_error_messages.trip_planner.
-            TRIP_PLANNER_ERROR_ALL_TRIPS_FILTERED_OUT;
+            warning_messages.trip_planner.all_trips_filtered_out;
 
             console.log(
                 "Trip planner error: no practical trips found."
-            );
-
-        }
-
-        else if (error_field.idField) {
-
-            trip_planner_error_dialog_text =
-            module_error_messages.trip_planner.
-            TRIP_PLANNER_ERROR_NO_DATA_ERROR_MESSAGE;
-
-            console.log(
-                "Trip planner error: problem communicating with server."
             );
 
         }
@@ -314,8 +298,7 @@ unitConversionAndDataReporting, module_error_messages, recentlyViewedService) {
         if (error_status === "ZERO_RESULTS") {
 
             $scope.geocoder_error_dialog_text =
-            module_error_messages.geocoder.
-            GEOCODER_ERROR_ALERT_DIALOG_TEXT_NOT_FOUND;
+            warning_messages.geocoder.not_found;
 
             dialog_styles["error-dialog-centered"] = false;
             dialog_styles["trip-planner-dialog-centered"] = false;
@@ -345,8 +328,7 @@ unitConversionAndDataReporting, module_error_messages, recentlyViewedService) {
         else if (error_status === "OVER_QUERY_LIMIT") {
 
             $scope.geocoder_error_dialog_text =
-            module_error_messages.geocoder.
-            GEOCODER_ERROR_ALERT_DIALOG_TEXT_OVER_LIMIT;
+            warning_messages.geocoder.over_request_limit;
 
             dialog_styles["error-dialog-centered"] = true;
 
@@ -492,27 +474,26 @@ unitConversionAndDataReporting, module_error_messages, recentlyViewedService) {
 
         switch (itinerary_number) {
 
-                case 0:
+            case 0:
 
-                    trip_planner_itinerary_step_container =
-                    $scope.trip_planner_itinerary_step_container_size_0;
+                trip_planner_itinerary_step_container =
+                $scope.trip_planner_itinerary_step_container_size_0;
 
-                    break;
+                break;
 
-                case 1:
+            case 1:
 
-                    trip_planner_itinerary_step_container =
-                    $scope.trip_planner_itinerary_step_container_size_1;
+                trip_planner_itinerary_step_container =
+                $scope.trip_planner_itinerary_step_container_size_1;
 
-                    break;
+                break;
 
-                case 2:
+            case 2:
 
-                    trip_planner_itinerary_step_container =
-                    $scope.trip_planner_itinerary_step_container_size_2;
+                trip_planner_itinerary_step_container =
+                $scope.trip_planner_itinerary_step_container_size_2;
 
-                    break;
-
+                break;
 
         }
 

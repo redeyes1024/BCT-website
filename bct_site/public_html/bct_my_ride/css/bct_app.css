@@ -1583,6 +1583,7 @@ trip-planner-navigation-bar {
 }
 .trip-planner-navigation-bar-main-contents {
     height: 4em;
+    overflow-x: hidden;
 }
 #schedule-map-error-dialog,
 #trip-planner-dialog,

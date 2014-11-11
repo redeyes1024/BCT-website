@@ -4,6 +4,50 @@ var BCTAppValues = angular.module('BCTAppValues', []);
 //BCTAppValues.value('scheduleWebSocket',
 //new WebSocket("ws://echo.websocket.org"));
 
+BCTAppValues.value('map_zoom_span_breakpoints', [
+
+    {
+        needed_zoom: 16,
+        manual_breakpoint: null
+    },
+
+    {
+        needed_zoom: 15,
+        manual_breakpoint: null
+    },
+
+    {
+        needed_zoom: 14,
+        manual_breakpoint: null
+    },
+
+    {
+        needed_zoom: 13,
+        manual_breakpoint: null
+    },
+
+    {
+        needed_zoom: 12,
+        manual_breakpoint: null
+    },
+
+    {
+        needed_zoom: 11,
+        manual_breakpoint: null
+    },
+
+    {
+        needed_zoom: 10,
+        manual_breakpoint: null
+    },
+
+    {
+        needed_zoom: 9,
+        manual_breakpoint: null
+    }
+
+]);
+
 BCTAppValues.value('clusterer_options', {
 
     styles: [
@@ -170,20 +214,26 @@ BCTAppValues.value('full_schedule_categories', [
 ]);
 
 BCTAppValues.value('base_marker_sizes', {
+
     scaling_weight: 16,
+
     default: {
         scale: 7,
         strokeWeight: 2
     },
+
     mouseover: {
         scale: 11,
         strokeWeight: 3
     }
+
 });
 
 BCTAppValues.value('favorites_data', {
+
     obj: {},
     arr: []
+
 });
 
 BCTAppValues.value('selected_nearest_map_stop', {
@@ -256,18 +306,30 @@ BCTAppValues.value('map_clusterer', {
     clusterer: {}
 
 });
+BCTAppValues.value('warning_messages', {
 
-BCTAppValues.value('module_error_messages', {
+    main_search: {
+
+        search_too_short:
+            'Enter a search term with at least 3 characters. ' +
+            'For example, if you are searching for “BCT Route 10” ' +
+            'enter "BCT10" instead of "10"',
+
+        no_results:
+            'Sorry, there are no results for your entry. Check spelling ' +
+            'or broaden your search by entering fewer characters.'
+
+    },
 
     schedule_map: {
 
-        SCHEDULE_MAP_ERROR_NO_DATA_ERROR_MESSAGE: "" +
+        no_error_data:
         "Schedule Map error: Problem communicating with server.",
 
-        SCHEDULE_MAP_ERROR_STOP_SEEKER:
+        stop_seeker:
         "There was a problem with the Stop Seeker. Please try again later.",
 
-        SCHEDULE_MAP_ERROR_MAIN_SCHEDULE:
+        main_schedule:
         "There was a problem downloading the main schedule. " +
         "Please try again later."
 
@@ -275,35 +337,31 @@ BCTAppValues.value('module_error_messages', {
 
     full_schedule: {
 
-        FULL_SCHEDULE_ERROR_NO_DATA_ERROR_MESSAGE: "" +
+        no_error_data:
         "Full Schedule error: Problem communicating with server."
 
     },
 
     trip_planner: {
 
-        TRIP_PLANNER_ERROR_TEXT_NO_PLAN_FOUND: "" +
-        "No trip plan found.",
-
-        TRIP_PLANNER_ERROR_DEPART_TIME_PASSED: "" +
-        "Please try setting a later departure time.",
-
-        TRIP_PLANNER_ERROR_NO_DATA_ERROR_MESSAGE: "" +
-        "There was a problem retrieving your trip plan. " +
+        no_error_data: "There was a problem retrieving your trip plan. " +
         "Please try again later.",
 
-        TRIP_PLANNER_ERROR_ALL_TRIPS_FILTERED_OUT: "" +
-        "No suitable trip plans found. " +
+        TRIP_PLANNER_ERROR_TEXT_NO_PLAN_FOUND: "No trip plan found.",
+
+        departure_time_passed: "Please try setting a later departure time.",
+
+        all_trips_filtered_out: "No suitable trip plans found. " +
         "Please try different trip planner settings."
 
     },
 
     geocoder: {
         
-        GEOCODER_ERROR_ALERT_DIALOG_TEXT_NOT_FOUND:
+        not_found:
         "Location not found.",
 
-        GEOCODER_ERROR_ALERT_DIALOG_TEXT_OVER_LIMIT:
+        over_request_limit:
         "Application Busy. Try again."
 
     }
@@ -684,6 +742,14 @@ BCTAppValues.value('location_icons', {
         spinning_icon: "show_nearest_results_bstops_location_icon_with_spin"
 
     }
+
+});
+
+BCTAppValues.value('bct_routes_alt_names', {
+
+    "US1 Breeze": "101",
+    "University Breeze": "102",
+    "441 Breeze": "441"
 
 });
 
