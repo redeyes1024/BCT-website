@@ -1482,7 +1482,7 @@ trip_planner_constants, bct_routes_alt_names) {
 
                 for (var route_name in bct_routes_alt_names) {
 
-                    if (legs[j].routeField === route_name) {
+                    if (legs[j].routeLongNameField === route_name) {
 
                         legs[j].routeField = bct_routes_alt_names[route_name];
 
@@ -1922,8 +1922,7 @@ function(nearestStopsService, googleMapsUtilities) {
         googleMapsUtilities.clearMap(true);
 
         googleMapsUtilities.displayNearestMapStops(
-            nearest_stops_to_map_point,
-            bus_stop_dictionary
+            nearest_stops_to_map_point
         );
 
         return nearest_stops_to_map_point;
@@ -2076,6 +2075,7 @@ BCTAppServices.service('recentlyViewedService', [ 'recently_viewed_items',
 
 BCTAppServices.service('routeStopLandmarkTransformationService', [
 'full_bstop_data', 'full_route_data', 'full_landmark_data', 'all_alerts',
+
 function(full_bstop_data, full_route_data, full_landmark_data, all_alerts) {
 
     var self = this;
@@ -2140,6 +2140,8 @@ function(full_bstop_data, full_route_data, full_landmark_data, all_alerts) {
         for (var r_i=0;r_i<all_routes.length;r_i++) {
 
             var route = all_routes[r_i];
+
+            route.route_icon_label = route.Id.replace(/BCT/,"");
 
             //The following property contains mock data
             route.alerts = all_alerts.schedule_map;

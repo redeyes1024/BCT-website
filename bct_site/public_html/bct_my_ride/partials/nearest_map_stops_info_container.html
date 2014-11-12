@@ -24,9 +24,7 @@ class="nearest-map-stops-single-stop-display">
                 <span
                 class="nearest-map-stops-single-stop-display-bus-route-id">
 
-                    {{
-                    all_transit_agency_data.BCT.indexers.partial_labels[route]
-                    }}
+                    {{ routes[route].route_icon_label }}
 
                 </span>
 

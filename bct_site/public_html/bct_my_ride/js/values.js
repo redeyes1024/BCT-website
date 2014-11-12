@@ -749,6 +749,13 @@ BCTAppValues.value('bct_routes_alt_names', {
 
     "US1 Breeze": "101",
     "University Breeze": "102",
+    "Miramar": "106",
+    "Hollywood": "107",
+    "Pembroke Pines": "108",
+    "Pembroke Pines/Miramar": "109",
+    "Sunrise/Miami": "110",
+    "Sunrise/Ft Lauderdale": "112",
+    "Weston/Civic Center": "114",
     "441 Breeze": "441"
 
 });

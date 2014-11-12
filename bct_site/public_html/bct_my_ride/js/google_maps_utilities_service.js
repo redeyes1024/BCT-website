@@ -1109,8 +1109,7 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
                 lng: nearest_stops[i].LatLng.Longitude
             };
 
-            var marker_options = marker_icon_options.
-            schedule_map.default;
+            var marker_options = marker_icon_options.schedule_map.default;
 
             marker_options.fillColor = map_palette.colors.red;
 

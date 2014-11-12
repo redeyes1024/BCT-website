@@ -724,19 +724,9 @@ function (
 
     })();
 
-    $scope.all_transit_agency_data = {
-
-        BCT: {
-            obj: {},
-            arr: [],
-            indexers: {
-                partial_labels: {}
-            }
-        }
-
-    };
-
     /* END Data Object Templates */
+
+    $scope.warning_messages = warning_messages;
 
     recentlyViewedService.loadRecentlyViewedList();
 
