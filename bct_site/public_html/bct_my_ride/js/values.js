@@ -4,6 +4,59 @@ var BCTAppValues = angular.module('BCTAppValues', []);
 //BCTAppValues.value('scheduleWebSocket',
 //new WebSocket("ws://echo.websocket.org"));
 
+BCTAppValues.value('timer_constants', {
+
+    location_service: {
+
+        request_ignored: 15000,
+        recalculate_location: 30000
+
+    },
+
+    error_dialog_delays: {
+
+        geocoder: {
+
+            main: 3000,
+            full_hide: 1000,
+            fade_gap: 200
+
+        }
+
+    },
+
+    trip_planner: {
+
+        update_request_time: 12000
+
+    }
+
+});
+
+BCTAppValues.value('nearest_stops_service_constants', {
+
+    max_reported_stops: 3,
+
+    //Will not report stops further than this distance
+    //In degrees, OR meters divided by 111111 as a rough conversion
+    max_dist: 1000 / 111111
+
+});
+
+BCTAppValues.value('target_area_bounds', {
+
+    lat: {
+        max: 27,
+        min: 25
+    },
+
+    lng: {
+        max: -80.0,
+        min: -80.5
+    }
+
+});
+
 BCTAppValues.value('map_zoom_span_breakpoints', [
 
     {
@@ -254,20 +307,6 @@ BCTAppValues.value('marker_click_memory', {
 
 });
 
-BCTAppValues.value('out_of_region_cutoff_coords', {
-
-    lat: {
-        max: 27,
-        min: 25
-    },
-
-    lng: {
-        max: -80.0,
-        min: -80.5
-    }
-
-});
-
 BCTAppValues.value('marker_icon_options', {
 
     schedule_map: {
@@ -358,11 +397,11 @@ BCTAppValues.value('warning_messages', {
 
     geocoder: {
         
-        not_found:
-        "Location not found.",
+        not_found: "Location not found.",
 
-        over_request_limit:
-        "Application Busy. Try again."
+        out_of_bounds: "Location out of target region.",
+
+        over_request_limit: "Application Busy. Try again."
 
     }
 

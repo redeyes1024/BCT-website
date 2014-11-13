@@ -590,7 +590,7 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
 
     };
 
-    this.displayInfoWindowSchedule = function(res) {
+    this.displayInfoWindowSchedule = function(res, marker) {
 
         if (!res.data.Today) {
 
@@ -611,7 +611,7 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
             try {
 
                 var schedule_el_cont =
-                self.trip_step.info.div_.getElementsByClassName(
+                marker.info.div_.getElementsByClassName(
                     "schedule-map-info-window-schedule-contents"
                 )[0];
 
@@ -682,7 +682,7 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
 
         this.route_id = route_id;
 
-        this.trip_step = myride.dom_q.map.overlays.points[stop_id];
+        this.marker = myride.dom_q.map.overlays.points[stop_id];
 
         this.route_icons_template = route_icons_template;
 
@@ -696,7 +696,7 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
 
             var window_already_open = top_self.showSelectedInfoWindow(
                 "schedule",
-                self.trip_step,
+                self.marker,
                 e,
                 self.stop_id,
                 hovered
@@ -705,7 +705,7 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
             if (window_already_open) { return true; }
 
             google.maps.event.addListenerOnce(
-                self.trip_step.info,
+                self.marker.info,
                 'domready',
                 function() {
 
@@ -715,12 +715,12 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
 
                         try {
 
-                            var route_icons_el = self.trip_step.info.div_.
+                            var route_icons_el = self.marker.info.div_.
                             getElementsByClassName(
                                 "info-window-associated-routes"
                             )[0];
 
-                            var schedule_el = self.trip_step.info.div_.
+                            var schedule_el = self.marker.info.div_.
                             getElementsByClassName(
                                 "schedule-map-info-window-schedule"
                             )[0];
@@ -755,12 +755,12 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
 
                     if (!hovered) {
 
-                        self.trip_step.info.clicked = true;
+                        self.marker.info.clicked = true;
 
                         angular.element(document).ready(function() {
 
                             var schedule_el =
-                            self.trip_step.info.div_.getElementsByClassName(
+                            self.marker.info.div_.getElementsByClassName(
                                 "schedule-map-info-window-schedule"
                             )[0];
 
@@ -776,7 +776,9 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
                         ).
                         then(function(res) {
 
-                            top_self.displayInfoWindowSchedule(res);
+                            top_self.displayInfoWindowSchedule(
+                                res, self.marker
+                            );
 
                         });
 
@@ -812,12 +814,12 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
 
         var self = this;
 
-        this.trip_step = trip_point;
+        this.marker = trip_point;
 
         this.open = function(e) {
 
             var window_already_open =
-            top_self.showSelectedInfoWindow("planner", self.trip_step, e);
+            top_self.showSelectedInfoWindow("planner", self.marker, e);
 
             if (window_already_open) { return true; }
 

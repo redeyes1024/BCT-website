@@ -248,20 +248,18 @@ BCTAppServices.service('miniScheduleService', [ function() {
 }]);
 
 BCTAppServices.service('locationService', [ '$timeout', 'latest_location',
-'default_demo_coords', 'out_of_region_cutoff_coords',
-function($timeout, latest_location, default_demo_coords,
-out_of_region_cutoff_coords) {
+'default_demo_coords', 'target_area_bounds', 'timer_constants',
+
+function($timeout, latest_location, default_demo_coords, target_area_bounds,
+timer_constants) {
 
     var self = this;
-
-    this.OUT_OF_REGION_CUTOFF_COORDS = out_of_region_cutoff_coords;
 
     this.getDefaultDemoCoords = function(coord_labels) {
 
         var default_coords = {};
 
         default_coords[coord_labels[0]] = default_demo_coords.LatLng.Latitude;
-
         default_coords[coord_labels[1]] = default_demo_coords.LatLng.Longitude;  
 
         return default_coords;
@@ -269,18 +267,22 @@ out_of_region_cutoff_coords) {
     };
 
     this.updateLatestLocation = function(location) {
+
         var lat = location.coords.latitude;
         var lng = location.coords.longitude;
         var time = location.timestamp;
 
         latest_location.timestamp = time;
+
         latest_location.LatLng = {
             Latitude: lat,
             Longitude: lng
         };
+
     };
 
-    /*  Note on the getCurrentLocation function:
+    /*  
+        Note on the getCurrentLocation function:
 
         Since the geolocation API contains no indication that the user
         agreed to share their location before loading, the loading animation
@@ -303,15 +305,11 @@ out_of_region_cutoff_coords) {
         input section of the trip planner unexpectedly.
 
         In short, the user has the number of seconds stored in the 
-        'constant' $scope.TIME_UNTIL_LOCATION_REQUEST_PRESUMED_IGNORED
+        'constant' $scope.timer_constants.location_service.request_ignored
         *minus* the amount of time it takes the location to be retrieved,
         otherwise it is presumed that the user ignored the location request
         and will have to click the location button again.
     */
-
-    this.TIME_UNTIL_LOCATION_REQUEST_PRESUMED_IGNORED = 15000;
-
-    this.TIME_ELAPSED_UNTIL_LOCATION_MUST_BE_RECALCULATED = 30000;
 
     this.getCurrentLocationAndDisplayData =
     function(setLoadingAnimation, displayData) {
@@ -322,88 +320,112 @@ out_of_region_cutoff_coords) {
         latest_location_prompt_time - latest_location.timestamp;
 
         if (time_since_last_location_prompt <
-            self.TIME_ELAPSED_UNTIL_LOCATION_MUST_BE_RECALCULATED) {
+            timer_constants.location_service.recalculate_location) {
+
             displayData(latest_location);
+
             return true;
+
         }
 
         setLoadingAnimation("active");
 
         navigator.geolocation.getCurrentPosition(
+
             function(p_res) {
+
                 var latest_successful_location_request_time = new Date;
 
                 if ((latest_successful_location_request_time -
                     latest_location_prompt_time) <
-                    self.TIME_UNTIL_LOCATION_REQUEST_PRESUMED_IGNORED) {
+                    timer_constants.location_service.request_ignored) {
 
                     self.updateLatestLocation(p_res);
 
                     displayData(latest_location);
 
                     setLoadingAnimation("inactive");
+
                 }
+
             },
+
             function() {
+
                 console.log("Location request cancelled or failed.");
 
                 setLoadingAnimation("inactive");
+
             },
+
             {
-                timeout: self.TIME_UNTIL_LOCATION_REQUEST_PRESUMED_IGNORED
+                timeout: timer_constants.location_service.request_ignored
             }
+
         );
 
         var user_ignored_location_request_timer = $timeout(function() {
             setLoadingAnimation("inactive");
-        }, self.TIME_UNTIL_LOCATION_REQUEST_PRESUMED_IGNORED);
+        }, self.timer_constants.location_service.request_ignored);
 
         return user_ignored_location_request_timer;
 
     };
 
+    this.checkIfLocationWithinBounds = function(coords) {
+
+        var bounds = target_area_bounds;
+
+        var lat = coords.LatLng.Latitude;
+        var lng = coords.LatLng.Longitude;
+
+        var within_lat_bounds = bounds.lat.min <= lat && lat <= bounds.lat.max;
+        var within_lng_bounds = bounds.lng.min <= lng && lng <= bounds.lng.max;
+
+        var bounds_check = within_lat_bounds && within_lng_bounds;
+
+        return bounds_check;
+
+    }
+
     //Change reference location if client is not in South East Florida
     //For demonstration/testing only, to make development location-agnostic
-    this.changeToDefaultLocationIfOutsideOfFlorida =
-    function(current_location) {
+    this.changeToDefaultLocationIfOutsideOfFlorida = function(
+        current_location
+    ) {
 
-        var bounds = self.OUT_OF_REGION_CUTOFF_COORDS;
-        var current_lat = current_location.LatLng.Latitude;
-        var current_lng = current_location.LatLng.Longitude;
+        if (!self.checkIfLocationWithinBounds(current_location)) {
 
-        if (
-            !(bounds.lat.min <= current_lat && current_lat <= bounds.lat.max) ||
-            !(bounds.lng.min <= current_lng && current_lng <= bounds.lng.max)
-        ) {
             current_location = self.getDefaultDemoCoords(
                 ["Latitude", "Longitude"]
             );
+
             console.log(
-                "User outside of local region. Using demonstration coordinates."
+                "User outside of local region. " +
+                "Using demonstration coordinates."
             );
+
         }
 
         return current_location;
+
     };
 
 }]);
 
 BCTAppServices.service('nearestStopsService', [ 'locationService',
-'full_bstop_data', function(locationService, full_bstop_data) {
+'full_bstop_data', 'nearest_stops_service_constants',
+
+function(locationService, full_bstop_data, nearest_stops_service_constants) {
 
     var self = this;
-
-    //Will not report stops further than this distance
-    //In degrees, or meters divided by 111111 as a rough conversion
-    this.MAXIMUM_DISTANCE = 1000 / 111111;
-
-    this.MAXIMUM_REPORTED_STOPS = 3;
 
     //Calculate distance between two geographic points, not taking the Earth's
     //curvature into account since the comparison is between relatively short
     //distances and it is unlikely that factoring this in would change the
     //order of shorest-to-longest distances
     this.computeLinearDistance = function(coords1, coords2) {
+
         var lat_span = coords1.Latitude - coords2.Latitude;
         var lng_span = coords1.Longitude - coords2.Longitude;
 
@@ -411,6 +433,7 @@ BCTAppServices.service('nearestStopsService', [ 'locationService',
         var linear_distance = Math.pow(distance_sq, 0.5);
 
         return linear_distance;
+
     };
 
     this.labelDistancesAndConvertFromDegrees = function (distance) {
@@ -508,7 +531,7 @@ BCTAppServices.service('nearestStopsService', [ 'locationService',
 
         var stops_below_cutoff = full_bstop_list_ids_coords.
         filter(function(sd) {
-            return sd.distance < self.MAXIMUM_DISTANCE;
+            return sd.distance < nearest_stops_service_constants.max_dist;
         });
 
         var nearest_bstops;
@@ -522,7 +545,7 @@ BCTAppServices.service('nearestStopsService', [ 'locationService',
         else {
 
             nearest_bstops = stops_below_cutoff.
-            slice(0, self.MAXIMUM_REPORTED_STOPS);
+            slice(0, nearest_stops_service_constants.max_reported_stops);
 
         }
 
@@ -546,6 +569,7 @@ BCTAppServices.service('nearestStopsService', [ 'locationService',
 BCTAppServices.service('placeholderService', [ function() {
 
     this.createLoadingPlaceholder = function(length, content) {
+
         var placeholder_arr = [];
         var placeholder_length = length;
         var placeholder_content = content;
@@ -555,6 +579,7 @@ BCTAppServices.service('placeholderService', [ function() {
         }
 
         return placeholder_arr;
+
     };
 
 }]);
@@ -563,8 +588,6 @@ BCTAppServices.service('landmarkInfoService', ['$http', '$q',
 'generalServiceUtilities',
 
 function($http, $q, generalServiceUtilities) {
-
-    var self = this;
 
     this.downloadLandmarkInfo = function() {
 

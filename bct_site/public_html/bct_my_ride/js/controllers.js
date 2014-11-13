@@ -122,19 +122,21 @@ function ($scope, $timeout, nearestStopsService, recently_viewed_items) {
 
     //Init operations completed when the $scope.init flag is set to "true"
     if (!$scope.init) {
+
         angular.element(document).ready(function() {
             $scope.init = true;
         });
+
     }
 
 }]);
 
 BCTAppControllers.controller('tripPlannerController', ['$scope',
 'googleMapsUtilities', '$timeout', 'tripPlannerService', 'warning_messages',
-'recentlyViewedService',
+'recentlyViewedService', 'locationService', 'timer_constants',
 
 function ($scope, googleMapsUtilities, $timeout, tripPlannerService,
-warning_messages, recentlyViewedService) {
+warning_messages, recentlyViewedService, locationService, timer_constants) {
 
     //For ease of debugging (development only)
     window.trip_scope = $scope;
@@ -145,13 +147,18 @@ warning_messages, recentlyViewedService) {
     $scope.geocoder_error_dialog_text = "Default dialog text";
 
     $scope.top_scope.trip_opts = {
+
         optimize: "QUICK",
+
         modeswitch: {
+
             bus: true,
             train: true,
             bike: false,
             com_bus: true
+
         },
+
         datetarg: "depart_by",
         datepick: new Date
     };
@@ -168,7 +175,7 @@ warning_messages, recentlyViewedService) {
 
             }
 
-        }, 120000);
+        }, timer_constants.trip_planner.update_request_time);
 
     };
 
@@ -263,7 +270,7 @@ warning_messages, recentlyViewedService) {
             dialog_styles["error-dialog-faded-out"] = false;
             dialog_styles["error-dialog-faded-in"] = true;
 
-        }, 200);
+        }, timer_constants.error_dialog_delays.geocoder.fade_gap);
 
         $scope.geocoder_error_dialog_timeout = $timeout(function() {
 
@@ -273,18 +280,49 @@ warning_messages, recentlyViewedService) {
             $scope.planner_error_alert_dialog_hide_in_progress = true;
 
             $timeout(function() {
+
                 $scope.top_scope.show_geocoder_error_dialog = false;
                 $scope.planner_error_alert_dialog_hide_in_progress = false;
-            }, 1000);
 
-        }, $scope.GEOCODER_ERROR_ALERT_DIALOG_HIDE_DELAY);
+            }, timer_constants.error_dialog_delays.geocoder.full_hide);
+
+        }, timer_constants.error_dialog_delays.geocoder.main);
 
         $scope.geocoder_error_dialog_text =
         $scope.selectTripPlannerErrorMessage(error_field);
 
     };
 
-    $scope.GEOCODER_ERROR_ALERT_DIALOG_HIDE_DELAY = 3000;
+    $scope.displayFromAndToFieldGeocoderErrors = function(input_field_name) {
+
+        var dialog_styles = $scope.top_scope.planner_dialog_styles;
+
+        dialog_styles["error-dialog-centered"] = false;
+        dialog_styles["trip-planner-dialog-centered"] = false;
+
+        switch (input_field_name) {
+
+            case "start":
+
+                dialog_styles["trip-planner-dialog-finish"] = false;
+                dialog_styles["trip-planner-dialog-start"] = true;
+
+                myride.dom_q.inputs.trip[0].focus();
+
+                break;
+
+            case "finish":
+
+                dialog_styles["trip-planner-dialog-start"] = false;
+                dialog_styles["trip-planner-dialog-finish"] = true;
+
+                myride.dom_q.inputs.trip[1].focus();
+
+                break;
+
+        }
+
+    };
 
     $scope.alertUserToGeocoderErrors = function(
         input_field_name, error_status
@@ -295,54 +333,48 @@ warning_messages, recentlyViewedService) {
 
         var dialog_styles = $scope.top_scope.planner_dialog_styles;
 
-        if (error_status === "ZERO_RESULTS") {
+        switch (error_status) {
 
-            $scope.geocoder_error_dialog_text =
-            warning_messages.geocoder.not_found;
+            case "ZERO_RESULTS":
 
-            dialog_styles["error-dialog-centered"] = false;
-            dialog_styles["trip-planner-dialog-centered"] = false;
+                $scope.geocoder_error_dialog_text =
+                warning_messages.geocoder.not_found;
 
-            switch (input_field_name) {
+                $scope.displayFromAndToFieldGeocoderErrors(input_field_name);
 
-                case "start":
+                break;
 
-                    dialog_styles["trip-planner-dialog-finish"] = false;
-                    dialog_styles["trip-planner-dialog-start"] = true;
-                    myride.dom_q.inputs.trip[0].focus();
+            case "out_of_bounds":
 
-                    break;
+                $scope.geocoder_error_dialog_text =
+                warning_messages.geocoder.out_of_bounds;
 
-                case "finish":
+                $scope.displayFromAndToFieldGeocoderErrors(input_field_name);
 
-                    dialog_styles["trip-planner-dialog-start"] = false;
-                    dialog_styles["trip-planner-dialog-finish"] = true;
-                    myride.dom_q.inputs.trip[1].focus();
+                break;
 
-                    break;
+            case "OVER_QUERY_LIMIT":
 
-            }
+                $scope.geocoder_error_dialog_text =
+                warning_messages.geocoder.over_request_limit;
 
-        }
+                dialog_styles["error-dialog-centered"] = true;
 
-        else if (error_status === "OVER_QUERY_LIMIT") {
+                dialog_styles["trip-planner-dialog-finish"] = false;
+                dialog_styles["trip-planner-dialog-start"] = false;
 
-            $scope.geocoder_error_dialog_text =
-            warning_messages.geocoder.over_request_limit;
-
-            dialog_styles["error-dialog-centered"] = true;
-
-            dialog_styles["trip-planner-dialog-finish"] = false;
-            dialog_styles["trip-planner-dialog-start"] = false;
+                break;
 
         }
 
         $scope.top_scope.show_geocoder_error_dialog = true;
 
         $timeout(function() {
+
             dialog_styles["error-dialog-faded-out"] = false;
             dialog_styles["error-dialog-faded-in"] = true;
-        }, 200);
+
+        }, timer_constants.error_dialog_delays.geocoder.fade_gap);
 
         $timeout.cancel($scope.geocoder_error_dialog_timeout);
 
@@ -350,29 +382,74 @@ warning_messages, recentlyViewedService) {
 
             dialog_styles["error-dialog-faded-in"] = false;
             dialog_styles["error-dialog-faded-out"] = true;
-            $timeout(function() {
-                $scope.top_scope.show_geocoder_error_dialog = false;
-            }, 1000);
 
-        }, $scope.GEOCODER_ERROR_ALERT_DIALOG_HIDE_DELAY);
+            $timeout(function() {
+
+                $scope.top_scope.show_geocoder_error_dialog = false;
+
+            }, timer_constants.error_dialog_delays.geocoder.full_hide);
+
+        }, timer_constants.error_dialog_delays.geocoder.main);
 
     };
 
-    $scope.checkForGeocoderErrors = function(coords) {
+    $scope.checkForGeocoderErrors = function(geocoder_output) {
 
-        if (typeof(coords[0]) === "string") {
+        if (typeof(geocoder_output[0]) === "string") {
 
-            $scope.alertUserToGeocoderErrors("start", coords[0]);
+            $scope.alertUserToGeocoderErrors("start", geocoder_output[0]);
 
             return false;
 
         }
 
-        else if (typeof(coords[1]) === "string") {
+        else if (typeof(geocoder_output[1]) === "string") {
 
-            $scope.alertUserToGeocoderErrors("finish", coords[1]);
+            $scope.alertUserToGeocoderErrors("finish", geocoder_output[1]);
 
             return false;
+
+        }
+
+        else {
+
+            var coords = {
+
+                LatLng: {
+
+                    Latitude: geocoder_output[0][0].geometry.location.lat(),
+                    Longitude: geocoder_output[0][0].geometry.location.lng()
+
+                }
+
+            };
+
+            if (!locationService.checkIfLocationWithinBounds(coords)) {
+
+                $scope.alertUserToGeocoderErrors("start", "out_of_bounds");
+
+                return false;
+
+            }
+
+            else {
+                
+                coords.LatLng = {
+
+                    Latitude: geocoder_output[1][0].geometry.location.lat(),
+                    Longitude: geocoder_output[1][0].geometry.location.lng()
+
+                };
+                
+                if (!locationService.checkIfLocationWithinBounds(coords)) {
+
+                    $scope.alertUserToGeocoderErrors("finish", "out_of_bounds");
+
+                    return false;
+
+                }
+                
+            }
 
         }
 
