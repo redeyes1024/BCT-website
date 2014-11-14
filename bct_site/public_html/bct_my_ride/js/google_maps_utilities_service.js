@@ -336,7 +336,8 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
 
         myride.dom_q.map.overlays[open_info_name] = [{
             close: function() {},
-            content: "<span>Stop: First</span>"
+            content: "<span>Stop: First</span>",
+            is_dummy: true
         }];
 
     };
@@ -358,6 +359,7 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
             id_type_name = "trip_marker_window_id";
 
         }
+
         else if (module === "schedule") {
 
             if (hovered) {
@@ -379,10 +381,14 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
         //Prevent info box from opening from hover if already opened from click
         if (module === "schedule" && !!hovered) {
 
-            if (typeof myride.dom_q.map.
-                overlays["open_info"][0][id_type_name] !== "undefined" &&
-                point.info[id_type_name] ===
-                myride.dom_q.map.overlays["open_info"][0][id_type_name]) {
+            var open_info_window_exists =
+            typeof myride.dom_q.map.overlays["open_info"][0][id_type_name] !==
+            "undefined";
+
+            var cur_info_window_opened = point.info[id_type_name] ===
+            myride.dom_q.map.overlays["open_info"][0][id_type_name];
+
+            if (open_info_window_exists && cur_info_window_opened) {
 
                 return true;
 
@@ -467,8 +473,11 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
     ) {
 
         google.maps.event.addListener(
+
             myride.dom_q.map.overlays[marker_list_name][marker_id].info,
+
             'closeclick',
+
             function() {
 
                 self.createDummyInfoWindow(marker_list_name);
@@ -479,22 +488,32 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
                 info.clicked = false;
 
             }
+
         );
 
         if (marker_list_name === "points") {
 
             google.maps.event.addListener(
+
                 myride.dom_q.map.overlays[marker_list_name][marker_id].marker,
+
                 'click',
+
                 function() {
+
                     myride.dom_q.map.overlays[marker_list_name][marker_id].
                     info_opener.open("click", false);
+
                 }
+
             );
 
             google.maps.event.addListener(
+
                 myride.dom_q.map.overlays[marker_list_name][marker_id].marker,
+
                 'mouseover',
+
                 function() {
 
                     var icon_options =
@@ -505,21 +524,23 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
                     marker.getIcon().fillColor;
 
                     myride.dom_q.map.overlays[marker_list_name][marker_id].
-                    marker.setOptions(
-                        {
-                            icon: icon_options
-                        }
-                    );
+                    marker.setOptions({
+                        icon: icon_options
+                    });
 
                     myride.dom_q.map.overlays[marker_list_name][marker_id].
                     info_opener.open(null, true);
 
                 }
+
             );
 
             google.maps.event.addListener(
+
                 myride.dom_q.map.overlays[marker_list_name][marker_id].marker,
+
                 'mouseout',
+
                 function() {
 
                     var icon_options = marker_icon_options.schedule_map.default;
@@ -529,11 +550,9 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
                     marker.getIcon().fillColor;
 
                     myride.dom_q.map.overlays[marker_list_name][marker_id].
-                    marker.setOptions(
-                        {
-                            icon: icon_options
-                        }
-                    );
+                    marker.setOptions({
+                        icon: icon_options
+                    });
 
                     var marker_was_clicked =
                     myride.dom_q.map.overlays[marker_list_name][marker_id].
@@ -549,6 +568,7 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
                     }
 
                 }
+
             );
 
         }
@@ -556,10 +576,14 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
         else if (marker_list_name === "trip_points") {
         
             google.maps.event.addListener(
+
                 myride.dom_q.map.overlays[marker_list_name][marker_id].marker,
+
                 'click',
+
                 myride.dom_q.map.overlays[marker_list_name][marker_id].
                 info_opener.open
+
             );
 
         }
@@ -740,6 +764,13 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
                             schedule_el_ang_obj.append(
                                 $compile(self.schedule_template)(scope)
                             );
+
+                            if (hovered) {
+
+                                schedule_el.parentNode.parentNode.parentNode.
+                                style.zIndex = 1;
+
+                            }
 
                         }
 

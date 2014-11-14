@@ -19,9 +19,10 @@ BCTApp.directive('bctMyRideTopLevelOverlays', [ function() {
 }]);
 
 BCTApp.directive('scheduleMap', [ 'googleMapsUtilities', 'marker_icon_options',
-'base_marker_sizes',
+'base_marker_sizes', 'clusterer_options',
 
-function(googleMapsUtilities, marker_icon_options, base_marker_sizes) {
+function(googleMapsUtilities, marker_icon_options, base_marker_sizes,
+clusterer_options) {
 
     function link(scope) {
 
@@ -105,6 +106,56 @@ function(googleMapsUtilities, marker_icon_options, base_marker_sizes) {
                         scope.top_scope.show_nearest_map_stops_title) {
 
                         resetMarkerSizes();
+
+                        if (scope.top_scope.show_schedule_result_top_bar &&
+                            !!myride.dom_q.map.overlays.open_info[0].hide) {
+
+                            var cur_info_window_hidden =
+                            myride.dom_q.map.overlays.open_info[0].isHidden_;
+
+                            if (myride.dom_q.map.inst.getZoom() <=
+                                clusterer_options.maxZoom) {
+
+                                if (!myride.dom_q.map.overlays.
+                                    open_info_hovered[0].is_dummy) {
+
+                                    google.maps.event.addListenerOnce(
+
+                                        myride.dom_q.map.inst,
+                                        'idle',
+                                        function() {
+
+                                            myride.dom_q.map.overlays.
+                                            open_info_hovered[0].close();
+
+                                            myride.dom_q.map.overlays.
+                                            open_info_hovered.pop();
+
+                                            googleMapsUtilities.
+                                            createDummyInfoWindow(
+                                                "points", true
+                                            );
+
+                                    });
+
+                                }
+
+                                if (!cur_info_window_hidden) {
+
+                                    myride.dom_q.map.overlays.
+                                    open_info[0].hide();
+
+                                }
+
+                            }
+
+                            else if (cur_info_window_hidden) {
+
+                                myride.dom_q.map.overlays.open_info[0].show();
+
+                            }
+
+                        }
 
                     }
 
