@@ -7,8 +7,12 @@ var BCTApp = angular.module('BCTApp', ['ngRoute', 'mobile-angular-ui',
     'BCTAppServices', 'BCTAppControllers', 'BCTAppDirectives', 'ngQuickDate',
     'BCTAppTopController', 'BCTAppValues'])
         
-.config(function($sceProvider) {
+.config(function($sceProvider, $rootScopeProvider) {
+
     $sceProvider.enabled(false);
+
+    $rootScopeProvider.digestTtl(20);
+
 });
 
 //App namespace

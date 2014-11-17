@@ -419,6 +419,17 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
                 myride.dom_q.map.overlays.points[marker_label].info.clicked =
                 false;
 
+                var icon_options = marker_icon_options.schedule_map.default;
+
+                icon_options.fillColor =
+                myride.dom_q.map.overlays.points[open_window.marker_label].
+                marker.getIcon().fillColor;
+
+                myride.dom_q.map.overlays.points[open_window.marker_label].
+                marker.setOptions({
+                    icon: icon_options
+                });
+
             }
 
         }
@@ -436,6 +447,17 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
             myride.dom_q.map.inst.setCenter({
                 lat: point_coords.lat(),
                 lng: point_coords.lng()
+            });
+
+            var icon_options = marker_icon_options.schedule_map.mouseover;
+
+            icon_options.fillColor =
+            myride.dom_q.map.overlays.points[point_name].
+            marker.getIcon().fillColor;
+
+            myride.dom_q.map.overlays.points[point_name].
+            marker.setOptions({
+                icon: icon_options
             });
 
             if (e) {
@@ -543,17 +565,6 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
 
                 function() {
 
-                    var icon_options = marker_icon_options.schedule_map.default;
-
-                    icon_options.fillColor =
-                    myride.dom_q.map.overlays[marker_list_name][marker_id].
-                    marker.getIcon().fillColor;
-
-                    myride.dom_q.map.overlays[marker_list_name][marker_id].
-                    marker.setOptions({
-                        icon: icon_options
-                    });
-
                     var marker_was_clicked =
                     myride.dom_q.map.overlays[marker_list_name][marker_id].
                     info.clicked;
@@ -564,6 +575,18 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
                         info.close();
 
                         self.createDummyInfoWindow(marker_list_name, true);
+
+                        var icon_options =
+                        marker_icon_options.schedule_map.default;
+
+                        icon_options.fillColor =
+                        myride.dom_q.map.overlays[marker_list_name][marker_id].
+                        marker.getIcon().fillColor;
+
+                        myride.dom_q.map.overlays[marker_list_name][marker_id].
+                        marker.setOptions({
+                            icon: icon_options
+                        });
 
                     }
 
@@ -777,7 +800,7 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
                         catch(e) {
 
                             console.log(
-                                "Info box closed too quickly to load SVGs."
+                                "Info box closed too quickly to load graphics."
                             );
 
                         }
@@ -997,7 +1020,7 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
                 pixelOffset: {
 
                     width: -103,
-                    height: -122
+                    height: -127
 
                 },
 

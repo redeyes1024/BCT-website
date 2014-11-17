@@ -366,7 +366,7 @@ timer_constants) {
 
         var user_ignored_location_request_timer = $timeout(function() {
             setLoadingAnimation("inactive");
-        }, self.timer_constants.location_service.request_ignored);
+        }, timer_constants.location_service.request_ignored);
 
         return user_ignored_location_request_timer;
 
@@ -386,7 +386,7 @@ timer_constants) {
 
         return bounds_check;
 
-    }
+    };
 
     //Change reference location if client is not in South East Florida
     //For demonstration/testing only, to make development location-agnostic
@@ -1301,6 +1301,7 @@ function(map_navigation_marker_indices) {
         if (counter_name === "planner") {
             marker_list_length = myride.dom_q.map.overlays.trip_points.length;
         }
+
         else if (counter_name === "schedule") {
             marker_list_length =
             myride.dom_q.map.overlays.ordered_stop_list.length;
