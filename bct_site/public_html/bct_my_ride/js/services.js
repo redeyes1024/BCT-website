@@ -1160,27 +1160,56 @@ BCTAppServices.service('generalServiceUtilities', [ function() {
 
     var self = this;
 
-    /* START Force Digest Workaround */
+    /*
+        passTopScopePropRefsToGenUtils
 
-    //Used only when absolutely necessary, i.e., for when Angular
-    //fails to 'detect' a change to certain values from a function
-    //defined in a service method. Checks if $apply is already in
-    //progress as a safety measure.
-    angular.element(document).ready(function() {
+        This function allows for certain top-level scope values and functions
+        to be accessed from the services layer. This is to avoid passing in
+        a direct reference to the top-level scope to this layer. Note that
+        this function should be used sparingly and only when absolutely
+        necessary, e.g., when the alternative would be to put large blocks of
+        service-heavy code into the controller layer (thereby bloating the
+        controller layer), just to make use of a few top-level scope
+        values or functions.
+    */
+    this.passTopScopePropRefsToGenUtils = function(top_level_scope_props) {
 
-        self.top_level_scope = angular.element(
-            document.getElementById("bct-app")
-        ).scope();
+        self.top_level_scope_prop_refs = top_level_scope_props;
 
-        self.forceDigest = function() {
-            if(!self.top_level_scope.$$phase) {
-                self.top_level_scope.$apply();
-            }
-        };
+    };
 
-    });
+    /*
+        forceDigest
 
-    /* END Force Digest Workaround */
+        Used only when absolutely necessary, i.e., for when Angular
+        fails to 'detect' a change to certain values from a function
+        defined in a service method. Checks if $apply is already in
+        progress as a safety measure.
+    */
+    this.forceDigest = function() {
+
+        if (!self.top_level_scope_prop_refs) {
+
+            console.log(
+                "Please do not use the forceDigest function until the " +
+                "top-level controller is fully loaded (or more precisely, " +
+                "after the  function defined in the top-level controller " +
+                "is called.)"
+            );
+            
+            return false;
+
+        }
+
+        if (!self.top_level_scope_prop_refs.$$phase) {
+
+            self.top_level_scope_prop_refs.$apply();
+
+        }
+
+    };
+
+    this.compileTemplateWithTopScope = thing;
 
     this.formatDateYYYYMMDD = function(date_obj) {
 

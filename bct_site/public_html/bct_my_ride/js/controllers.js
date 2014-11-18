@@ -1,10 +1,9 @@
 var BCTAppControllers = angular.module('BCTAppControllers', []);
 
-BCTAppControllers.controller('routeSchedulesController', ['$scope',
-'$timeout', 'profilePageService', 'marker_icon_options', 'base_marker_sizes',
+BCTAppControllers.controller('routeSchedulesController', ['$scope', '$timeout',
+'$q',
 
-function ($scope, $timeout, profilePageService, marker_icon_options,
-base_marker_sizes) {
+function ($scope, $timeout, $q) {
 
     //For ease of debugging (development only)
     window.rs_scope = $scope;
@@ -15,13 +14,11 @@ base_marker_sizes) {
     myride.dom_q.inputs.elements.rs_search_input.value =
     $scope.query_data.schedule_search;
 
-    $scope.top_scope.rs_scope_loaded = true;
+    $scope.$on('$viewContentLoaded', function() {
 
-    $scope.$on("destroy", function() {
+        $scope.top_scope.route_schedules_module_loaded_deferred.resolve();
 
-        $scope.top_scope.rs_scope_loaded = false;
-
-        //google.maps.event.removeListener(schedule_map_zoom_out_listener);
+        $scope.top_scope.route_schedules_module_loaded_deferred = $q.defer();
 
     });
 
@@ -119,15 +116,6 @@ function ($scope, $timeout, nearestStopsService, recently_viewed_items) {
     };
 
     $scope.top_scope.recently_viewed_items = recently_viewed_items;
-
-    //Init operations completed when the $scope.init flag is set to "true"
-    if (!$scope.init) {
-
-        angular.element(document).ready(function() {
-            $scope.init = true;
-        });
-
-    }
 
 }]);
 

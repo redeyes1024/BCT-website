@@ -15,7 +15,7 @@ BCTAppTopController.controller('BCTController', [
     'svg_icon_paths', 'full_schedule_categories',
     'full_schedule_category_with_datepicker', 'recentlyViewedService',
     'full_schedule_availabilities', 'generalUIUtilities',
-    'routeStopLandmarkTransformationService',
+    'routeStopLandmarkTransformationService', 'generalServiceUtilities',
 
 function (
 
@@ -31,7 +31,7 @@ function (
     favorites_data, svg_icon_paths, full_schedule_categories,
     full_schedule_category_with_datepicker, recentlyViewedService,
     full_schedule_availabilities, generalUIUtilities,
-    routeStopLandmarkTransformationService
+    routeStopLandmarkTransformationService, generalServiceUtilities
 
 ) {
 
@@ -357,65 +357,61 @@ function (
     $scope.full_schedule_loading_placeholder =
     placeholderService.createLoadingPlaceholder(20, " ");
 
-    angular.element(document).ready(function() {
+    $scope.$watch("full_schedule_date.datepick",
+    function(new_val, old_val) {
 
-        $scope.$watch("full_schedule_date.datepick",
-        function(new_val, old_val) {
+        if (new_val !== old_val) {
 
-            if (new_val !== old_val) {
+            $scope.schedule.date_pick =
+            $scope.full_schedule_loading_placeholder;
 
-                $scope.schedule.date_pick =
-                $scope.full_schedule_loading_placeholder;
+            $scope.show_full_schedule_category_loading_modal_datepick =
+            true;
+
+            $scope.show_schedule_result_date_pick_row_no_data = false;
+
+            scheduleDownloadAndTransformation.downloadSchedule(
+
+                $scope.map_schedule_info.route,
+                $scope.map_schedule_info.stop,
+                $scope.full_schedule_date.datepick
+
+            ).
+            then(function(res) {
 
                 $scope.show_full_schedule_category_loading_modal_datepick =
-                true;
+                false;
 
-                $scope.show_schedule_result_date_pick_row_no_data = false;
+                if (res.data.Today) {
 
-                scheduleDownloadAndTransformation.downloadSchedule(
+                    var t_schedule = scheduleDownloadAndTransformation.
+                    transformSchedule("datepick", res.data.Today);
 
-                    $scope.map_schedule_info.route,
-                    $scope.map_schedule_info.stop,
-                    $scope.full_schedule_date.datepick
+                    $scope.schedule.date_pick = t_schedule.date_pick;
 
-                ).
-                then(function(res) {
+                }
 
-                    $scope.show_full_schedule_category_loading_modal_datepick =
-                    false;
+                else {
 
-                    if (res.data.Today) {
-
-                        var t_schedule = scheduleDownloadAndTransformation.
-                        transformSchedule("datepick", res.data.Today);
-
-                        $scope.schedule.date_pick = t_schedule.date_pick;
-
-                    }
-
-                    else {
-
-                        $scope.show_schedule_result_date_pick_row_no_data =
-                        true;
-
-                        $scope.alertUserToFullScheduleErrors();
-
-                    }
-
-                })["catch"](function() {
-
-                    console.log("Server communication error: full schedule.");
+                    $scope.show_schedule_result_date_pick_row_no_data =
+                    true;
 
                     $scope.alertUserToFullScheduleErrors();
 
-                    $scope.show_full_schedule_category_loading_modal_datepick =
-                    false;
+                }
 
-                });
+            })["catch"](function() {
 
-            }
+                console.log("Server communication error: full schedule.");
 
-        });
+                $scope.alertUserToFullScheduleErrors();
+
+                $scope.show_full_schedule_category_loading_modal_datepick =
+                false;
+
+            });
+
+        }
 
     });
 
@@ -726,6 +722,21 @@ function (
 
     /* END Data Object Templates */
 
+    $scope.compileTemplateWithTopScope = function(target_el, template) {
+
+        var target_el_obj = angular.element(target_el);
+
+        target_el_obj.append($compile(template)($scope));
+
+    };
+
+    //See generalServiceUtilities for usage information
+    generalServiceUtilities.passTopScopePropRefsToGenUtils({
+        "$$phase": $scope.$$phase,
+        "$apply": $scope.$apply,
+        "compileTemplateWithTopScope": $scope.compileTemplateWithTopScope
+    });
+
     $scope.warning_messages = warning_messages;
 
     recentlyViewedService.loadRecentlyViewedList();
@@ -735,8 +746,8 @@ function (
     $scope.full_schedule_category_with_datepicker =
     full_schedule_category_with_datepicker;
 
-    $scope.cur_def_dir = window.myride.directories.site_roots.active;
-    $scope.cur_def_path = window.myride.directories.paths.active;
+    $scope.cur_def_dir = myride.directories.site_roots.active;
+    $scope.cur_def_path = myride.directories.paths.active;
 
     $scope.svg_icon_paths = svg_icon_paths;
 
@@ -2321,8 +2332,6 @@ function (
 
     };
 
-    $scope.rs_scope_loaded = false;
-
     $scope.getIconPath = unitConversionAndDataReporting.getIconPath;
 
     $scope.setLocationSpinnerAnimation = function(context, new_state) {
@@ -2867,6 +2876,8 @@ function (
 
     })();
 
+    $scope.route_schedules_module_loaded_deferred = $q.defer();
+
     $scope.goToScheduleFromProfilePage = function() {
 
         var url = window.location.toString();
@@ -2893,7 +2904,7 @@ function (
 
         }
 
-        angular.element(document).ready(function() {
+        $scope.route_schedules_module_loaded_deferred.promise.then(function() {
 
             $scope.query_data.schedule_search =
             full_bstop_data.dict[stop].Name;

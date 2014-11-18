@@ -271,46 +271,6 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
 
     };
 
-    //Replace items in "other routes" list with clickable
-    //buttons that change the displayed route
-    this.addRouteSwapButtons = function(
-        route_swap_button_holders,
-        open_info_stop
-    ) {
-
-        var scope = 
-        angular.element(document.getElementById("bct-app")).scope();
-
-        var route_swap_button_container =
-        route_swap_button_holders[0].parentNode;
-
-        route_swap_button_container.innerHTML =
-        route_swap_button_container.innerHTML.replace(/,/g, "");
-
-        while (route_swap_button_holders.length > 0) {
-
-            var route_swap_button = angular.element(
-                '<a class="ptr" ng-click="switchRoutes(' +
-                    '\'' + route_swap_button_holders[0].innerHTML + '\', ' +
-                    '\'' + open_info_stop + '\'' +
-                ');">' +
-                    route_swap_button_holders[0].innerHTML +
-                '</a>'
-            );
-
-            angular.element(route_swap_button_container).
-            append($compile(route_swap_button)(scope));
-
-            route_swap_button_holders[0].outerHTML = "";
-
-            if (route_swap_button_holders[0]) {
-                angular.element(route_swap_button_container).append(",&nbsp;");
-            }
-
-        }
-
-    };
-
     //Creates a temporary object made to resemble an info window/box object by
     //including mock placeholder properties. These objects are generally used
     //in order to get around checks for which info windows/boxes are open
@@ -449,16 +409,20 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
                 lng: point_coords.lng()
             });
 
-            var icon_options = marker_icon_options.schedule_map.mouseover;
+            if (module === "schedule") {
 
-            icon_options.fillColor =
-            myride.dom_q.map.overlays.points[point_name].
-            marker.getIcon().fillColor;
+                var icon_options = marker_icon_options.schedule_map.mouseover;
 
-            myride.dom_q.map.overlays.points[point_name].
-            marker.setOptions({
-                icon: icon_options
-            });
+                icon_options.fillColor =
+                myride.dom_q.map.overlays.points[point_name].
+                marker.getIcon().fillColor;
+
+                myride.dom_q.map.overlays.points[point_name].
+                marker.setOptions({
+                    icon: icon_options
+                });
+
+            }
 
             if (e) {
 
@@ -653,67 +617,64 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
             "nearest", res.data.Today
         );
 
-        angular.element(document).ready(function() {
+        try {
 
-            try {
+            var schedule_el_cont =
+            marker.info.div_.getElementsByClassName(
+                "schedule-map-info-window-schedule-contents"
+            )[0];
 
-                var schedule_el_cont =
-                marker.info.div_.getElementsByClassName(
-                    "schedule-map-info-window-schedule-contents"
-                )[0];
+            var nearest_times =
+            nearest_schedule.nearest.next_times;
 
-                var nearest_times =
-                nearest_schedule.nearest.next_times;
+            var converted_nearest_times = [];
 
-                var converted_nearest_times = [];
+            for (var i=0;i<nearest_times.length;i++) {
 
-                for (var i=0;i<nearest_times.length;i++) {
-
-                    converted_nearest_times.push(
-                        unitConversionAndDataReporting.convertToTwelveHourTime(
-                            nearest_times[i]
-                        )
-                    );
-
-                }
-
-                if (converted_nearest_times[0]) {
-
-                    schedule_el_cont.innerHTML =
-                    converted_nearest_times.map(
-
-                        function(time) {
-
-                            var time_no_flags =
-                            time.replace(/;next|;prev/, "");
-
-                            return time_no_flags;
-
-                        }
-
-                    ).join(", ");
-
-                }
-
-                else {
-
-                    schedule_el_cont.innerHTML =
-                    "No more departures today.";
-
-                }
-
-            }
-
-            catch(e) {
-
-                console.log(
-                    "A Google Maps infowindow was closed before next " +
-                    "times were fully loaded."
+                converted_nearest_times.push(
+                    unitConversionAndDataReporting.
+                    convertToTwelveHourTime(
+                        nearest_times[i]
+                    )
                 );
 
             }
 
-        });
+            if (converted_nearest_times[0]) {
+
+                schedule_el_cont.innerHTML =
+                converted_nearest_times.map(
+
+                    function(time) {
+
+                        var time_no_flags =
+                        time.replace(/;next|;prev/, "");
+
+                        return time_no_flags;
+
+                    }
+
+                ).join(", ");
+
+            }
+
+            else {
+
+                schedule_el_cont.innerHTML =
+                "No more departures today.";
+
+            }
+
+        }
+
+        catch(e) {
+
+            console.log(
+                "A Google Maps infowindow was closed before next " +
+                "times were fully loaded."
+            );
+
+        }
 
     };
 
@@ -756,62 +717,60 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
                 'domready',
                 function() {
 
-                    var scope = generalServiceUtilities.top_level_scope;
+                    var compilerFunction = generalServiceUtilities.
+                    top_level_scope_prop_refs.compileTemplateWithTopScope;
 
-                    angular.element(document).ready(function() {
+                    try {
 
-                        try {
+                        var route_icons_el = self.marker.info.div_.
+                        getElementsByClassName(
+                            "info-window-associated-routes"
+                        )[0];
 
-                            var route_icons_el = self.marker.info.div_.
-                            getElementsByClassName(
-                                "info-window-associated-routes"
-                            )[0];
+                        var schedule_el = self.marker.info.div_.
+                        getElementsByClassName(
+                            "schedule-map-info-window-schedule"
+                        )[0];
 
-                            var schedule_el = self.marker.info.div_.
-                            getElementsByClassName(
-                                "schedule-map-info-window-schedule"
-                            )[0];
+                        schedule_el.style.display = "none";
 
-                            schedule_el.style.display = "none";
+                        compilerFunction(
+                            route_icons_el,
+                            self.route_icons_template
+                        );
 
-                            var route_icons_el_ang_obj =
-                            angular.element(route_icons_el);
+                        compilerFunction(
+                            schedule_el,
+                            self.schedule_template
+                        );
 
-                            var schedule_el_ang_obj =
-                            angular.element(schedule_el);
+                        if (hovered) {
 
-                            route_icons_el_ang_obj.append(
-                                $compile(self.route_icons_template)(scope)
-                            );
-
-                            schedule_el_ang_obj.append(
-                                $compile(self.schedule_template)(scope)
-                            );
-
-                            if (hovered) {
-
-                                schedule_el.parentNode.parentNode.parentNode.
-                                style.zIndex = 1;
-
-                            }
+                            schedule_el.parentNode.parentNode.parentNode.
+                            style.zIndex = 1;
 
                         }
 
-                        catch(e) {
+                    }
 
-                            console.log(
-                                "Info box closed too quickly to load graphics."
-                            );
+                    catch(e) {
 
-                        }
+                        console.log(
+                            "Info box closed too quickly to load graphics."
+                        );
 
-                    });
+                    }
 
                     if (!hovered) {
 
                         self.marker.info.clicked = true;
 
-                        angular.element(document).ready(function() {
+                        var deferred = $q.defer();
+
+                        google.maps.event.addListenerOnce(
+                        myride.dom_q.map.inst,
+                        'idle',
+                        function() {
 
                             var schedule_el =
                             self.marker.info.div_.getElementsByClassName(
@@ -819,6 +778,8 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
                             )[0];
 
                             schedule_el.style.display = "block";
+
+                            deferred.resolve();
 
                         });
 
@@ -830,33 +791,17 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
                         ).
                         then(function(res) {
 
-                            top_self.displayInfoWindowSchedule(
-                                res, self.marker
-                            );
+                            deferred.promise.then(function() {
+
+                                top_self.displayInfoWindowSchedule(
+                                    res, self.marker
+                                );
+
+                            });
 
                         });
 
                     }
-
-                    angular.element(document).ready(function() {
-
-                        var route_swap_button_holders =
-                        document.getElementsByClassName(
-                            "route-swap-button-holder"
-                        );
-
-                        if (route_swap_button_holders[0]) {
-
-                            top_self.addRouteSwapButtons(
-                                route_swap_button_holders,
-                                self.stop_id
-                            );
-
-                        }
-
-                    }
-
-                );
 
             });
 
