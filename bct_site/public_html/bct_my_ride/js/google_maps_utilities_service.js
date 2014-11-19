@@ -713,8 +713,11 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
             if (window_already_open) { return true; }
 
             google.maps.event.addListenerOnce(
+
                 self.marker.info,
+
                 'domready',
+
                 function() {
 
                     var compilerFunction = generalServiceUtilities.
@@ -783,7 +786,8 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
 
                         });
 
-                        scope.show_info_window_schedule = true;
+                        generalServiceUtilities.top_level_scope_prop_refs.
+                        showInfoWindowSchedule();
 
                         scheduleDownloadAndTransformation.downloadSchedule(
                             self.route_id,

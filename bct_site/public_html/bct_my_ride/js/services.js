@@ -1209,8 +1209,6 @@ BCTAppServices.service('generalServiceUtilities', [ function() {
 
     };
 
-    this.compileTemplateWithTopScope = thing;
-
     this.formatDateYYYYMMDD = function(date_obj) {
 
         var date = String(date_obj.getDate());
@@ -1229,7 +1227,7 @@ BCTAppServices.service('generalServiceUtilities', [ function() {
 
     this.tryParsingResponse = function(res, function_name) {
 
-        var error_message = "" +
+        var error_message =
         "There was a problem parsing the data into JSON: " +
         function_name;
 
@@ -1565,8 +1563,7 @@ function($http, favorites_data, generalServiceUtilities) {
             url: 'http://174.94.153.48:7777/TransitAPI/Favorites',
             data: {
                 "UserId": 777,
-                "Action": "GET",
-                "Favorite": null
+                "Action": "GET"
             },
             transformResponse: function(res) {
 
@@ -1586,8 +1583,7 @@ function($http, favorites_data, generalServiceUtilities) {
             data: {
                 UserId: 777,
                 Action: "ADD",
-                Favorite: {
-                    UserId: 777,
+                data: {
                     AgencyId: "BCT",
                     RouteId: route,
                     StopId: stop
@@ -1597,7 +1593,7 @@ function($http, favorites_data, generalServiceUtilities) {
 
     };
 
-    this.deleteFavoriteRouteStop = function(route, stop) {
+    this.deleteFavoriteRouteStop = function(record_id) {
 
        return $http({
             method: 'POST',
@@ -1605,25 +1601,21 @@ function($http, favorites_data, generalServiceUtilities) {
             data: {
                 UserId: 777,
                 Action: "DELETE",
-                "Favorite": {
-                    UserId: 777,
-                    AgencyId: "BCT",
-                    RouteId: route,
-                    StopId: stop
+                data: {
+                    RecordId: record_id + ""
                 }
             }
         });
 
     };
 
-    this.checkIfRouteStopFavorited = function(route, stop) {
+    this.checkIfRouteStopFavorited = function(agency_id, route, stop) {
 
-        var favorites = favorites_data.arr;
+        for (var i=0;i<favorites_data.length;i++) {
 
-        for (var i=0;i<favorites.length;i++) {
-
-            if (favorites[i].RouteId === "route" &&
-                favorites[i].StopId === "stop") {
+            if (favorites_data[i].AgencyId === agency_id &&
+                favorites_data[i].RouteId === route &&
+                favorites_data[i].StopId + "" === stop) {
 
                 return true;
 
@@ -1632,6 +1624,123 @@ function($http, favorites_data, generalServiceUtilities) {
         }
 
         return false;
+
+    };
+
+    this.addAndRecordFavoriteRouteStop = function(agency_id, route, stop) {
+
+        var route_stop_add_promise = self.addFavoriteRouteStop(route, stop);
+
+        route_stop_add_promise.then(function(res) {
+
+            if (res.data.Type === "success") {
+
+                var record_id = res.data.Message;
+
+                var new_favorite = {
+
+                    AgencyId: agency_id,
+                    Route: route,
+                    Stop: stop,
+                    record_id: record_id
+
+                };
+
+                favorites_data.push(new_favorite);
+
+            }
+
+            else if (res.data.Message === "favorite_already_added") {
+
+                console.log(
+                    "Favorite route/stop already added."
+                );
+
+            }
+
+            else {
+
+                console.log(
+                    "Error adding stop: " + res.data.Message
+                );
+
+            }
+
+        })["catch"](function() {
+
+            console.log(
+                "Failed to add stop to favorites."
+            );
+
+        });
+
+    };
+
+    this.deleteAndRecordFavoriteRouteStop = function(agency_id, route, stop) {
+
+        for (var f_i=0;f_i<favorites_data.length;f_i++) {
+
+            var record_id;
+
+            if (favorites_data[f_i].AgencyId === agency_id &&
+                favorites_data[f_i].RouteId === route &&
+                favorites_data[f_i].StopId + "" === stop) {
+
+                record_id = favorites_data[f_i].RecordId;
+
+                break;
+
+            }
+
+        }
+
+        if (!record_id) {
+
+            console.log(
+                "Unable to find record for: " +
+                "agency " + agency_id + ", " +
+                "route " + route + ", " +
+                "stop " + stop + "."
+            );
+
+            return false;
+
+        }
+
+        var route_stop_delete_promise =
+        self.deleteFavoriteRouteStop(record_id);
+
+        route_stop_delete_promise.then(function(res) {
+
+            if (!res.data.Type === "success") {
+
+                favorites_data.splice(1, f_i);
+
+            }
+
+            else if (res.data.Message === "record_id_not_found") {
+
+                console.log(
+                    "Unable to delete route/stop. Record ID not found."
+                );
+
+            }
+            
+            else {
+
+                console.log(
+                    "Error deleting stop: " + res.data.Message
+                );
+
+            }
+
+        })["catch"](function() {
+
+            console.log(
+                "Failed to delete stop from favorites."
+            );
+
+        });
 
     };
 
@@ -2271,5 +2380,11 @@ function(full_bstop_data, full_route_data, full_landmark_data, all_alerts) {
         }
 
     };
+
+}]);
+
+BCTAppServices.service('scrollingAlertsService', [ function() {
+
+    
 
 }]);

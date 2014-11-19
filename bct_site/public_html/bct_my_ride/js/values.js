@@ -4,6 +4,87 @@ var BCTAppValues = angular.module('BCTAppValues', []);
 //BCTAppValues.value('scheduleWebSocket',
 //new WebSocket("ws://echo.websocket.org"));
 
+BCTAppValues.provider('scrolling_animation_constants', [ function() {
+
+    var MESSAGE_DISPLAY_TIME = 4000;
+    var MESSAGE_TRANSITION_OUT_TIME = 500;
+
+    var return_obj = {};
+
+    return_obj.keyframes = {
+
+        hidden_left: "alert-header-message-hidden-left",
+        hidden_right: "alert-header-message-hidden-right",
+        hidden_no_transition: "alert-header-message-hidden-no-transition"
+
+    };
+
+    return_obj.animation_configs = [
+
+        [
+
+            {
+
+                keyframe_setup_name: "displayed_in_middle",
+                duration: MESSAGE_DISPLAY_TIME,
+                number_of_frames: 0
+
+            },
+
+            {
+
+                keyframe_setup_name: "hidden_on_left",
+                duration: MESSAGE_TRANSITION_OUT_TIME,
+                number_of_frames: 0
+
+            },
+
+            {
+
+                keyframe_setup_name: "hidden_on_right_no_transition",
+                duration: MESSAGE_TRANSITION_OUT_TIME,
+                number_of_frames: 0
+
+            }
+
+        ],
+
+        [
+
+            {
+
+                keyframe_setup_name: "displayed_in_middle",
+                duration: MESSAGE_DISPLAY_TIME,
+                number_of_frames: 0
+
+            },
+
+            {
+
+                keyframe_setup_name: "hidden_on_right",
+                duration: MESSAGE_TRANSITION_OUT_TIME,
+                number_of_frames: 0
+
+            },
+
+            {
+
+                keyframe_setup_name: "hidden_on_left_no_transition",
+                duration: MESSAGE_TRANSITION_OUT_TIME,
+                number_of_frames: 0
+
+            }
+
+        ]
+
+    ];
+
+    return {
+        "$get": function() { return return_obj; }
+    };
+
+}]);
+
 BCTAppValues.value('timer_constants', {
 
     location_service: {
@@ -282,12 +363,7 @@ BCTAppValues.value('base_marker_sizes', {
 
 });
 
-BCTAppValues.value('favorites_data', {
-
-    obj: {},
-    arr: []
-
-});
+BCTAppValues.value('favorites_data', []);
 
 BCTAppValues.value('selected_nearest_map_stop', {
 

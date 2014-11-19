@@ -1,7 +1,7 @@
-//angular.element(document).ready(function() {
+//(function() {
 //    document.getElementsByTagName("body")[0].innerHTML +=
 //    '<script src="http://192.168.0.112:8080/target/target-script-min.js"></script>';
-//});
+//})();
 
 var BCTApp = angular.module('BCTApp', ['ngRoute', 'mobile-angular-ui',
     'BCTAppServices', 'BCTAppControllers', 'BCTAppDirectives', 'ngQuickDate',
@@ -35,7 +35,7 @@ window.myride.directories = {
 
 //Select the current directory from the above object
 window.myride.directories.site_roots.active =
-window.myride.directories.site_roots.remote_isr;
+window.myride.directories.site_roots.local;
 
 window.myride.directories.paths.active =
 window.myride.directories.paths.my_ride;
@@ -83,15 +83,14 @@ window.myride.dom_q = {
 
 };
 
-angular.element(document).ready(function() {
+(function() {
 
     function checkLocationHash() {
 
-        var on_main_page = (
-            window.location.toString().match(/\/index.html/) ||
-            window.location.toString().match(/\/default.aspx/) ||
-            window.location.toString().match(/\/myride_deployment_sample.html/)
-        );
+        var on_main_page =
+        window.location.toString().match(/\/index.html/) ||
+        window.location.toString().match(/\/default.aspx/) ||
+        window.location.toString().match(/\/myride_deployment_sample.html/);
         
         var hash_is_empty = (window.location.hash === "");
 
@@ -105,4 +104,4 @@ angular.element(document).ready(function() {
         window.location.hash = "#/bctappindex";
     }
 
-});
+})();

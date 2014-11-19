@@ -3,7 +3,7 @@ var BCTAppTopController = angular.module('BCTAppTopController', []);
 BCTAppTopController.controller('BCTController', [
 
     '$scope', '$timeout', 'full_bstop_data', 'full_route_data',
-    'full_landmark_data',
+    'full_landmark_data', '$compile', 'scrollingAlertsService',
     //'scheduleWebSocket', 'scheduleSocketService',
     'scheduleDownloadAndTransformation', 'googleMapsUtilities', '$q',
     'unitConversionAndDataReporting', 'miniScheduleService',
@@ -16,11 +16,12 @@ BCTAppTopController.controller('BCTController', [
     'full_schedule_category_with_datepicker', 'recentlyViewedService',
     'full_schedule_availabilities', 'generalUIUtilities',
     'routeStopLandmarkTransformationService', 'generalServiceUtilities',
+    'scrolling_animation_constants',
 
 function (
 
     $scope, $timeout, full_bstop_data, full_route_data,
-    full_landmark_data,
+    full_landmark_data, $compile, scrollingAlertsService,
     //scheduleWebSocket, scheduleSocketService,
     scheduleDownloadAndTransformation, googleMapsUtilities, $q,
     unitConversionAndDataReporting, miniScheduleService, placeholderService,
@@ -31,7 +32,8 @@ function (
     favorites_data, svg_icon_paths, full_schedule_categories,
     full_schedule_category_with_datepicker, recentlyViewedService,
     full_schedule_availabilities, generalUIUtilities,
-    routeStopLandmarkTransformationService, generalServiceUtilities
+    routeStopLandmarkTransformationService, generalServiceUtilities,
+    scrolling_animation_constants
 
 ) {
 
@@ -314,18 +316,22 @@ function (
     $scope.$watch("show_schedule_result_top_bar", function(new_val, old_val) {
 
         if (new_val > old_val) {
+
             $scope.show_schedule_map_stop_navigation_bar = true;
 
             $scope.map_full_screen_return_button_message =
             $scope.map_full_screen_return_button_messages.schedule;
+
         }
 
         else if (new_val < old_val) {
+
             $scope.resetScheduleMapNavigationBar();
 
             $timeout.cancel($scope.schedule_update_timer);
 
             $scope.schedule_map_navigation_bar_same_stop_open = false;
+
         }
 
     });
@@ -730,11 +736,18 @@ function (
 
     };
 
+    $scope.showInfoWindowSchedule = function() {
+
+        $scope.show_info_window_schedule = true;
+
+    };
+
     //See generalServiceUtilities for usage information
     generalServiceUtilities.passTopScopePropRefsToGenUtils({
         "$$phase": $scope.$$phase,
         "$apply": $scope.$apply,
-        "compileTemplateWithTopScope": $scope.compileTemplateWithTopScope
+        "compileTemplateWithTopScope": $scope.compileTemplateWithTopScope,
+        "showInfoWindowSchedule": $scope.showInfoWindowSchedule
     });
 
     $scope.warning_messages = warning_messages;
@@ -2356,78 +2369,11 @@ function (
 
     };
 
-    $scope.addFavoriteRouteStop = function(route, stop) {
+    $scope.addAndRecordFavoriteRouteStop =
+    profilePageService.addAndRecordFavoriteRouteStop;
 
-        var route_stop_add_promise =
-        profilePageService.addFavoriteRouteStop(route, stop);
-
-        route_stop_add_promise.then(function(res) {
-
-            if (res.data.Type === "success") {
-
-                var new_favorite = {
-
-                    route: route,
-                    stop: stop
-
-                };
-
-                favorites_data.arr.push(new_favorite);
-
-                //favorites_data.obj[record_id] = new_favorite;
-
-            }
-
-            else {
-
-                console.log(
-                    "Error adding stop: " + res.data.Message
-                );
-
-            }
-
-        })["catch"](function() {
-
-            console.log(
-                "Failed to add stop to favorites."
-            );
-
-        });
-
-    };
-
-    $scope.deleteFavoriteRouteStop = function(route, stop) {
-
-        var route_stop_delete_promise =
-        profilePageService.deleteFavoriteRouteStop(route, stop);
-
-        route_stop_delete_promise.then(function() {
-
-            if (!res.data.Type === "success") {
-
-                //favorites_data.arr.splice();
-
-                //delete favorites_data.obj;
-
-            }
-
-            else {
-
-                console.log(
-                    "Error adding stop: " + res.data.Message
-                );
-
-            }
-
-        })["catch"](function() {
-
-            console.log(
-                "Failed to delete stop from favorites."
-            );
-
-        });
-
-    };
+    $scope.deleteAndRecordFavoriteRouteStop =
+    profilePageService.addAndRecordFavoriteRouteStop;
 
     $scope.addRouteStopToTripPlanner = function(stop) {
 
@@ -2809,28 +2755,18 @@ function (
 
     (function() {
 
-        function transformFavorites() {
-
-            for (var f_i in favorites_data.obj) {
-
-                favorites_data.arr.push(favorites_data.obj[f_i]);
-
-            }
-
-        }
-
-        //N.B. "catch" mathod is not used with the dot operator due to
-        //YUI Compressor (Rhino Engine) reserving the word for try/catch
-        //statement
+        /*
+            N.B. "catch" mathod is not used with the dot operator due to
+            YUI Compressor (Rhino Engine) reserving the word for try/catch
+            statement
+        */
 
         fullDataDownloadPromise = $q.all([
 
             profilePageService.downloadUserFavorites().
             then(function(res) {
 
-                favorites_data.obj = res.data;
-
-                transformFavorites();
+                favorites_data = res.data;
 
             })["catch"](function() {
 
