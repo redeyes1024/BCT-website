@@ -19,6 +19,57 @@ BCTAppValues.provider('scrolling_animation_constants', [ function() {
 
     };
 
+    return_obj.keyframe_setups = {
+
+        displayed_in_middle: {
+
+            hidden_right: false,
+            hidden_left: false,
+            hidden_no_transition: false
+
+        },
+
+        hidden_on_left: {
+
+            hidden_right: false,
+            hidden_left: true,
+            hidden_no_transition: false
+
+        },
+
+        hidden_on_right: {
+
+            hidden_right: true,
+            hidden_left: false,
+            hidden_no_transition: false
+
+        },
+
+        hidden_on_right_no_transition: {
+
+            hidden_right: true,
+            hidden_left: false,
+            hidden_no_transition: true
+
+        },
+
+        hidden_on_left_no_transition: {
+
+            hidden_right: false,
+            hidden_left: true,
+            hidden_no_transition: true
+
+        }
+
+    };
+
+    /*
+        animation_configs
+    
+        These arrays of configuration objects are used to create a simple
+        list of animation 'frames' for each direction (forward and reverse)
+        Frame counts are calculated and set below
+    */
     return_obj.animation_configs = [
 
         [

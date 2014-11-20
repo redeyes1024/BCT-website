@@ -950,66 +950,15 @@ function (
 
     (function() {
 
-        /* START Animation settings */
+        /* 
+            Animation settings can be found in values.js
+            (value name scrolling_animation_constants)
+        */
 
-        var MESSAGE_DISPLAY_TIME = 4000;
-        var MESSAGE_TRANSITION_OUT_TIME = 500;
+        var keyframes = scrolling_animation_constants.keyframes;
 
-        var keyframes = {
+        var keyframe_setups = scrolling_animation_constants.keyframe_setups;
 
-            hidden_left: "alert-header-message-hidden-left",
-            hidden_right: "alert-header-message-hidden-right",
-            hidden_no_transition: "alert-header-message-hidden-no-transition"
-
-        };
-
-        var keyframe_setups = {
-
-            displayed_in_middle: {
-
-                hidden_right: false,
-                hidden_left: false,
-                hidden_no_transition: false
-
-            },
-
-            hidden_on_left: {
-
-                hidden_right: false,
-                hidden_left: true,
-                hidden_no_transition: false
-
-            },
-
-            hidden_on_right: {
-
-                hidden_right: true,
-                hidden_left: false,
-                hidden_no_transition: false
-
-            },
-
-            hidden_on_right_no_transition: {
-
-                hidden_right: true,
-                hidden_left: false,
-                hidden_no_transition: true
-
-            },
-
-            hidden_on_left_no_transition: {
-
-                hidden_right: false,
-                hidden_left: true,
-                hidden_no_transition: true
-
-            }
-
-        };
-
-        //These arrays of configuration objects are used to create a simple
-        //list of animation 'frames' for each direction (forward and reverse)
-        //Frame counts are calculated and set below
         var animation_config_forward = [
 
             {
