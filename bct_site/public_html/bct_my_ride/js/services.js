@@ -1171,6 +1171,10 @@ BCTAppServices.service('generalServiceUtilities', [ function() {
         service-heavy code into the controller layer (thereby bloating the
         controller layer), just to make use of a few top-level scope
         values or functions.
+
+        Select which properties you wish to pass into the services layer via
+        the call to generalServiceUtilities.passTopScopePropRefsToGenUtils
+        in top_level_controller.js.
     */
     this.passTopScopePropRefsToGenUtils = function(top_level_scope_props) {
 
@@ -2380,11 +2384,5 @@ function(full_bstop_data, full_route_data, full_landmark_data, all_alerts) {
         }
 
     };
-
-}]);
-
-BCTAppServices.service('scrollingAlertsService', [ function() {
-
-    
 
 }]);

@@ -182,7 +182,9 @@ window.myride.dom_q = {
     inputs: {
         input_labels: [],
         elements: {}
-    }
+    },
+
+    scrolling_alerts: {}
 
 };
 

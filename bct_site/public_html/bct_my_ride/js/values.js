@@ -6,10 +6,10 @@ var BCTAppValues = angular.module('BCTAppValues', []);
 
 BCTAppValues.provider('scrolling_animation_constants', [ function() {
 
-    var MESSAGE_DISPLAY_TIME = 4000;
-    var MESSAGE_TRANSITION_OUT_TIME = 500;
-
     var return_obj = {};
+
+    return_obj.message_display_time = 4000;
+    return_obj.message_transition_out_time = 500;
 
     return_obj.keyframes = {
 
@@ -77,7 +77,7 @@ BCTAppValues.provider('scrolling_animation_constants', [ function() {
             {
 
                 keyframe_setup_name: "displayed_in_middle",
-                duration: MESSAGE_DISPLAY_TIME,
+                duration: return_obj.message_display_time,
                 number_of_frames: 0
 
             },
@@ -85,7 +85,7 @@ BCTAppValues.provider('scrolling_animation_constants', [ function() {
             {
 
                 keyframe_setup_name: "hidden_on_left",
-                duration: MESSAGE_TRANSITION_OUT_TIME,
+                duration: return_obj.message_transition_out_time,
                 number_of_frames: 0
 
             },
@@ -93,7 +93,7 @@ BCTAppValues.provider('scrolling_animation_constants', [ function() {
             {
 
                 keyframe_setup_name: "hidden_on_right_no_transition",
-                duration: MESSAGE_TRANSITION_OUT_TIME,
+                duration: return_obj.message_transition_out_time,
                 number_of_frames: 0
 
             }
@@ -105,7 +105,7 @@ BCTAppValues.provider('scrolling_animation_constants', [ function() {
             {
 
                 keyframe_setup_name: "displayed_in_middle",
-                duration: MESSAGE_DISPLAY_TIME,
+                duration: return_obj.message_display_time,
                 number_of_frames: 0
 
             },
@@ -113,7 +113,7 @@ BCTAppValues.provider('scrolling_animation_constants', [ function() {
             {
 
                 keyframe_setup_name: "hidden_on_right",
-                duration: MESSAGE_TRANSITION_OUT_TIME,
+                duration: return_obj.message_transition_out_time,
                 number_of_frames: 0
 
             },
@@ -121,7 +121,7 @@ BCTAppValues.provider('scrolling_animation_constants', [ function() {
             {
 
                 keyframe_setup_name: "hidden_on_left_no_transition",
-                duration: MESSAGE_TRANSITION_OUT_TIME,
+                duration: return_obj.message_transition_out_time,
                 number_of_frames: 0
 
             }

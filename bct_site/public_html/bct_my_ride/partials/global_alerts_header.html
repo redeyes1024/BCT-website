@@ -6,17 +6,9 @@
         <i class="fa fa-chevron-left"></i>
     </span>
 
-    <span class="alert-header-message"
-    ng-class="global_alert_message_styles_1">
+    <span id="global-alert-header-message" class="alert-header-message">
 
-        {{ global_alerts[global_alerts_index["leader"]] }}
-
-    </span>
-
-    <span class="alert-header-message"
-    ng-class="global_alert_message_styles_2">
-
-        {{ global_alerts[global_alerts_index["follower"]] }}
+        {{ current_global_alerts_message }}
 
     </span>
 

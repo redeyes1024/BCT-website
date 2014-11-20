@@ -2,38 +2,36 @@ var BCTAppTopController = angular.module('BCTAppTopController', []);
 
 BCTAppTopController.controller('BCTController', [
 
-    '$scope', '$timeout', 'full_bstop_data', 'full_route_data',
+    '$scope', '$timeout', 'full_bstop_data', 'full_route_data', 'all_alerts',
     'full_landmark_data', '$compile', 'scrollingAlertsService',
     //'scheduleWebSocket', 'scheduleSocketService',
     'scheduleDownloadAndTransformation', 'googleMapsUtilities', '$q',
     'unitConversionAndDataReporting', 'miniScheduleService',
     'placeholderService', 'locationService', 'location_icons',
     'agency_filter_icons', 'results_exist', 'map_navigation_marker_indices',
-    'legend_icon_list', 'all_alerts', 'profilePageService',
+    'legend_icon_list', 'profilePageService',
     'routeAndStopFilters', 'warning_messages', 'selected_nearest_map_stop',
     'nearest_map_stop_distances', 'landmarkInfoService', 'favorites_data',
     'svg_icon_paths', 'full_schedule_categories',
     'full_schedule_category_with_datepicker', 'recentlyViewedService',
     'full_schedule_availabilities', 'generalUIUtilities',
     'routeStopLandmarkTransformationService', 'generalServiceUtilities',
-    'scrolling_animation_constants',
 
 function (
 
-    $scope, $timeout, full_bstop_data, full_route_data,
+    $scope, $timeout, full_bstop_data, full_route_data, all_alerts,
     full_landmark_data, $compile, scrollingAlertsService,
     //scheduleWebSocket, scheduleSocketService,
     scheduleDownloadAndTransformation, googleMapsUtilities, $q,
     unitConversionAndDataReporting, miniScheduleService, placeholderService,
     locationService, location_icons, agency_filter_icons, results_exist,
-    map_navigation_marker_indices, legend_icon_list, all_alerts,
+    map_navigation_marker_indices, legend_icon_list,
     profilePageService, routeAndStopFilters, warning_messages,
     selected_nearest_map_stop, nearest_map_stop_distances, landmarkInfoService,
     favorites_data, svg_icon_paths, full_schedule_categories,
     full_schedule_category_with_datepicker, recentlyViewedService,
     full_schedule_availabilities, generalUIUtilities,
-    routeStopLandmarkTransformationService, generalServiceUtilities,
-    scrolling_animation_constants
+    routeStopLandmarkTransformationService, generalServiceUtilities
 
 ) {
 
@@ -41,6 +39,16 @@ function (
     window.main_scope = $scope;
 
     $scope.top_scope = $scope;
+
+    $scope.$on('$viewContentLoaded', function() {
+
+        myride.dom_q.scrolling_alerts.global =
+        document.getElementById("global-alert-header-message");
+
+        //Start scrolling animation (default: forward direction)
+        $scope.goToNextGlobalAlertMessage();
+
+    });
 
     /* START CSS class expressions to be used to ng-class, with defaults */
 
@@ -97,24 +105,6 @@ function (
 
     $scope.schedule_map_styles = {
         "schedule-map-full-screen": false
-    };
-
-    $scope.global_alert_message_styles_1 = {
-        "alert-header-message-hidden-left": false,
-        "alert-header-message-hidden-right": false
-    };
-
-    $scope.global_alert_message_styles_2 = {
-        "alert-header-message-hidden": false
-    };
-
-    $scope.schedule_map_alert_message_styles_1 = {
-        "alert-header-message-hidden-left": false,
-        "alert-header-message-hidden-right": false
-    };
-
-    $scope.schedule_map_alert_message_styles_2 = {
-        "alert-header-message-hidden": false
     };
 
     $scope.trip_planner_itinerary_step_container_size_0 = {
@@ -742,14 +732,6 @@ function (
 
     };
 
-    //See generalServiceUtilities for usage information
-    generalServiceUtilities.passTopScopePropRefsToGenUtils({
-        "$$phase": $scope.$$phase,
-        "$apply": $scope.$apply,
-        "compileTemplateWithTopScope": $scope.compileTemplateWithTopScope,
-        "showInfoWindowSchedule": $scope.showInfoWindowSchedule
-    });
-
     $scope.warning_messages = warning_messages;
 
     recentlyViewedService.loadRecentlyViewedList();
@@ -945,630 +927,101 @@ function (
     $scope.stopSubFilterFunc =
     (new routeAndStopFilters.RouteAndStopFilterMaker("stop", false)).filter;
 
-    $scope.global_alerts = all_alerts.global;
     $scope.schedule_map_alerts = all_alerts.schedule_map;
 
-    (function() {
+    $scope.toggleRouteAlertOverlay = function() {
 
-        /* 
-            Animation settings can be found in values.js
-            (value name scrolling_animation_constants)
-        */
+        if (!$scope.show_route_alert_overlay) {
 
-        var keyframes = scrolling_animation_constants.keyframes;
-
-        var keyframe_setups = scrolling_animation_constants.keyframe_setups;
-
-        var animation_config_forward = [
-
-            {
-
-                keyframe_setup_name: "displayed_in_middle",
-                duration: MESSAGE_DISPLAY_TIME,
-                number_of_frames: 0
-
-            },
-
-            {
-
-                keyframe_setup_name: "hidden_on_left",
-                duration: MESSAGE_TRANSITION_OUT_TIME,
-                number_of_frames: 0
-
-            },
-
-            {
-
-                keyframe_setup_name: "hidden_on_right_no_transition",
-                duration: MESSAGE_TRANSITION_OUT_TIME,
-                number_of_frames: 0
-
-            }
-
-        ];
-
-        var animation_config_reverse = [
-
-            {
-
-                keyframe_setup_name: "displayed_in_middle",
-                duration: MESSAGE_DISPLAY_TIME,
-                number_of_frames: 0
-
-            },
-
-            {
-
-                keyframe_setup_name: "hidden_on_right",
-                duration: MESSAGE_TRANSITION_OUT_TIME,
-                number_of_frames: 0
-
-            },
-
-            {
-
-                keyframe_setup_name: "hidden_on_left_no_transition",
-                duration: MESSAGE_TRANSITION_OUT_TIME,
-                number_of_frames: 0
-
-            }
-
-        ];
-
-        /* END Animation Settings */
-
-        $scope.toggleRouteAlertOverlay = function() {
-
-            if (!$scope.show_route_alert_overlay) {
-
-                $scope.current_route_alert_index = 0;
-
-            }
-
-            $scope.show_route_alert_overlay = !$scope.show_route_alert_overlay;
-
-        };
-
-        $scope.cycleThroughRouteAlerts = function(old_index) {
-
-            var number_of_alerts =
-            full_route_data.dict[$scope.map_schedule_info.route].alerts.length;
-
-            var new_index = old_index;
-
-            if (old_index > number_of_alerts - 1) {
-
-                new_index = 0;
-
-            }
-
-            else if (old_index < 0) {
-
-                new_index = number_of_alerts - 1;
-
-            }
-
-            return new_index;
-
-        };
-
-        $scope.changeRouteAlert = function(direction) {
-
-            var cur_route_index = $scope.current_route_alert_index;
-
-            if (direction === "next") {
-
-                cur_route_index++;
-
-            }
-
-            else if (direction === "prev") {
-
-                cur_route_index--;
-
-            }
-
-            $scope.current_route_alert_index =
-            $scope.cycleThroughRouteAlerts(cur_route_index);
-
-        };
-
-        var alert_message_indices = {
-
-            global: {
-
-                "leader": 0
-
-            }
-
-        };
-
-        function cycleThroughAlertFrames(old_index) {
-
-            var new_index = old_index;
-
-            if (old_index > number_of_steps - 1) {
-
-                new_index = 0;
-
-            }
-
-            else if (old_index < 0) {
-
-                new_index = number_of_steps - 1;
-
-            }
-
-            return new_index;
+            $scope.current_route_alert_index = 0;
 
         }
 
-        function cycleThroughAlertMessages(module, old_index) {
+        $scope.show_route_alert_overlay = !$scope.show_route_alert_overlay;
 
-            var new_index = old_index;
+    };
 
-            var number_of_messages = all_alerts[module].length;
+    $scope.cycleThroughRouteAlerts = function(old_index) {
 
-            if (old_index > number_of_messages) {
+        var number_of_alerts =
+        full_route_data.dict[$scope.map_schedule_info.route].alerts.length;
 
-                new_index = 1;
+        var new_index = old_index;
 
-            }
+        if (old_index > number_of_alerts - 1) {
 
-            else if (old_index > number_of_messages - 1) {
-
-                new_index = 0;
-
-            }
-
-            else if (old_index === -3) {
-
-                new_index = number_of_messages - 3;
-
-            }
-
-            else if (old_index === -2) {
-
-                new_index = number_of_messages - 2;
-
-            }
-
-            else if (old_index === -1) {
-
-                new_index = number_of_messages - 1;
-
-            }
-
-            return new_index;
+            new_index = 0;
 
         }
 
-        $scope.global_alerts_index = alert_message_indices.global;
-        $scope.schedule_map_alerts_index = alert_message_indices.schedule_map;
+        else if (old_index < 0) {
 
-        function changeAlertMessage(module, message, direction) {
-
-            var message_iterator_amount = 1;
-
-            if (direction === "prev") {
-
-                message_iterator_amount *= -1;
-
-            }
-
-            var cur_indices = alert_message_indices[module];
-
-            cur_indices[message] += message_iterator_amount;
-
-            cur_indices[message] =
-            cycleThroughAlertMessages(module, cur_indices[message]);
+            new_index = number_of_alerts - 1;
 
         }
 
-        var prev_stylings = {
+        return new_index;
 
-            global: {
+    };
 
-                "leader": ""
+    $scope.changeRouteAlert = function(direction) {
 
-            }
+        var cur_route_index = $scope.current_route_alert_index;
 
-        };
+        if (direction === "next") {
 
-        function setKeyframeStyle(
-            module,
-            message,
-            current_styling,
-            keyframe_setup,
-            direction
-        ) {
-
-            var cur_keyframe_setup = keyframe_setups[keyframe_setup];
-
-            for (var setting in cur_keyframe_setup) {
-
-                var new_style_setting = cur_keyframe_setup[setting];
-
-                var style_name = keyframes[setting];
-
-                current_styling[style_name] = new_style_setting;
-
-            }
-
-            if (prev_stylings[module][message] === "hidden_on_left" &&
-                keyframe_setup === "hidden_on_right_no_transition") {
-
-                changeAlertMessage(module, message, direction);
-
-            }
-
-            else if (prev_stylings[module][message] === "hidden_on_right" &&
-                keyframe_setup === "hidden_on_left_no_transition") {
-
-                changeAlertMessage(module, message, direction);
-
-            }
-
-            prev_stylings[module][message] = keyframe_setup;
+            cur_route_index++;
 
         }
 
-        function ScrollingMessage(module, type) {
+        else if (direction === "prev") {
 
-            var self = this;
-
-            this.type = type;
-
-            this.module = module;
-
-            if (self.type === "leader") {
-
-                this.step_forward = 0;
-                this.step_reverse = 1;
-
-                this.message_index = 0;
-
-                if (self.module === "global") {
-
-                    this.current_styling =
-                    $scope.global_alert_message_styles_1;
-
-                }
-
-            }
-
-            this.goToNextStep = function() {
-
-                setKeyframeStyle(
-                    self.module,
-                    type,
-                    self.current_styling,
-                    steps_list_forward[self.step_forward].keyframe_setup,
-                    "next"
-                );
-
-                self.step_forward++;
-
-                self.step_forward = cycleThroughAlertFrames(self.step_forward);
-
-            };
-
-            this.goToPrevStep = function() {
-
-                setKeyframeStyle(
-                    self.module,
-                    type,
-                    self.current_styling,
-                    steps_list_reverse[self.step_reverse].keyframe_setup,
-                    "prev"
-                );
-
-                self.step_reverse++;
-
-                self.step_reverse = cycleThroughAlertFrames(self.step_reverse);
-
-            };
+            cur_route_index--;
 
         }
 
-        var global_leader_message =
-        new ScrollingMessage("global", "leader");
+        $scope.current_route_alert_index =
+        $scope.cycleThroughRouteAlerts(cur_route_index);
 
-        //General case: the minimum in an array of animation times
-        var shortest_animation_time = MESSAGE_TRANSITION_OUT_TIME;
+    };
 
-        var animation_configs = [
+    $scope.current_global_alerts_message = "";
 
-            animation_config_forward,
-            animation_config_reverse
+    $scope.changeScrollingAlertMessage = function(module, new_message) {
 
-        ];
+        if (module === "global") {
 
-        for (var i=0;i<animation_configs.length;i++) {
-
-            for (var j=0;j<animation_configs[i].length;j++) {
-
-                var number_of_frames =
-                animation_configs[i][j].duration / shortest_animation_time;
-
-                animation_configs[i][j].number_of_frames = number_of_frames;
-
-            }
+            $scope.current_global_alerts_message = new_message;
 
         }
 
-        //General case: the sum of all animation steps
-        var number_of_steps =
-        ((MESSAGE_TRANSITION_OUT_TIME * 2) + MESSAGE_DISPLAY_TIME) /
-        shortest_animation_time;
+    };
 
-        var steps_list_forward = new Array(number_of_steps);
-        var steps_list_reverse = new Array(number_of_steps);
+    $scope.changeGlobalAlertsBarHighlighting = function(direction) {
 
-        var steps_counter_forward = 0;
-        var steps_counter_reverse = 0;
+        if (direction === "left") {
 
-        var steps_list;
-        var steps_counter;
+            $scope.alert_area_left_styles["alert-area-highlighted"] = true;
 
-        for (var k=0;k<animation_configs.length;k++) {
-
-            //k === 0, i.e., the forward direction for the scrolling animation
-            if (k === 0) {
-
-                steps_list = steps_list_forward;
-                steps_counter = steps_counter_forward;
-
-            }
-
-            //k === 1, i.e., the reverse direction for the scrolling animation
-            else if (k === 1) {
-
-                steps_list = steps_list_reverse;
-                steps_counter = steps_counter_reverse;
-
-            }
-
-            for (var l=0;l<animation_configs[k].length;l++) {
-
-                var cur_length = animation_configs[k][l].number_of_frames;
-
-                for (var m=0;m<cur_length;m++) {
-
-                    var cur_step = {
-
-                        keyframe_setup: animation_configs[k][l].
-                        keyframe_setup_name
-
-                    };
-
-                    steps_list[steps_counter] = cur_step;
-
-                    steps_counter++;
-
-                }
-
-            }
+            $scope.alert_area_right_styles["alert-area-highlighted"] = false;
 
         }
-
-        function runMessageForwardScrollingAnimations() {
         
-            $scope.forward_message_timer = $timeout(function() {
+        else if (direction === "right") {
+            
+            $scope.alert_area_left_styles["alert-area-highlighted"] = false;
 
-                global_leader_message.goToNextStep();
-
-                runMessageForwardScrollingAnimations();
-
-            }, shortest_animation_time);
+            $scope.alert_area_right_styles["alert-area-highlighted"] = true;
 
         }
 
-        function runMessageReverseScrollingAnimations() {
-        
-            $scope.reverse_message_timer = $timeout(function() {
+    };
 
-                global_leader_message.goToPrevStep();
+    $scope.goToNextGlobalAlertMessage =
+    scrollingAlertsService.goToNextGlobalAlertMessage;
 
-                runMessageReverseScrollingAnimations();
-
-            }, shortest_animation_time);
-
-        }
-
-        function getStepLastDisplayIndex(steps_list) {
-
-            var step_last_display_index;
-
-            for (var step_index in steps_list) {
-
-                var current_step =
-                steps_list_forward[step_index].keyframe_setup;
-
-                if (current_step === "hidden_on_right_no_transition" ||
-                    current_step === "hidden_on_left_no_transition") {
-
-                    step_last_display_index = step_index;
-
-                    return step_last_display_index;
-
-                }
-
-            }
-
-        }
-
-        var forward_step_last_display_index =
-        getStepLastDisplayIndex(steps_list_forward);
-
-        var reverse_step_last_display_index =
-        getStepLastDisplayIndex(steps_list_reverse);
-
-        function getTransitionStepLabels(steps_list) {
-
-            var transition_steps =
-            steps_list.filter(function(step) {
-
-                if (step.keyframe_setup !== "displayed_in_middle") {
-
-                    return step;
-
-                }
-
-            });
-
-            return transition_steps;
-
-        }
-
-        var forward_transition_steps =
-        getTransitionStepLabels(steps_list_forward);
-
-        var reverse_transition_steps =
-        getTransitionStepLabels(steps_list_reverse);
-
-        function getIndexObjectsArray(obj_array, targ_object, targ_property) {
-
-            var targ_prop_val = targ_object[targ_property];
-
-            for (var i=0;i<obj_array.length;i++) {
-
-                var cur_prop_val = obj_array[i][targ_property];
-
-                if (cur_prop_val === targ_prop_val) {
-
-                    return i;
-
-                }
-
-            }
-
-            return -1;
-
-        }
-
-        function getTransitionStepIndices(full_step_list, transition_steps) {
-
-            var transition_steps_indices = [];
-
-            for (var t_s_idx=0;t_s_idx<transition_steps.length;t_s_idx++) {
-
-                var transition_step_index =
-                getIndexObjectsArray(
-                    full_step_list,
-                    transition_steps[t_s_idx],
-                    "keyframe_setup"
-                );
-
-                transition_steps_indices.push(transition_step_index);
-
-            }
-
-            return transition_steps_indices;
-
-        }
-
-        var forward_transition_steps_indices =
-        getTransitionStepIndices(steps_list_forward, forward_transition_steps);
-
-        var reverse_transition_steps_indices =
-        getTransitionStepIndices(steps_list_reverse, reverse_transition_steps);
-
-        var previous_global_alert_direction;
-        var current_global_alert_direction;
-
-        $scope.goToNextGlobalAlertMessage = function() {
-
-            current_global_alert_direction = "forward";
-
-            if (current_global_alert_direction ===
-                previous_global_alert_direction &&
-                forward_transition_steps_indices.
-                indexOf(global_leader_message.step_forward) !== -1) {
-
-                return true;
-
-            }
-
-            if (current_global_alert_direction !==
-                previous_global_alert_direction) {
-                
-                $timeout.cancel($scope.reverse_message_timer);
-
-                runMessageForwardScrollingAnimations();
-
-                global_leader_message.reverse_step = 0;
-
-                $scope.alert_area_left_styles
-                ["alert-area-highlighted"] = false;
-
-                $scope.alert_area_right_styles
-                ["alert-area-highlighted"] = true;
-
-            }
-
-            var frames_to_skip =
-            forward_step_last_display_index -
-            global_leader_message.step_forward;
-
-            for (var i=0;i<frames_to_skip;i++) {
-
-                global_leader_message.goToNextStep();
-
-            }
-
-            previous_global_alert_direction = "forward";
-
-        };
-
-        $scope.goToPrevGlobalAlertMessage = function() {
-
-            current_global_alert_direction = "reverse";
-
-            if (current_global_alert_direction ===
-                previous_global_alert_direction &&
-                reverse_transition_steps_indices.
-                indexOf(global_leader_message.step_reverse) !== -1) {
-
-                return true;
-
-            }
-
-            if (current_global_alert_direction !==
-                previous_global_alert_direction) {
-
-                $timeout.cancel($scope.forward_message_timer);
-
-                runMessageReverseScrollingAnimations();
-
-                global_leader_message.forward_step = 0;
-
-                $scope.alert_area_left_styles
-                ["alert-area-highlighted"] = true;
-
-                $scope.alert_area_right_styles
-                ["alert-area-highlighted"] = false;
-
-            }
-
-            var frames_to_skip =
-            reverse_step_last_display_index -
-            global_leader_message.step_reverse;
-
-            for (var i=0;i<frames_to_skip;i++) {
-
-                global_leader_message.goToPrevStep();
-
-            }
-
-            previous_global_alert_direction = "reverse";
-
-        };
-
-        //Start scrolling animation (default: forward direction)
-        $scope.goToNextGlobalAlertMessage();
-
-    }());
+    $scope.goToPrevGlobalAlertMessage =
+    scrollingAlertsService.goToPrevGlobalAlertMessage;
 
     $scope.base_myride_url =
     window.myride.directories.site_roots.active +
@@ -2874,6 +2327,24 @@ function (
         $scope.trip_scope.submitTrip();
 
     };
+
+    //See generalServiceUtilities for usage information
+    generalServiceUtilities.passTopScopePropRefsToGenUtils({
+
+        "$$phase": $scope.$$phase,
+
+        "$apply": $scope.$apply,
+
+        "compileTemplateWithTopScope": $scope.compileTemplateWithTopScope,
+
+        "showInfoWindowSchedule": $scope.showInfoWindowSchedule,
+
+        "changeGlobalAlertsBarHighlighting":
+        $scope.changeGlobalAlertsBarHighlighting,
+
+        "changeScrollingAlertMessage": $scope.changeScrollingAlertMessage
+
+    });
 
     /*
 

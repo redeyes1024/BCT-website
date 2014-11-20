@@ -548,11 +548,6 @@ iframe #schedule-map-loading-modal-spinner {
     position: absolute;
     width: calc(100% - 4.5em);
 }
-.schedule-map-alerts-header-contents {
-    position: relative;
-    border-style: solid;
-    border-width: 1px 0px;
-}
 .schedule-map-mini-schedule-button {
     width: 3em;
     font-size: 1.5em;
