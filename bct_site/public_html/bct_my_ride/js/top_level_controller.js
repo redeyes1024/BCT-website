@@ -40,16 +40,6 @@ function (
 
     $scope.top_scope = $scope;
 
-    $scope.$on('$viewContentLoaded', function() {
-
-        myride.dom_q.scrolling_alerts.global =
-        document.getElementById("global-alert-header-message");
-
-        //Start scrolling animation (default: forward direction)
-        $scope.goToNextGlobalAlertMessage();
-
-    });
-
     /* START CSS class expressions to be used to ng-class, with defaults */
 
     /*
@@ -1017,11 +1007,8 @@ function (
 
     };
 
-    $scope.goToNextGlobalAlertMessage =
-    scrollingAlertsService.goToNextGlobalAlertMessage;
-
-    $scope.goToPrevGlobalAlertMessage =
-    scrollingAlertsService.goToPrevGlobalAlertMessage;
+    $scope.goToGlobalAlertMessage =
+    scrollingAlertsService.goToGlobalAlertMessage;
 
     $scope.base_myride_url =
     window.myride.directories.site_roots.active +
@@ -2343,6 +2330,15 @@ function (
         $scope.changeGlobalAlertsBarHighlighting,
 
         "changeScrollingAlertMessage": $scope.changeScrollingAlertMessage
+
+    });
+
+    $scope.global_alerts_ready_deferred = $q.defer();
+
+    $scope.global_alerts_ready_deferred.promise.then(function() {
+
+        //Start scrolling animation (default: forward direction)
+        $scope.goToGlobalAlertMessage('forward');
 
     });
 

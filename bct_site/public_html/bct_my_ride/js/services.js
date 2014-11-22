@@ -1190,7 +1190,7 @@ BCTAppServices.service('generalServiceUtilities', [ function() {
         defined in a service method. Checks if $apply is already in
         progress as a safety measure.
     */
-    this.forceDigest = function() {
+    this.forceDigest = function(ignore_phase) {
 
         if (!self.top_level_scope_prop_refs) {
 
@@ -1205,7 +1205,7 @@ BCTAppServices.service('generalServiceUtilities', [ function() {
 
         }
 
-        if (!self.top_level_scope_prop_refs.$$phase) {
+        if (!self.top_level_scope_prop_refs.$$phase || ignore_phase) {
 
             self.top_level_scope_prop_refs.$apply();
 

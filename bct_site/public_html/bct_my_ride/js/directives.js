@@ -450,9 +450,23 @@ BCTApp.directive('tripPlannerStep', [ function() {
 
 }]);
 
-BCTApp.directive('globalAlertsHeader', [ function() {
+BCTApp.directive('globalAlertsHeader', [ '$q', function($q) {
+
+    function link(scope, element) {
+
+        element.ready(function() {
+            
+            myride.dom_q.scrolling_alerts.global =
+            document.getElementById("global-alert-header-message");
+
+            scope.global_alerts_ready_deferred.resolve();
+
+        });
+
+    }
 
     return {
+        link: link,
         restrict: 'E',
         templateUrl: window.myride.directories.site_roots.active +
         window.myride.directories.paths.active +

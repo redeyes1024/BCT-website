@@ -1,7 +1,23 @@
-BCTAppServices.service('scrollingAlertsService', [ '$timeout', 'all_alerts',
+/*
+    scrollingAlertsService
+
+    This service contains the logic needed for the scrolling alerts bar
+    (top of page) to run.
+
+    Its use of Angular's two-way data binding is kept to a minimum, for
+    performance reasons.
+    
+    Specifically, setTimeout is used instead of its Angular wrapper ($timeout),
+    and CSS class changes (for CSS3 animation) are done manually. The only
+    use of AngularJS data binding herein involves the
+    changeGlobalAlertsBarHighlighting function, which is only called
+    upon a click event instead of being fired using the recursive timers.
+*/
+
+BCTAppServices.service('scrollingAlertsService', [ 'all_alerts',
 'scrolling_animation_constants', 'generalServiceUtilities',
 
-function($timeout, all_alerts, scrolling_animation_constants,
+function(all_alerts, scrolling_animation_constants,
 generalServiceUtilities) {
 
     var alert_message_indices = { global: 0 };
@@ -91,6 +107,8 @@ generalServiceUtilities) {
 
             generalServiceUtilities.top_level_scope_prop_refs.
             changeScrollingAlertMessage(module, new_alert_message);
+
+            generalServiceUtilities.forceDigest(true);
 
         }
 
@@ -288,7 +306,7 @@ generalServiceUtilities) {
 
     function runMessageForwardScrollingAnimations() {
 
-        forward_message_timer = $timeout(function() {
+        forward_message_timer = setTimeout(function() {
 
             global_leader_message.goToNextStep();
 
@@ -300,7 +318,7 @@ generalServiceUtilities) {
 
     function runMessageReverseScrollingAnimations() {
 
-        reverse_message_timer = $timeout(function() {
+        reverse_message_timer = setTimeout(function() {
 
             global_leader_message.goToPrevStep();
 
@@ -410,85 +428,105 @@ generalServiceUtilities) {
     var previous_global_alert_direction;
     var current_global_alert_direction;
 
-    this.goToNextGlobalAlertMessage = function() {
+    this.goToGlobalAlertMessage = function(direction) {
 
-        current_global_alert_direction = "forward";
+        var step_index_in_list;
 
-        if (current_global_alert_direction ===
-            previous_global_alert_direction &&
-            forward_transition_steps_indices.
-            indexOf(global_leader_message.step_forward) !== -1) {
+        var opposite_message_timer;
 
-            return true;
+        var runMessagesInNewDirection;
+
+        var selected_arrow_name;
+
+        var opposite_step_name;
+
+        var goToStepFunction;
+
+        var frames_to_skip;
+
+        current_global_alert_direction = direction;
+
+        if (direction === "forward") {
+
+            step_index_in_list =
+            forward_transition_steps_indices.indexOf(
+                global_leader_message.step_forward
+            ) !== -1;
+
+            opposite_message_timer = reverse_message_timer;
+
+            opposite_step_name = "step_reverse";
+
+            runMessagesInNewDirection = 
+            runMessageForwardScrollingAnimations;
+
+            selected_arrow_name = "right";
+
+            frames_to_skip =
+            forward_step_last_display_index -
+            global_leader_message.step_forward;
+
+            goToStepFunction = global_leader_message.goToNextStep;
 
         }
 
-        if (current_global_alert_direction !==
-            previous_global_alert_direction) {
+        else if (direction === "reverse") {
 
-            $timeout.cancel(reverse_message_timer);
+            step_index_in_list =
+            reverse_transition_steps_indices.indexOf(
+                global_leader_message.step_reverse
+            ) !== -1;
 
-            runMessageForwardScrollingAnimations();
+            opposite_message_timer = forward_message_timer;
 
-            global_leader_message.reverse_step = 0;
+            opposite_step_name = "step_forward";
+
+            runMessagesInNewDirection =
+            runMessageReverseScrollingAnimations;
+
+            selected_arrow_name = "left";
+
+            frames_to_skip =
+            reverse_step_last_display_index -
+            global_leader_message.step_reverse;
+
+            goToStepFunction = global_leader_message.goToPrevStep;
+
+        }
+
+        else {
+
+            console.log("Invalid direction specified: " + direction);
+
+            return false;
+
+        }
+
+        var scrolling_direction_changed =
+        current_global_alert_direction !== previous_global_alert_direction;
+
+        if (!scrolling_direction_changed && step_index_in_list) { return true; }
+
+        if (scrolling_direction_changed) {
+
+            clearTimeout(opposite_message_timer);
+
+            runMessagesInNewDirection();
+
+            global_leader_message[opposite_step_name] = 0;
 
             generalServiceUtilities.top_level_scope_prop_refs.
-            changeGlobalAlertsBarHighlighting("right");
+            changeGlobalAlertsBarHighlighting(selected_arrow_name);
 
         }
-
-        var frames_to_skip =
-        forward_step_last_display_index -
-        global_leader_message.step_forward;
 
         for (var i=0;i<frames_to_skip;i++) {
 
-            global_leader_message.goToNextStep();
+            goToStepFunction();
 
         }
 
-        previous_global_alert_direction = "forward";
-
-    };
-
-    this.goToPrevGlobalAlertMessage = function() {
-
-        current_global_alert_direction = "reverse";
-
-        if (current_global_alert_direction ===
-            previous_global_alert_direction &&
-            reverse_transition_steps_indices.
-            indexOf(global_leader_message.step_reverse) !== -1) {
-
-            return true;
-
-        }
-
-        if (current_global_alert_direction !==
-            previous_global_alert_direction) {
-
-            $timeout.cancel(forward_message_timer);
-
-            runMessageReverseScrollingAnimations();
-
-            global_leader_message.forward_step = 0;
-
-            generalServiceUtilities.top_level_scope_prop_refs.
-            changeGlobalAlertsBarHighlighting("right");
-
-        }
-
-        var frames_to_skip =
-        reverse_step_last_display_index -
-        global_leader_message.step_reverse;
-
-        for (var i=0;i<frames_to_skip;i++) {
-
-            global_leader_message.goToPrevStep();
-
-        }
-
-        previous_global_alert_direction = "reverse";
+        previous_global_alert_direction = direction;
 
     };
 

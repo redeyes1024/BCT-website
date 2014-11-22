@@ -2,8 +2,10 @@
 
     <span class="alert-area-icon alert-area-left no-highlight ptr link-icon"
     ng-class="alert_area_left_styles"
-    ng-click="goToPrevGlobalAlertMessage();">
+    ng-click="goToGlobalAlertMessage('reverse');">
+
         <i class="fa fa-chevron-left"></i>
+
     </span>
 
     <span id="global-alert-header-message" class="alert-header-message">
@@ -14,8 +16,10 @@
 
     <span class="alert-area-icon alert-area-right no-highlight ptr link-icon"
     ng-class="alert_area_right_styles"
-    ng-click="goToNextGlobalAlertMessage();">
+    ng-click="goToGlobalAlertMessage('forward');">
+
         <i class="fa fa-chevron-right"></i>
+
     </span>
 
     
