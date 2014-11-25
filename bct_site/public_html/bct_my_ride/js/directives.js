@@ -237,6 +237,15 @@ BCTApp.directive('tripPlanner', [ function() {
     };
 }]);
 
+BCTApp.directive('tripPlannerItinerarySelector', [ function() {
+    return {
+        restrict: 'E',
+        templateUrl: window.myride.directories.site_roots.active +
+        window.myride.directories.paths.active +
+        'partials/trip_planner_itinerary_selector.html'
+    };
+}]);
+
 BCTApp.directive('subPanelRoutes', [ function() {
     return {
         restrict: 'E',
@@ -330,7 +339,7 @@ function(linkFunctions) {
 
 BCTApp.directive('tripPlannerDialog', [ function() {
 
-    var template = '' +
+    var template =
         '<div id="trip-planner-dialog" ng-class="planner_dialog_styles"' +
             'ng-show="show_geocoder_error_dialog">' +
             '{{ geocoder_error_dialog_text }}' +
@@ -345,7 +354,7 @@ BCTApp.directive('tripPlannerDialog', [ function() {
 
 BCTApp.directive('scheduleMapErrorDialog', [ function() {
 
-    var template = '' +
+    var template =
         '<div id="schedule-map-error-dialog" ' + 
         'ng-class="schedule_map_error_dialog_styles" ' +
             'ng-show="show_schedule_map_error_dialog">' +
@@ -361,7 +370,7 @@ BCTApp.directive('scheduleMapErrorDialog', [ function() {
 
 BCTApp.directive('fullScheduleErrorDialog', [ function() {
 
-    var template = '' +
+    var template =
         '<div id="full-schedule-error-dialog" ' + 
         'ng-class="full_schedule_error_dialog_styles" ' +
             'ng-show="show_full_schedule_error_dialog">' +

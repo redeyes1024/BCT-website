@@ -16,8 +16,12 @@ ng-show="show_schedule_map_stop_navigation_bar_contents">
         </span>
 
         <span class="schedule-map-navigation-bar-contents-info">
-            {{ map_schedule_info.route }}
+
+            Route {{ map_schedule_info.route }} -
+            [ID #{{ stops[map_schedule_info.stop].Code }}]
+            -
             {{ stops[map_schedule_info.stop].Name }}
+
         </span>
 
     </span>

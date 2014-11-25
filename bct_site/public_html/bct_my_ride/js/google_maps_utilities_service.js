@@ -1153,7 +1153,7 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
 
                 leg_color = "#" + route_dict["BCT" + route_field].Color;
                 route_text = "BCT" + route_field;
-                label = "Bus route";
+                label = "Bus Route";
 
                 break;
 

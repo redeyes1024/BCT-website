@@ -105,10 +105,9 @@ generalServiceUtilities) {
 
             var new_alert_message = all_alerts[module][current_message_index];
 
-            generalServiceUtilities.top_level_scope_prop_refs.
-            changeScrollingAlertMessage(module, new_alert_message);
+            var module_alert_el = myride.dom_q.scrolling_alerts.global;
 
-            generalServiceUtilities.forceDigest(true);
+            module_alert_el.innerHTML = new_alert_message;
 
         }
 

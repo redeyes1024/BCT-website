@@ -391,7 +391,7 @@ warning_messages, recentlyViewedService, locationService, timer_constants) {
 
         }
 
-        else if (typeof(geocoder_output[1]) === "string") {
+        if (typeof(geocoder_output[1]) === "string") {
 
             $scope.alertUserToGeocoderErrors("finish", geocoder_output[1]);
 
@@ -399,44 +399,28 @@ warning_messages, recentlyViewedService, locationService, timer_constants) {
 
         }
 
-        else {
+        var test_coords = {};
 
-            var coords = {
+        var input_field_labels = ["start", "stop"];
 
-                LatLng: {
+        for (var i=0;i<geocoder_output.length;i++) {
 
-                    Latitude: geocoder_output[0][0].geometry.location.lat(),
-                    Longitude: geocoder_output[0][0].geometry.location.lng()
+            var test_lat = geocoder_output[i].Latitude ||
+            geocoder_output[i][0].geometry.location.lat();
 
-                }
+            var test_lng = geocoder_output[i].Longitude ||
+            geocoder_output[i][0].geometry.location.lng();
 
-            };
+            test_coords.LatLng = { Latitude: test_lat, Longitude: test_lng };
 
-            if (!locationService.checkIfLocationWithinBounds(coords)) {
+            if (!locationService.checkIfLocationWithinBounds(test_coords)) {
 
-                $scope.alertUserToGeocoderErrors("start", "out_of_bounds");
+                $scope.alertUserToGeocoderErrors(
+                    input_field_labels[i], "out_of_bounds"
+                );
 
                 return false;
 
-            }
-
-            else {
-                
-                coords.LatLng = {
-
-                    Latitude: geocoder_output[1][0].geometry.location.lat(),
-                    Longitude: geocoder_output[1][0].geometry.location.lng()
-
-                };
-                
-                if (!locationService.checkIfLocationWithinBounds(coords)) {
-
-                    $scope.alertUserToGeocoderErrors("finish", "out_of_bounds");
-
-                    return false;
-
-                }
-                
             }
 
         }
@@ -612,22 +596,28 @@ warning_messages, recentlyViewedService, locationService, timer_constants) {
         tripPlannerService.getLatLon(
             $scope.top_scope.trip_inputs.start,
             $scope.top_scope.trip_inputs.finish
-        ).then(function(coords) {
+        ).
+        then(function(all_coords) {
 
-            if (!$scope.checkForGeocoderErrors(coords)) { return false; }
+            if (!$scope.checkForGeocoderErrors(all_coords)) { return false; }
 
-            var start_coords = coords[0];
-            var finish_coords = coords[1];
+            var start_coords = all_coords[0];
+            var finish_coords = all_coords[1];
 
             //If coordinate data is wrapped in an array, it is the output
             //of the GM Geocoder and needs to be transformed
             if (start_coords[0]) {
+
                 start_coords = tripPlannerService.
                 transformGeocodeCoords(start_coords[0].geometry.location);
+
             }
+
             if (finish_coords[0]) {
+
                 finish_coords = tripPlannerService.
                 transformGeocodeCoords(finish_coords[0].geometry.location);
+
             }
 
             tripPlannerService.getTripPlanPromise(

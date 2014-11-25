@@ -1190,7 +1190,7 @@ BCTAppServices.service('generalServiceUtilities', [ function() {
         defined in a service method. Checks if $apply is already in
         progress as a safety measure.
     */
-    this.forceDigest = function(ignore_phase) {
+    this.forceDigest = function() {
 
         if (!self.top_level_scope_prop_refs) {
 
@@ -1205,7 +1205,7 @@ BCTAppServices.service('generalServiceUtilities', [ function() {
 
         }
 
-        if (!self.top_level_scope_prop_refs.$$phase || ignore_phase) {
+        if (!self.top_level_scope_prop_refs.$$phase) {
 
             self.top_level_scope_prop_refs.$apply();
 
@@ -1615,11 +1615,11 @@ function($http, favorites_data, generalServiceUtilities) {
 
     this.checkIfRouteStopFavorited = function(agency_id, route, stop) {
 
-        for (var i=0;i<favorites_data.length;i++) {
+        for (var i=0;i<favorites_data.favorites.length;i++) {
 
-            if (favorites_data[i].AgencyId === agency_id &&
-                favorites_data[i].RouteId === route &&
-                favorites_data[i].StopId + "" === stop) {
+            if (favorites_data.favorites[i].AgencyId === agency_id &&
+                favorites_data.favorites[i].RouteId === route &&
+                favorites_data.favorites[i].StopId + "" === stop) {
 
                 return true;
 
@@ -1682,15 +1682,15 @@ function($http, favorites_data, generalServiceUtilities) {
 
     this.deleteAndRecordFavoriteRouteStop = function(agency_id, route, stop) {
 
-        for (var f_i=0;f_i<favorites_data.length;f_i++) {
+        for (var f_i=0;f_i<favorites_data.favorites.length;f_i++) {
 
             var record_id;
 
-            if (favorites_data[f_i].AgencyId === agency_id &&
-                favorites_data[f_i].RouteId === route &&
-                favorites_data[f_i].StopId + "" === stop) {
+            if (favorites_data.favorites[f_i].AgencyId === agency_id &&
+                favorites_data.favorites[f_i].RouteId === route &&
+                favorites_data.favorites[f_i].StopId + "" === stop) {
 
-                record_id = favorites_data[f_i].RecordId;
+                record_id = favorites_data.favorites[f_i].RecordId;
 
                 break;
 
@@ -1718,7 +1718,7 @@ function($http, favorites_data, generalServiceUtilities) {
 
             if (!res.data.Type === "success") {
 
-                favorites_data.splice(1, f_i);
+                favorites_data.favorites.splice(1, f_i);
 
             }
 

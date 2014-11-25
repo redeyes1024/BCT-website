@@ -1,0 +1,86 @@
+<div id="trip-planner-itinerary-selector-modal"
+ng-show="show_trip_planner_itinerary_selector"
+ng-class="itinerary_selector_modal_styles"></div>
+
+<div id="trip-planner-itinerary-selector"
+ng-class="itinerary_selector_styles"
+ng-show="show_trip_planner_itinerary_selector">
+
+    <span id="trip-planner-itinerary-selector-title"
+    class="no-highlight title-header">
+        Select An Itinerary
+    </span>
+
+    <div id="trip-planner-itinerary-panel-area">
+
+        <div class="trip-planner-itinerary-panel no-highlight"
+        ng-class="itinerary_selector_panel_styles"
+        ng-repeat="itinerary in current_trip_plan_data track by $index"
+        ng-show="itinerary.times_valid">
+
+            <div class="trip-planner-itinerary-labels">
+                {{ itinerary.loading }}
+            </div>
+
+            <div class="trip-planner-itinerary-labels ptr"
+            ng-show="show_trip_planner_itinerary_labels"
+            ng-click="displayTripPlan($index);">
+
+                <div>
+
+                    <div id="trip-planner-itinerary-step-container"
+                    ng-class="trip_planner_itinerary_step_container_size_{{
+                        $index 
+                    }}">
+
+                        <span class="trip-planer-itinerary-step"
+                        ng-repeat="leg in itinerary.legsField">
+
+                            <trip-planner-step></trip-planner-step>
+
+                        </span>
+
+                    </div>
+
+                    <div class="trip-planner-itinerary-time-range">
+
+                        <span class="trip-planner-itinerary-date"
+                        ng-show="itinerary.start_date">
+                            ({{ itinerary.start_date }})
+                        </span>
+
+                        {{ itinerary.startTimeFieldFormatted }}
+
+                        to
+
+                        <span class="trip-planner-itinerary-date"
+                        ng-show="itinerary.end_date">
+                            ({{ itinerary.end_date }})
+                        </span>
+
+                        {{ itinerary.endTimeFieldFormatted }}
+
+                    </div>
+
+                    <div>
+                        Duration:
+                        <span class="trip-planner-itinerary-duration">
+                            {{ itinerary.durationFieldFormatted }}
+                        </span>
+                    </div>
+
+                    <div ng-show="itinerary.fareField">
+                        Fare:
+                        ${{ (itinerary.fareField.fare1Field[0].
+                        valueField.centsField / 100).toFixed(2) }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

@@ -977,16 +977,6 @@ function (
 
     $scope.current_global_alerts_message = "";
 
-    $scope.changeScrollingAlertMessage = function(module, new_message) {
-
-        if (module === "global") {
-
-            $scope.current_global_alerts_message = new_message;
-
-        }
-
-    };
-
     $scope.changeGlobalAlertsBarHighlighting = function(direction) {
 
         if (direction === "left") {
@@ -2155,7 +2145,7 @@ function (
             profilePageService.downloadUserFavorites().
             then(function(res) {
 
-                favorites_data = res.data;
+                favorites_data.favorites = res.data;
 
             })["catch"](function() {
 
@@ -2327,9 +2317,7 @@ function (
         "showInfoWindowSchedule": $scope.showInfoWindowSchedule,
 
         "changeGlobalAlertsBarHighlighting":
-        $scope.changeGlobalAlertsBarHighlighting,
-
-        "changeScrollingAlertMessage": $scope.changeScrollingAlertMessage
+        $scope.changeGlobalAlertsBarHighlighting
 
     });
 

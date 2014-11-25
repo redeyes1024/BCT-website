@@ -414,7 +414,11 @@ BCTAppValues.value('base_marker_sizes', {
 
 });
 
-BCTAppValues.value('favorites_data', []);
+BCTAppValues.value('favorites_data', {
+
+    favorites: [] 
+
+});
 
 BCTAppValues.value('selected_nearest_map_stop', {
 
