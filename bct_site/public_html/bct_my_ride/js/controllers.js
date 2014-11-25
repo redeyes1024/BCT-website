@@ -14,6 +14,9 @@ function ($scope, $timeout, $q) {
     myride.dom_q.inputs.elements.rs_search_input.value =
     $scope.query_data.schedule_search;
 
+    $scope.top_scope.stop_result_panel_top_container_class_name =
+    "schedule-results-main-container";
+
     $scope.$on('$viewContentLoaded', function() {
 
         $scope.top_scope.route_schedules_module_loaded_deferred.resolve();
@@ -82,6 +85,9 @@ function ($scope, $timeout, nearestStopsService, recently_viewed_items) {
     document.getElementById("route-stop-search-index-input");
 
     $scope.nearest_bstops = $scope.nearest_bstops_loading;
+
+    $scope.top_scope.stop_result_panel_top_container_class_name  =
+    "index-main-container";
 
     $scope.calculateAndShowNearestBusStops = function(location) {
 

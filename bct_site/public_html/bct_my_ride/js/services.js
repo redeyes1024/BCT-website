@@ -1205,11 +1205,11 @@ BCTAppServices.service('generalServiceUtilities', [ function() {
 
         }
 
-        if (!self.top_level_scope_prop_refs.$$phase) {
+        setTimeout(function() {
 
             self.top_level_scope_prop_refs.$apply();
 
-        }
+        }, 0);
 
     };
 
@@ -1256,10 +1256,73 @@ BCTAppServices.service('generalServiceUtilities', [ function() {
 BCTAppServices.service('generalUIUtilities', [ 'map_navigation_marker_indices',
 function(map_navigation_marker_indices) {
 
-    this.setAccordionPlusMinusIcons = function(event) {
+    var self = this;
 
-        var accordion_container =
-        event.target.parentNode.parentNode.parentNode.parentNode;
+    this.getAccordionTopContainer = function(
+        main_container, optional_class_label
+    ) {
+
+        var accordion_container;
+
+        switch (main_container) {
+
+        case "landmark":
+        case "route":
+
+            accordion_container = document.getElementsByClassName(
+                "schedule-results-main-container"
+            )[0];
+
+            break;
+
+        case "stop":
+
+            accordion_container = document.getElementsByClassName(
+                optional_class_label
+            )[0];
+
+            break;
+
+        case "recently_viewed":
+
+            accordion_container = document.getElementsByClassName(
+                "index-main-container"
+            )[0];
+
+            break;
+
+        case "full_schedule":
+
+            accordion_container = document.getElementById(
+                "full-schedule-accordion"
+            );
+
+            break;
+
+        default:
+
+            console.log(
+                "setAccordionPlusMinusIcons: " +
+                "You must specify the name of the main target container."
+            );
+
+            accordion_container = false;
+
+            break;
+
+        }
+
+        return accordion_container;
+
+    };
+
+    this.setAccordionPlusMinusIcons = function(
+        event, main_container, optional_class_label
+    ) {
+
+        var accordion_container = self.getAccordionTopContainer(
+            main_container, optional_class_label
+        );
 
         var c_buttons =
         accordion_container.getElementsByClassName("collapse-button");

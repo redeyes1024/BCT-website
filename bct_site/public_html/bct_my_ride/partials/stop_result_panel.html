@@ -1,7 +1,10 @@
 <div id="{{ stop.Id }}" class="panel panel-default">
 
     <h2 class="panel-heading panel-title route-title ptr" toggle
-    target="{{ stop.Id }}-collapse" ng-click="setAccordionPlusMinusIcons($event);">
+    target="{{ stop.Id }}-collapse"
+    ng-click="setAccordionPlusMinusIcons(
+        $event, 'stop', stop_result_panel_top_container_class_name
+    );">
 
         <span class="collapse-button">
 

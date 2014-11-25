@@ -768,23 +768,12 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
 
                         self.marker.info.clicked = true;
 
-                        var deferred = $q.defer();
+                        var schedule_el =
+                        self.marker.info.div_.getElementsByClassName(
+                            "schedule-map-info-window-schedule"
+                        )[0];
 
-                        google.maps.event.addListenerOnce(
-                        myride.dom_q.map.inst,
-                        'idle',
-                        function() {
-
-                            var schedule_el =
-                            self.marker.info.div_.getElementsByClassName(
-                                "schedule-map-info-window-schedule"
-                            )[0];
-
-                            schedule_el.style.display = "block";
-
-                            deferred.resolve();
-
-                        });
+                        schedule_el.style.display = "block";
 
                         generalServiceUtilities.top_level_scope_prop_refs.
                         showInfoWindowSchedule();
@@ -795,13 +784,9 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
                         ).
                         then(function(res) {
 
-                            deferred.promise.then(function() {
-
-                                top_self.displayInfoWindowSchedule(
-                                    res, self.marker
-                                );
-
-                            });
+                            top_self.displayInfoWindowSchedule(
+                                res, self.marker
+                            );
 
                         });
 
@@ -1042,11 +1027,9 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
 
                     icon_options.fillColor = map_palette.colors.red;
 
-                    cur_point.marker.setOptions(
-                        {
-                            icon: icon_options
-                        }
-                    );
+                    cur_point.marker.setOptions({
+                        icon: icon_options
+                    });
 
                 }
 
@@ -1092,13 +1075,13 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
 
                 icon_options.fillColor = map_palette.colors.blue;
 
-                cur_point.marker.setOptions(
-                    {
-                        icon: icon_options
-                    }
-                );
+                cur_point.marker.setOptions({
+                    icon: icon_options
+                });
 
                 selected_nearest_map_stop.stop_id = cur_point_id;
+
+                generalServiceUtilities.forceDigest();
 
             }
     );

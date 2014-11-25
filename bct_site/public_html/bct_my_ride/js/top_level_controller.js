@@ -1810,6 +1810,13 @@ function (
 
         }
 
+        else if (starting_page === "schedule_search") {
+
+            myride.dom_q.inputs.elements.rs_search_input.value =
+            $scope.query_data["schedule_search"];
+
+        }
+
     };
 
     $scope.clearSearch = function(model) {
@@ -2122,9 +2129,13 @@ function (
     $scope.getCurrentLocationAndDisplayData = locationService.
     getCurrentLocationAndDisplayData;
 
-    $scope.setAccordionPlusMinusIcons = function(event) {
+    $scope.setAccordionPlusMinusIcons = function(
+        event, main_container, optional_class_label
+    ) {
 
-        generalUIUtilities.setAccordionPlusMinusIcons(event);
+        generalUIUtilities.setAccordionPlusMinusIcons(
+            event, main_container, optional_class_label
+        );
 
         $scope.clearFilters();
 

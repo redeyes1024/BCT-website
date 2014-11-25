@@ -304,6 +304,7 @@ function(linkFunctions) {
         linkFunctions.dynamicPanelContentsLoader(
             scope, element, type
         );
+
     }
 
     return {
