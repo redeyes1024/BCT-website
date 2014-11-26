@@ -1182,37 +1182,6 @@ BCTAppServices.service('generalServiceUtilities', [ function() {
 
     };
 
-    /*
-        forceDigest
-
-        Used only when absolutely necessary, i.e., for when Angular
-        fails to 'detect' a change to certain values from a function
-        defined in a service method. Checks if $apply is already in
-        progress as a safety measure.
-    */
-    this.forceDigest = function() {
-
-        if (!self.top_level_scope_prop_refs) {
-
-            console.log(
-                "Please do not use the forceDigest function until the " +
-                "top-level controller is fully loaded (or more precisely, " +
-                "after the  function defined in the top-level controller " +
-                "is called.)"
-            );
-            
-            return false;
-
-        }
-
-        setTimeout(function() {
-
-            self.top_level_scope_prop_refs.$apply();
-
-        }, 0);
-
-    };
-
     this.formatDateYYYYMMDD = function(date_obj) {
 
         var date = String(date_obj.getDate());
@@ -1506,10 +1475,12 @@ trip_planner_constants, bct_routes_alt_names) {
         if (trip_opts.datetarg === "arrive_by") {
             arrdep = true;
         }
-        for (mode in trip_opts.modeswitch) {
+        for (var mode in trip_opts.modeswitch) {
+
             if (trip_opts.modeswitch[mode] === true) {
                 modearr.push(mode.toUpperCase());
             }
+
         }
 
         return $http({

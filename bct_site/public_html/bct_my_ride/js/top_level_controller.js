@@ -2319,10 +2319,6 @@ function (
     //See generalServiceUtilities for usage information
     generalServiceUtilities.passTopScopePropRefsToGenUtils({
 
-        "$$phase": $scope.$$phase,
-
-        "$apply": $scope.$apply,
-
         "compileTemplateWithTopScope": $scope.compileTemplateWithTopScope,
 
         "showInfoWindowSchedule": $scope.showInfoWindowSchedule,

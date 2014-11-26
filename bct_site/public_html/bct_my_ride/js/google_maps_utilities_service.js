@@ -1,4 +1,4 @@
-BCTAppServices.service('googleMapsUtilities', [ '$compile', '$q',
+BCTAppServices.service('googleMapsUtilities', [ '$q', '$timeout',
 'scheduleDownloadAndTransformation', 'unitConversionAndDataReporting',
 'locationService', 'map_navigation_marker_indices',
 'generalServiceUtilities', 'svg_icon_paths', 'map_clusterer',
@@ -6,7 +6,7 @@ BCTAppServices.service('googleMapsUtilities', [ '$compile', '$q',
 'nearest_map_stop_distances', 'full_route_data', 'full_bstop_data',
 'map_palette', 'clusterer_options', 'map_zoom_span_breakpoints',
 
-function($compile, $q, scheduleDownloadAndTransformation,
+function($q, $timeout, scheduleDownloadAndTransformation,
 unitConversionAndDataReporting, locationService,
 map_navigation_marker_indices, generalServiceUtilities,
 svg_icon_paths, map_clusterer, marker_icon_options, marker_click_memory,
@@ -466,6 +466,14 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
 
             function() {
 
+                var icon_options =
+                marker_icon_options.schedule_map.default;
+
+                myride.dom_q.map.overlays[marker_list_name][marker_id].marker.
+                setOptions({
+                    icon: icon_options
+                });
+
                 self.createDummyInfoWindow(marker_list_name);
 
                 self.createDummyInfoWindow(marker_list_name, true);
@@ -806,15 +814,14 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
 
         this.open = function(e) {
 
-            var window_already_open =
-            top_self.showSelectedInfoWindow("planner", self.marker, e);
+            $timeout(function() {
 
-            if (window_already_open) { return true; }
+                var window_already_open =
+                top_self.showSelectedInfoWindow("planner", self.marker, e);
 
-            if (e) {
-                //Digest needs to be called manually
-                generalServiceUtilities.forceDigest();
-            }
+                if (window_already_open) { return true; }
+
+            }, 0);
 
         };
 
@@ -1079,9 +1086,9 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
                     icon: icon_options
                 });
 
-                selected_nearest_map_stop.stop_id = cur_point_id;
-
-                generalServiceUtilities.forceDigest();
+                $timeout(function() {
+                    selected_nearest_map_stop.stop_id = cur_point_id;
+                }, 0);
 
             }
     );
