@@ -529,4 +529,16 @@ generalServiceUtilities) {
 
     };
 
+    this.pauseGlobalAlertMessageScrolling = function() {
+
+        clearTimeout(forward_message_timer);
+        clearTimeout(reverse_message_timer);
+
+        generalServiceUtilities.top_level_scope_prop_refs.
+        changeGlobalAlertsBarHighlighting("pause");
+
+        previous_global_alert_direction = "paused";
+
+    };
+
 }]);

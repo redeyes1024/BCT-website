@@ -127,12 +127,20 @@ function (
         "map-full-screen-activate-button-schedule-map": true
     };
 
-    $scope.alert_area_left_styles = {
-        "alert-area-highlighted": false
-    };
+    $scope.global_alert_area_styles = {
 
-    $scope.alert_area_right_styles = {
-        "alert-area-highlighted": false
+        left: {
+            "alert-area-highlighted": false
+        },
+
+        right: {
+            "alert-area-highlighted": false
+        },
+
+        pause: {
+            "alert-area-highlighted": false
+        }
+
     };
 
     $scope.nearest_map_stops_title_styles = {
@@ -977,21 +985,25 @@ function (
 
     $scope.current_global_alerts_message = "";
 
-    $scope.changeGlobalAlertsBarHighlighting = function(direction) {
+    $scope.changeGlobalAlertsBarHighlighting = function(cur_direction) {
 
-        if (direction === "left") {
+        var button_styles_list = $scope.global_alert_area_styles;
 
-            $scope.alert_area_left_styles["alert-area-highlighted"] = true;
+        var highlight_class = "alert-area-highlighted";
 
-            $scope.alert_area_right_styles["alert-area-highlighted"] = false;
+        for (var direction in button_styles_list) {
 
-        }
-        
-        else if (direction === "right") {
-            
-            $scope.alert_area_left_styles["alert-area-highlighted"] = false;
+            if (direction === cur_direction) {
 
-            $scope.alert_area_right_styles["alert-area-highlighted"] = true;
+                button_styles_list[direction][highlight_class] = true;
+
+            }
+
+            else {
+
+                button_styles_list[direction][highlight_class] = false;
+
+            }
 
         }
 
@@ -999,6 +1011,9 @@ function (
 
     $scope.goToGlobalAlertMessage =
     scrollingAlertsService.goToGlobalAlertMessage;
+
+    $scope.pauseGlobalAlertMessageScrolling =
+    scrollingAlertsService.pauseGlobalAlertMessageScrolling;
 
     $scope.base_myride_url =
     window.myride.directories.site_roots.active +

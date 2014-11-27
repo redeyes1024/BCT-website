@@ -355,9 +355,13 @@ em.hint-text {
 .alert-area-left {
     border-width: 0px 2px 0px 0px;
 }
+.alert-area-pause {
+    float: right;
+    border-width: 0px;
+}
 .alert-area-right {
-    right: calc(-100% + 3.8em);
-    border-width: 0px 0px 0px 2px;
+    float: right;
+    border-width: 0px 2px;
 }
 .alert-header-message {
     position: absolute;
