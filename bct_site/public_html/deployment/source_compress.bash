@@ -8,8 +8,10 @@
 #
 # Copy-paste dependencies in order into a text file. Specify its filename and
 # path (relative to the directory containing this script) with the option -s.
-# If source list filename is supplied, it defaults to a local file named
+# If source list filename is not supplied, it defaults to a local file named
 # all_sources.txt. The user will be notified when any defaults are used.
+#
+# This script currently uses minify from npm for both CSS and JS sources.
 
 while getopts ":t:f:s:m:" opt; do
 
@@ -52,15 +54,25 @@ while getopts ":t:f:s:m:" opt; do
 done
 
 if [ -z ${type} ] || [[ ${type} != "css" && ${type} != "js" ]]; then
+
     echo "Type missing or invalid. Use either '-t css' or '-t js'." >&2
+
     exit
+
+fi
+
+if [[ -n ${compression_mode} && "${compression_mode}" != "concat" ]]; then
+
+    echo "That compression mode does not exist. Please use 'concat' for \
+    concatenation (no minification) or do not specify the -m flag for \
+    default behavior (minification enabled)." >&2
+
+    exit
+
 fi
 
 readonly ROOT_DIR=$(
     printf "%s/NetBeansProjects/ISR/BCT-website/bct_site/public_html/" "${HOME}"
-)
-readonly YUICOMPRESSOR_DIR=$(
-    printf "%s/Documents/java_utilities" "${HOME}"
 )
 
 function useDefaultFilenameIfNoneSpecified {
@@ -106,13 +118,31 @@ case $type in
 
         useDefaultFilenameIfNoneSpecified "compressed_javascript.js"
 
-        sources=$(
+        all_js_sources=$(
             cat ${sourcelist} |
             grep -Eo "src=\".*\"" |
             grep -v "http" |
             sed 's/"//g' |
             sed 's/src=//'
         )
+
+        pre_minified_js_sources=$(
+            printf '%b\n' ${all_js_sources} |
+            grep ".min."
+        )
+
+        if [[ "${compression_mode}" != "concat" ]]; then
+
+            sources=$(
+                printf '%b\n' ${all_js_sources} |
+                grep -v ".min."
+            )
+
+        else
+
+            sources=${all_js_sources}
+
+        fi
 
         ;;
 
@@ -125,31 +155,51 @@ full_sources=$(
 
 printf "\nCompressing the following sources: \n\n%b\n" "${full_sources}"
 
-# YUI Compressor breaking CSS, especially calc() values (bug already reported)
-# TODO: Find new CSS compression engine
-# In the meanwhile, just concatenate the CSS
+gawk 'FNR==1 {print ""}1' ${full_sources} > ${output_filename}
 
-if [[ "${type}" == "css" ]]; then
+if [[ -z ${compression_mode} ]]; then
 
-    gawk 'FNR==1 {print ""}1' ${full_sources} > ${output_filename}
+    echo ""
 
-elif [[ "${type}" == "js" ]]; then
+    min_output_filename=$(echo ${output_filename} | sed 's/\./.min./')
 
-    if [[ -z ${compression_mode} ]]; then
+    minify ${output_filename} -o ${min_output_filename}
 
-        gawk 'FNR==1 {print ""}1' ${full_sources} |
-        java -jar "${YUICOMPRESSOR_DIR}/yuicompressor-2.4.8.jar" \
-        --type ${type} --line-break 4000 --nomunge > ${output_filename}
+    rm ./${output_filename}
 
-    elif [[ "${compression_mode}" == "concat" ]]; then
+    output_filename=${min_output_filename}
 
-        gawk 'FNR==1 {print ""}1' ${full_sources} > ${output_filename}
+    if [[ "${type}" == "js" ]]; then
+
+        full_pre_minified_js_sources=$(
+            printf '%b\n' "${pre_minified_js_sources}" |
+            awk -v root_dir="${ROOT_DIR}" '{ print root_dir $0 }'
+        )
+
+        full_pre_minified_js_sources="${full_pre_minified_js_sources} \
+        ${output_filename}"
+
+        gawk 'FNR==1 {print ""}1' ${full_pre_minified_js_sources} > \
+        temp_full_compressed_js_sources.min.js
+
+        rm ./${output_filename}
+
+        mv temp_full_compressed_js_sources.min.js ${output_filename}
 
     fi
 
 fi
 
-orig_size=$(cat $full_sources | wc -c)
+if [[ "${type}" == "js" && "${compression_mode}" != "concat" ]]; then
+
+    orig_size=$(cat ${full_pre_minified_js_sources} | wc -c)
+
+else
+
+    orig_size=$(cat ${full_sources} | wc -c)
+
+fi
+
 new_size=$(cat $output_filename | wc -c)
 
 orig_size_kb=$(echo "scale=2; ${orig_size} / 1000" | bc)
