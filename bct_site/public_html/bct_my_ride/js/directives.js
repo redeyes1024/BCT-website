@@ -460,7 +460,7 @@ BCTApp.directive('tripPlannerStep', [ function() {
 
 }]);
 
-BCTApp.directive('globalAlertsHeader', [ '$q', function($q) {
+BCTApp.directive('globalAlertsHeader', [ function() {
 
     function link(scope, element) {
 

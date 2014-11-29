@@ -2483,7 +2483,7 @@ function (
 
 }]).
 
-config(function($routeProvider) {
+config( [ '$routeProvider', function($routeProvider) {
 
     var site_root = window.myride.directories.site_roots.active;
     var cur_path = window.myride.directories.paths.active;
@@ -2500,7 +2500,7 @@ config(function($routeProvider) {
         controller: 'nearestMapStopsController'
     });
 
-});
+}]);
 
 //.config(['$routeProvider', '$sceDelegateProvider',
 //    function ($routeProvider, $sceDelegateProvider) {

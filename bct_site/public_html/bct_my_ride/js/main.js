@@ -105,16 +105,15 @@
 //    '</script>';
 //})();
 
-
-var BCTApp = angular.module('BCTApp', ['ngRoute', 'mobile-angular-ui',
-    'BCTAppServices', 'BCTAppControllers', 'BCTAppDirectives', 'ngQuickDate',
-    'BCTAppTopController', 'BCTAppValues'])
+var BCTApp = angular.module('BCTApp', [ 'ngRoute', 'mobile-angular-ui',
+'BCTAppServices', 'BCTAppControllers', 'BCTAppDirectives', 'ngQuickDate',
+'BCTAppTopController', 'BCTAppValues', 'BCTAppProviders'])
         
-.config(function($sceProvider, $rootScopeProvider) {
+.config( [ '$sceProvider', function($sceProvider) {
 
     $sceProvider.enabled(false);
 
-});
+}]);
 
 //App namespace
 window.myride = {};
