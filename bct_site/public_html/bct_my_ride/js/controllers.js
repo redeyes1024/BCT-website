@@ -760,12 +760,15 @@ warning_messages, recentlyViewedService, locationService, timer_constants) {
     };
 
     $scope.toggleTripOptions = function() {
+
         if ($scope.top_scope.show_trip_planner_options) {
             $scope.top_scope.show_trip_planner_options = false;
         }
+
         else {
             $scope.top_scope.show_trip_planner_options = true;
         }
+
     };
 
     //Check if inputs are empty or contain just spaces; false -> do not submit
@@ -773,76 +776,34 @@ warning_messages, recentlyViewedService, locationService, timer_constants) {
 
         if ($scope.trip_inputs.start === "" ||
             $scope.trip_inputs.finish === "" ) {
+
             return false;
+
         }
+
         return true;
 
     };
 
-    $scope.submitTripPlannerQueryAndShowMap = function() {
+    $scope.submitTripPlannerQuery = function() {
 
         if ( !$scope.tripPlannerInputsEmpty() ) { return true; }
 
-        googleMapsUtilities.clearMap();
-        $scope.getTripPlan();
+        if (!$scope.trip_planner_is_open) {
 
-        $scope.trip_planner_styles["trip-planner-module-active"] = true;
+            $scope.top_scope.toggleMapSchedule("planner");
 
-        if (!$scope.show_map_overlay_module) {
-            $scope.toggleMapSchedule("planner");
         }
+
+        googleMapsUtilities.clearMap();
+
+        $scope.getTripPlan();
 
         $scope.top_scope.show_trip_planner_title = true;
 
         $scope.top_scope.show_schedule_result_top_bar = false;
 
         $scope.top_scope.show_nearest_map_stops_info_container = false;
-
-        //Do not toggle map the subsequent times this function is called
-        //until function is re-defined yet again (when map is closed)
-        $scope.submitTrip =
-        $scope.submitTripPlannerQueryWithoutNewMap;
-
-    };
-
-    $scope.submitTripPlannerQueryWithoutNewMap = function() {
-
-        if (!$scope.tripPlannerInputsEmpty()) { return true; }
-
-        $scope.getTripPlan();
-
-    };
-
-    //The first time the trip form is submitted, the map is shown (see above)
-    $scope.submitTrip = $scope.submitTripPlannerQueryAndShowMap;
-
-    $scope.top_scope.closeMapAndResetTripPlanner = function(
-        disable_map_toggle
-    ) {
-
-        if(!disable_map_toggle) {
-            $scope.toggleMapSchedule("planner");
-        }
-
-        googleMapsUtilities.createDummyInfoWindow("trip_points");
-
-        $scope.top_scope.show_trip_planner_title = false;
-
-        $scope.submitTrip = $scope.submitTripPlannerQueryAndShowMap;
-
-    };
-
-    $scope.top_scope.closeMapAndResetScheduleMap = function() {
-
-        googleMapsUtilities.createDummyInfoWindow("points");
-
-        $scope.toggleMapSchedule("schedule");
-
-        $scope.top_scope.show_schedule_result_top_bar = false;
-
-        $scope.top_scope.show_trip_planner_title = false;
-
-        $scope.submitTrip = $scope.submitTripPlannerQueryAndShowMap;
 
     };
 

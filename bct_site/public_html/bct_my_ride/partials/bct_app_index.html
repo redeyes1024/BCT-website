@@ -3,33 +3,45 @@
     <div class="schedule-search-area-container myride-title-shadow
     no-highlight">
 
-        <span class="title-header myride-title-shadow no-highlight"
-        ng-show="show_index_title_normal">
+        <span class="title-header myride-title-shadow no-highlight">
 
-            Welcome to MyRide
-
-            <span class="info-corner-icon text-shadow-hover-icon ptr"
-            ng-click="toggleIconLegendOverlay();">
-                <i class="fa fa-info-circle"></i>
-            </span>
-
-        </span>
-
-        <span class="title-header no-highlight" 
-        ng-show="show_index_title_with_back_function">
-
-            <span ng-click="closeMapAndResetTripPlanner();"
-            class="ptr text-shadow-hover">
-
-                <i class="fa fa-arrow-circle-left"></i>
-
-                Back to Index - MyRide
+            <span ng-show="show_index_title_normal">
+            
+                Welcome to MyRide
 
             </span>
 
+            <span ng-show="show_trip_planner_back_to_index_button">
+
+                <span ng-click="toggleMapSchedule('planner', true);"
+                class="ptr text-shadow-hover">
+
+                    <i class="fa fa-arrow-circle-left"></i>
+
+                    Back to Index - MyRide
+
+                </span>
+
+            </span>
+
+            <span ng-show="show_schedule_map_back_to_index_button">
+
+                <span ng-click="toggleMapSchedule('schedule', true);"
+                class="ptr text-shadow-hover">
+
+                    <i class="fa fa-arrow-circle-left"></i>
+
+                    Back to Index - MyRide
+
+                </span>
+
+            </span>
+
             <span class="info-corner-icon text-shadow-hover-icon ptr"
             ng-click="toggleIconLegendOverlay();">
+
                 <i class="fa fa-info-circle"></i>
+
             </span>
 
         </span>
