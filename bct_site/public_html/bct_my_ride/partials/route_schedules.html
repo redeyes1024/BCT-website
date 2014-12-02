@@ -3,34 +3,44 @@
     <div class="schedule-search-area-container myride-title-shadow
     no-highlight">
 
-        <span class="title-header myride-title-shadow no-highlight"
-        ng-show="show_schedule_results_module_title_normal">
+        <span class="title-header myride-title-shadow no-highlight">
 
-            <span class="ptr text-shadow-hover"
-            ng-click="changeURLHash('bctappindex');">
+            <span ng-show="show_schedule_results_module_title_normal">
 
-                <i class="fa fa-arrow-circle-left"></i>
+                <span class="ptr text-shadow-hover"
+                ng-click="changeURLHash('bctappindex');">
 
-                Back to Index - MyRide
+                    <i class="fa fa-arrow-circle-left"></i>
+
+                    Back to Index - MyRide
+
+                </span>
 
             </span>
 
-            <span class="info-corner-icon text-shadow-hover-icon ptr"
-            ng-click="toggleIconLegendOverlay();">
-                <i class="fa fa-info-circle"></i>
+            <span ng-show="show_schedule_map_back_to_schedule_results_button">
+            
+                <span class="text-shadow-hover ptr"
+                ng-click="toggleMapSchedule('schedule');">
+
+                    <i class="fa fa-arrow-circle-left"></i>
+
+                    Back to Schedule Search - MyRide
+
+                </span>
+
             </span>
 
-        </span>
+            <span ng-show="show_trip_planner_back_to_schedule_results_button">
+            
+                <span class="text-shadow-hover ptr"
+                ng-click="toggleMapSchedule('planner');">
 
-        <span class="title-header no-highlight"
-        ng-show="show_schedule_results_module_title_with_back_function">
+                    <i class="fa fa-arrow-circle-left"></i>
 
-            <span class="text-shadow-hover ptr"
-            ng-click="toggleMapSchedule('schedule', true);">
+                    Back to Schedule Search - MyRide
 
-                <i class="fa fa-arrow-circle-left"></i>
-
-                Back to Schedule Search - MyRide
+                </span>
 
             </span>
 

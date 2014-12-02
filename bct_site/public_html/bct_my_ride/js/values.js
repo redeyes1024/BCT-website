@@ -4,6 +4,128 @@ var BCTAppValues = angular.module('BCTAppValues', []);
 //BCTAppValues.value('scheduleWebSocket',
 //new WebSocket("ws://echo.websocket.org"));
 
+BCTAppValues.value('toggle_targets', {
+
+    schedule_map: {
+
+        base: {
+
+            ng_class: [],
+
+            ng_show: [
+
+                "schedule_map_is_open",
+
+                "show_schedule_result_top_bar",
+
+                "show_schedule_map_stop_navigation_bar"
+
+            ]
+
+        },
+
+        "/bctappindex": {
+
+            ng_class: [],
+
+            ng_show: [
+
+                "show_index_title_normal",
+
+                "show_schedule_map_back_to_index_button"
+
+            ]
+
+        },
+
+        "/routeschedules" : {
+
+            ng_class: [],
+
+            ng_show: [
+
+                "show_schedule_results_module_title_normal",
+
+                "show_schedule_map_back_to_schedule_results_button"
+
+            ]
+
+        },
+
+        "/nearestmapstops" : {
+
+            ng_class: [],
+
+            ng_show: []
+
+        }
+
+    },
+
+    trip_planner: {
+
+        base: {
+
+            ng_class: [
+
+                {
+                    class_obj:
+                    "map_full_screen_activate_button_styles",
+
+                    class_label:
+                    "map-full-screen-activate-button-schedule-map"
+                }
+
+            ],
+
+            ng_show: [
+
+                "show_trip_planner_title"
+
+            ]
+
+        },
+
+        "/bctappindex": {
+
+            ng_class: [],
+
+            ng_show: [
+
+                "show_index_title_normal",
+
+                "show_trip_planner_back_to_index_button"
+
+            ]
+
+        },
+
+        "/routeschedules" : {
+
+            ng_class: [],
+
+            ng_show: [
+
+                "show_schedule_results_module_title_normal",
+
+                "show_trip_planner_back_to_schedule_results_button"
+
+            ]
+
+        },
+
+        "/nearestmapstops" : {
+
+            ng_class: [],
+
+            ng_show: []
+
+        }
+
+    }
+
+});
+
 BCTAppValues.value('timer_constants', {
 
     location_service: {

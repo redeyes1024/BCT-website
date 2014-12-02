@@ -791,7 +791,7 @@ warning_messages, recentlyViewedService, locationService, timer_constants) {
 
         if (!$scope.trip_planner_is_open) {
 
-            $scope.top_scope.toggleMapSchedule("planner");
+            $scope.top_scope.openTripPlannerMap();
 
         }
 
