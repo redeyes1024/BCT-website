@@ -6,6 +6,7 @@ var BCTAppValues = angular.module('BCTAppValues', []);
 
 BCTAppValues.value('toggle_targets', {
 
+    //Module can be activated under all controllers except for Nearest Map Stops
     schedule_map: {
 
         base: {
@@ -50,18 +51,11 @@ BCTAppValues.value('toggle_targets', {
 
             ]
 
-        },
-
-        "/nearestmapstops" : {
-
-            ng_class: [],
-
-            ng_show: []
-
         }
 
     },
 
+    //Module can be activated under all controllers
     trip_planner: {
 
         base: {
@@ -118,7 +112,32 @@ BCTAppValues.value('toggle_targets', {
 
             ng_class: [],
 
-            ng_show: []
+            ng_show: [
+
+                "show_trip_planner_back_to_index_from_nearest_map_stops"
+
+            ]
+
+        }
+
+    },
+
+    //Module can only be activated under its own separate controller
+    nearest_map_stops: {
+
+        base: {
+
+            ng_class: [],
+
+            ng_show: [
+
+                "show_nearest_map_stops_title",
+
+                "show_nearest_map_stops_info_container",
+
+                "show_nearest_map_stops_back_to_index_button"
+
+            ]
 
         }
 

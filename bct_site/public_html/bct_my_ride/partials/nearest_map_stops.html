@@ -1,15 +1,32 @@
 <div id="nearest-map-stops">
 
-    <span class="title-header no-highlight"
-    ng-show="show_nearest_map_stops_title_with_back_function">
+    <span class="title-header no-highlight">
 
-        <span class="text-shadow-hover ptr"
-        ng-click="changeURLHash('bctappindex');
-        closeMapAndResetTripPlanner(true);">
+        <span ng-show="show_trip_planner_back_to_index_from_nearest_map_stops">
+        
+            <span class="text-shadow-hover ptr"
+            ng-click="toggleMapSchedule('planner');
+            changeURLHash('bctappindex');">
 
-            <i class="fa fa-arrow-circle-left"></i>
+                <i class="fa fa-arrow-circle-left"></i>
 
-            Back to Index - MyRide
+                Back to Index - MyRide
+
+            </span>
+
+        </span>
+
+        <span ng-show="show_nearest_map_stops_back_to_index_button">
+
+            <span ng-click="toggleMapSchedule('nearest');
+            changeURLHash('bctappindex');"
+            class="ptr text-shadow-hover">
+
+                <i class="fa fa-arrow-circle-left"></i>
+
+                Back to Index - MyRide
+
+            </span>
 
         </span>
 

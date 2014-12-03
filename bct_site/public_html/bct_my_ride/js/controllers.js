@@ -920,10 +920,6 @@ nearest_map_stops_instructions) {
 
         google.maps.event.removeListener(add_drag_pin_click_listener);
 
-        $scope.toggleMapSchedule("nearest");
-
-        $scope.top_scope.show_nearest_map_stops_info_container = false;
-
     });
 
 }]);

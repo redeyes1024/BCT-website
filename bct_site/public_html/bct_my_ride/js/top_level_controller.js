@@ -169,8 +169,6 @@ function (
 
     $scope.show_index_nearest_stops_panels = false;
 
-    $scope.schedule_map_is_open = false;
-
     $scope.show_map_overlay_module = false;
     $scope.show_schedule_map_loading_modal = false;
 
@@ -189,6 +187,9 @@ function (
     $scope.show_schedule_results_module_title_normal = true;
     $scope.show_schedule_map_back_to_schedule_results_button = false;
     $scope.show_trip_planner_back_to_schedule_results_button = false;
+
+    $scope.show_nearest_map_stops_back_to_index_button = false;
+    $scope.show_trip_planner_back_to_index_from_nearest_map_stops = false;
 
     $scope.show_trip_planner_title = false;
     $scope.show_trip_planner_options = false;
@@ -229,8 +230,6 @@ function (
     $scope.show_route_alert_overlay = false;
 
     $scope.show_nearest_map_stops_title = false;
-    $scope.show_nearest_map_stops_title_header = true;
-    $scope.show_nearest_map_stops_title_with_back_function = false;
 
     $scope.show_nearest_map_stops_info_container = false;
 
@@ -1872,15 +1871,21 @@ function (
 
     $scope.toggleShowsAndClasses = function(module) {
 
-        var ng_show_targs =
-        toggle_targets[module][$scope.current_location].ng_show.concat(   
-            toggle_targets[module].base.ng_show
-        );
+        var ng_show_targs = toggle_targets[module].base.ng_show;
+        var ng_class_targs = toggle_targets[module].base.ng_class;
 
-        var ng_class_targs =
-        toggle_targets[module][$scope.current_location].ng_class.concat(
-            toggle_targets[module].base.ng_class
-        );
+        if (toggle_targets[module][$scope.current_location]) {
+
+            ng_show_targs = ng_show_targs.concat(
+                toggle_targets[module][$scope.current_location].ng_show
+            );
+
+            ng_class_targs = ng_class_targs.concat(
+                toggle_targets[module][$scope.current_location].ng_class
+            );
+
+
+        }
 
         for (var i=0;i<ng_show_targs.length;i++) {
 
@@ -1899,11 +1904,9 @@ function (
 
     $scope.openMapSchedule = function(route, stop) {
 
-        if ($scope.trip_planner_is_open) {
+        $scope.schedule_map_is_open = true;
 
-            $scope.closeTripPlannerMap();
-
-        }
+        $scope.safelyCloseOtherMapModules("schedule_map");
 
         recentlyViewedService.saveRecentlyViewedItem("schedule_map", {
             route: route,
@@ -1934,8 +1937,6 @@ function (
 
         });
 
-        $scope.show_trip_planner_title = false;
-
         $scope.map_full_screen_return_button_message =
         $scope.map_full_screen_return_button_messages.schedule;
 
@@ -1943,15 +1944,11 @@ function (
 
     $scope.openTripPlannerMap = function() {
 
-        if ($scope.schedule_map_is_open) {
+        $scope.trip_planner_is_open = true;
 
-            $scope.closeMapSchedule();
-
-        }
+        $scope.safelyCloseOtherMapModules("trip_planner");
 
         $scope.show_trip_planner_step_navigation_bar = false;
-
-        $scope.trip_planner_is_open = true;
 
         $scope.show_map_overlay_module =  true;
 
@@ -1975,16 +1972,42 @@ function (
 
     };
 
+    $scope.safelyCloseOtherMapModules = function(from_module) {
+
+        if ($scope.trip_planner_is_open &&
+            from_module !== "trip_planner") {
+
+            $scope.closeTripPlannerMap();
+
+        }
+
+        else if ($scope.schedule_map_is_open &&
+                 from_module !== "schedule_map") {
+
+            $scope.closeMapSchedule();
+
+        }
+
+        else if ($scope.nearest_map_stops_is_open &&
+                 from_module !== "nearest_map_stops") {
+
+            $scope.closeNearestMapStops();
+
+        }
+
+    };
+
     $scope.openNearestMapStops = function() {
+
+        $scope.nearest_map_stops_is_open = true;
+
+        $scope.safelyCloseOtherMapModules("nearest_map_stops");
 
         $scope.show_map_overlay_module =  true;
 
-        $scope.show_trip_planner_title = false;
-        $scope.show_nearest_map_stops_title = true;
+        $scope.toggleShowsAndClasses("nearest_map_stops");
 
         $scope.show_map_full_screen_button = false;
-
-        $scope.show_nearest_map_stops_title_with_back_function = true;
 
         googleMapsUtilities.setMapPosition(null, 10);
 
@@ -2004,8 +2027,6 @@ function (
         $scope.show_full_schedule_module = false;
 
         $scope.show_route_alert_overlay = false;
-
-        $scope.show_nearest_map_stops_title_with_back_function = false;
 
         $scope.resetScheduleMapNavigationBar();
 
@@ -2035,7 +2056,9 @@ function (
 
     $scope.closeNearestMapStops = function() {
 
-        $scope.show_nearest_map_stops_title = false;
+        $scope.nearest_map_stops_is_open = false;
+
+        $scope.toggleShowsAndClasses("nearest_map_stops");
 
         $scope.show_map_overlay_module = false;
 
