@@ -827,7 +827,7 @@ nearest_map_stops_instructions) {
 
     $scope.top_scope.show_schedule_map_stop_navigation_bar = false;
 
-    $scope.toggleMapSchedule("nearest");
+    $scope.toggleMapOverlayModule("nearest");
 
     $scope.top_scope.show_trip_planner_title = false;
 

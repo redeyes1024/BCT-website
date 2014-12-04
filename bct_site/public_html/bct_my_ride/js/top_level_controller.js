@@ -123,10 +123,6 @@ function (
         "myride-title-shadow": true
     };
 
-    $scope.trip_planner_module_map_title_styles = {
-        "trip-planner-module-map-title-extra-padding": false
-    };
-
     $scope.map_full_screen_activate_button_styles = {
         "map-full-screen-activate-button-schedule-map": true
     };
@@ -550,25 +546,6 @@ function (
                 $scope.trip_date_changed,
                 $scope.removeTripOptsDateWatch
             );
-
-        }
-
-    });
-
-    $scope.$watch("show_trip_planner_step_navigation_bar",
-    function(new_val, old_val) {
-
-        if (new_val > old_val) {
-
-            $scope.trip_planner_module_map_title_styles
-            ["trip-planner-module-map-title-extra-padding"] = true;
-
-        }
-
-        if (new_val < old_val) {
-
-            $scope.trip_planner_module_map_title_styles
-            ["trip-planner-module-map-title-extra-padding"] = false;
 
         }
 
@@ -1902,9 +1879,7 @@ function (
 
     };
 
-    $scope.openMapSchedule = function(route, stop) {
-
-        $scope.schedule_map_is_open = true;
+    $scope.openScheduleMap = function(route, stop) {
 
         $scope.safelyCloseOtherMapModules("schedule_map");
 
@@ -1944,8 +1919,6 @@ function (
 
     $scope.openTripPlannerMap = function() {
 
-        $scope.trip_planner_is_open = true;
-
         $scope.safelyCloseOtherMapModules("trip_planner");
 
         $scope.show_trip_planner_step_navigation_bar = false;
@@ -1964,6 +1937,8 @@ function (
     };
 
     $scope.goToMyRideSchedule = function(route, stop) {
+
+        $scope.safelyCloseOtherMapModules();
 
         window.location =
         generalUIUtilities.addRouteAndStopParamsToUrl(route, stop);
@@ -1984,7 +1959,7 @@ function (
         else if ($scope.schedule_map_is_open &&
                  from_module !== "schedule_map") {
 
-            $scope.closeMapSchedule();
+            $scope.closeScheduleMap();
 
         }
 
@@ -1998,8 +1973,6 @@ function (
     };
 
     $scope.openNearestMapStops = function() {
-
-        $scope.nearest_map_stops_is_open = true;
 
         $scope.safelyCloseOtherMapModules("nearest_map_stops");
 
@@ -2015,7 +1988,7 @@ function (
 
     };
 
-    $scope.closeMapSchedule = function() {
+    $scope.closeScheduleMap = function() {
 
         googleMapsUtilities.createDummyInfoWindow("points");
 
@@ -2042,8 +2015,6 @@ function (
 
         $scope.show_trip_planner_step_navigation_bar = false;
 
-        $scope.trip_planner_is_open = false;
-
         $scope.show_map_overlay_module = false;
 
         $scope.toggleShowsAndClasses("trip_planner");
@@ -2056,8 +2027,6 @@ function (
 
     $scope.closeNearestMapStops = function() {
 
-        $scope.nearest_map_stops_is_open = false;
-
         $scope.toggleShowsAndClasses("nearest_map_stops");
 
         $scope.show_map_overlay_module = false;
@@ -2066,19 +2035,19 @@ function (
 
     };
 
-    $scope.toggleMapSchedule = function(originating_module, route, stop) {
+    $scope.toggleMapOverlayModule = function(target_module, route, stop) {
 
         if ($scope.show_map_overlay_module) {
 
-            if (originating_module === "planner") {
+            if (target_module === "planner") {
                 $scope.closeTripPlannerMap();
             }
 
-            else if (originating_module === "schedule") {
-                $scope.closeMapSchedule();
+            else if (target_module === "schedule") {
+                $scope.closeScheduleMap();
             }
 
-            else if (originating_module === "nearest") {
+            else if (target_module === "nearest") {
                 $scope.closeNearestMapStops();
             }
 
@@ -2086,19 +2055,19 @@ function (
 
         else {
 
-            if (originating_module === "planner") {
+            if (target_module === "planner") {
 
                 $scope.openTripPlannerMap();
 
             }
 
-            else if (originating_module === "schedule") {
+            else if (target_module === "schedule") {
 
-                $scope.openMapSchedule(route, stop);
+                $scope.openScheduleMap(route, stop);
 
             }
 
-            else if (originating_module === "nearest") {
+            else if (target_module === "nearest") {
 
                 $scope.openNearestMapStops();
 

@@ -74,6 +74,8 @@ BCTAppValues.value('toggle_targets', {
 
             ng_show: [
 
+                "trip_planner_is_open",
+
                 "show_trip_planner_title"
 
             ]
@@ -130,6 +132,8 @@ BCTAppValues.value('toggle_targets', {
             ng_class: [],
 
             ng_show: [
+
+                "nearest_map_stops_is_open",
 
                 "show_nearest_map_stops_title",
 

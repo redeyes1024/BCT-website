@@ -236,7 +236,7 @@ em.hint-text {
     font-weight: 400;
     border-style: dotted;
     border-width: 1px 0px;
-    padding: 0.5em 0em 0.8em;
+    padding: 0.3em 0em;
     background-color: #FFF;
     text-align: center;
 }
@@ -813,7 +813,6 @@ schedule-map-navigation-bar {
     background: none repeat scroll 0% 0% #FFF;
     display: table;
     table-layout: fixed;
-    margin: 0em 0em 1em 0em;
     font-size: 0.7em;
 }
 .schedule-map-navigation-bar-contents {
@@ -1162,9 +1161,6 @@ inline-filter-icons {
     box-shadow: 0px 6px 6px -5px #000;
     z-index: 1029;
     padding: 2px 0em calc(1.4em + 3px) 0.5em;
-}
-.trip-planner-module-map-title-extra-padding {
-    padding: 2px 0em calc(2em - 2px) 0.5em;
 }
 .schedule-results-main-container,
 .index-main-container {
