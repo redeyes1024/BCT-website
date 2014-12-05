@@ -58,6 +58,17 @@ clusterer_options) {
 
                 }
 
+                var clicked_point_label =
+                myride.dom_q.map.overlays.open_info[0].marker_label;
+
+                if (clicked_point_label) {
+
+                    schedule_map_points[clicked_point_label].marker.setIcon(
+                        marker_icon_options.schedule_map.mouseover
+                    );
+
+                }
+
             }
 
             else if (scope.top_scope.show_nearest_map_stops_title) {
@@ -89,6 +100,13 @@ clusterer_options) {
                 myride.dom_q.map.inst,
                 'zoom_changed',
                 function() {
+
+                    if (myride.dom_q.map.inst.getZoom() <
+                        clusterer_options.maxZoom) {
+
+                        return true;
+
+                    }
 
                     marker_icon_options.schedule_map.default.scale =
                     getNewMarkerIconProperty("default", "scale");

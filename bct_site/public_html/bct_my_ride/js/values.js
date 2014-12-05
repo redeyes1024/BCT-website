@@ -4,6 +4,12 @@ var BCTAppValues = angular.module('BCTAppValues', []);
 //BCTAppValues.value('scheduleWebSocket',
 //new WebSocket("ws://echo.websocket.org"));
 
+BCTAppValues.value('map_setting_defaults', {
+
+    near_zoom: 18
+
+});
+
 BCTAppValues.value('toggle_targets', {
 
     //Module can be activated under all controllers except for Nearest Map Stops
@@ -17,9 +23,7 @@ BCTAppValues.value('toggle_targets', {
 
                 "schedule_map_is_open",
 
-                "show_schedule_result_top_bar",
-
-                "show_schedule_map_stop_navigation_bar"
+                "show_schedule_result_top_bar"
 
             ]
 
@@ -142,6 +146,52 @@ BCTAppValues.value('toggle_targets', {
                 "show_nearest_map_stops_back_to_index_button"
 
             ]
+
+        }
+
+    },
+
+    full_schedule: {
+
+        base: {
+
+            ng_class: [
+
+                {
+
+                    class_obj: "schedule_map_styles",
+
+                    class_label: "hide-scroll"
+
+                }
+
+            ],
+
+            ng_show: [
+
+                "show_full_schedule_module",
+
+                "show_schedule_result_top_info_bar",
+
+                "show_map_canvas"
+
+            ]
+
+        },
+
+        "/bctappindex": {
+
+            ng_class: [],
+
+            ng_show: []
+
+        },
+
+        "/routeschedules" : {
+
+            ng_class: [],
+
+            ng_show: []
 
         }
 

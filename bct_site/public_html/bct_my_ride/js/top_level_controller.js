@@ -4,7 +4,7 @@ BCTAppTopController.controller('BCTController', [
 
     '$scope', '$timeout', 'full_bstop_data', 'full_route_data', 'all_alerts',
     'full_landmark_data', '$compile', 'scrollingAlertsService',
-    //'scheduleWebSocket', 'scheduleSocketService',
+    'map_setting_defaults', //'scheduleWebSocket', 'scheduleSocketService',
     'scheduleDownloadAndTransformation', 'googleMapsUtilities', '$q',
     'unitConversionAndDataReporting', 'miniScheduleService',
     'placeholderService', 'locationService', 'location_icons',
@@ -22,7 +22,7 @@ function (
 
     $scope, $timeout, full_bstop_data, full_route_data, all_alerts,
     full_landmark_data, $compile, scrollingAlertsService,
-    //scheduleWebSocket, scheduleSocketService,
+    map_setting_defaults, //scheduleWebSocket, scheduleSocketService,
     scheduleDownloadAndTransformation, googleMapsUtilities, $q,
     unitConversionAndDataReporting, miniScheduleService, placeholderService,
     locationService, location_icons, agency_filter_icons, results_exist,
@@ -300,30 +300,6 @@ function (
 
             $scope.show_empty_result_message_no_results = false;
             $scope.show_schedule_results_result_panels = true;
-
-        }
-
-    });
-
-    $scope.$watch("show_full_schedule_module", function(new_val, old_val) {
-
-        if (new_val > old_val) {
-
-            $scope.show_map_canvas = false;
-            $scope.show_schedule_map_stop_navigation_bar = false;
-
-            $scope.show_schedule_map_error_dialog = false;
-
-            $timeout.cancel($scope.schedule_map_error_dialog_timeout);
-
-            $scope.show_route_alert_overlay = false;
-
-        }
-
-        else if (new_val < old_val) {
-
-            $scope.show_map_canvas = true;
-            $scope.show_schedule_map_stop_navigation_bar = true;
 
         }
 
@@ -1564,6 +1540,8 @@ function (
                 map_type, map_navigation_marker_indices.schedule
             );
 
+            myride.dom_q.map.inst.setZoom(map_setting_defaults.near_zoom);
+
         }
 
     };
@@ -1589,6 +1567,8 @@ function (
                 map_type, map_navigation_marker_indices.schedule
             );
 
+            myride.dom_q.map.inst.setZoom(map_setting_defaults.near_zoom);
+
         }
 
     };
@@ -1609,7 +1589,6 @@ function (
 
                 break;
 
-            //Trip planner only
             case "planner_step":
 
                 map_navigation_marker_indices.planner = new_index;
@@ -1894,6 +1873,8 @@ function (
 
         $scope.toggleShowsAndClasses("schedule_map");
 
+        $scope.show_schedule_map_stop_navigation_bar = true;
+
         $scope.populateScheduleMapTimes(route, stop);
 
         $scope.populateScheduleMap(route, stop).then(function() {
@@ -1970,6 +1951,12 @@ function (
 
         }
 
+        if ($scope.full_schedule_is_open) {
+
+            $scope.closeFullSchedule(from_module);
+
+        }
+
     };
 
     $scope.openNearestMapStops = function() {
@@ -1994,10 +1981,11 @@ function (
 
         $scope.toggleShowsAndClasses("schedule_map");
 
+        $scope.show_schedule_map_stop_navigation_bar = false;
+
         $scope.show_schedule_result_top_bar = false;
 
         $scope.show_map_overlay_module = false;
-        $scope.show_full_schedule_module = false;
 
         $scope.show_route_alert_overlay = false;
 
@@ -2035,7 +2023,7 @@ function (
 
     };
 
-    $scope.toggleMapOverlayModule = function(target_module, route, stop) {
+    $scope.toggleOverlayModule = function(target_module, route, stop) {
 
         if ($scope.show_map_overlay_module) {
 
@@ -2056,21 +2044,15 @@ function (
         else {
 
             if (target_module === "planner") {
-
                 $scope.openTripPlannerMap();
-
             }
 
             else if (target_module === "schedule") {
-
                 $scope.openScheduleMap(route, stop);
-
             }
 
             else if (target_module === "nearest") {
-
                 $scope.openNearestMapStops();
-
             }
 
         }
@@ -2083,50 +2065,44 @@ function (
 
         cur_center = $scope.initial_schedule_map_data.coords;
         
-        myride.dom_q.map.inst.setZoom(18);
+        myride.dom_q.map.inst.setZoom(map_setting_defaults.near_zoom);
+
         myride.dom_q.map.inst.setCenter(cur_center);
 
     };
 
-    $scope.hideMiniScheduleAndAlertBars = function() {
+    $scope.openFullSchedule = function() {
 
-        $scope.show_schedule_result_top_info_bar = false;
+        $scope.full_schedule_is_open = true;
+
+        $scope.show_schedule_map_error_dialog = false;
+
+        $timeout.cancel($scope.schedule_map_error_dialog_timeout);
+
+        $scope.full_schedule_date.datepick = new Date;
+
+        $scope.toggleShowsAndClasses("full_schedule");
+
+        $scope.show_schedule_map_stop_navigation_bar = false;
 
     };
 
-    $scope.showMiniScheduleAndAlertBars = function() {
+    $scope.closeFullSchedule = function(from_module) {
 
-        $scope.show_schedule_result_top_info_bar = true;
+        $scope.full_schedule_is_open = false;
 
-    };
+        googleMapsUtilities.touchMap();
 
-    $scope.toggleFullSchedule = function() {
+        $scope.toggleShowsAndClasses("full_schedule");
 
-        /* Closing full schedule overlay */
+        if (from_module !== "trip_planner") {
 
-        if ($scope.show_full_schedule_module) {
-
-            $scope.show_full_schedule_module = false;
-            $scope.schedule_map_styles["hide-scroll"] = false;
-            googleMapsUtilities.touchMap();
-
-            $scope.showMiniScheduleAndAlertBars();
-
-        }
-
-        /* Opening full schedule module */
-
-        else {
-
-            $scope.full_schedule_date.datepick = new Date;
-            $scope.show_full_schedule_module = true;
-            $scope.schedule_map_styles["hide-scroll"] = true;
-
-            $scope.hideMiniScheduleAndAlertBars();
+            $scope.show_schedule_map_stop_navigation_bar = true;
 
         }
 
     };
+
 
     $scope.clearFilters = function() {
 
