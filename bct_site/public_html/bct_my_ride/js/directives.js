@@ -19,10 +19,10 @@ BCTApp.directive('bctMyRideTopLevelOverlays', [ function() {
 }]);
 
 BCTApp.directive('scheduleMap', [ 'googleMapsUtilities', 'marker_icon_options',
-'base_marker_sizes', 'clusterer_options',
+'base_marker_sizes', 'clusterer_options', '$q',
 
 function(googleMapsUtilities, marker_icon_options, base_marker_sizes,
-clusterer_options) {
+clusterer_options, $q) {
 
     function link(scope) {
 
@@ -98,11 +98,14 @@ clusterer_options) {
             google.maps.event.addListener(
 
                 myride.dom_q.map.inst,
+
                 'zoom_changed',
+
                 function() {
 
-                    if (myride.dom_q.map.inst.getZoom() <
-                        clusterer_options.maxZoom) {
+                    if ((!scope.top_scope.nearest_map_stops_is_open &&
+                        !scope.top_scope.schedule_map_is_open) ||
+                        scope.top_scope.trip_planner_is_open) {
 
                         return true;
 
@@ -120,82 +123,66 @@ clusterer_options) {
                     marker_icon_options.schedule_map.mouseover.strokeWeight =
                     getNewMarkerIconProperty("mouseover", "strokeWeight");
 
-                    if (scope.top_scope.show_schedule_result_top_bar ||
-                        scope.top_scope.show_nearest_map_stops_title) {
+                    var cur_zoom = myride.dom_q.map.inst.getZoom();
 
-                        resetMarkerSizes();
+                    var map_ready_deferred = $q.defer();
 
-                        if (scope.top_scope.show_schedule_result_top_bar &&
-                            !!myride.dom_q.map.overlays.open_info[0].hide) {
+                    google.maps.event.addListenerOnce(
+                        myride.dom_q.map.inst,
+                        'idle',
+                        function() {
 
-                            var cur_info_window_hidden =
-                            myride.dom_q.map.overlays.open_info[0].isHidden_;
-
-                            if (myride.dom_q.map.inst.getZoom() <=
-                                clusterer_options.maxZoom) {
-
-                                if (!myride.dom_q.map.overlays.
-                                    open_info_hovered[0].is_dummy) {
-
-                                    google.maps.event.addListenerOnce(
-
-                                        myride.dom_q.map.inst,
-                                        'idle',
-                                        function() {
-
-                                            myride.dom_q.map.overlays.
-                                            open_info_hovered[0].close();
-
-                                            myride.dom_q.map.overlays.
-                                            open_info_hovered.pop();
-
-                                            googleMapsUtilities.
-                                            createDummyInfoWindow(
-                                                "points", true
-                                            );
-
-                                    });
-
-                                }
-
-                                if (!cur_info_window_hidden) {
-
-                                    myride.dom_q.map.overlays.
-                                    open_info[0].hide();
-
-                                }
-
-                            }
-
-                            else if (cur_info_window_hidden) {
-
-                                myride.dom_q.map.overlays.open_info[0].show();
-
-                            }
-
-                        }
-
-                    }
-
-                    else if (scope.top_scope.show_trip_planner_title) {
-     
-                        return true;
-
-                    }
-
-                    else {
-
-                        google.maps.event.addListenerOnce(
-
-                            myride.dom_q.map.inst,
-                            'idle',
-                            function() {
+                            if (scope.top_scope.nearest_map_stops_is_open ||
+                                cur_zoom > clusterer_options.maxZoom) {
 
                                 resetMarkerSizes();
 
                             }
 
-                        );
+                            map_ready_deferred.resolve();
+
+                        }
+                    );
+
+                    if (scope.top_scope.schedule_map_is_open &&
+                        !!myride.dom_q.map.overlays.open_info[0].hide) {
+
+                        var cur_info_window_hidden =
+                        myride.dom_q.map.overlays.open_info[0].isHidden_;
+
+                        if (cur_zoom <= clusterer_options.maxZoom) {
+
+                            if (!myride.dom_q.map.overlays.
+                                open_info_hovered[0].is_dummy) {
+
+                                map_ready_deferred.promise.then(function() {
+
+                                    myride.dom_q.map.overlays.
+                                    open_info_hovered[0].close();
+
+                                    myride.dom_q.map.overlays.
+                                    open_info_hovered.pop();
+
+                                    googleMapsUtilities.
+                                    createDummyInfoWindow("points", true);
+
+                                });
+
+                            }
+
+                            if (!cur_info_window_hidden) {
+
+                                myride.dom_q.map.overlays.open_info[0].hide();
+
+                            }
+
+                        }
+
+                        else if (cur_info_window_hidden) {
+
+                            myride.dom_q.map.overlays.open_info[0].show();
+
+                        }
 
                     }
 
