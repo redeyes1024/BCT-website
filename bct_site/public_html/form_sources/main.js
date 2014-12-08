@@ -2,6 +2,9 @@
 //Company name
 ISR = {};
 
+//General data storage
+ISR.data = {};
+
 //Stored DOM queries
 ISR.dom = {};
 
@@ -22,7 +25,7 @@ ISR.directories = {
 };
 
 ISR.directories.site_roots.active =
-ISR.directories.site_roots.remote_isr;
+ISR.directories.site_roots.local;
 
 ISR.directories.paths.active =
 ISR.directories.paths.form_sources;
@@ -196,6 +199,85 @@ ISR.utils.goToMyRideSchedule = function(route, stop) {
     window.location =
     location_prefix + "#routeschedules?route=" + route + "&" +
     "stop=" + stop;
+
+};
+
+ISR.utils.downloadFavoritesData = function() {
+
+    var favorites_request = new XMLHttpRequest;
+
+    var favorites_api_url = "http://174.94.153.48:7777/TransitAPI/Favorites";
+
+    var favorites_request_body = JSON.stringify({
+        "UserId": 777,
+        "Action": "GET"
+    });
+
+    favorites_request.open("POST", favorites_api_url);
+
+    favorites_request.setRequestHeader("Accept", "application/json");
+    favorites_request.setRequestHeader("Content-Type", "application/json");
+
+    favorites_request.send(favorites_request_body);
+
+    favorites_request.onreadystatechange = function() {
+
+        if (favorites_request.readyState === 4 &&
+            favorites_request.status === 200) {
+
+            ISR.templates.data.
+            profile_page["favorites-container-route-stop-panel"].
+            favorites_list = JSON.parse(favorites_request.responseText);
+
+            ISR.utils.templating.addFavoriteRouteStopPanelsToContainer();
+
+        }
+
+    };
+
+};
+
+ISR.utils.downloadStopsInfo = function() {
+
+    if (localStorage.stop_data) {
+
+        JSON.parse(localStorage.stop_data);
+
+        ISR.data.stops_info = JSON.parse(stops_info_request.responseText);
+
+        ISR.utils.downloadFavoritesData();
+
+        return true;
+
+    }
+
+    var stops_info_request = new XMLHttpRequest;
+
+    var stops_info_api_url = "http://174.94.153.48:7777/TransitApi/Stops/";
+
+    var stops_info_request_body = JSON.stringify({ 
+        "AgencyId": "BCT"
+    });
+
+    stops_info_request.open("POST", stops_info_api_url);
+
+    stops_info_request.setRequestHeader("Accept", "application/json");
+    stops_info_request.setRequestHeader("Content-Type", "application/json");
+
+    stops_info_request.send(stops_info_request_body);
+
+    stops_info_request.onreadystatechange = function() {
+
+        if (stops_info_request.readyState === 4 &&
+            stops_info_request.status === 200) {
+
+            ISR.data.stops_info = JSON.parse(stops_info_request.responseText);
+
+            ISR.utils.downloadFavoritesData();
+
+        }
+
+    };
 
 };
 
@@ -418,5 +500,7 @@ window.onload = function() {
         'bct_profile_page_template.html',
         'profile-container'
     );
+
+    ISR.utils.downloadStopsInfo();
 
 };

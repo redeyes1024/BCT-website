@@ -4,7 +4,7 @@ ISR.templates.data = {};
 //Associate template data object with each template
 (function() {
 
-    for (template_group_name in ISR.templates) {
+    for (var template_group_name in ISR.templates) {
 
         if (template_group_name === "data") { continue; }
 
@@ -12,73 +12,13 @@ ISR.templates.data = {};
 
         var template_group = ISR.templates[template_group_name];
 
-        for (template_name in template_group) {
+        for (var template_name in template_group) {
 
             template_group_data[template_name] = {};
 
         }
 
     }
-
-}());
-
-/*
-
-    Favorite route/stop combinations should be added to this array
-    It currently contains three demo favorites.
-
-    The format for addition of new favorites is as follows:
-
-    {
-        agency: "<agency_name>",
-        route: "<route_number> <route_name>",
-        stop: "<stop_number> <stop_name>"
-    }
-
-    In this version, the property strings must be concatenated beforehand.
-
-*/
-
-(function() {
-
-    try {
-        var favorites_list = JSON.parse(localStorage.my_bct_fav);
-    }
-
-    catch(e) {
-
-        ISR.templates.data.
-        profile_page["favorites-container-route-stop-panel"].favorites_list = [];
-
-        return true;
-
-    }
-
-    var formatted_favorites_list = [];
-
-    for (var i=0;i<favorites_list.length;i++) {
-
-        var agency = favorites_list[i].agency;
-        var route_id = favorites_list[i].fav_route.Id;
-        var stop_id = favorites_list[i].fav_stop.Id;
-        var stop_name = favorites_list[i].fav_stop.Name;
-
-        var formatted_favorite_item = {
-
-            agency: agency,
-            route: route_id,
-            stop_id: stop_id,
-            stop_name: stop_name
-
-        };
-
-        formatted_favorites_list.push(formatted_favorite_item);
-
-    }
-
-    ISR.templates.data.
-    profile_page["favorites-container-route-stop-panel"].favorites_list =
-    formatted_favorites_list;
 
 }());
 
@@ -214,18 +154,18 @@ ISR.utils.templating = {};
     /* START Favorite Route Panel */
 
     function getRouteStopPanelAgency(route_stop_panel_data) {
-        return route_stop_panel_data.agency;
+        return route_stop_panel_data.AgencyId;
     }
 
     function getRouteStopPanelRoute(route_stop_panel_data) {
-        return route_stop_panel_data.route;
+        return route_stop_panel_data.RouteId;
     }
 
     function getRouteStopPanelStopId(route_stop_panel_data) {
-        return route_stop_panel_data.stop_id;
+        return route_stop_panel_data.StopId;
     }
     function getRouteStopPanelStopName(route_stop_panel_data) {
-        return route_stop_panel_data.stop_name;
+        return ISR.data.stops_info[route_stop_panel_data.StopId];
     }
 
     /* END Favorite Route Panel */
@@ -354,6 +294,15 @@ ISR.utils.templating = {};
 
     };
 
+    ISR.utils.templating.addFavoriteRouteStopPanelsToContainer = function() {
+
+        var favorites_main_panel_container =
+        document.getElementById("favorites-container-main-panels");
+
+        ISR.utils.addFavoriteRouteStopPanel(favorites_main_panel_container);
+
+    };
+
     //Main templating function, where the above templating functions are passed
     //as callbacks. Some above functions' references to it prevent it from
     //being garbage collected, despite it being defined in this closure.
@@ -414,15 +363,6 @@ ISR.utils.init.templating.addFavoriteAgencySelectorsToContainer = function() {
     ISR.dom.post_templating.methods.getAgencySelectorPanels();
 
     ISR.utils.changeAgency("broward-county");
-
-};
-
-ISR.utils.init.templating.addFavoriteRouteStopPanelsToContainer = function() {
-
-    var favorites_main_panel_container =
-    document.getElementById("favorites-container-main-panels");
-
-    ISR.utils.addFavoriteRouteStopPanel(favorites_main_panel_container);
 
 };
 

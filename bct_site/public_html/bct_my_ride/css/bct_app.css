@@ -1187,7 +1187,6 @@ inline-filter-icons {
     overflow: auto;
     padding: 0px;
     display: table;
-    table-layout: fixed;
     width: 100%;
 }
 .result-filter {
@@ -1207,6 +1206,7 @@ inline-filter-icons {
     border-width: 0px;
 }
 .result-icon-container {
+    position: relative;
     text-align: center;
     width: 3em;
 }
@@ -1216,6 +1216,16 @@ inline-filter-icons {
 }
 .favorite-route-icon-saved {
     color: #017AC2;
+}
+.favorite-icon-spinner-container {
+    display: none;
+    position: absolute;
+    font-size: 1.5em;
+    left: 0em;
+    height: calc(100% - 1px);
+    width: 2em;
+    padding: 0.5em 0.5em 0em;
+    background-color: rgba(255, 255, 255, 0.7);
 }
 .arrow-right-icon {
     cursor: default;
@@ -1584,7 +1594,7 @@ trip-planner-navigation-bar {
     border-style: dotted solid dashed;
     border-width: 0px 0px 1px;
     background-color: white;
-    padding: 1em 0em 2em 0em;
+    padding: 0.5em 0em;
 }
 .trip-planner-itinerary-navigation-bar {
     height: 4em;

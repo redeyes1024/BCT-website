@@ -1676,7 +1676,7 @@ function (
     profilePageService.addAndRecordFavoriteRouteStop;
 
     $scope.deleteAndRecordFavoriteRouteStop =
-    profilePageService.addAndRecordFavoriteRouteStop;
+    profilePageService.deleteAndRecordFavoriteRouteStop;
 
     $scope.addRouteStopToTripPlanner = function(stop) {
 

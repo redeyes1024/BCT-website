@@ -674,6 +674,7 @@ full_schedule_category_with_datepicker) {
     };
 
     this.downloadStopInfo = function() {
+
         if (localStorage.stop_data) {
             var deferred = $q.defer();
             var promise = deferred.promise;
@@ -703,6 +704,7 @@ full_schedule_category_with_datepicker) {
 
             }
         });
+
     };
 
     this.downloadSchedule = function(route, stop, date) {
@@ -1621,7 +1623,7 @@ function($http, favorites_data, generalServiceUtilities) {
             data: {
                 UserId: 777,
                 Action: "ADD",
-                data: {
+                Favorite: {
                     AgencyId: "BCT",
                     RouteId: route,
                     StopId: stop
@@ -1639,7 +1641,7 @@ function($http, favorites_data, generalServiceUtilities) {
             data: {
                 UserId: 777,
                 Action: "DELETE",
-                data: {
+                Favorite: {
                     RecordId: record_id + ""
                 }
             }
@@ -1665,11 +1667,52 @@ function($http, favorites_data, generalServiceUtilities) {
 
     };
 
-    this.addAndRecordFavoriteRouteStop = function(agency_id, route, stop) {
+    this.showOrHideFavoriteIconSpinner = function(element, show_or_hide) {
+
+        var new_style;
+        
+        switch (show_or_hide) {
+
+            case "show":
+
+                new_style = "block";
+
+                break;
+
+            case "hide":
+                
+                new_style = "";
+
+                break;
+                
+            default:
+
+                console.log(
+                    "showOrHideFavoriteIconSpinner: option not available: " +
+                    show_or_hide
+                );
+
+                return false;
+
+        }
+
+        element.parentNode.children[2].style.display = new_style;
+
+    };
+
+    this.addAndRecordFavoriteRouteStop = function(
+        agency_id, route, stop, event
+    ) {
+
+        var element = event.currentTarget;
+
+        self.showOrHideFavoriteIconSpinner(element, "show");
 
         var route_stop_add_promise = self.addFavoriteRouteStop(route, stop);
 
         route_stop_add_promise.then(function(res) {
+
+            self.showOrHideFavoriteIconSpinner(element, "hide");
 
             if (res.data.Type === "success") {
 
@@ -1678,13 +1721,13 @@ function($http, favorites_data, generalServiceUtilities) {
                 var new_favorite = {
 
                     AgencyId: agency_id,
-                    Route: route,
-                    Stop: stop,
-                    record_id: record_id
+                    RouteId: route,
+                    StopId: stop,
+                    RecordId: record_id
 
                 };
 
-                favorites_data.push(new_favorite);
+                favorites_data.favorites.push(new_favorite);
 
             }
 
@@ -1706,6 +1749,8 @@ function($http, favorites_data, generalServiceUtilities) {
 
         })["catch"](function() {
 
+            self.showOrHideFavoriteIconSpinner(element, "hide");
+
             console.log(
                 "Failed to add stop to favorites."
             );
@@ -1714,7 +1759,13 @@ function($http, favorites_data, generalServiceUtilities) {
 
     };
 
-    this.deleteAndRecordFavoriteRouteStop = function(agency_id, route, stop) {
+    this.deleteAndRecordFavoriteRouteStop = function(
+        agency_id, route, stop, event
+    ) {
+
+        var element = event.currentTarget;
+
+        self.showOrHideFavoriteIconSpinner(element, "show");
 
         for (var f_i=0;f_i<favorites_data.favorites.length;f_i++) {
 
@@ -1750,9 +1801,11 @@ function($http, favorites_data, generalServiceUtilities) {
 
         route_stop_delete_promise.then(function(res) {
 
-            if (!res.data.Type === "success") {
+            self.showOrHideFavoriteIconSpinner(element, "hide");
 
-                favorites_data.favorites.splice(1, f_i);
+            if (res.data.Type === "success") {
+
+                favorites_data.favorites.splice(f_i, 1);
 
             }
 
@@ -1773,6 +1826,8 @@ function($http, favorites_data, generalServiceUtilities) {
             }
 
         })["catch"](function() {
+
+            self.showOrHideFavoriteIconSpinner(element, "hide");
 
             console.log(
                 "Failed to delete stop from favorites."
