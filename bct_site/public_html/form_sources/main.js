@@ -5,6 +5,13 @@ ISR = {};
 //General data storage
 ISR.data = {};
 
+ISR.data.urls = {
+
+    stops_info: "http://174.94.153.48:7777/TransitApi/Stops/",
+    favorites: "http://174.94.153.48:7777/TransitAPI/Favorites"
+
+};
+
 //Stored DOM queries
 ISR.dom = {};
 
@@ -16,6 +23,7 @@ ISR.directories = {
         remote_isr: 'http://www.isrtransit.com/files/bct/webapp/',
         active: ''
     },
+
     paths: {
         none: '',
         form_sources: 'form_sources/',
@@ -114,28 +122,130 @@ ISR.utils.selectDropDownOption = function(target) {
 
 };
 
-ISR.utils.deleteFavoriteRouteStop = function(route, stop, element) {
+ISR.utils.makeAPIRequest = function(
+    request_type, doneCallback, additional_data
+) {
 
-    element.parentNode.parentNode.removeChild(element.parentNode);
+    var request = new XMLHttpRequest;
 
-    var old_favorites = JSON.parse(localStorage.my_bct_fav);
+    var request_body_obj;
 
-    for (var i=0;i<old_favorites.length;i++) {
+    var api_module_name;
 
-        if (old_favorites[i].fav_route.Id === route &&
-            old_favorites[i].fav_stop.Id === stop) {
+    switch (request_type) {
 
-            old_favorites.splice(i, 1);
+        case "get_favorites": 
+
+            api_module_name = "favorites";
+
+            request_body_obj = {
+                "UserId": 777,
+                "Action": "GET"
+            };
 
             break;
+
+        case "delete_favorite": 
+
+            api_module_name = "favorites";
+
+            request_body_obj = {
+                UserId: 777,
+                Action: "DELETE",
+                Favorite: {
+                    RecordId: additional_data.record_id
+                }
+            };
+
+            break;
+
+        case "get_stops_info": 
+
+            api_module_name = "stops_info";
+
+            request_body_obj = { 
+                "AgencyId": "BCT"
+            };
+
+            break;
+
+        default:
+            
+            console.log(
+                "makeApiRequest: Request type unknown: " + request_type + "."
+            );
+
+            break;
+
+    }
+
+    var request_url = ISR.data.urls[api_module_name];
+
+    var request_body = JSON.stringify(request_body_obj);
+
+    request.open("POST", request_url);
+
+    request.setRequestHeader("Accept", "application/json");
+    request.setRequestHeader("Content-Type", "application/json");
+
+    request.send(request_body);
+
+    request.onreadystatechange = function() {
+
+    if (typeof doneCallback === "function" &&
+        request.readyState === 4 &&
+        request.status === 200) {
+
+            doneCallback(request.responseText);
+
+        }
+
+    };
+
+};
+
+ISR.utils.deleteFavoriteRouteStop = function(route, stop, element) {
+
+    var favorites_list =
+    ISR.templates.data.profile_page["favorites-container-route-stop-panel"].
+    favorites_list;
+
+    for (var i=0;i<favorites_list.length;i++) {
+
+        if (favorites_list[i].RouteId === route &&
+            favorites_list[i].StopId === stop) {
+
+            var record_id = favorites_list[i].RecordId;
 
         }
 
     }
 
-    var new_favorites_stringified = JSON.stringify(old_favorites);
+    ISR.utils.styling.functions.toggleFavoritePanelDeleteModal(element);
 
-    localStorage.setItem('my_bct_fav', new_favorites_stringified);
+    var doneCallback = function(response_text) {
+
+        var response = JSON.parse(response_text);
+
+        if (response.Type !== "success") {
+
+            console.log("Error deleting favorite: " + response.Message);
+
+            return false;
+
+        }
+
+        favorites_list.splice(i, 1);
+
+        element.parentNode.parentNode.removeChild(element.parentNode);
+
+    };
+
+    ISR.utils.makeAPIRequest(
+        "delete_favorite",
+        doneCallback,
+        { record_id: record_id }
+    );
 
 };
 
@@ -181,14 +291,14 @@ ISR.utils.goToMyRideSchedule = function(route, stop) {
         location_prefix = "index.html";
 //
 //    }
-//
+
 //    else if(window.location.toString().
 //            match(/\/default.aspx/)) {
 //
 //        location_prefix = "default.aspx";
 //
 //    }
-//
+
 //    else if(window.location.toString().
 //            match(/\/myride_deployment_sample.html/)) {
 //
@@ -196,44 +306,46 @@ ISR.utils.goToMyRideSchedule = function(route, stop) {
 //
 //    }
 
-    window.location =
-    location_prefix + "#routeschedules?route=" + route + "&" +
-    "stop=" + stop;
+    window.location = location_prefix + "#bctappindex?route=" + route +
+    "&" + "stop=" + stop;
 
 };
 
 ISR.utils.downloadFavoritesData = function() {
 
-    var favorites_request = new XMLHttpRequest;
+    var doneCallback = function(response_text) {
 
-    var favorites_api_url = "http://174.94.153.48:7777/TransitAPI/Favorites";
+        ISR.utils.styling.functions.toggleFavoritesContainerLoadingModal();
 
-    var favorites_request_body = JSON.stringify({
-        "UserId": 777,
-        "Action": "GET"
-    });
+        ISR.templates.data.
+        profile_page["favorites-container-route-stop-panel"].
+        favorites_list = JSON.parse(response_text);
 
-    favorites_request.open("POST", favorites_api_url);
-
-    favorites_request.setRequestHeader("Accept", "application/json");
-    favorites_request.setRequestHeader("Content-Type", "application/json");
-
-    favorites_request.send(favorites_request_body);
-
-    favorites_request.onreadystatechange = function() {
-
-        if (favorites_request.readyState === 4 &&
-            favorites_request.status === 200) {
-
-            ISR.templates.data.
-            profile_page["favorites-container-route-stop-panel"].
-            favorites_list = JSON.parse(favorites_request.responseText);
-
-            ISR.utils.templating.addFavoriteRouteStopPanelsToContainer();
-
-        }
+        ISR.utils.templating.addFavoriteRouteStopPanelsToContainer();
 
     };
+
+    ISR.utils.makeAPIRequest(
+        "get_favorites",
+        doneCallback
+    );
+
+};
+
+ISR.utils.createHashMapWithStopsInfoList = function(stops_info_JSON) {
+
+    var stops_info = JSON.parse(stops_info_JSON);
+
+    ISR.data.stops_info = {};
+
+    for (var i=0;i<stops_info.length;i++) {
+
+        ISR.data.stops_info[stops_info[i].Id] = {
+            Name: stops_info[i].Name,
+            Code: stops_info[i].Code
+        };
+
+    }
 
 };
 
@@ -241,9 +353,7 @@ ISR.utils.downloadStopsInfo = function() {
 
     if (localStorage.stop_data) {
 
-        JSON.parse(localStorage.stop_data);
-
-        ISR.data.stops_info = JSON.parse(stops_info_request.responseText);
+        ISR.utils.createHashMapWithStopsInfoList(localStorage.stop_data);
 
         ISR.utils.downloadFavoritesData();
 
@@ -251,33 +361,18 @@ ISR.utils.downloadStopsInfo = function() {
 
     }
 
-    var stops_info_request = new XMLHttpRequest;
+    var doneCallback = function(response_text) {
 
-    var stops_info_api_url = "http://174.94.153.48:7777/TransitApi/Stops/";
+        ISR.utils.createHashMapWithStopsInfoList(response_text);
 
-    var stops_info_request_body = JSON.stringify({ 
-        "AgencyId": "BCT"
-    });
-
-    stops_info_request.open("POST", stops_info_api_url);
-
-    stops_info_request.setRequestHeader("Accept", "application/json");
-    stops_info_request.setRequestHeader("Content-Type", "application/json");
-
-    stops_info_request.send(stops_info_request_body);
-
-    stops_info_request.onreadystatechange = function() {
-
-        if (stops_info_request.readyState === 4 &&
-            stops_info_request.status === 200) {
-
-            ISR.data.stops_info = JSON.parse(stops_info_request.responseText);
-
-            ISR.utils.downloadFavoritesData();
-
-        }
+        ISR.utils.downloadFavoritesData();
 
     };
+
+    ISR.utils.makeAPIRequest(
+        "get_stops_info",
+        doneCallback
+    );
 
 };
 
@@ -290,6 +385,14 @@ ISR.utils.init.general = {};
 ISR.utils.init.general.startingDomQueries = function() {
 
     /* Modules */
+
+    
+    ISR.dom.modals = {};
+
+    ISR.dom.modals["favorites-container-loading-modal"] = 
+    document.getElementById(
+        "favorites-container-loading-modal"
+    );
 
     ISR.dom.modules = {};
 
@@ -340,6 +443,42 @@ ISR.utils.styling = {};
 
 //Dynamic styling functions
 ISR.utils.styling.functions = {};
+
+ISR.utils.styling.functions.toggleFavoritesContainerLoadingModal = function() {
+
+    var target_modal = ISR.dom.modals["favorites-container-loading-modal"];
+
+    if (target_modal.classList.contains("module-hidden")) {
+
+        target_modal.classList.remove("module-hidden");
+
+    }
+
+    else {
+
+        target_modal.classList.add("module-hidden");
+
+    }
+
+};
+
+ISR.utils.styling.functions.toggleFavoritePanelDeleteModal = function(panel) {
+
+    var target_modal = panel.parentNode.children[0];
+
+    if (target_modal.classList.contains("module-hidden")) {
+
+        target_modal.classList.remove("module-hidden");
+
+    }
+
+    else {
+
+        target_modal.classList.add("module-hidden");
+
+    }
+
+};
 
 //Dynamic styling configutation
 ISR.utils.styling.config = {};

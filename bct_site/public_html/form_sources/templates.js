@@ -20,6 +20,19 @@ ISR.templates.profile_page["favorites-container-route-stop-panel"] = '' +
 
     '<div class="favorites-container-route-stop-panel">' +
 
+        '<div class="favorites-container-route-stop-panel-delete-modal ' +
+        'module-hidden">' +
+
+            '<div class="' +
+                'favorites-container-route-stop-panel-delete-modal-spinner"' +
+            '>' +
+
+                '<i class="fa fa-spinner fa-spin"></i>' +
+
+            '</div>' +
+
+        '</div>' +
+
         '<div class="favorites-container-route-stop-panel-item ' +
         'favorites-container-route-stop-panel-myride ' +
         'link-icon no-highlight ptr"\n\
@@ -42,7 +55,7 @@ ISR.templates.profile_page["favorites-container-route-stop-panel"] = '' +
         '<div class="favorites-container-route-stop-panel-item ' +
         'favorites-container-route-stop-panel-stop">' +
 
-            '{{ ROUTE_STOP_PANEL_STOP_ID }}' + ' - ' +
+            '[ID #{{ ROUTE_STOP_PANEL_STOP_CODE }}]' + ' - ' +
             '{{ ROUTE_STOP_PANEL_STOP_NAME }}' +
 
         '</div>' +
@@ -54,7 +67,7 @@ ISR.templates.profile_page["favorites-container-route-stop-panel"] = '' +
             '\'{{ ROUTE_STOP_PANEL_ROUTE }}\', ' + 
             '\'{{ ROUTE_STOP_PANEL_STOP_ID }}\', ' +
             'this' +
-        ');">' + 
+        ');">' +
 
             '<i class="fa fa-times-circle"></i>' +
 

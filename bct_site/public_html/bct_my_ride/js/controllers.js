@@ -17,14 +17,6 @@ function ($scope, $timeout, $q) {
     $scope.top_scope.stop_result_panel_top_container_class_name =
     "schedule-results-main-container";
 
-    $scope.$on('$viewContentLoaded', function() {
-
-        $scope.top_scope.route_schedules_module_loaded_deferred.resolve();
-
-        $scope.top_scope.route_schedules_module_loaded_deferred = $q.defer();
-
-    });
-
     $scope.loaded_results = {
         routes: [],
         stops: []
@@ -75,8 +67,8 @@ function ($scope, $timeout, $q) {
 }]);
 
 BCTAppControllers.controller('indexController', ['$scope', '$timeout',
-'nearestStopsService', 'recently_viewed_items',
-function ($scope, $timeout, nearestStopsService, recently_viewed_items) {
+'nearestStopsService', 'recently_viewed_items', '$q',
+function ($scope, $timeout, nearestStopsService, recently_viewed_items, $q) {
 
     //For ease of debugging (development only)
     window.index_scope = $scope;
@@ -102,6 +94,15 @@ function ($scope, $timeout, nearestStopsService, recently_viewed_items) {
             "nearest_bstops", new_state
         );
     };
+
+    
+    $scope.top_scope.index_controller_loaded_deferred = $q.defer();
+
+    $scope.$on('$viewContentLoaded', function() {
+
+        $scope.top_scope.index_controller_loaded_deferred.resolve();
+
+    });
 
     $scope.$on('$destroy', function() {
 

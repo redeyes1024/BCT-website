@@ -1924,7 +1924,7 @@ function (
         window.location =
         generalUIUtilities.addRouteAndStopParamsToUrl(route, stop);
 
-        $scope.goToScheduleFromProfilePage();
+        $scope.goToScheduleWithURLEncodedData();
 
     };
 
@@ -2188,9 +2188,7 @@ function (
 
     })();
 
-    $scope.route_schedules_module_loaded_deferred = $q.defer();
-
-    $scope.goToScheduleFromProfilePage = function() {
+    $scope.goToScheduleWithURLEncodedData = function() {
 
         var url = window.location.toString();
 
@@ -2216,19 +2214,9 @@ function (
 
         }
 
-        $scope.route_schedules_module_loaded_deferred.promise.then(function() {
+        $scope.toggleOverlayModule('schedule', route, stop);
 
-            $scope.query_data.schedule_search =
-            full_bstop_data.dict[stop].Name;
-
-            if (myride.dom_q.inputs.elements.rs_search_input) {
-
-                myride.dom_q.inputs.elements.rs_search_input.value =
-                $scope.query_data.schedule_search;
-
-            }
-
-        });
+        window.location = window.location.toString.replace(params[0], "");
 
     };
 
@@ -2236,12 +2224,14 @@ function (
 
         routeStopLandmarkTransformationService.linkRouteAndStopReferences();
 
-        $scope.goToScheduleFromProfilePage();
-
         $scope.stops = full_bstop_data.dict;
         $scope.routes = full_route_data.dict;
 
         $scope.show_main_loading_modal = false;
+
+        $scope.top_scope.index_controller_loaded_deferred.promise.then(
+            $scope.goToScheduleWithURLEncodedData
+        );
 
     });
 

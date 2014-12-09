@@ -164,8 +164,13 @@ ISR.utils.templating = {};
     function getRouteStopPanelStopId(route_stop_panel_data) {
         return route_stop_panel_data.StopId;
     }
+
+    function getRouteStopPanelStopCode(route_stop_panel_data) {
+        return ISR.data.stops_info[route_stop_panel_data.StopId].Code;
+    }
+
     function getRouteStopPanelStopName(route_stop_panel_data) {
-        return ISR.data.stops_info[route_stop_panel_data.StopId];
+        return ISR.data.stops_info[route_stop_panel_data.StopId].Name;
     }
 
     /* END Favorite Route Panel */
@@ -283,6 +288,7 @@ ISR.utils.templating = {};
         "{{ ROUTE_STOP_PANEL_AGENCY }}": getRouteStopPanelAgency,
         "{{ ROUTE_STOP_PANEL_ROUTE }}": getRouteStopPanelRoute,
         "{{ ROUTE_STOP_PANEL_STOP_ID }}": getRouteStopPanelStopId,
+        "{{ ROUTE_STOP_PANEL_STOP_CODE }}": getRouteStopPanelStopCode,
         "{{ ROUTE_STOP_PANEL_STOP_NAME }}": getRouteStopPanelStopName,
 
         "{{ ALERT_DAY_OF_WEEK }}": getAlertDay,
