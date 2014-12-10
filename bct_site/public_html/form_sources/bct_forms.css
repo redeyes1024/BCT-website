@@ -355,61 +355,64 @@ a.link-icon-rev {
     color: #FFF;
 }
 .favorites-container-column-names-delete,
+.favorites-container-column-names-myride {
+    text-align: center;
+}
+.favorites-container-column-names-delete,
 .favorites-container-column-names-myride,
 .favorites-container-route-stop-panel-delete,
 .favorites-container-route-stop-panel-myride {
     font-size: 1.5em;
-    text-align: center;
-    width: 1em;
-}
-.favorites-container-column-names-delete,
-.favorites-container-column-names-myride {
-    padding: 0em 0.5em;
 }
 .favorites-container-column-names-delete {
     position: relative;
+    width: 1.7em;
+}
+.favorites-container-route-stop-panel-item,
+.favorites-container-route-stop-panel-delete-icon {
+    padding: 0.4em;
+    vertical-align: middle;
+}
+.favorites-container-route-stop-panel-delete-icon {
+    
 }
 .favorites-container-route-stop-panel-delete-modal {
     position: absolute;
-    font-size: 1.5em;
-    top: 0em;
-    right: 0em;
-    height: 100%;
-    width: 2em;
+    height: calc(100% - 1px);
     text-align: center;
     background-color: rgba(255, 255, 255, 0.7);
+    width: 100%;
 }
 .favorites-container-route-stop-panel-delete-modal-spinner {
     height: 100%;
-    margin: 0.5em 0em 0em 0em;
+    margin: 0.4em 0em 0em 0em;
 }
 .favorites-container-column-names-route {
-    padding: 0em 0.5em;
+    width: 4.9em;
 }
 .favorites-container-column-names-route,
 .favorites-container-route-stop-panel-route {
-    width: 4em;
     text-align: center;
 }
 .favorites-container-column-names-myride {
-    padding: 0em calc(0.5em + 7.5px);
+    width: calc(2.5em - 2px);
 }
 .favorites-container-route-stop-panel {
     position: relative;
 }
 .favorites-container-route-stop-panel-item {
     display: table-cell;
-    padding: 0.5em;
 }
 .favorites-container-route-stop-panel-delete,
 .favorites-container-route-stop-panel-myride {
     vertical-align: middle;
 }
 .favorites-container-route-stop-panel-delete {
-    
+    position: relative;
+    padding: 0em;
 }
 .favorites-container-route-stop-panel-route {
-    
+    width: 4em;
 }
 .favorites-container-route-stop-panel-stop {
     

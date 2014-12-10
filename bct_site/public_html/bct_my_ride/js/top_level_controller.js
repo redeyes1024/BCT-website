@@ -2142,7 +2142,17 @@ function (
             profilePageService.downloadUserFavorites().
             then(function(res) {
 
-                favorites_data.favorites = res.data;
+                if (res.data === null) {
+
+                    favorites_data.favorites = [];
+
+                }
+
+                else {
+
+                    favorites_data.favorites = res.data;
+
+                }
 
             })["catch"](function() {
 
@@ -2216,7 +2226,7 @@ function (
 
         $scope.toggleOverlayModule('schedule', route, stop);
 
-        window.location = window.location.toString.replace(params[0], "");
+        window.location = window.location.toString().replace(params[0], "");
 
     };
 

@@ -237,7 +237,9 @@ ISR.utils.deleteFavoriteRouteStop = function(route, stop, element) {
 
         favorites_list.splice(i, 1);
 
-        element.parentNode.parentNode.removeChild(element.parentNode);
+        element.parentNode.parentNode.parentNode.removeChild(
+            element.parentNode.parentNode
+        );
 
     };
 
