@@ -137,7 +137,9 @@ window.myride.directories = {
 
 //Select the current directory from the above object
 window.myride.directories.site_roots.active =
+//START DEPLOYMENT_ROOT_TARGET
 window.myride.directories.site_roots.local;
+//END DEPLOYMENT_ROOT_TARGET
 
 window.myride.directories.paths.active =
 window.myride.directories.paths.my_ride;

@@ -101,4 +101,33 @@ def parse_config(sub_cts, parse_depth_counter, parent_prop_list):
 
 parse_config(config_file_cts, 1, [])
 
-pprint.pprint(result_dict)
+new_root_target_location = ""
+
+for new_root_name, new_root_location in result_dict['WEB_ROOTS']:
+    if args.new_root == new_root_name:
+        new_root_target_location = new_root_location
+        break
+
+if new_root_target_location == "":
+    exit("Unrecognized target root name: " + args.new_root + ".")
+
+def change_route_in_source(path_name, path):
+    target_file_path = result_dict['SOURCES_ROOT'] + path
+
+    with open(target_file_path) as target_file:
+        target_file_cts = target_file.read()
+        start_idx = re.finditer(r"START DEPLOYMENT_ROOT_TARGET", target_file_cts)
+        end_idx = re.finditer(r"END DEPLOYMENT_ROOT_TARGET", target_file_cts)
+        start_start_idx = start_idx.start()
+        start_end_idx = start_idx.end()
+        end_start_idx = end_idx.start()
+        end_end_idx = end_idx.end()
+        target_region = target_file_cts[start_start_idx:end_end_idx]
+        target_code = target_file_cts[start_end_idx:end_start_idx]
+        new_code = re.sub("site_roots\.\w+]", ("site_roots." + new_root_target_location), target_code)
+        target_file_cts.replace(target_region, new_code)
+        target_file.seek(0)
+        target_file.write(target_file_cts)
+
+for path_name, path in result_dict['PATHS']:
+    change_route_in_source(path_name, path)
