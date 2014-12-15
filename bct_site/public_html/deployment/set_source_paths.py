@@ -1,6 +1,5 @@
 import argparse
 import re
-import pprint
 
 parser = argparse.ArgumentParser()
 
@@ -103,31 +102,56 @@ parse_config(config_file_cts, 1, [])
 
 new_root_target_location = ""
 
-for new_root_name, new_root_location in result_dict['WEB_ROOTS']:
-    if args.new_root == new_root_name:
-        new_root_target_location = new_root_location
-        break
+valid_root_names = ""
+root_name_ctr = 0
+for new_root_name in result_dict['WEB_ROOTS'].keys():
+    valid_root_names += new_root_name
+    if (root_name_ctr != len(result_dict['WEB_ROOTS']) - 1):
+        valid_root_names += ", "
+    root_name_ctr += 1
 
-if new_root_target_location == "":
-    exit("Unrecognized target root name: " + args.new_root + ".")
+if args.new_root == None:
+    exit("Please supply a new root name.\nValid root names:\n" + valid_root_names)
+else:
+    for new_root_name, new_root_location in result_dict['WEB_ROOTS'].items():
+        if args.new_root == new_root_name:
+            new_root_target_location = new_root_location
+            break
 
-def change_route_in_source(path_name, path):
+    if new_root_target_location == "":
+        exit("Unrecognized target root name: " + args.new_root + ".\nValid root names:\n" + valid_root_names)
+
+def re_iter_to_list(re_iter):
+    match_list = []
+    for re_match in re_iter:
+        match_list.append(re_match)
+    return match_list
+
+def change_route_in_source(path):
     target_file_path = result_dict['SOURCES_ROOT'] + path
 
-    with open(target_file_path) as target_file:
+    with open(target_file_path, "r+") as target_file:
         target_file_cts = target_file.read()
-        start_idx = re.finditer(r"START DEPLOYMENT_ROOT_TARGET", target_file_cts)
-        end_idx = re.finditer(r"END DEPLOYMENT_ROOT_TARGET", target_file_cts)
-        start_start_idx = start_idx.start()
-        start_end_idx = start_idx.end()
-        end_start_idx = end_idx.start()
-        end_end_idx = end_idx.end()
-        target_region = target_file_cts[start_start_idx:end_end_idx]
-        target_code = target_file_cts[start_end_idx:end_start_idx]
-        new_code = re.sub("site_roots\.\w+]", ("site_roots." + new_root_target_location), target_code)
-        target_file_cts.replace(target_region, new_code)
-        target_file.seek(0)
-        target_file.write(target_file_cts)
+        start_idx = re.finditer(r"//START DEPLOYMENT_ROOT_TARGET", target_file_cts)
+        end_idx = re.finditer(r"//END DEPLOYMENT_ROOT_TARGET", target_file_cts)
 
-for path_name, path in result_dict['PATHS']:
-    change_route_in_source(path_name, path)
+        start_idx_list = re_iter_to_list(start_idx)
+        end_idx_list = re_iter_to_list(end_idx)
+
+        for i in range(len(start_idx_list)):
+            start_start_idx = start_idx_list[i].start()
+            start_end_idx = start_idx_list[i].end()
+            end_start_idx = end_idx_list[i].start()
+            end_end_idx = end_idx_list[i].end()
+
+            target_file_cts_list = list(target_file_cts)
+            target_code = target_file_cts[start_end_idx:end_start_idx]
+            new_code = re.sub("site_roots\.\w+", ("site_roots." + new_root_target_location), target_code)
+            target_file_cts_list[start_end_idx:end_start_idx] = list(new_code)
+
+            target_file.seek(0)
+            target_file.truncate()
+            target_file.write("".join(target_file_cts_list))
+
+for path in result_dict['PATHS'].values():
+    change_route_in_source(path)

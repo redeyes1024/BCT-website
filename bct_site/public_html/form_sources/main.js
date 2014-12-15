@@ -33,7 +33,9 @@ ISR.directories = {
 };
 
 ISR.directories.site_roots.active =
+//START DEPLOYMENT_ROOT_TARGET
 ISR.directories.site_roots.local;
+//END DEPLOYMENT_ROOT_TARGET
 
 ISR.directories.paths.active =
 ISR.directories.paths.form_sources;
