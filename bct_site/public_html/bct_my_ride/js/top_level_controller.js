@@ -4,8 +4,8 @@ BCTAppTopController.controller('BCTController', [
 
     '$scope', '$timeout', 'full_bstop_data', 'full_route_data', 'all_alerts',
     'full_landmark_data', '$compile', 'scrollingAlertsService',
-    'map_setting_defaults', //'scheduleWebSocket', 'scheduleSocketService',
-    'scheduleDownloadAndTransformation', 'googleMapsUtilities', '$q',
+    'map_setting_defaults', 'scheduleDownloadAndTransformation',
+    'googleMapsUtilities', '$q', 'timer_constants',
     'unitConversionAndDataReporting', 'miniScheduleService',
     'placeholderService', 'locationService', 'location_icons',
     'agency_filter_icons', 'results_exist', 'map_navigation_marker_indices',
@@ -22,8 +22,8 @@ function (
 
     $scope, $timeout, full_bstop_data, full_route_data, all_alerts,
     full_landmark_data, $compile, scrollingAlertsService,
-    map_setting_defaults, //scheduleWebSocket, scheduleSocketService,
-    scheduleDownloadAndTransformation, googleMapsUtilities, $q,
+    map_setting_defaults, scheduleDownloadAndTransformation,
+    googleMapsUtilities, $q, timer_constants,
     unitConversionAndDataReporting, miniScheduleService, placeholderService,
     locationService, location_icons, agency_filter_icons, results_exist,
     map_navigation_marker_indices, legend_icon_list,
@@ -60,32 +60,33 @@ function (
         "hide-scroll": true
     };
 
-    $scope.planner_dialog_styles = {
-        "trip-planner-dialog-start": false,
-        "trip-planner-dialog-finish": false,
-        "trip-planner-dialog-centered": false,
-        "error-dialog-centered": false,
-        "error-dialog-faded-in": false,
-        "error-dialog-faded-out": true
-    };
+    (function() {
 
-    $scope.nearest_stops_map_error_dialog_styles = {
-        "error-dialog-centered": false,
-        "error-dialog-faded-in": false,
-        "error-dialog-faded-out": true
-    };
+        function ErrorDialogStylesForNgClass() {
 
-    $scope.schedule_map_error_dialog_styles = {
-        "error-dialog-centered": false,
-        "error-dialog-faded-in": false,
-        "error-dialog-faded-out": true
-    };
+            this["error-dialog-centered"] = false;
+            this["error-dialog-faded-in"] = false;
+            this["error-dialog-faded-out"] = true;
+            this["error-dialog-behind"] = true;
 
-    $scope.full_schedule_error_dialog_styles = {
-        "error-dialog-centered": false,
-        "error-dialog-faded-in": false,
-        "error-dialog-faded-out": true
-    };
+        }
+
+        $scope.nearest_stops_map_error_dialog_styles =
+        new ErrorDialogStylesForNgClass;
+
+        $scope.schedule_map_error_dialog_styles =
+        new ErrorDialogStylesForNgClass;
+
+        $scope.full_schedule_error_dialog_styles =
+        new ErrorDialogStylesForNgClass;
+
+        $scope.planner_dialog_styles = new ErrorDialogStylesForNgClass;
+
+        $scope.planner_dialog_styles["trip-planner-dialog-start"] = false;
+        $scope.planner_dialog_styles["trip-planner-dialog-finish"] = false;
+        $scope.planner_dialog_styles["trip-planner-dialog-centered"] = false;
+
+    })();
 
     $scope.itinerary_selector_styles = {
         "trip-planner-itinerary-selector-pushed": false
@@ -107,23 +108,26 @@ function (
         "schedule-map-full-screen": false
     };
 
-    $scope.trip_planner_itinerary_step_container_size_0 = {
-        "trip-planner-itinerary-step-container-le-6": false,
-        "trip-planner-itinerary-step-container-le-8": false,
-        "trip-planner-itinerary-step-container-le-10": false
-    };
+    (function() {
 
-    $scope.trip_planner_itinerary_step_container_size_1 = {
-        "trip-planner-itinerary-step-container-le-6": false,
-        "trip-planner-itinerary-step-container-le-8": false,
-        "trip-planner-itinerary-step-container-le-10": false
-    };
+        function TripPlannerItineraryStepContainer() {
 
-    $scope.trip_planner_itinerary_step_container_size_2 = {
-        "trip-planner-itinerary-step-container-le-6": false,
-        "trip-planner-itinerary-step-container-le-8": false,
-        "trip-planner-itinerary-step-container-le-10": false
-    };
+            this["trip-planner-itinerary-step-container-le-6"] = false;
+            this["trip-planner-itinerary-step-container-le-8"] = false;
+            this["trip-planner-itinerary-step-container-le-10"] = false;
+
+        }
+
+        $scope.trip_planner_itinerary_step_container_size_0 =
+        new TripPlannerItineraryStepContainer;
+
+        $scope.trip_planner_itinerary_step_container_size_1 =
+        new TripPlannerItineraryStepContainer;
+
+        $scope.trip_planner_itinerary_step_container_size_2 =
+        new TripPlannerItineraryStepContainer;
+
+    })();
 
     $scope.trip_planner_title_header_style = {
         "myride-title-shadow": true
@@ -147,14 +151,6 @@ function (
             "alert-area-highlighted": false
         }
 
-    };
-
-    $scope.nearest_map_stops_title_styles = {
-        
-    };
-
-    $scope.nearest_map_stops_info_container_styles = {
-        
     };
 
     /* END CSS class expressions to be used to ng-class, with defaults */
@@ -196,14 +192,8 @@ function (
     $scope.show_trip_planner_title = false;
     $scope.show_trip_planner_options = false;
 
-    $scope.show_geocoder_error_dialog = false;
-
     $scope.show_trip_planner_itinerary_selector = false;
     $scope.show_trip_planner_itinerary_labels = false;
-
-    $scope.show_schedule_map_error_dialog = false;
-    $scope.show_full_schedule_error_dialog = false;
-    $scope.show_nearest_stops_map_error_dialog = false;
 
     $scope.show_schedule_result_date_pick_row_loading = false;
     $scope.show_schedule_result_date_pick_row_no_data = false;
@@ -1173,7 +1163,6 @@ function (
         error_field,
         dialog_styles,
         disableErrorAlert,
-        ng_show_flag_name,
         dialog_timeout_name,
         hide_in_progress_flag_name,
         display_time,
@@ -1183,9 +1172,8 @@ function (
 
         if (disableErrorAlert(dialog_styles)) { return false; }
 
+        dialog_styles["error-dialog-behind"] = false;
         dialog_styles["error-dialog-centered"] = true;
-//Test: hide with z-index instead
-        $scope[ng_show_flag_name] = true;
 
         $timeout(function() {
 
@@ -1203,10 +1191,10 @@ function (
 
             $timeout(function() {
 
-                $scope[ng_show_flag_name] = false;
+                dialog_styles["error-dialog-behind"] = true;
                 $scope[hide_in_progress_flag_name] = false;
 
-            }, 1000);
+            }, timer_constants.error_dialog_delays.general);
 
         }, display_time);
 
@@ -1281,7 +1269,6 @@ function (
             error_field,
             dialog_styles,
             disableErrorAlert,
-            ng_show_flag_name,
             dialog_timeout_name,
             hide_in_progress_flag_name,
             display_time,
@@ -1347,7 +1334,6 @@ function (
             error_field,
             dialog_styles,
             disableErrorAlert,
-            ng_show_flag_name,
             dialog_timeout_name,
             hide_in_progress_flag_name,
             display_time,
@@ -1465,7 +1451,6 @@ function (
             error_field,
             dialog_styles,
             disableErrorAlert,
-            ng_show_flag_name,
             dialog_timeout_name,
             hide_in_progress_flag_name,
             display_time,
@@ -1837,8 +1822,6 @@ function (
     $scope.schedule.nearest.times_and_diffs =
     $scope.mini_schedule_loading_template;
 
-    $scope.MINI_SCHEDULE_UPDATE_TIME_INTERVAL = 20000;
-
     $scope.updateAndPushSchedule = function (transformed_schedule) {
 
         var reprocessed_schedule = scheduleDownloadAndTransformation.
@@ -1854,7 +1837,7 @@ function (
 
             $scope.updateAndPushSchedule(reprocessed_schedule);
 
-        }, $scope.MINI_SCHEDULE_UPDATE_TIME_INTERVAL);
+        }, timer_constants.schedule_map.mini_schedule_update_interval_time);
 
     };
 
@@ -1994,8 +1977,6 @@ function (
     $scope.openTripPlannerMap = function() {
 
         $scope.safelyCloseOtherMapModules("trip_planner");
-
-        $scope.show_trip_planner_step_navigation_bar = false;
 
         $scope.show_map_overlay_module =  true;
 
@@ -2351,16 +2332,24 @@ function (
     $scope.agency_filter_icons = agency_filter_icons;
 
     $scope.enableAgencyFilter = function(agency) {
+
         var new_class = "";
 
         if ($scope.agency_filter_icons[agency].selection_class ===
             "agency-filter-icon-selected") {
+
             new_class = "";
+
         }
+
         else {
+
             new_class = "agency-filter-icon-selected";
+
         }
+
         $scope.agency_filter_icons[agency].selection_class = new_class;
+
     };
 
     $scope.changeURLHash = function(new_hash, model) {
@@ -2506,7 +2495,7 @@ function (
 
             var input_names = window.myride.dom_q.inputs.input_labels;
 
-            for (name in input_names) {
+            for (var name in input_names) {
 
                 if (name === current_input_name) {
 

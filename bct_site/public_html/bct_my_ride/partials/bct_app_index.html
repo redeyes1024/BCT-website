@@ -46,36 +46,7 @@
 
         </span>
 
-        <div class="search-area-contents">
-
-            <input type="text" id="route-stop-search-index-input"
-            class="search-input-field needsclick"
-            placeholder="Search">
-
-            <span class="search-submit-button search-top-buttons">
-                <i class="fa fa-search icon-lower-2 link-icon ptr"
-                ng-click="changeURLHash('routeschedules', 'schedule_search');
-                submitRouteStopSearch('click', 'index');">     
-                </i>
-            </span>
-
-            <span class="all-routes-button search-top-buttons">
-                <i class="fa fa-list-alt icon-lower-2 link-icon ptr"
-                ng-click="showAllRoutes('index');"></i>
-            </span>
-
-            <span class="search-clear-button search-top-buttons">
-                <i class="fa fa-times-circle icon-lower-2 link-icon ptr"
-                ng-click="clearSearch('schedule_search');"></i>
-            </span>
-
-            <inline-filter-icons></inline-filter-icons>
-
-        </div>
-
-        <div id="schedule-search-area-bottom">
-            <mobile-filter-icons></mobile-filter-icons>
-        </div>
+        <top-search-bar module="index_page"></top-search-bar>
 
     </div>
 

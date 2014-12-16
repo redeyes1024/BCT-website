@@ -8,12 +8,6 @@ function ($scope, $timeout, $q) {
     //For ease of debugging (development only)
     window.rs_scope = $scope;
 
-    myride.dom_q.inputs.elements.rs_search_input =
-    document.getElementById("route-stop-search-input");
-
-    myride.dom_q.inputs.elements.rs_search_input.value =
-    $scope.query_data.schedule_search;
-
     $scope.top_scope.stop_result_panel_top_container_class_name =
     "schedule-results-main-container";
 
@@ -258,14 +252,10 @@ warning_messages, recentlyViewedService, locationService, timer_constants) {
         dialog_styles["trip-planner-dialog-finish"] = false;
         dialog_styles["trip-planner-dialog-start"] = false;
 
-        $scope.top_scope.show_geocoder_error_dialog = true;
+        dialog_styles["error-dialog-behind"] = false;
 
-        $timeout(function() {
-
-            dialog_styles["error-dialog-faded-out"] = false;
-            dialog_styles["error-dialog-faded-in"] = true;
-
-        }, timer_constants.error_dialog_delays.geocoder.fade_gap);
+        dialog_styles["error-dialog-faded-out"] = false;
+        dialog_styles["error-dialog-faded-in"] = true;
 
         $scope.geocoder_error_dialog_timeout = $timeout(function() {
 
@@ -276,12 +266,13 @@ warning_messages, recentlyViewedService, locationService, timer_constants) {
 
             $timeout(function() {
 
-                $scope.top_scope.show_geocoder_error_dialog = false;
                 $scope.planner_error_alert_dialog_hide_in_progress = false;
 
-            }, timer_constants.error_dialog_delays.geocoder.full_hide);
+                dialog_styles["error-dialog-behind"] = true;
 
-        }, timer_constants.error_dialog_delays.geocoder.main);
+            }, timer_constants.error_dialog_delays.general.full_hide);
+
+        }, timer_constants.error_dialog_delays.general.main);
 
         $scope.geocoder_error_dialog_text =
         $scope.selectTripPlannerErrorMessage(error_field);
@@ -362,14 +353,10 @@ warning_messages, recentlyViewedService, locationService, timer_constants) {
 
         }
 
-        $scope.top_scope.show_geocoder_error_dialog = true;
+        dialog_styles["error-dialog-behind"] = false;
 
-        $timeout(function() {
-
-            dialog_styles["error-dialog-faded-out"] = false;
-            dialog_styles["error-dialog-faded-in"] = true;
-
-        }, timer_constants.error_dialog_delays.geocoder.fade_gap);
+        dialog_styles["error-dialog-faded-out"] = false;
+        dialog_styles["error-dialog-faded-in"] = true;
 
         $timeout.cancel($scope.geocoder_error_dialog_timeout);
 
@@ -380,11 +367,11 @@ warning_messages, recentlyViewedService, locationService, timer_constants) {
 
             $timeout(function() {
 
-                $scope.top_scope.show_geocoder_error_dialog = false;
+                dialog_styles["error-dialog-behind"] = true;
 
-            }, timer_constants.error_dialog_delays.geocoder.full_hide);
+            }, timer_constants.error_dialog_delays.general.full_hide);
 
-        }, timer_constants.error_dialog_delays.geocoder.main);
+        }, timer_constants.error_dialog_delays.general.main);
 
     };
 
@@ -795,6 +782,8 @@ warning_messages, recentlyViewedService, locationService, timer_constants) {
             $scope.top_scope.openTripPlannerMap();
 
         }
+
+        $scope.top_scope.show_trip_planner_step_navigation_bar = false;
 
         googleMapsUtilities.clearMap();
 

@@ -225,6 +225,7 @@ em.hint-text {
     padding: 0.5em 0em;
 }
 .search-area-contents input {
+    width: calc(100% - 1em);
     padding: 0em 0.2em;
 }
 .search-input-field {
@@ -408,6 +409,9 @@ em.hint-text {
 .error-dialog-faded-in {
     opacity: 1;
 }
+.error-dialog-behind {
+    z-index: -1 !important;
+}
 
 /* END Generic Classes */
 
@@ -425,15 +429,13 @@ em.hint-text {
     width: 100%;
     background-color: #FFF;
     border-bottom: 1px dotted #000;
+    text-align: center;
 }
 #index-schedule-search-bar {
     position: fixed;
     width: 100%;
     background-color: #FFF;
     z-index: 1;
-}
-#route-stop-search-index-input {
-    width: calc(100% - 0.5em);
 }
 #recent-accordion {
     text-align: left;
@@ -1083,10 +1085,6 @@ schedule-map-navigation-bar {
 .input-area {
     position: relative;
 }
-#route-stop-search-input {
-    width: calc(100% - 1em);
-    margin-left: 0.5em;
-}
 #schedule-search-area {
     background-color: #fff;
 }
@@ -1102,7 +1100,7 @@ schedule-map-navigation-bar {
 .schedule-results-icons-inline {
     display: table-cell;
 }
-#schedule-search-area-bottom {
+.schedule-search-area-bottom {
     display: none;
     width: 100%;
     padding: 0em 1em 0.5em;
@@ -1851,7 +1849,7 @@ iframe .trip-planner-dialog-finish {
     #schedule-search-clear-button-top {
         border-width: 0px 0px 0px 1px;
     }
-    #schedule-search-area-bottom {
+    .schedule-search-area-bottom {
         display: block;
     }
     .schedule-results-no-results-text {

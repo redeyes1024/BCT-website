@@ -1,0 +1,34 @@
+<div class="search-area-contents">
+
+    <input type="text" id="{{ input_id }}"
+    class="search-input-field needsclick"
+    placeholder="Search">
+
+    <span class="search-submit-button search-top-buttons">
+
+        <i class="fa fa-search link-icon icon-lower-2 ptr"
+        ng-click="submitRouteStopSearchWrapper();"></i>
+
+    </span>
+
+    <span class="all-routes-button search-top-buttons">
+
+        <i class="fa fa-list-alt icon-lower-2 link-icon ptr"
+        ng-click="showAllRoutesWrapper();"></i>
+
+    </span>
+
+    <span class="search-clear-button search-top-buttons">
+
+        <i class="fa fa-times-circle link-icon icon-lower-2 ptr"
+        ng-click="clearSearch('schedule_search');"></i>
+
+    </span>
+
+    <inline-filter-icons></inline-filter-icons>
+
+</div>
+
+<div class="schedule-search-area-bottom">
+    <mobile-filter-icons></mobile-filter-icons>
+</div>

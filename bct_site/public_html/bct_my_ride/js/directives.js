@@ -346,8 +346,7 @@ function(linkFunctions) {
 BCTApp.directive('tripPlannerDialog', [ function() {
 
     var template =
-    '<div id="trip-planner-dialog" ng-class="planner_dialog_styles"' +
-        'ng-show="show_geocoder_error_dialog">' +
+    '<div id="trip-planner-dialog" ng-class="planner_dialog_styles">' +
         '{{ geocoder_error_dialog_text }}' +
     '<div>';
 
@@ -362,8 +361,7 @@ BCTApp.directive('nearestStopsMapDialog', [ function() {
 
     var template =
     '<div id="nearest-stops-map-dialog" ' +
-    'ng-class="nearest_stops_map_error_dialog_styles"' +
-    'ng-show="show_nearest_stops_map_error_dialog">' +
+    'ng-class="nearest_stops_map_error_dialog_styles">' +
         '{{ nearest_stops_map_error_dialog_text }}' +
     '<div>';
 
@@ -379,7 +377,6 @@ BCTApp.directive('scheduleMapErrorDialog', [ function() {
     var template =
     '<div id="schedule-map-error-dialog" ' + 
     'ng-class="schedule_map_error_dialog_styles" ' +
-    'ng-show="show_schedule_map_error_dialog">' +
         '{{ schedule_map_error_dialog_text }}' +
     '<div>';
 
@@ -395,7 +392,6 @@ BCTApp.directive('fullScheduleErrorDialog', [ function() {
     var template =
     '<div id="full-schedule-error-dialog" ' + 
     'ng-class="full_schedule_error_dialog_styles" ' +
-        'ng-show="show_full_schedule_error_dialog">' +
         '{{ full_schedule_error_dialog_text }}' +
     '<div>';
 
@@ -642,6 +638,77 @@ BCTApp.directive('subPanelRecentRouteStop', [ function() {
         templateUrl: window.myride.directories.site_roots.active +
         window.myride.directories.paths.active +
         'partials/sub_panel_recent_route_stop.html'
+    };
+
+}]);
+
+BCTApp.directive('topSearchBar', [ '$timeout', function($timeout) {
+
+    function link(scope) {
+
+        var top_level_scope = scope.$parent.top_scope;
+
+        if (scope.module === "index_page") {
+
+            scope.input_id = "route-stop-search-index-input";
+
+            scope.submitRouteStopSearchWrapper = function() {
+
+                scope.top_scope.changeURLHash(
+                    'routeschedules', 'schedule_search'
+                );
+
+                top_level_scope.submitRouteStopSearch('click', 'index');
+
+            };
+
+            scope.showAllRoutesWrapper = function() {
+
+                top_level_scope.showAllRoutes('index');
+
+            };
+
+        }
+
+        else if (scope.module === "search_results_page") {
+
+            scope.input_id = "route-stop-search-input";
+
+            scope.submitRouteStopSearchWrapper = function() {
+
+                top_level_scope.submitRouteStopSearch('click', 'results');
+
+            };
+
+            scope.showAllRoutesWrapper = function() {
+
+                top_level_scope.showAllRoutes('schedule_search');
+
+            };
+
+            $timeout(function() {
+                
+                myride.dom_q.inputs.elements.rs_search_input =
+                document.getElementById("route-stop-search-input");
+
+                myride.dom_q.inputs.elements.rs_search_input.value =
+                top_level_scope.query_data.schedule_search;
+
+            }, 0);
+
+        }
+
+    }
+
+    return {
+        restrict: 'E',
+        scope: {
+            module: '@'
+        },
+        link: link,
+        templateUrl: window.myride.directories.site_roots.active +
+        window.myride.directories.paths.active +
+        'partials/top_search_bar.html'
     };
 
 }]);

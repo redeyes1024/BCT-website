@@ -1,41 +1,5 @@
 var BCTAppServices = angular.module('BCTAppServices', []);
 
-//BCTAppServices.service('scheduleSocketService', ['$q', 'scheduleWebSocket',
-//    function($q, scheduleWebSocket) {
-//
-//    var self = this;
-//    var currentCallbackId = 0;
-//    //this.callbacks = {};
-//
-//    this.sendRequest = function(request) {
-//        //var callbackId = self.getCallbackId();
-//
-//        //request.callback_id = callbackId;
-//        console.log('Sending request', request);
-//        scheduleWebSocket.send(request);
-//    };
-//    this.listener = function(data) {
-//        var messageObj = data;
-//        console.log("Received data from websocket: ", messageObj);
-//        if(callbacks.hasOwnProperty(messageObj.callback_id)) {
-//            console.log(callbacks[messageObj.callback_id]);
-//            $rootScope.$apply(self.callbacks[messageObj.callback_id].
-//            cb.resolve(messageObj.data));
-//            delete self.callbacks[messageObj.callbackID];
-//        }
-//    };
-////    this.getCallbackId = function() {
-////        currentCallbackId += 1;
-////        if(currentCallbackId > 10000) {
-////            currentCallbackId = 0;
-////        }
-////        return currentCallbackId;
-////    };
-//    this.echo = function(request) {
-//        self.sendRequest(request);
-//    };
-//}]);
-
 BCTAppServices.service('miniScheduleService', [ function() {
 
     var self = this;

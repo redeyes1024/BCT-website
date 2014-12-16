@@ -210,11 +210,10 @@ BCTAppValues.value('timer_constants', {
 
     error_dialog_delays: {
 
-        geocoder: {
+        general: {
 
             main: 3000,
-            full_hide: 1000,
-            fade_gap: 200
+            full_hide: 1000 //Length of opacity CSS3 transition
 
         }
 
@@ -223,6 +222,12 @@ BCTAppValues.value('timer_constants', {
     trip_planner: {
 
         update_request_time: 12000
+
+    },
+
+    schedule_map: {
+
+        mini_schedule_update_interval_time: 20000
 
     }
 
