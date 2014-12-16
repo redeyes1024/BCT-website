@@ -568,6 +568,16 @@ BCTAppValues.value('warning_messages', {
 
     },
 
+    nearest_stops_map: {
+
+        out_of_bounds:
+        "That location is out of bounds. Please try again.",
+
+        no_error_data:
+        "Nearest Stops Map error: Problem communicating with server."
+
+    },
+
     full_schedule: {
 
         no_error_data:

@@ -355,7 +355,7 @@ ISR.utils.createHashMapWithStopsInfoList = function(stops_info_JSON) {
 
 ISR.utils.downloadStopsInfo = function() {
 
-    if (localStorage.stop_data) {
+    if (localStorage && localStorage.stop_data) {
 
         ISR.utils.createHashMapWithStopsInfoList(localStorage.stop_data);
 
@@ -366,6 +366,10 @@ ISR.utils.downloadStopsInfo = function() {
     }
 
     var doneCallback = function(response_text) {
+
+        if (localStorage) {
+            localStorage.setItem('stop_data', response_text);
+        }
 
         ISR.utils.createHashMapWithStopsInfoList(response_text);
 

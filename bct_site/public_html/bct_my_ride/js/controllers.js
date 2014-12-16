@@ -813,11 +813,11 @@ warning_messages, recentlyViewedService, locationService, timer_constants) {
 BCTAppControllers.controller('nearestMapStopsController', ['$scope',
 '$timeout', 'googleMapsUtilities', 'selected_nearest_map_stop',
 'nearestMapStopsService', 'nearest_map_stop_distances',
-'nearest_map_stops_instructions',
+'nearest_map_stops_instructions', 'locationService',
 
 function ($scope, $timeout, googleMapsUtilities, selected_nearest_map_stop,
 nearestMapStopsService, nearest_map_stop_distances,
-nearest_map_stops_instructions) {
+nearest_map_stops_instructions, locationService) {
 
     //For ease of debugging (development only)
     window.nms_scope = $scope;
@@ -873,45 +873,75 @@ nearest_map_stops_instructions) {
 
     var add_drag_pin_dragend_listener;
 
+    var add_drag_pin_click_listener_callback = function(e) {
+
+        var clicked_lat = e.latLng.lat();
+        var clicked_lng = e.latLng.lng();
+
+        var click_within_bounds =
+        locationService.checkIfLocationWithinBounds({LatLng: {
+            Latitude: clicked_lat, Longitude: clicked_lng
+        }});
+
+        if (!click_within_bounds) {
+
+            $scope.alertUserToNearestStopsMapErrors("out_of_bounds");
+
+            add_drag_pin_click_listener = google.maps.event.addListenerOnce(
+
+                myride.dom_q.map.inst,
+                'click',
+                add_drag_pin_click_listener_callback
+
+            );
+
+            return true;
+
+        }
+
+        $scope.top_scope.nearestMapDragendDisplayStops(
+            clicked_lat, clicked_lng
+        );
+
+        nearest_map_stops_instructions.selected =
+        nearest_map_stops_instructions.clicked;
+
+        var marker =
+        myride.dom_q.map.overlays.nearest_map_draggable.default.marker =
+        new google.maps.Marker({
+            map: myride.dom_q.map.inst,
+            position: e.latLng,
+            draggable: true
+        });
+
+        add_drag_pin_dragend_listener = google.maps.event.addListener(
+            marker,
+            'dragend',
+            function() {
+
+                var lat = this.getPosition().lat();
+                var lng = this.getPosition().lng();
+
+                $scope.top_scope.nearestMapDragendDisplayStops(lat, lng);
+
+            }
+        );
+
+    };
+
     var add_drag_pin_click_listener = google.maps.event.addListenerOnce(
 
         myride.dom_q.map.inst,
         'click',
-        function(e) {
-
-            $scope.top_scope.nearestMapDragendDisplayStops(
-                e.latLng.lat(), e.latLng.lng()
-            );
-
-            nearest_map_stops_instructions.selected =
-            nearest_map_stops_instructions.clicked;
-
-            var marker =
-            myride.dom_q.map.overlays.nearest_map_draggable.default.marker =
-            new google.maps.Marker({
-                map: myride.dom_q.map.inst,
-                position: e.latLng,
-                draggable: true
-            });
-
-            add_drag_pin_dragend_listener = google.maps.event.addListener(
-                marker,
-                'dragend',
-                function() {
-
-                    var lat = this.getPosition().lat();
-                    var lng = this.getPosition().lng();
-
-                    $scope.top_scope.nearestMapDragendDisplayStops(lat, lng);
-
-                }
-            );
-
-        }
+        add_drag_pin_click_listener_callback
 
     );
 
     $scope.$on("$destroy", function() {
+
+        $timeout.cancel(
+            $scope.top_scope.nearest_stops_map_error_dialog_timeout
+        );
 
         if (add_drag_pin_dragend_listener) {
 

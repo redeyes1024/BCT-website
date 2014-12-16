@@ -69,6 +69,12 @@ function (
         "error-dialog-faded-out": true
     };
 
+    $scope.nearest_stops_map_error_dialog_styles = {
+        "error-dialog-centered": false,
+        "error-dialog-faded-in": false,
+        "error-dialog-faded-out": true
+    };
+
     $scope.schedule_map_error_dialog_styles = {
         "error-dialog-centered": false,
         "error-dialog-faded-in": false,
@@ -197,6 +203,7 @@ function (
 
     $scope.show_schedule_map_error_dialog = false;
     $scope.show_full_schedule_error_dialog = false;
+    $scope.show_nearest_stops_map_error_dialog = false;
 
     $scope.show_schedule_result_date_pick_row_loading = false;
     $scope.show_schedule_result_date_pick_row_no_data = false;
@@ -1177,7 +1184,7 @@ function (
         if (disableErrorAlert(dialog_styles)) { return false; }
 
         dialog_styles["error-dialog-centered"] = true;
-
+//Test: hide with z-index instead
         $scope[ng_show_flag_name] = true;
 
         $timeout(function() {
@@ -1185,7 +1192,7 @@ function (
             dialog_styles["error-dialog-faded-out"] = false;
             dialog_styles["error-dialog-faded-in"] = true;
 
-        }, 200);
+        });
 
         $scope[dialog_timeout_name] = $timeout(function() {
 
@@ -1284,6 +1291,72 @@ function (
 
     };
 
+    $scope.nearest_stops_map_error_dialog_text = "Default Dialog Text";
+
+    $scope.selectNearestStopsMapErrorMessage = function(error_field) {
+
+        var nearest_stops_map_error_dialog_text;
+
+        if (!error_field) {
+
+            nearest_stops_map_error_dialog_text =
+            warning_messages.nearest_stops_map.no_error_data;
+
+            console.log(
+                "Nearest Stops Map error: problem communicating with server"
+            );
+
+        }
+             
+        else if (error_field === "out_of_bounds") {
+
+            nearest_stops_map_error_dialog_text =
+            warning_messages.nearest_stops_map.out_of_bounds;
+
+            console.log(
+                "Nearest Stops Map error: Out of Bounds."
+            );
+
+         }
+
+         return nearest_stops_map_error_dialog_text;
+
+    };
+
+    $scope.alertUserToNearestStopsMapErrors = function(error_field) {
+
+        var dialog_styles = $scope.nearest_stops_map_error_dialog_styles;
+
+        var disableErrorAlert =
+        $scope.checkIfShouldDisableNearestStopsMapErrorDialog;
+
+        var ng_show_flag_name = "show_nearest_stops_map_error_dialog";
+
+        var dialog_timeout_name = "nearest_stops_map_error_dialog_timeout";
+
+        var hide_in_progress_flag_name =
+        "nearest_stops_map_error_dialog_hide_in_progress";
+
+        var display_time = 3000;
+
+        var display_text_name = "nearest_stops_map_error_dialog_text";
+
+        var displayTextSelector = $scope.selectNearestStopsMapErrorMessage;
+
+        $scope.alertUserToMainModuleError(
+            error_field,
+            dialog_styles,
+            disableErrorAlert,
+            ng_show_flag_name,
+            dialog_timeout_name,
+            hide_in_progress_flag_name,
+            display_time,
+            display_text_name,
+            displayTextSelector
+        );
+
+    };
+
     $scope.schedule_map_error_dialog_text = "Default Dialog Text";
 
     $scope.selectScheduleMapErrorMessage = function(error_field) {
@@ -1324,6 +1397,26 @@ function (
         }
 
         return schedule_map_error_dialog_text;
+
+    };
+
+    $scope.nearest_stops_map_error_dialog_hide_in_progress = false;
+
+    $scope.checkIfShouldDisableNearestStopsMapErrorDialog = function(
+        dialog_styles
+    ) {
+
+        var disable_nearest_stops_map_error_dialog = false;
+
+        if ($scope.full_schedule_error_dialog_hide_in_progress ||
+            dialog_styles["error-dialog-faded-in"] ||
+            !$scope.show_map_overlay_module) {
+
+            disable_nearest_stops_map_error_dialog = true;
+
+        }
+
+        return disable_nearest_stops_map_error_dialog;
 
     };
 

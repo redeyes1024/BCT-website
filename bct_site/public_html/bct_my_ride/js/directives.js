@@ -346,10 +346,26 @@ function(linkFunctions) {
 BCTApp.directive('tripPlannerDialog', [ function() {
 
     var template =
-        '<div id="trip-planner-dialog" ng-class="planner_dialog_styles"' +
-            'ng-show="show_geocoder_error_dialog">' +
-            '{{ geocoder_error_dialog_text }}' +
-        '<div>';
+    '<div id="trip-planner-dialog" ng-class="planner_dialog_styles"' +
+        'ng-show="show_geocoder_error_dialog">' +
+        '{{ geocoder_error_dialog_text }}' +
+    '<div>';
+
+    return {
+        restrict: 'E',
+        template: template
+    };
+
+}]);
+
+BCTApp.directive('nearestStopsMapDialog', [ function() {
+
+    var template =
+    '<div id="nearest-stops-map-dialog" ' +
+    'ng-class="nearest_stops_map_error_dialog_styles"' +
+    'ng-show="show_nearest_stops_map_error_dialog">' +
+        '{{ nearest_stops_map_error_dialog_text }}' +
+    '<div>';
 
     return {
         restrict: 'E',
@@ -361,11 +377,11 @@ BCTApp.directive('tripPlannerDialog', [ function() {
 BCTApp.directive('scheduleMapErrorDialog', [ function() {
 
     var template =
-        '<div id="schedule-map-error-dialog" ' + 
-        'ng-class="schedule_map_error_dialog_styles" ' +
-            'ng-show="show_schedule_map_error_dialog">' +
-            '{{ schedule_map_error_dialog_text }}' +
-        '<div>';
+    '<div id="schedule-map-error-dialog" ' + 
+    'ng-class="schedule_map_error_dialog_styles" ' +
+    'ng-show="show_schedule_map_error_dialog">' +
+        '{{ schedule_map_error_dialog_text }}' +
+    '<div>';
 
     return {
         restrict: 'E',
@@ -377,11 +393,11 @@ BCTApp.directive('scheduleMapErrorDialog', [ function() {
 BCTApp.directive('fullScheduleErrorDialog', [ function() {
 
     var template =
-        '<div id="full-schedule-error-dialog" ' + 
-        'ng-class="full_schedule_error_dialog_styles" ' +
-            'ng-show="show_full_schedule_error_dialog">' +
-            '{{ full_schedule_error_dialog_text }}' +
-        '<div>';
+    '<div id="full-schedule-error-dialog" ' + 
+    'ng-class="full_schedule_error_dialog_styles" ' +
+        'ng-show="show_full_schedule_error_dialog">' +
+        '{{ full_schedule_error_dialog_text }}' +
+    '<div>';
 
     return {
         restrict: 'E',

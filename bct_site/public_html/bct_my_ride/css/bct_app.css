@@ -1609,17 +1609,15 @@ trip-planner-navigation-bar {
 }
 #schedule-map-error-dialog,
 #trip-planner-dialog,
+#nearest-stops-map-dialog,
 #full-schedule-error-dialog {
     background-color: #F2CD00;
     position: absolute;
-    z-index: 1029;
+    z-index: 1030;
     border-radius: 10px;
     padding: 0.5em;
     -webkit-transition: opacity 1s;
     transition: opacity 1s;
-}
-iframe #trip-planner-dialog {
-    position: fixed;
 }
 .trip-planner-dialog-start,
 .trip-planner-dialog-finish {
@@ -1659,7 +1657,7 @@ iframe .trip-planner-dialog-finish {
 /* START Nearest Map Stops */
 
 #nearest-map-stops {
-    
+    position: relative;
 }
 .nearest-map-stops-title {
     box-shadow: 0px 6px 6px -5px #000;
