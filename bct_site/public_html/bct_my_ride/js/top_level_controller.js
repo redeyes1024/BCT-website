@@ -1985,8 +1985,6 @@ function (
         $scope.map_full_screen_return_button_message =
         $scope.map_full_screen_return_button_messages.planner;
 
-        $scope.show_trip_planner_itinerary_selector = true;
-
         $scope.toggleShowsAndClasses("trip_planner");
 
     };
@@ -2084,6 +2082,8 @@ function (
         googleMapsUtilities.createDummyInfoWindow("trip_points");
 
         $scope.show_trip_planner_itinerary_selector = false;
+
+        $scope.show_schedule_map_loading_modal = false;
 
     };
 

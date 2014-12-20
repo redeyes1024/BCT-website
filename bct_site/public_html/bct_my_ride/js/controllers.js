@@ -235,8 +235,6 @@ warning_messages, recentlyViewedService, locationService, timer_constants) {
 
     $scope.alertUserToTripPlannerErrors = function(error_field) {
 
-        $scope.top_scope.show_trip_planner_itinerary_selector = false;
-        $scope.top_scope.show_schedule_map_loading_modal = false;
         myride.dom_q.inputs.trip[0].focus();
 
         var dialog_styles = $scope.top_scope.planner_dialog_styles;
@@ -315,7 +313,6 @@ warning_messages, recentlyViewedService, locationService, timer_constants) {
     ) {
 
         $scope.top_scope.show_trip_planner_itinerary_selector = false;
-        $scope.top_scope.show_schedule_map_loading_modal = false;
 
         var dialog_styles = $scope.top_scope.planner_dialog_styles;
 
@@ -593,7 +590,13 @@ warning_messages, recentlyViewedService, locationService, timer_constants) {
         ).
         then(function(all_coords) {
 
-            if (!$scope.checkForGeocoderErrors(all_coords)) { return false; }
+            if (!$scope.checkForGeocoderErrors(all_coords)) {
+
+                $scope.top_scope.show_schedule_map_loading_modal = false;
+
+                return false;
+
+            }
 
             var start_coords = all_coords[0];
             var finish_coords = all_coords[1];
@@ -620,6 +623,8 @@ warning_messages, recentlyViewedService, locationService, timer_constants) {
                 finish_coords
             ).then(function(res) {
 
+                $scope.top_scope.show_schedule_map_loading_modal = false;
+
                 if (!res.data.planField) {
 
                     $scope.alertUserToTripPlannerErrors(res.data.errorField);
@@ -641,7 +646,7 @@ warning_messages, recentlyViewedService, locationService, timer_constants) {
                     finish: $scope.top_scope.trip_inputs.finish
                 });
 
-                if ($scope.top_scope.show_trip_planner_title) {
+                if ($scope.trip_planner_is_open) {
 
                     var trip_planner_itineraries_count =
                     res.data.planField.itinerariesField.length;
@@ -684,12 +689,6 @@ warning_messages, recentlyViewedService, locationService, timer_constants) {
                 );
 
                 $scope.top_scope.show_trip_planner_itinerary_labels = true;
-
-                $scope.top_scope.show_schedule_map_loading_modal = false;
-
-                //N.B. "catch" method is not used with the dot operator due
-                //to the fact that the YUI Compressor (which uses the Rhino
-                //Engine) reserves this word for try/catch statements
 
             })["catch"](function() {
 

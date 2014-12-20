@@ -97,6 +97,14 @@
         "Magic strings" and "magic numbers" are avoided whenever possible.
         Constants with descriptive names should be used instead.
 
+    8. Additional Comments
+
+        The "catch" method of certain promises (especially those returned
+        from calls to $http) is referenced with square bracket syntax instead
+        of dot syntax to accomodate minification software if and when there
+        is a conflict with the name of this method and the "catch" part of a
+        try/catch statement.
+
 */
 
 //(function() {
