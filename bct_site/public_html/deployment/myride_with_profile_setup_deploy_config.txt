@@ -1,0 +1,21 @@
+#WEB_ROOTS
+    ##ISR
+    remote_isr
+    ##BCT
+    remote
+    ##LOCAL
+    local
+#SOURCES_ROOT
+    /Users/Andrew/NetBeansProjects/ISR/BCT-website/bct_site/public_html/
+#PATHS
+    ##MYRIDE
+    bct_my_ride/js/main.js
+    ##PROFILE
+    form_sources/main.js
+#SOURCES_LIST_FILE
+    ./myride_with_profile_sources_list.txt
+#MINIFY_SETTINGS
+    ##JS
+    true
+    ##CSS
+    true
