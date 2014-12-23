@@ -19,3 +19,8 @@
     true
     ##CSS
     true
+#MINIFIED_SOURCE_OUTPUT_NAMES
+    ##JS
+    myride_with_profile_scripts.js
+    ##CSS
+    myride_with_profile_stylesheets.css

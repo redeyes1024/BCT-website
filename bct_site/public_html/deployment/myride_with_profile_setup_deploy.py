@@ -1,6 +1,7 @@
 import os.path
 import re
 import subprocess
+import shlex
 
 class pathsToConfigFile:
 
@@ -186,17 +187,17 @@ def check_config_file_result_dictionary():
     if "SOURCES_ROOT" not in config_dict:
 
         error_message = "No sources root is defined in the configuration file. Please add a path under the " + \
-        "#SOURCES_ROOT header."
+            "#SOURCES_ROOT header."
 
     elif "PATHS" not in config_dict:
 
         error_message = "No target paths are defined in the configuration file. Please add one or more paths " + \
-        "under the #PATHS header, each prefixed with two hash marks (##)."
+            "under the #PATHS header, each prefixed with two hash marks (##)."
 
     elif "WEB_ROOTS" not in config_dict:
 
         error_message = "No alternate web root names are defined in the configuration file. Please add one " + \
-        "or more paths under the #WEB_ROOTS header, each prefixed with two hash marks (##)."
+            "or more paths under the #WEB_ROOTS header, each prefixed with two hash marks (##)."
 
     elif "SOURCES_LIST_FILE" not in config_dict:
 
@@ -205,7 +206,12 @@ def check_config_file_result_dictionary():
     elif "MINIFY_SETTINGS" not in config_dict:
 
         error_message = "No minification settings are defined in the configuration file. Please add one or " + \
-        "more types under the #MINIFY_SETTINGS header, each prefixed with two hash marks (##)."
+            "more types under the #MINIFY_SETTINGS header, each prefixed with two hash marks (##)."
+
+    elif "MINIFIED_SOURCE_OUTPUT_NAMES" not in config_dict:
+
+        error_message = "No minified sources output filenames are defined in the configuration file. Please add " + \
+            "one or more types under the #MINIFIED_SOURCE_OUTPUT_NAMES header, each prefixed with two hash marks (##)."
 
     return error_message
 
@@ -355,16 +361,131 @@ def change_web_root_in_target_files():
 
     config_dict = configFileParseOutputDictionary.dict
 
-    for path in config_dict['PATHS'].values():
+    for path in config_dict["PATHS"].values():
 
         change_route_in_source(path)
 
+def run_shell_command(cmd, cmd_args_dict_list):
+
+    extra_space = " "
+
+    full_cmd_sanitized = cmd + extra_space
+
+    for cmd_arg_dict in cmd_args_dict_list:
+
+        extra_space = "" if cmd_arg_dict["prefix"] == "" else " "
+        argument_prefix = "" if cmd_arg_dict["prefix"] == "" else shlex.quote(cmd_arg_dict["prefix"])
+
+        full_cmd_sanitized += argument_prefix + extra_space + shlex.quote(cmd_arg_dict["argument"]) + " "
+
+    cur_subprocess = subprocess.Popen(full_cmd_sanitized, shell=True)
+
+    cur_subprocess.wait()
+
+    stdout_output, stderr_output = cur_subprocess.communicate()
+
+    return (stdout_output, stderr_output)
+
+def get_source_list(source_type):
+
+    source_list_path = configFileParseOutputDictionary.dict["SOURCES_LIST_FILE"]
+
+    with open(source_list_path) as source_list_file:
+
+        source_list_file_cts = source_list_file.read()
+
+    source_matches = []
+
+    if source_type == "css":
+
+        source_matches = re.findall('href=\".*?\"', source_list_file_cts)
+
+        for i in range(0, len(source_matches)):
+
+            source_matches[i] = re.sub("\"|(href=)", "", source_matches[i])
+
+    elif source_type == "js":
+
+        source_matches = re.findall('src=\".*\"', source_list_file_cts)
+
+        source_matches = [m for m in source_matches if "http" not in m]
+
+        for i in range(0, len(source_matches)):
+
+            source_matches[i] = re.sub("\"|(src=)", "", source_matches[i])
+
+    return source_matches
+
+def concatenate_source_file_list_onto_temp_file(source_list_name, source_list):
+
+    temp_concat_file_name = "myride_with_profile_setup_deploy_concatenated_sources_temp." + source_list_name
+
+    source_file_parent_path = configFileParseOutputDictionary.dict["SOURCES_ROOT"]
+
+    temp_concat_file = open(temp_concat_file_name, "w")
+
+    for source_file_path in source_list:
+
+        full_source_path = source_file_parent_path + source_file_path
+
+        with open(full_source_path, "r") as cur_source_file:
+
+            cur_source_file_cts = cur_source_file.read()
+
+            temp_concat_file.write(cur_source_file_cts)
+
+            temp_concat_file.write("\n")
+
+    temp_concat_file.close()
+
+    return temp_concat_file_name
+
 def compress_all_sources():
 
-    bash_command = "bash"
+    '''
+        The js and css minification software used here is "minify" from npm.
+        Choosing different minification software will necessitate a rewrite of this function.
+    '''
 
-    proc = subprocess.Popen(bash_command, shell = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+    config_dict = configFileParseOutputDictionary.dict
 
-    proc.wait()
+    source_list_dict = {"css": get_source_list("css"), "js": get_source_list("js")}
+
+    for source_list_name, source_list in source_list_dict.items():
+
+        minify_this_type = config_dict["MINIFY_SETTINGS"][source_list_name.upper()]
+
+        compressed_sources_file_output_name = config_dict["MINIFIED_SOURCE_OUTPUT_NAMES"][source_list_name.upper()]
+
+        temp_concat_file_name = concatenate_source_file_list_onto_temp_file(source_list_name, source_list)
+
+        if minify_this_type == "true":
+
+            minify_args = [
+                {"prefix": "", "argument": temp_concat_file_name},
+                {"prefix": "-o", "argument": compressed_sources_file_output_name}
+            ]
+
+            print("\nMinifying ." + source_list_name + " files...")
+
+            run_shell_command("minify", minify_args)
+
+            os.remove(temp_concat_file_name)
+
+        elif minify_this_type == "false":
+
+            print("\nSkipping minify step for ." + source_list_name + " files.")
+
+            concat_only_args = [
+                {"prefix": "", "argument": temp_concat_file_name},
+                {"prefix": "", "argument": compressed_sources_file_output_name}
+            ]
+
+            run_shell_command("mv", concat_only_args)
+
+        else:
+
+            exit("Unexpected minifier configuration: " + minify_this_type + ".\nPlease use either \"true\" or " +
+                 "\"false\" for the items under the #MINIFIED_SOURCE_OUTPUT_NAMES header")
 
 main()
