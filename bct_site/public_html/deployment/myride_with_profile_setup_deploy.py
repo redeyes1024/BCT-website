@@ -1,26 +1,96 @@
+"""This script performs a variety of tasks necessary to prepare MyRide and the associated Profile Page for deployment.
+
+Most of the configuration is set in a file, typically in the same directory, with a default path and filename that
+are set from within the class PathsToConfigFile. The default can only be overridden on a per execution basis, when
+the user is prompted to do so.
+
+*** CONFIGURATION FILE CONTENTS ***
+
+The configuration file contains the following information needed to prepare the project for deployment:
+
+1) WEB_ROOTS: Alternate web roots that the project will point to when requesting resources (HTML templates, icons, etc).
+
+2) SOURCES_ROOT: The absolute path to the local project folder. This is used for "source compression", i.e., the
+process of either minifying (or just concatenating, see below) all of the JavaScript and CSS sources needed for
+the project.
+
+3) PATHS: The paths to and filenames of the target JS scripts which set the web root for the project modules. These
+JS scripts are typically named main.js. This Python script automatically changes the line in which one of the alternate
+web roots are selected. The line is targeted by being surrounded (on different lines) by the target comments which are
+set in the class JavaScriptFileTargetExpressions.
+
+4) SOURCES_LIST_FILE: The path to and filename of a file containing the HTML tags pointing to all of the project
+sources. For local deployment (i.e. of non-compressed sources), these are the same tags that are found at the top of
+the index.html files (one for both the Profile Page and MyRide). For example, any new project source file that is
+created or library that is to be added, in addition to the <script> (or <link> in the case of stylesheets) that is
+added to the appropriate index.html file, a copy of this tag must be added to the Sources List File, in the same
+order as it appears in the index.html file. This Python script captures the paths to each source and infers their
+type (either JS or CSS) based on the attributes of the HTML tag that references them.
+
+5) MINIFY_SETTINGS: In case there is a conflict between the minifier (the project currently uses minify from NPM) and
+either the JS or CSS sources, the minification step can be skipped for either of these source types. This feature
+is meant to be a stop-gap measure in case the project requires deployment but any conflict between the minifier
+and the sources has not yet been resolved. The word "false" under either of the sub-headers (which are the names
+of source types) indicates that the minification step for all sources of this type is to be skipped; otherwise
+it must be set to "true" for default behavior.
+
+6) MINIFIED_SOURCE_OUTPUT_NAMES: One output file is generated for each of the types of sources that are "compressed"
+in this script. Each of these files contains the minified (or concatenated) contents of all of the sources of their
+corresponding type. Note that these "compressed" files are directly referenced on the site which will contain both
+MyRide and the Profile Page. Therefore, if and when their names are changed, the references in the containing site
+must be updated to reflect these name changes.
+
+*** CONFIGURATION FILE FORMATTING ***
+
+The configuration file is formatted in a simple, nested manner. If formatted correctly, this script parses the file
+into a Python dictionary, whose nested properties are then referenced to get the necessary configuration parameters.
+When this script is executed, if any of the properties are missing (or unreadable), the script will exit immediately,
+indicating where the problem lies in the configuration file, via an error message. The configuration file's format
+follows these rules:
+
+1) Each of the headers is nested at some level, which corresponds to a level of nesting within a Python dictionary,
+referred to as the "configuration dictionary". Headers which begin with a hash mark (#) will become the top-level
+properties of the configuration dictionary; headers which begin with two hash marks (##) will become their properties,
+etc. In this way, nested properties and their values can be set without having to hard-code them into a configuration
+dictionary, for example, directly into this script.
+
+2) All headers must be in UPPER CASE.
+
+3) Values are set one line beneath the headers.
+
+4) A uniform 4-space indention for each level of nesting is recommended.
+
+5) Avoid blank lines and excess whitespace between headers and other headers, as well as headers and their values.
+"""
+
 import os.path
 import re
 import subprocess
 import shlex
 
-class pathsToConfigFile:
+class PathsToConfigFile:
 
     default = "./myride_with_profile_setup_deploy_config.txt"
     current = default
 
-class configFileParseOutputDictionary:
+class ConfigFileParseOutputDictionary:
 
     dict = {}
 
-class userSelectedSettings:
+class UserSelectedSettings:
 
     web_root_name = ""
+
+class JavaScriptFileTargetExpressions:
+
+    start = "//START DEPLOYMENT_ROOT_TARGET"
+    end = "//END DEPLOYMENT_ROOT_TARGET"
 
 def main():
 
     prompt_for_path_confirmation()
 
-    with open(pathsToConfigFile.current) as config_file:
+    with open(PathsToConfigFile.current) as config_file:
 
         config_file_cts = config_file.read()
 
@@ -36,7 +106,7 @@ def main():
 
 def prompt_for_path_confirmation():
 
-    print("The configuration file path is: " + pathsToConfigFile.current + "\n\nIs this correct? Y/N")
+    print("The configuration file path is: " + PathsToConfigFile.current + "\n\nIs this correct? Y/N")
 
     config_path_resp = input()
 
@@ -68,7 +138,7 @@ def check_config_file_path(new_path_to_config):
 
     else:
 
-        pathsToConfigFile.current = new_path_to_config
+        PathsToConfigFile.current = new_path_to_config
 
         prompt_for_path_confirmation()
 
@@ -104,7 +174,7 @@ def parse_config_file(sub_cts, parse_depth_counter, parent_prop_list):
 
     if label_counter == 0:
 
-        parent_dict = configFileParseOutputDictionary.dict
+        parent_dict = ConfigFileParseOutputDictionary.dict
 
         for parent_prop in parent_prop_list[:-1]:
 
@@ -154,11 +224,11 @@ def parse_config_file(sub_cts, parse_depth_counter, parent_prop_list):
 
     if len(parent_prop_list) == 0:
 
-        configFileParseOutputDictionary.dict = sub_result_dict
+        ConfigFileParseOutputDictionary.dict = sub_result_dict
 
     else:
 
-        parent_dict = configFileParseOutputDictionary.dict
+        parent_dict = ConfigFileParseOutputDictionary.dict
 
         for parent_prop in parent_prop_list[:len(parent_prop_list)-1]:
 
@@ -180,7 +250,7 @@ def parse_config_file(sub_cts, parse_depth_counter, parent_prop_list):
 
 def check_config_file_result_dictionary():
 
-    config_dict = configFileParseOutputDictionary.dict
+    config_dict = ConfigFileParseOutputDictionary.dict
 
     error_message = ""
 
@@ -241,7 +311,7 @@ def prompt_for_settings_check():
 
     if settings_check_resp.upper() == "N":
 
-        exit("Please alter the configuration file, found under this path: " + pathsToConfigFile.current)
+        exit("Please alter the configuration file, found under this path: " + PathsToConfigFile.current)
 
     elif settings_check_resp.upper() != "Y":
 
@@ -261,7 +331,7 @@ def display_config_file_settings():
 
     print("\nThe following are your configuration settings:")
 
-    config_dict = configFileParseOutputDictionary.dict
+    config_dict = ConfigFileParseOutputDictionary.dict
 
     sources_root = config_dict["SOURCES_ROOT"]
 
@@ -293,7 +363,7 @@ def display_config_file_settings():
 
 def prompt_for_alt_web_root_name_selection():
 
-    config_dict = configFileParseOutputDictionary.dict
+    config_dict = ConfigFileParseOutputDictionary.dict
 
     print("\nWhich web root would you like to use? (see list above, case-insensitive)")
 
@@ -307,7 +377,7 @@ def prompt_for_alt_web_root_name_selection():
 
     else:
 
-        userSelectedSettings.web_root_name = new_web_root_name_selection
+        UserSelectedSettings.web_root_name = new_web_root_name_selection
 
 def re_iter_to_list(re_iter):
 
@@ -321,19 +391,19 @@ def re_iter_to_list(re_iter):
 
 def change_route_in_source(path):
 
-    config_dict = configFileParseOutputDictionary.dict
+    config_dict = ConfigFileParseOutputDictionary.dict
 
     target_file_path = config_dict["SOURCES_ROOT"] + path
 
-    new_root_target_location = config_dict["WEB_ROOTS"][userSelectedSettings.web_root_name]
+    new_root_target_location = config_dict["WEB_ROOTS"][UserSelectedSettings.web_root_name]
 
     with open(target_file_path, "r+") as target_file:
 
         target_file_cts = target_file.read()
 
-        start_idx = re.finditer(r"//START DEPLOYMENT_ROOT_TARGET", target_file_cts)
+        start_idx = re.finditer(r""+JavaScriptFileTargetExpressions.start, target_file_cts)
 
-        end_idx = re.finditer(r"//END DEPLOYMENT_ROOT_TARGET", target_file_cts)
+        end_idx = re.finditer(r""+JavaScriptFileTargetExpressions.end, target_file_cts)
 
         start_idx_list = re_iter_to_list(start_idx)
         end_idx_list = re_iter_to_list(end_idx)
@@ -359,7 +429,7 @@ def change_route_in_source(path):
 
 def change_web_root_in_target_files():
 
-    config_dict = configFileParseOutputDictionary.dict
+    config_dict = ConfigFileParseOutputDictionary.dict
 
     for path in config_dict["PATHS"].values():
 
@@ -388,7 +458,7 @@ def run_shell_command(cmd, cmd_args_dict_list):
 
 def get_source_list(source_type):
 
-    source_list_path = configFileParseOutputDictionary.dict["SOURCES_LIST_FILE"]
+    source_list_path = ConfigFileParseOutputDictionary.dict["SOURCES_LIST_FILE"]
 
     with open(source_list_path) as source_list_file:
 
@@ -420,7 +490,7 @@ def concatenate_source_file_list_onto_temp_file(source_list_name, source_list):
 
     temp_concat_file_name = "myride_with_profile_setup_deploy_concatenated_sources_temp." + source_list_name
 
-    source_file_parent_path = configFileParseOutputDictionary.dict["SOURCES_ROOT"]
+    source_file_parent_path = ConfigFileParseOutputDictionary.dict["SOURCES_ROOT"]
 
     temp_concat_file = open(temp_concat_file_name, "w")
 
@@ -442,12 +512,11 @@ def concatenate_source_file_list_onto_temp_file(source_list_name, source_list):
 
 def compress_all_sources():
 
-    '''
-        The js and css minification software used here is "minify" from npm.
-        Choosing different minification software will necessitate a rewrite of this function.
-    '''
+    """The js and css minification software used here is "minify" from npm. Choosing different minification software
+    will necessitate changes to this function.
+    """
 
-    config_dict = configFileParseOutputDictionary.dict
+    config_dict = ConfigFileParseOutputDictionary.dict
 
     source_list_dict = {"css": get_source_list("css"), "js": get_source_list("js")}
 
