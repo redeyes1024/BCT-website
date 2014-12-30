@@ -1,3 +1,8 @@
+#OUTPUT_INFO
+    ##PATH
+    /Users/Andrew/Desktop/
+    ##FOLDER_NAME_BASE
+    bct_my_ride
 #WEB_ROOTS
     ##ISR
     remote_isr
@@ -24,3 +29,26 @@
     myride_with_profile_scripts.js
     ##CSS
     myride_with_profile_stylesheets.css
+#PROFILE_PAGE_PATH
+    profile_page.html
+#OTHER_SOURCES_PATHS
+    ##MAIN
+        ###PATH
+        MAIN
+        ###FILES
+        bct_site.css
+    ##ICONS
+        ###PATH
+        bct_my_ride/css/ico/
+        ###FILES
+        ALL
+    ##PARTIALS
+        ###PATH
+        bct_my_ride/partials/
+        ###FILES
+        ALL
+    ##FORMS
+        ###PATH
+        form_sources/
+        ###FILES
+        bct_profile_page_template.html

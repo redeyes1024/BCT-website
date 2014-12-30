@@ -1,25 +1,46 @@
 """This script performs a variety of tasks necessary to prepare MyRide and the associated Profile Page for deployment.
 
+Given the required paths, this script ultimately outputs an updated folder within the set output directory, as well
+as zipped version of this folder. This script also creates two "compressed" source files, each being a either a
+concatenated and minified or simply concatenated version of all of the source files of a particular type. The types
+handled by this script are both CSS stylesheets (with a .css extension) and JavaScript sources (with a .js extension).
+These files are added to the output folder and its associated zip file.
+
 Most of the configuration is set in a file, typically in the same directory, with a default path and filename that
 are set from within the class PathsToConfigFile. The default can only be overridden on a per execution basis, when
 the user is prompted to do so.
+
+*** REQUIREMENTS ***
+
+Python 3.x (this script was written for a Python 3.4 interpreter)
+    -> Download from www.python.org or use your system's package manager (try "python3" as a package name)
+
+minify (the NPM package)
+    -> This can be installed (and will be globally accessible) with this command: npm install -g minifier
+
+This script was tested on a Mac running OSX 10.9.5, but it has not been tested on other UNIX systems. This version
+cannot be run under Windows.
 
 *** CONFIGURATION FILE CONTENTS ***
 
 The configuration file contains the following information needed to prepare the project for deployment:
 
-1) WEB_ROOTS: Alternate web roots that the project will point to when requesting resources (HTML templates, icons, etc).
+1) OUTPUT_INFO: Contains (a) a path to the output directory that will contain the output folder and its associated zip
+file and (b) the base name for the output folder and zip file. The current date in the format YY_MM_DD will be
+appended to this base name to create the final folder/zip file names.
 
-2) SOURCES_ROOT: The absolute path to the local project folder. This is used for "source compression", i.e., the
+2) WEB_ROOTS: Alternate web roots that the project will point to when requesting resources (HTML templates, icons, etc).
+
+3) SOURCES_ROOT: The absolute path to the local project folder. This is used for "source compression", i.e., the
 process of either minifying (or just concatenating, see below) all of the JavaScript and CSS sources needed for
 the project.
 
-3) PATHS: The paths to and filenames of the target JS scripts which set the web root for the project modules. These
+4) PATHS: The paths to and filenames of the target JS scripts which set the web root for the project modules. These
 JS scripts are typically named main.js. This Python script automatically changes the line in which one of the alternate
 web roots are selected. The line is targeted by being surrounded (on different lines) by the target comments which are
 set in the class JavaScriptFileTargetExpressions.
 
-4) SOURCES_LIST_FILE: The path to and filename of a file containing the HTML tags pointing to all of the project
+5) SOURCES_LIST_FILE: The path to and filename of a file containing the HTML tags pointing to all of the project
 sources. For local deployment (i.e. of non-compressed sources), these are the same tags that are found at the top of
 the index.html files (one for both the Profile Page and MyRide). For example, any new project source file that is
 created or library that is to be added, in addition to the <script> (or <link> in the case of stylesheets) that is
@@ -27,18 +48,25 @@ added to the appropriate index.html file, a copy of this tag must be added to th
 order as it appears in the index.html file. This Python script captures the paths to each source and infers their
 type (either JS or CSS) based on the attributes of the HTML tag that references them.
 
-5) MINIFY_SETTINGS: In case there is a conflict between the minifier (the project currently uses minify from NPM) and
+6) MINIFY_SETTINGS: In case there is a conflict between the minifier (the project currently uses minify from NPM) and
 either the JS or CSS sources, the minification step can be skipped for either of these source types. This feature
 is meant to be a stop-gap measure in case the project requires deployment but any conflict between the minifier
 and the sources has not yet been resolved. The word "false" under either of the sub-headers (which are the names
 of source types) indicates that the minification step for all sources of this type is to be skipped; otherwise
 it must be set to "true" for default behavior.
 
-6) MINIFIED_SOURCE_OUTPUT_NAMES: One output file is generated for each of the types of sources that are "compressed"
+7) MINIFIED_SOURCE_OUTPUT_NAMES: One output file is generated for each of the types of sources that are "compressed"
 in this script. Each of these files contains the minified (or concatenated) contents of all of the sources of their
 corresponding type. Note that these "compressed" files are directly referenced on the site which will contain both
 MyRide and the Profile Page. Therefore, if and when their names are changed, the references in the containing site
 must be updated to reflect these name changes.
+
+8) PROFILE_PAGE_PATH: The path to the profile page, including file name.
+
+9) OTHER_SOURCES_PATHS: Path information for the non JS/CSS sources (which are handled by "compression" as described
+in the above sections) needed for the project. Contains path labels, each of which contain a path (or MAIN for
+the output folder root), and a comma-separated list of files or each path that are necessary for deployment (or
+ALL for all files and sub-directories in the path).
 
 *** CONFIGURATION FILE FORMATTING ***
 
@@ -61,12 +89,31 @@ dictionary, for example, directly into this script.
 4) A uniform 4-space indention for each level of nesting is recommended.
 
 5) Avoid blank lines and excess whitespace between headers and other headers, as well as headers and their values.
+
+*** USING THIS SCRIPT ***
+
+Most settings (usually defaults) are set in the configuration file, which can be changed following the rules given
+in the above sections. One exception is the default path to the configuration file itself, which is hard-coded in this
+script as the "default" property of class PathsToConfigFile.
+
+When running this script, the user is prompted at a number of steps to either confirm that some default parameter
+will be used, or to override its default value for the current execution of the script. When overriding, the script
+will validate the overridden parameter. If it is invalid, the user will be prompted again to enter a valid parameter
+until one is entered. If one cannot be provided, the user must exit the script with CTRL-C.
 """
 
-import os.path
+import os
 import re
 import subprocess
 import shlex
+import time
+import shutil
+import distutils.core
+
+class FolderNames:
+
+    deployment = "deployment"
+    output = ""
 
 class PathsToConfigFile:
 
@@ -86,6 +133,16 @@ class JavaScriptFileTargetExpressions:
     start = "//START DEPLOYMENT_ROOT_TARGET"
     end = "//END DEPLOYMENT_ROOT_TARGET"
 
+class ProfilePageTargetExpressions:
+
+    start_compressed = "<!-- START Compressed Sources"
+    start_forms = "<!-- START Sources for forms -->"
+    end_forms = "<!-- END Sources for forms -->"
+
+class AlteredProfilePageTempName:
+
+    name = "altered_profile_page_temp.html"
+
 def main():
 
     prompt_for_path_confirmation()
@@ -103,6 +160,15 @@ def main():
     change_web_root_in_target_files()
 
     compress_all_sources()
+
+    create_deployment_profile_page()
+
+    prepare_deployment_folder()
+
+    zip_deployment_folder()
+
+    print("\nMyRide is ready to deploy. The output folder and associated .zip file can be found here: " +
+        ConfigFileParseOutputDictionary.dict["OUTPUT_INFO"]["PATH"])
 
 def prompt_for_path_confirmation():
 
@@ -254,7 +320,13 @@ def check_config_file_result_dictionary():
 
     error_message = ""
 
-    if "SOURCES_ROOT" not in config_dict:
+    if "OUTPUT_INFO" not in config_dict:
+
+        error_message = "No output information is defined in the configuration file. Please add a path and an " + \
+            "output folder base name under (i.e., minus the date) the #OUTPUT_INFO header, each prefixed " + \
+            "with two hash marks (##)."
+
+    elif "SOURCES_ROOT" not in config_dict:
 
         error_message = "No sources root is defined in the configuration file. Please add a path under the " + \
             "#SOURCES_ROOT header."
@@ -283,6 +355,19 @@ def check_config_file_result_dictionary():
         error_message = "No minified sources output filenames are defined in the configuration file. Please add " + \
             "one or more types under the #MINIFIED_SOURCE_OUTPUT_NAMES header, each prefixed with two hash marks (##)."
 
+    elif "PROFILE_PAGE_PATH" not in config_dict:
+
+        error_message = "No profile page path is defined in the configuration file. Please add a path under the " + \
+            "#PROFILE_PAGE_PATH header."
+
+    elif "OTHER_SOURCES_PATHS" not in config_dict:
+
+        error_message = "No paths to other sources are defined in the configuration file. Please add one or more " + \
+            "path labels, under the #OTHER_SOURCES_PATHS header, prefixed by two hash marks (##). Then for each " + \
+            "of these, supply both a path (or write MAIN for the output folder root), and a comma-separated list " + \
+            "of files for each path that are necessary for deployment (or ALL for all files and sub-directories " + \
+            "in the path), each prefixed by three hash marks (###)"
+
     return error_message
 
 def create_list_string_from_dict(input_dict):
@@ -294,6 +379,10 @@ def create_list_string_from_dict(input_dict):
     for key, value in input_dict.items():
 
         item_counter += 1
+
+        if type(value) is dict:
+
+            value = create_list_string_from_dict(value)
 
         list_string += key + ": " + value
 
@@ -333,6 +422,8 @@ def display_config_file_settings():
 
     config_dict = ConfigFileParseOutputDictionary.dict
 
+    output_information = create_list_string_from_dict(config_dict["OUTPUT_INFO"])
+
     sources_root = config_dict["SOURCES_ROOT"]
 
     path_list = create_list_string_from_dict(config_dict["PATHS"])
@@ -343,19 +434,29 @@ def display_config_file_settings():
 
     minification_settings = create_list_string_from_dict(config_dict["MINIFY_SETTINGS"])
 
+    profile_page_path = config_dict["PROFILE_PAGE_PATH"]
+
+    other_sources_paths = create_list_string_from_dict(config_dict["OTHER_SOURCES_PATHS"])
+
     print(
         """
-        Sources Root: {0}\n
-        Target File Paths: {1}\n
-        Alternate Web Roots: {2}\n
-        Sources List File Path: {3}\n
-        Minification Settings: {4}
+        Output Information: {0}\n
+        Sources Root: {1}\n
+        Target File Paths: {2}\n
+        Alternate Web Roots: {3}\n
+        Sources List File Path: {4}\n
+        Minification Settings: {5}\n
+        Path to Profile Page: {6}\n
+        Paths to Other Sources: {7}
         """.format(
+            output_information,
             sources_root,
             path_list,
             web_roots_list,
             sources_list_file_path,
-            minification_settings
+            minification_settings,
+            profile_page_path,
+            other_sources_paths
         )
     )
 
@@ -486,13 +587,14 @@ def get_source_list(source_type):
 
     return source_matches
 
-def concatenate_source_file_list_onto_temp_file(source_list_name, source_list):
-
-    temp_concat_file_name = "myride_with_profile_setup_deploy_concatenated_sources_temp." + source_list_name
+def concatenate_source_file_list_onto_temp_file(source_list_name, source_list, deployment_folder_name):
 
     source_file_parent_path = ConfigFileParseOutputDictionary.dict["SOURCES_ROOT"]
 
-    temp_concat_file = open(temp_concat_file_name, "w")
+    temp_concat_file_path = source_file_parent_path + deployment_folder_name + "/" + \
+        "myride_with_profile_setup_deploy_concatenated_sources_temp." + source_list_name
+
+    temp_concat_file = open(temp_concat_file_path, "w")
 
     for source_file_path in source_list:
 
@@ -508,7 +610,7 @@ def concatenate_source_file_list_onto_temp_file(source_list_name, source_list):
 
     temp_concat_file.close()
 
-    return temp_concat_file_name
+    return temp_concat_file_path
 
 def compress_all_sources():
 
@@ -516,38 +618,47 @@ def compress_all_sources():
     will necessitate changes to this function.
     """
 
+    deployment_folder_name = FolderNames.deployment
+
     config_dict = ConfigFileParseOutputDictionary.dict
+
+    make_folder_if_needed(config_dict["SOURCES_ROOT"] + deployment_folder_name)
 
     source_list_dict = {"css": get_source_list("css"), "js": get_source_list("js")}
 
     for source_list_name, source_list in source_list_dict.items():
 
-        minify_this_type = config_dict["MINIFY_SETTINGS"][source_list_name.upper()]
-
         compressed_sources_file_output_name = config_dict["MINIFIED_SOURCE_OUTPUT_NAMES"][source_list_name.upper()]
 
-        temp_concat_file_name = concatenate_source_file_list_onto_temp_file(source_list_name, source_list)
+        compressed_sources_file_output_absolute_path = config_dict["SOURCES_ROOT"] + deployment_folder_name + "/" + \
+            compressed_sources_file_output_name
+
+        temp_concat_file_path = concatenate_source_file_list_onto_temp_file(
+            source_list_name, source_list, deployment_folder_name
+        )
+
+        minify_this_type = config_dict["MINIFY_SETTINGS"][source_list_name.upper()]
 
         if minify_this_type == "true":
 
             minify_args = [
-                {"prefix": "", "argument": temp_concat_file_name},
-                {"prefix": "-o", "argument": compressed_sources_file_output_name}
+                {"prefix": "", "argument": temp_concat_file_path},
+                {"prefix": "-o", "argument": compressed_sources_file_output_absolute_path}
             ]
 
             print("\nMinifying ." + source_list_name + " files...")
 
             run_shell_command("minify", minify_args)
 
-            os.remove(temp_concat_file_name)
+            os.remove(temp_concat_file_path)
 
         elif minify_this_type == "false":
 
             print("\nSkipping minify step for ." + source_list_name + " files.")
 
             concat_only_args = [
-                {"prefix": "", "argument": temp_concat_file_name},
-                {"prefix": "", "argument": compressed_sources_file_output_name}
+                {"prefix": "", "argument": temp_concat_file_path},
+                {"prefix": "", "argument": compressed_sources_file_output_absolute_path}
             ]
 
             run_shell_command("mv", concat_only_args)
@@ -556,5 +667,178 @@ def compress_all_sources():
 
             exit("Unexpected minifier configuration: " + minify_this_type + ".\nPlease use either \"true\" or " +
                  "\"false\" for the items under the #MINIFIED_SOURCE_OUTPUT_NAMES header")
+
+def make_folder_if_needed(path):
+
+    if not os.path.exists(path):
+
+        os.makedirs(path)
+
+    if not os.path.exists(path):
+
+        exit("There was an error creating this output folder: " + path)
+
+def create_output_folder():
+
+    config_dict = ConfigFileParseOutputDictionary.dict
+
+    folder_name_base = config_dict["OUTPUT_INFO"]["FOLDER_NAME_BASE"]
+
+    date_str = time.strftime("%y_%m_%d")
+
+    output_folder_name = FolderNames.output = folder_name_base + "_" + date_str
+
+    output_dir = config_dict["OUTPUT_INFO"]["PATH"]
+
+    output_dir_with_new_folder = output_dir + output_folder_name + "/"
+
+    make_folder_if_needed(output_dir_with_new_folder)
+
+    return output_dir_with_new_folder
+
+def update_source_files(full_output_path):
+
+    print("\nUpdating source files in: " + full_output_path)
+
+    config_dict = ConfigFileParseOutputDictionary.dict
+
+    for path_info in config_dict["OTHER_SOURCES_PATHS"].values():
+
+        cur_path = path_info["PATH"]
+
+        if cur_path == "MAIN":
+
+            cur_path = ""
+
+        cur_files = path_info["FILES"].split(",")
+
+        source_path_base = config_dict["SOURCES_ROOT"] + cur_path
+
+        dest_path_base = full_output_path + cur_path
+
+        make_folder_if_needed(dest_path_base)
+
+        cur_sub_dirs = []
+
+        if cur_files[0] == "ALL":
+
+            cur_files = os.listdir(source_path_base)
+
+        for file_name in (cur_files + cur_sub_dirs):
+
+            source_path = source_path_base + file_name
+
+            dest_path = dest_path_base + file_name
+
+            try:
+
+                shutil.copyfile(source_path, dest_path)
+
+            except IsADirectoryError:
+
+                distutils.dir_util.copy_tree(source_path, dest_path)
+
+    full_path_to_deployment_folder = config_dict["SOURCES_ROOT"] + FolderNames.deployment + "/"
+
+    for compressed_file_name in config_dict["MINIFIED_SOURCE_OUTPUT_NAMES"].values():
+
+        full_path_to_compressed_file = full_path_to_deployment_folder + compressed_file_name
+
+        main_output_directory_with_filename = full_output_path + compressed_file_name
+
+        shutil.copyfile(full_path_to_compressed_file, main_output_directory_with_filename)
+
+    full_path_to_altered_profile_page = config_dict["SOURCES_ROOT"] + AlteredProfilePageTempName.name
+
+    full_path_to_output_profile_page = full_output_path + config_dict["PROFILE_PAGE_PATH"]
+
+    move_and_rename_profile_page_args = [
+        {"prefix": "", "argument": full_path_to_altered_profile_page},
+        {"prefix": "", "argument": full_path_to_output_profile_page}
+    ]
+
+    run_shell_command("mv", move_and_rename_profile_page_args)
+
+    print("Done.")
+
+def prepare_deployment_folder():
+
+    full_output_path = create_output_folder()
+
+    update_source_files(full_output_path)
+
+def zip_deployment_folder():
+
+    print("\nZipping output folder...")
+
+    config_dict = ConfigFileParseOutputDictionary.dict
+
+    source_folder = FolderNames.output
+
+    dest_zip_file = source_folder + ".zip"
+
+    output_directory = config_dict["OUTPUT_INFO"]["PATH"]
+
+    old_directory = os.getcwd()
+
+    os.chdir(output_directory)
+
+    zip_folder_args = [
+        {"prefix": "-qr", "argument": dest_zip_file},
+        {"prefix": "", "argument": source_folder}
+    ]
+
+    run_shell_command("zip", zip_folder_args)
+
+    os.chdir(old_directory)
+
+    print("Done.")
+
+def create_deployment_profile_page():
+
+    print("\nAltering profile page HTML to point to compressed sources...")
+
+    config_dict = ConfigFileParseOutputDictionary.dict
+
+    sources_root = config_dict["SOURCES_ROOT"]
+
+    path_to_profile_page = sources_root + config_dict["PROFILE_PAGE_PATH"]
+
+    with open(path_to_profile_page, "r") as profile_page_file:
+
+        with open(sources_root + AlteredProfilePageTempName.name, "w") as profile_page_working_file:
+
+            stop_checking_for_start_compressed_line = False
+
+            stop_checking_for_forms_lines = False
+
+            line_is_beyond_start_forms_line = False
+
+            for line in profile_page_file:
+
+                if (stop_checking_for_start_compressed_line or
+                    ProfilePageTargetExpressions.start_compressed not in line):
+
+                    if (stop_checking_for_forms_lines or not
+                        (ProfilePageTargetExpressions.start_forms in line or
+                         line_is_beyond_start_forms_line)):
+
+                        profile_page_working_file.write(line)
+
+                    else:
+
+                        if ProfilePageTargetExpressions.end_forms in line:
+
+                            stop_checking_for_forms_lines = True
+
+                        line_is_beyond_start_forms_line = True
+
+                else:
+
+                    profile_page_working_file.write(line[:-1] + " -->\n")
+
+                    stop_checking_for_start_compressed_line = True
+
+    print("Done.")
 
 main()
