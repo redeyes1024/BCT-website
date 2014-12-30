@@ -691,10 +691,6 @@ full_schedule_category_with_datepicker) {
             },
             transformResponse: function(res) {
 
-//                if (localStorage) {
-//                    localStorage.setItem('route_data', res);
-//                }
-
                 return generalServiceUtilities.
                 tryParsingResponse(res, "downloadSchedule");
 

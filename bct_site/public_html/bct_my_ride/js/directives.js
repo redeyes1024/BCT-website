@@ -1,6 +1,6 @@
 var BCTAppDirectives = angular.module('BCTAppDirectives', []);
 
-BCTApp.directive('iconLegendOverlay', [ function() {
+BCTAppDirectives.directive('iconLegendOverlay', [ function() {
     return {
         restrict: 'E',
         templateUrl: window.myride.directories.site_roots.active +
@@ -9,7 +9,7 @@ BCTApp.directive('iconLegendOverlay', [ function() {
     };
 }]);
 
-BCTApp.directive('bctMyRideTopLevelOverlays', [ function() {
+BCTAppDirectives.directive('bctMyRideTopLevelOverlays', [ function() {
     return {
         restrict: 'E',
         templateUrl: window.myride.directories.site_roots.active +
@@ -18,7 +18,7 @@ BCTApp.directive('bctMyRideTopLevelOverlays', [ function() {
     };
 }]);
 
-BCTApp.directive('scheduleMap', [ 'googleMapsUtilities', 'marker_icon_options',
+BCTAppDirectives.directive('scheduleMap', [ 'googleMapsUtilities', 'marker_icon_options',
 'base_marker_sizes', 'clusterer_options', '$q',
 
 function(googleMapsUtilities, marker_icon_options, base_marker_sizes,
@@ -206,7 +206,7 @@ clusterer_options, $q) {
 
 }]);
 
-BCTApp.directive('mainLoadingModal', [ function() {
+BCTAppDirectives.directive('mainLoadingModal', [ function() {
     return {
         restrict: 'E',
         templateUrl: window.myride.directories.site_roots.active +
@@ -215,7 +215,7 @@ BCTApp.directive('mainLoadingModal', [ function() {
     };
 }]);
 
-BCTApp.directive('routeAlertOverlay', [ function() {
+BCTAppDirectives.directive('routeAlertOverlay', [ function() {
     return {
         restrict: 'E',
         templateUrl: window.myride.directories.site_roots.active +
@@ -224,7 +224,7 @@ BCTApp.directive('routeAlertOverlay', [ function() {
     };
 }]);
 
-BCTApp.directive('scheduleMapOverlay', [ function() {
+BCTAppDirectives.directive('scheduleMapOverlay', [ function() {
     return {
         restrict: 'E',
         templateUrl: window.myride.directories.site_roots.active +
@@ -233,7 +233,7 @@ BCTApp.directive('scheduleMapOverlay', [ function() {
     };
 }]);
 
-BCTApp.directive('tripPlanner', [ function() {
+BCTAppDirectives.directive('tripPlanner', [ function() {
     return {
         restrict: 'E',
         templateUrl: window.myride.directories.site_roots.active +
@@ -242,7 +242,7 @@ BCTApp.directive('tripPlanner', [ function() {
     };
 }]);
 
-BCTApp.directive('tripPlannerItinerarySelector', [ function() {
+BCTAppDirectives.directive('tripPlannerItinerarySelector', [ function() {
     return {
         restrict: 'E',
         templateUrl: window.myride.directories.site_roots.active +
@@ -251,7 +251,7 @@ BCTApp.directive('tripPlannerItinerarySelector', [ function() {
     };
 }]);
 
-BCTApp.directive('subPanelRoutes', [ function() {
+BCTAppDirectives.directive('subPanelRoutes', [ function() {
     return {
         restrict: 'E',
         templateUrl: window.myride.directories.site_roots.active +
@@ -260,7 +260,7 @@ BCTApp.directive('subPanelRoutes', [ function() {
     };
 }]);
 
-BCTApp.directive('subPanelStops', [ function() {
+BCTAppDirectives.directive('subPanelStops', [ function() {
     return {
         restrict: 'E',
         templateUrl: window.myride.directories.site_roots.active +
@@ -269,7 +269,7 @@ BCTApp.directive('subPanelStops', [ function() {
     };
 }]);
 
-BCTApp.directive('subPanelLandmarks', [ function() {
+BCTAppDirectives.directive('subPanelLandmarks', [ function() {
     return {
         restrict: 'E',
         templateUrl: window.myride.directories.site_roots.active +
@@ -278,7 +278,7 @@ BCTApp.directive('subPanelLandmarks', [ function() {
     };
 }]);
 
-BCTApp.directive('routeResultPanel', [ 'linkFunctions', 
+BCTAppDirectives.directive('routeResultPanel', [ 'linkFunctions', 
 function(linkFunctions) {
 
     function link(scope, element) {
@@ -299,7 +299,7 @@ function(linkFunctions) {
     };
 }]);
 
-BCTApp.directive('stopResultPanel', [ 'linkFunctions',
+BCTAppDirectives.directive('stopResultPanel', [ 'linkFunctions',
 function(linkFunctions) {
 
     function link(scope, element) {
@@ -322,7 +322,7 @@ function(linkFunctions) {
 
 }]);
 
-BCTApp.directive('landmarkResultPanel', [ 'linkFunctions', 
+BCTAppDirectives.directive('landmarkResultPanel', [ 'linkFunctions', 
 function(linkFunctions) {
 
     function link(scope, element) {
@@ -343,7 +343,7 @@ function(linkFunctions) {
     };
 }]);
 
-BCTApp.directive('tripPlannerDialog', [ function() {
+BCTAppDirectives.directive('tripPlannerDialog', [ function() {
 
     var template =
     '<div id="trip-planner-dialog" ng-class="planner_dialog_styles">' +
@@ -357,7 +357,7 @@ BCTApp.directive('tripPlannerDialog', [ function() {
 
 }]);
 
-BCTApp.directive('nearestStopsMapDialog', [ function() {
+BCTAppDirectives.directive('nearestStopsMapDialog', [ function() {
 
     var template =
     '<div id="nearest-stops-map-dialog" ' +
@@ -372,7 +372,7 @@ BCTApp.directive('nearestStopsMapDialog', [ function() {
 
 }]);
 
-BCTApp.directive('scheduleMapErrorDialog', [ function() {
+BCTAppDirectives.directive('scheduleMapErrorDialog', [ function() {
 
     var template =
     '<div id="schedule-map-error-dialog" ' + 
@@ -387,7 +387,7 @@ BCTApp.directive('scheduleMapErrorDialog', [ function() {
 
 }]);
 
-BCTApp.directive('fullScheduleErrorDialog', [ function() {
+BCTAppDirectives.directive('fullScheduleErrorDialog', [ function() {
 
     var template =
     '<div id="full-schedule-error-dialog" ' + 
@@ -402,7 +402,7 @@ BCTApp.directive('fullScheduleErrorDialog', [ function() {
 
 }]);
 
-BCTApp.directive('plannerOptionBar', [ function() {
+BCTAppDirectives.directive('plannerOptionBar', [ function() {
     return {
         restrict: 'E',
         templateUrl: window.myride.directories.site_roots.active +
@@ -411,7 +411,7 @@ BCTApp.directive('plannerOptionBar', [ function() {
     };
 }]);
 
-BCTApp.directive('nearestStops', [ function() {
+BCTAppDirectives.directive('nearestStops', [ function() {
     return {
         restrict: 'E',
         templateUrl: window.myride.directories.site_roots.active +
@@ -420,7 +420,7 @@ BCTApp.directive('nearestStops', [ function() {
     };
 }]);
 
-BCTApp.directive('mobileFilterIcons', [ 'templateGenerators',
+BCTAppDirectives.directive('mobileFilterIcons', [ 'templateGenerators',
 function(templateGenerators) {
 
     var template = templateGenerators.createFilterIconBarTemplate("mobile");
@@ -432,7 +432,7 @@ function(templateGenerators) {
 
 }]);
 
-BCTApp.directive('inlineFilterIcons', [ 'templateGenerators',
+BCTAppDirectives.directive('inlineFilterIcons', [ 'templateGenerators',
 function(templateGenerators) {
 
     var template = templateGenerators.createFilterIconBarTemplate("inline");
@@ -444,7 +444,7 @@ function(templateGenerators) {
 
 }]);
 
-BCTApp.directive('tripPlannerNavigationBar', [ function() {
+BCTAppDirectives.directive('tripPlannerNavigationBar', [ function() {
 
     return {
         restrict: 'E',
@@ -455,7 +455,7 @@ BCTApp.directive('tripPlannerNavigationBar', [ function() {
 
 }]);
 
-BCTApp.directive('scheduleMapNavigationBar', [ function() {
+BCTAppDirectives.directive('scheduleMapNavigationBar', [ function() {
 
     return {
         restrict: 'E',
@@ -466,7 +466,7 @@ BCTApp.directive('scheduleMapNavigationBar', [ function() {
 
 }]);
 
-BCTApp.directive('tripPlannerStep', [ function() {
+BCTAppDirectives.directive('tripPlannerStep', [ function() {
 
     return {
         restrict: 'E',
@@ -477,7 +477,7 @@ BCTApp.directive('tripPlannerStep', [ function() {
 
 }]);
 
-BCTApp.directive('globalAlertsHeader', [ function() {
+BCTAppDirectives.directive('globalAlertsHeader', [ function() {
 
     function link(scope, element) {
 
@@ -502,7 +502,7 @@ BCTApp.directive('globalAlertsHeader', [ function() {
 
 }]);
 
-BCTApp.directive('busSvg', [ function() {
+BCTAppDirectives.directive('busSvg', [ function() {
 
     return {
         restrict: 'E',
@@ -513,7 +513,7 @@ BCTApp.directive('busSvg', [ function() {
 
 }]);
 
-BCTApp.directive('destSvg', [ function() {
+BCTAppDirectives.directive('destSvg', [ function() {
 
     return {
         restrict: 'E',
@@ -524,7 +524,7 @@ BCTApp.directive('destSvg', [ function() {
 
 }]);
 
-BCTApp.directive('walkingSvg', [ function() {
+BCTAppDirectives.directive('walkingSvg', [ function() {
 
     return {
         restrict: 'E',
@@ -535,7 +535,7 @@ BCTApp.directive('walkingSvg', [ function() {
 
 }]);
 
-BCTApp.directive('tripPlannerIcon', [ '$compile', function($compile) {
+BCTAppDirectives.directive('tripPlannerIcon', [ '$compile', function($compile) {
 
     function link(scope, element) {
 
@@ -576,7 +576,7 @@ BCTApp.directive('tripPlannerIcon', [ '$compile', function($compile) {
 
 }]);
 
-BCTApp.directive('nearestMapStopsInfoContainer', [ function() {
+BCTAppDirectives.directive('nearestMapStopsInfoContainer', [ function() {
 
     return {
         restrict: 'E',
@@ -587,7 +587,7 @@ BCTApp.directive('nearestMapStopsInfoContainer', [ function() {
 
 }]);
 
-BCTApp.directive('fullSchedulePanel', [ function() {
+BCTAppDirectives.directive('fullSchedulePanel', [ function() {
 
     return {
         restrict: 'E',
@@ -598,7 +598,7 @@ BCTApp.directive('fullSchedulePanel', [ function() {
 
 }]);
 
-BCTApp.directive('fullSchedulePanelWithDatepicker', [ function() {
+BCTAppDirectives.directive('fullSchedulePanelWithDatepicker', [ function() {
 
     return {
         restrict: 'E',
@@ -609,7 +609,7 @@ BCTApp.directive('fullSchedulePanelWithDatepicker', [ function() {
 
 }]);
 
-BCTApp.directive('recentlyViewedItems', [ function() {
+BCTAppDirectives.directive('recentlyViewedItems', [ function() {
 
     return {
         restrict: 'E',
@@ -620,7 +620,7 @@ BCTApp.directive('recentlyViewedItems', [ function() {
 
 }]);
 
-BCTApp.directive('subPanelRecentTrip', [ function() {
+BCTAppDirectives.directive('subPanelRecentTrip', [ function() {
 
     return {
         restrict: 'E',
@@ -631,7 +631,7 @@ BCTApp.directive('subPanelRecentTrip', [ function() {
 
 }]);
 
-BCTApp.directive('subPanelRecentRouteStop', [ function() {
+BCTAppDirectives.directive('subPanelRecentRouteStop', [ function() {
 
     return {
         restrict: 'E',
@@ -642,7 +642,7 @@ BCTApp.directive('subPanelRecentRouteStop', [ function() {
 
 }]);
 
-BCTApp.directive('topSearchBar', [ '$timeout', function($timeout) {
+BCTAppDirectives.directive('topSearchBar', [ '$timeout', function($timeout) {
 
     function link(scope) {
 
