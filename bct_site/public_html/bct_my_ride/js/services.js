@@ -171,13 +171,12 @@ BCTAppServices.service('miniScheduleService', [ function() {
 
     this.getNearestTimes = function(time, times, bef, aft) {
 
-        if (!bef) {
-            var bef = self.mini_schedule_quantity_defaults.before_times;
-            var aft = self.mini_schedule_quantity_defaults.after_times;
+        if (typeof bef === "undefined") {
+            bef = self.mini_schedule_quantity_defaults.before_times;
         }
 
-        else if (!aft) {
-            var aft = self.mini_schedule_quantity_defaults.after_times;
+        if (typeof aft === "undefined") {
+            aft = self.mini_schedule_quantity_defaults.after_times;
         }
         
         var times_int = times.map(function(a) {
@@ -530,24 +529,6 @@ function(locationService, full_bstop_data, nearest_stops_service_constants) {
 
 }]);
 
-BCTAppServices.service('placeholderService', [ function() {
-
-    this.createLoadingPlaceholder = function(length, content) {
-
-        var placeholder_arr = [];
-        var placeholder_length = length;
-        var placeholder_content = content;
-
-        for (var i=0;i<placeholder_length;i++) {
-            placeholder_arr.push(placeholder_content);
-        }
-
-        return placeholder_arr;
-
-    };
-
-}]);
-
 BCTAppServices.service('landmarkInfoService', ['$http', '$q',
 'generalServiceUtilities',
 
@@ -673,8 +654,8 @@ full_schedule_category_with_datepicker) {
 
     this.downloadSchedule = function(route, stop, date) {
 
-        if (!date) {
-            var date = new Date;
+        if (typeof date === "undefined") {
+            date = new Date;
         }
 
         var formatted_date = generalServiceUtilities.formatDateYYYYMMDD(date);
@@ -811,41 +792,46 @@ full_schedule_category_with_datepicker) {
 
     };
 
-    this.transformSchedule = function(output_type, s_times) {
+    this.extractDeparturesFromSchedule = function(raw_schedule_data) {
 
-        var date_time = new Date;
-        var now = date_time.toTimeString().slice(0,5);
-        var departures = [];
+        var number_of_departures = raw_schedule_data.length;
+
+        var departures = new Array(number_of_departures);
+
+        for (var i=0;i<number_of_departures;i++) {
+
+            departures[i] = raw_schedule_data[i].DepartureTime;
+
+        }
+
+        return departures;
+
+    };
+
+    this.updateDatepickerSchedule = function(raw_schedule_data) {
+
+        var departures = self.extractDeparturesFromSchedule(raw_schedule_data);
+
+        full_schedule_category_with_datepicker[0].hours =
+        self.tabularizeDepartures(departures.slice());
+
+    };
+
+    this.transformSchedule = function(raw_schedule_data) {
+
+        var cur_time = (new Date).toTimeString().slice(0,5);
         var schedule_output = {};
 
-        for (var i=0;i<s_times.length;i++) {
+        var departures = self.extractDeparturesFromSchedule(raw_schedule_data);
 
-            departures.push(s_times[i].DepartureTime);
+        schedule_output.nearest = miniScheduleService.getNearestTimes(
+            cur_time, departures
+        );
 
-        }
+        schedule_output.nearest.all = schedule_output.nearest.
+        prev_times.concat(schedule_output.nearest.next_times);
 
-        switch (output_type) {
-
-            case "nearest":
-
-                schedule_output.nearest =
-                miniScheduleService.getNearestTimes(now, departures);
-
-                schedule_output.nearest.all = schedule_output.nearest.
-                prev_times.concat(schedule_output.nearest.next_times);
-
-                break;
-
-            case "datepick":
-
-                full_schedule_category_with_datepicker[0].hours =
-                self.tabularizeDepartures(departures.slice());
-
-                break;
-
-        }
-
-        schedule_output.raw = s_times;
+        schedule_output.raw = raw_schedule_data;
 
         return schedule_output;
 

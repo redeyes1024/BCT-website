@@ -619,16 +619,12 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
 
         }
 
-        var nearest_schedule =
-        scheduleDownloadAndTransformation.
-        transformSchedule(
-            "nearest", res.data.Today
-        );
+        var nearest_schedule = scheduleDownloadAndTransformation.
+        transformSchedule(res.data.Today);
 
         try {
 
-            var schedule_el_cont =
-            marker.info.div_.getElementsByClassName(
+            var schedule_el_cont = marker.info.div_.getElementsByClassName(
                 "schedule-map-info-window-schedule-contents"
             )[0];
 

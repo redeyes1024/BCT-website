@@ -7,7 +7,7 @@ BCTAppTopController.controller('BCTController', [
     'map_setting_defaults', 'scheduleDownloadAndTransformation',
     'googleMapsUtilities', '$q', 'timer_constants',
     'unitConversionAndDataReporting', 'miniScheduleService',
-    'placeholderService', 'locationService', 'location_icons',
+    'locationService', 'location_icons',
     'agency_filter_icons', 'results_exist', 'map_navigation_marker_indices',
     'legend_icon_list', 'profilePageService',
     'routeAndStopFilters', 'warning_messages', 'selected_nearest_map_stop',
@@ -16,7 +16,7 @@ BCTAppTopController.controller('BCTController', [
     'full_schedule_category_with_datepicker', 'recentlyViewedService',
     'full_schedule_availabilities', 'generalUIUtilities',
     'routeStopLandmarkTransformationService', 'generalServiceUtilities',
-    '$location', 'toggle_targets',
+    '$location', 'toggle_targets', 'schedule_data',
 
 function (
 
@@ -24,7 +24,7 @@ function (
     full_landmark_data, $compile, scrollingAlertsService,
     map_setting_defaults, scheduleDownloadAndTransformation,
     googleMapsUtilities, $q, timer_constants,
-    unitConversionAndDataReporting, miniScheduleService, placeholderService,
+    unitConversionAndDataReporting, miniScheduleService,
     locationService, location_icons, agency_filter_icons, results_exist,
     map_navigation_marker_indices, legend_icon_list,
     profilePageService, routeAndStopFilters, warning_messages,
@@ -33,7 +33,7 @@ function (
     full_schedule_category_with_datepicker, recentlyViewedService,
     full_schedule_availabilities, generalUIUtilities,
     routeStopLandmarkTransformationService, generalServiceUtilities,
-    $location, toggle_targets
+    $location, toggle_targets, schedule_data
 
 ) {
 
@@ -302,19 +302,11 @@ function (
 
     });
 
-    $scope.full_schedule_loading_placeholder =
-    placeholderService.createLoadingPlaceholder(20, " ");
-
-    $scope.$watch("full_schedule_date.datepick",
-    function(new_val, old_val) {
+    $scope.$watch("full_schedule_date.datepick", function(new_val, old_val) {
 
         if (new_val !== old_val) {
 
-            $scope.schedule.date_pick =
-            $scope.full_schedule_loading_placeholder;
-
-            $scope.show_full_schedule_category_loading_modal_datepick =
-            true;
+            $scope.show_full_schedule_category_loading_modal_datepick = true;
 
             $scope.show_schedule_result_date_pick_row_no_data = false;
 
@@ -332,10 +324,8 @@ function (
 
                 if (res.data.Today) {
 
-                    var t_schedule = scheduleDownloadAndTransformation.
-                    transformSchedule("datepick", res.data.Today);
-
-                    $scope.schedule.date_pick = t_schedule.date_pick;
+                    scheduleDownloadAndTransformation.
+                    updateDatepickerSchedule(res.data.Today);
 
                 }
 
@@ -543,21 +533,7 @@ function (
         stop: ""
     };
 
-    $scope.schedule = {
-
-        nearest: {},
-
-        planned: {
-
-            weekdays: [],
-            saturday: [],
-            sunday: []
-
-        },
-
-        date_pick: []
-
-    };
+    $scope.schedule = schedule_data;
 
     $scope.all_days = [
         "Weekdays",
@@ -1825,7 +1801,7 @@ function (
     $scope.updateAndPushSchedule = function (transformed_schedule) {
 
         var reprocessed_schedule = scheduleDownloadAndTransformation.
-        transformSchedule("nearest", transformed_schedule.raw);
+        transformSchedule(transformed_schedule.raw);
 
         $scope.schedule.nearest = reprocessed_schedule.nearest;
 
@@ -1893,7 +1869,7 @@ function (
             $scope.show_schedule_map_mini_schedule_no_data = false;
 
             var t_schedule = scheduleDownloadAndTransformation.
-            transformSchedule("nearest", res.data.Today);
+            transformSchedule(res.data.Today);
 
             $scope.updateAndPushSchedule(t_schedule);
 

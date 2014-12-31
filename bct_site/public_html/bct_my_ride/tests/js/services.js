@@ -1,5 +1,7 @@
 describe('BCTAppServices.miniScheduleService', function() {
 
+    /* Testing convertToTime Function */
+
     var miniScheduleService;
 
     beforeEach(module('BCTAppServices'));
@@ -17,55 +19,92 @@ describe('BCTAppServices.miniScheduleService', function() {
 
     });
 
-});
+    /* Testing getNearestTimes Function */
 
-describe('BCTAppServices.scheduleDownloadAndTransformation', function() {
-
-//    var $httpBackend;
-    var scheduleDownloadAndTransformation;
     var http;
-//    var scheduleRequestHandler;
-
-    beforeEach(module('BCTAppServices'));
+    var mock_schedule_data;
 
     beforeEach(inject(function($injector) {
 
         http = $injector.get('$http');
 
-//        $httpBackend = $injector.get('$httpBackend');
-
-        scheduleDownloadAndTransformation =
-        $injector.get('scheduleDownloadAndTransformation');
-
     }));
 
-    it('Should transform the schedule',
-    function() {
+    beforeEach(function(done) {
+        
+        http({
 
-//        scheduleRequestHandler = $httpBackend.when(
-//            'POST', 'http://174.94.153.48:7777/TransitApi/Schedules/'
-//        ).respond(
-//            getJSONFixture(
-//                'sheduledownloadAndTransformation_downloadSchedule.mock'
-//            )
-//        );
+            method: 'GET',
 
-        http.get(
-            'sheduledownloadAndTransformation_downloadSchedule.mock.json'
-        ).success(function(data) {
+            url: 'mock/' +
+            'scheduledownloadAndTransformation_downloadSchedule.mock.json'
 
-            var mock_schedule_data = data;
+        }).then(function(data) {
 
-            expect(scheduleDownloadAndTransformation.transformSchedule(
-                "nearest", mock_schedule_data
-            )).toBe("");
+            mock_schedule_data = miniScheduleService.
+            extractDeparturesFromSchedule(data);
 
-            expect(scheduleDownloadAndTransformation.transformSchedule(
-                "datepick", mock_schedule_data
-            )).toBe("");
+            done();
 
         });
 
     });
+
+    it('Should return arrays of the bus departure times closest in time ' +
+    'to some given departure time, both before and after the given time',
+    function() {
+
+        expect(miniScheduleService.getNearestTimes(
+            "12:30", // Target time, i.e., get times nearest to this time
+            mock_schedule_data, // Schedule data taken from a test request
+            1, // Number of times to report before current time
+            3  // Number of times to report after current time
+        )).toEqual({
+
+            "prev_times":[
+                "12:27"
+            ],
+
+            "next_times":[
+                "12:45",
+                "13:01",
+                "13:18"
+            ]
+        
+        });
+
+    });
+
+});
+
+describe('BCTAppServices.scheduleDownloadAndTransformation', function() {
+
+////    var $httpBackend;
+//    var scheduleDownloadAndTransformation;
+////    var scheduleRequestHandler;
+//
+//    beforeEach(module('BCTAppServices'));
+//
+//    beforeEach(inject(function($injector) {
+//
+////        $httpBackend = $injector.get('$httpBackend');
+//
+//        scheduleDownloadAndTransformation =
+//        $injector.get('scheduleDownloadAndTransformation');
+//
+//    }));
+//
+//    it('Should add the correct nearest times',
+//    function() {
+//
+////        scheduleRequestHandler = $httpBackend.when(
+////            'POST', 'http://174.94.153.48:7777/TransitApi/Schedules/'
+////        ).respond(
+////            getJSONFixture(
+////                'sheduledownloadAndTransformation_downloadSchedule.mock'
+////            )
+////        );
+//
+//    });
 
 });

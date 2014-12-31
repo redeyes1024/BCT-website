@@ -4,6 +4,22 @@ var BCTAppValues = angular.module('BCTAppValues', []);
 //BCTAppValues.value('scheduleWebSocket',
 //new WebSocket("ws://echo.websocket.org"));
 
+BCTAppValues.value('schedule_data', {
+
+    nearest: {},
+
+    planned: {
+
+        weekdays: [],
+        saturday: [],
+        sunday: []
+
+    },
+
+    date_pick: []
+
+});
+
 BCTAppValues.value('map_setting_defaults', {
 
     near_zoom: 18

@@ -34,13 +34,6 @@ module.exports = function(grunt) {
                         //Test sources
                         'bct_my_ride/tests/js/services.js',
 
-                        //JSON Fixtures
-                        {
-                            pattern: 'bct_my_ride/tests/js/mock/*.json',
-                            watched: true,
-                            served: true,
-                            included: false 
-                        }
                     ]
                 }
             }
