@@ -1,4 +1,6 @@
-{
+angular.module('AllMockData', []).
+value('scheduledownloadAndTransformation_downloadSchedule', {
+
     "RouteId":"BCT01",
     "RouteType":null,
     "AgencyId":"BCT",
@@ -539,4 +541,5 @@
     ],
     "Yesterday":null,
     "NextDay":null
-}
+
+});

@@ -178,14 +178,14 @@ BCTAppServices.service('miniScheduleService', [ function() {
         if (typeof aft === "undefined") {
             aft = self.mini_schedule_quantity_defaults.after_times;
         }
-        
+     
         var times_int = times.map(function(a) {
 
-            return parseInt(a.replace(/:/,""));
+            return Number(a.replace(/:/,""));
 
         });
 
-        var now_int = parseInt(time.replace(/:/,""));
+        var now_int = Number(time.replace(/:/,""));
 
         var nearest = {
             prev_times: [],

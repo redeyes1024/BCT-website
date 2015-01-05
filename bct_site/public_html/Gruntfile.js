@@ -34,6 +34,9 @@ module.exports = function(grunt) {
                         //Test sources
                         'bct_my_ride/tests/js/services.js',
 
+                        //Mock data
+                        'bct_my_ride/tests/js/mock/*.mock.js'
+
                     ]
                 }
             }
