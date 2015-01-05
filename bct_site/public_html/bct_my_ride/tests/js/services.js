@@ -74,3 +74,76 @@ describe('BCTAppServices.scheduleDownloadAndTransformation', function() {
     });
 
 });
+
+describe('BCTAppServices.locationService', function() {
+
+    // Disabling console output for this unit
+
+    var logger;
+
+    beforeAll(function() {
+
+        logger = console.log;
+
+        console.log = function() {};
+
+    });
+
+    /* Testing changeToDefaultLocationIfOutsideOfFlorida Function */
+
+    beforeEach(module('BCTAppServices', 'BCTAppValues'));
+
+    var locationService;
+    var default_demo_coords;
+
+    beforeEach(inject(function($injector) {
+
+        locationService = $injector.get('locationService');
+
+        default_demo_coords = $injector.get('default_demo_coords');
+
+    }));
+
+    var test_coord_obj_within_bounds = {
+
+        "LatLng":{
+            "Latitude": 26.00,
+            "Longitude": -80.25
+        }
+
+    };
+
+    it('Should return the coordinates given since the test location is ' +
+        'within bounds', function() {
+
+        expect(locationService.changeToDefaultLocationIfOutsideOfFlorida(
+            test_coord_obj_within_bounds
+        )).toEqual(test_coord_obj_within_bounds);
+
+    });
+
+    var test_coord_obj_out_of_bounds = {
+
+        "LatLng":{
+            "Latitude": 45.5017156,
+            "Longitude": -73.5728669
+        }
+
+    };
+
+    it('Should return default coordinates (within Florida) since the test ' +
+    'location is out of bounds', function() {
+
+        expect(locationService.changeToDefaultLocationIfOutsideOfFlorida(
+            test_coord_obj_out_of_bounds
+        )).toEqual(default_demo_coords.LatLng);
+
+    });
+
+    afterAll(function() {
+
+        console.log = logger;
+
+    });
+
+});
