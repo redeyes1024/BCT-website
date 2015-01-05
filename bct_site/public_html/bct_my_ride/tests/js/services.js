@@ -1,3 +1,5 @@
+var services_mock_data = angular.module('ServicesMockData', []);
+
 describe('BCTAppServices.miniScheduleService', function() {
 
     /* Testing convertToTime Function */
@@ -12,7 +14,7 @@ describe('BCTAppServices.miniScheduleService', function() {
 
     }));
 
-    it('Should convert to a time string', function() {
+    it('should convert to a time string', function() {
 
         expect(miniScheduleService.convertToTime(1230)).toBe("12:30");
         expect(miniScheduleService.convertToTime("1230")).toBe("12:30");
@@ -23,9 +25,44 @@ describe('BCTAppServices.miniScheduleService', function() {
 
 describe('BCTAppServices.scheduleDownloadAndTransformation', function() {
 
+    /* Testing tabularizeDepartures Function */
+
+    beforeEach(module('BCTAppServices', 'BCTAppValues',  'ServicesMockData'));
+
+    var scheduleDownloadAndTransformation;
+    var mock_tabularizeDepartures_data;
+
+    beforeEach(inject(function($injector) {
+
+        scheduleDownloadAndTransformation = $injector.get(
+            'scheduleDownloadAndTransformation'
+        );
+
+        mock_tabularizeDepartures_data = $injector.get(
+            'scheduleDownloadAndTransformation_tabularizeDepartures'
+        );
+
+    }));
+
+    it('should \"tabularize\" data (see function definition in ' +
+    'services.js for details)',
+    function() {
+
+        expect(scheduleDownloadAndTransformation.tabularizeDepartures(
+            mock_tabularizeDepartures_data.mock_input
+        )).toEqual(
+            mock_tabularizeDepartures_data.expected_output
+        );
+
+    });
+
+});
+
+describe('BCTAppServices.scheduleDownloadAndTransformation', function() {
+
     /* Testing getNearestTimes Function */
 
-    beforeEach(module('BCTAppServices', 'BCTAppValues', 'AllMockData'));
+    beforeEach(module('BCTAppServices', 'BCTAppValues', 'ServicesMockData'));
 
     var scheduleDownloadAndTransformation;
     var miniScheduleService;
@@ -45,7 +82,7 @@ describe('BCTAppServices.scheduleDownloadAndTransformation', function() {
 
     }));
 
-    it('Should return arrays of the bus departure times closest in time ' +
+    it('should return arrays of the bus departure times closest in time ' +
     'to some given departure time, both before and after the given time',
     function() {
 
@@ -113,7 +150,7 @@ describe('BCTAppServices.locationService', function() {
 
     };
 
-    it('Should return the coordinates given since the test location is ' +
+    it('should return the coordinates given since the test location is ' +
         'within bounds', function() {
 
         expect(locationService.changeToDefaultLocationIfOutsideOfFlorida(
@@ -131,7 +168,7 @@ describe('BCTAppServices.locationService', function() {
 
     };
 
-    it('Should return default coordinates (within Florida) since the test ' +
+    it('should return default coordinates (within Florida) since the test ' +
     'location is out of bounds', function() {
 
         expect(locationService.changeToDefaultLocationIfOutsideOfFlorida(

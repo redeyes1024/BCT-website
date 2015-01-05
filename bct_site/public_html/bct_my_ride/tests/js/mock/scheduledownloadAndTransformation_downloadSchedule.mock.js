@@ -1,4 +1,4 @@
-angular.module('AllMockData', []).
+services_mock_data.
 value('scheduledownloadAndTransformation_downloadSchedule', {
 
     "RouteId":"BCT01",
