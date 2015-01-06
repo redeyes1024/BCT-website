@@ -837,11 +837,13 @@ full_schedule_category_with_datepicker) {
 
     };
 
-    this.calculateTimeDifference = function(times_arr) {
+    this.calculateTimeDifferences = function(times_arr, reference_time) {
+
+        // Expected format for reference_time: "hh:mm", e.g, "12:30"
 
         var diff_arr = [];
 
-        var t2 = (new Date).toTimeString().slice(0,5);
+        var t2 = reference_time;
         var t2_h = parseInt(t2.split(":")[0]);
         var t2_m = parseInt(t2.split(":")[1]);
         var min_t2 = t2_h * 60 + t2_m;
@@ -1061,35 +1063,49 @@ function(scheduleDownloadAndTransformation) {
 
     };
 
-    this.formatTimeDifferences = function(reprocessed_schedule) {
+    this.calculateAndFormatTimeDifferences = function(
+        nearest_times, reference_time
+    ) {
 
-        var nearest_times = reprocessed_schedule.nearest.all;
+        /* 
+            A "day tag", which was appended to the time string, indicates if
+            the time is on a different day from the reference (usually current)
+            date. If the target date is the same as the reference date, no tag
+            would have been added.
+        */
 
-        var diffs = scheduleDownloadAndTransformation.calculateTimeDifference(
-            nearest_times
+        // The day tag is used to calculate the time difference between bus
+        // departure times here
+        var diffs = scheduleDownloadAndTransformation.calculateTimeDifferences(
+            nearest_times, reference_time
         );
 
         var diff_msgs = self.addTimeDiffMessages(diffs);
 
-        nearest_times =
-        reprocessed_schedule.nearest.all.map(function(time_with_day_label) {
+        // After the time difference is calculated, the day tag is no longer
+        // needed and is thus truncated here, if it was added originally
+        var nearest_times_no_day_tags = nearest_times.map(
 
-            var time = time_with_day_label.split(";")[0];
+            function(time_with_day_label) {
 
-            return time;
+                var time = time_with_day_label.split(";")[0];
 
-        });
+                return time;
+
+            }
+
+        );
 
         var times_and_diffs = [];
 
-        for (var i=0;i<nearest_times.length;i++) {
+        for (var i=0;i<nearest_times_no_day_tags.length;i++) {
 
             var time_12H = self.convertToTwelveHourTime(
-                nearest_times[i]
+                nearest_times_no_day_tags[i]
             );
 
             var time_and_diff = {
-                time: nearest_times[i],
+                time: nearest_times_no_day_tags[i],
                 diff: diff_msgs[i],
                 time_12H: time_12H
             };

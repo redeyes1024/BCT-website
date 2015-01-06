@@ -1805,9 +1805,13 @@ function (
 
         $scope.schedule.nearest = reprocessed_schedule.nearest;
 
-        $scope.schedule.nearest.times_and_diffs =
-        unitConversionAndDataReporting.
-        formatTimeDifferences(reprocessed_schedule);
+        var cur_time = (new Date).toTimeString().slice(0,5)
+
+        $scope.schedule.nearest.
+        times_and_diffs = unitConversionAndDataReporting.
+        calculateAndFormatTimeDifferences(
+            reprocessed_schedule.nearest.all, cur_time
+        );
 
         $scope.schedule_update_timer = $timeout(function() {
 

@@ -1,8 +1,6 @@
 var services_mock_data = angular.module('ServicesMockData', []);
 
-describe('BCTAppServices.miniScheduleService', function() {
-
-    /* Testing convertToTime Function */
+describe('BCTAppServices.miniScheduleService.convertToTime', function() {
 
     beforeEach(module('BCTAppServices'));
 
@@ -23,9 +21,8 @@ describe('BCTAppServices.miniScheduleService', function() {
 
 });
 
-describe('BCTAppServices.scheduleDownloadAndTransformation', function() {
-
-    /* Testing tabularizeDepartures Function */
+describe('BCTAppServices.scheduleDownloadAndTransformation.' +
+'tabularizeDepartures', function() {
 
     beforeEach(module('BCTAppServices', 'BCTAppValues',  'ServicesMockData'));
 
@@ -58,9 +55,8 @@ describe('BCTAppServices.scheduleDownloadAndTransformation', function() {
 
 });
 
-describe('BCTAppServices.scheduleDownloadAndTransformation', function() {
-
-    /* Testing getNearestTimes Function */
+describe('BCTAppServices.scheduleDownloadAndTransformation.' +
+'getNearestTimes', function() {
 
     beforeEach(module('BCTAppServices', 'BCTAppValues', 'ServicesMockData'));
 
@@ -112,7 +108,58 @@ describe('BCTAppServices.scheduleDownloadAndTransformation', function() {
 
 });
 
-describe('BCTAppServices.locationService', function() {
+describe('BCTAppServices.unitConversionAndDataReporting.' +
+'calculateAndFormatTimeDifferences', function() {
+
+    beforeEach(module('BCTAppServices', 'BCTAppValues', 'ServicesMockData'));
+
+    var unitConversionAndDataReporting;
+
+    beforeEach(inject(function($injector) {
+
+        unitConversionAndDataReporting = $injector.get(
+            'unitConversionAndDataReporting'
+        );
+
+    }));
+
+    it('should return an array of \"time and diff\" objects, which contain ' +
+    'the given time string, a formatted difference string, and a 12-hour ' +
+    'formatted time string, when provided an array of the bus departure ' +
+    'times closest to the reference time, and the reference time itself.',
+    function() {
+
+        expect(unitConversionAndDataReporting.calculateAndFormatTimeDifferences(
+            ["15:17", "15:35", "15:53", "16:12"], "15:29"
+        )).toEqual([
+            {
+                "time":"15:17",
+                "diff":"12 minutes ago",
+                "time_12H":"3:17 PM"
+            },
+            {
+                "time":"15:35",
+                "diff":"in 6 minutes",
+                "time_12H":"3:35 PM"
+            },
+            {
+                "time":"15:53",
+                "diff":"in 24 minutes",
+                "time_12H":"3:53 PM"
+            },
+            {
+                "time":"16:12",
+                "diff":"in 43 minutes",
+                "time_12H":"4:12 PM"
+            }
+        ]);
+
+    });
+
+});
+
+describe('BCTAppServices.locationService.' +
+'changeToDefaultLocationIfOutsideOfFlorida', function() {
 
     // Disabling console output for this unit
 
@@ -125,8 +172,6 @@ describe('BCTAppServices.locationService', function() {
         console.log = function() {};
 
     });
-
-    /* Testing changeToDefaultLocationIfOutsideOfFlorida Function */
 
     beforeEach(module('BCTAppServices', 'BCTAppValues'));
 
@@ -180,6 +225,31 @@ describe('BCTAppServices.locationService', function() {
     afterAll(function() {
 
         console.log = logger;
+
+    });
+
+});
+
+describe('BCTAppServices.generalServiceUtilities.formatDateYYYYMMDD', 
+function() {
+
+    beforeEach(module('BCTAppServices', 'BCTAppValues'));
+
+    var generalServiceUtilities;
+
+    beforeEach(inject(function($injector) {
+
+        generalServiceUtilities = $injector.get('generalServiceUtilities');
+
+    }));
+
+    var mock_date = new Date("2015/01/02");
+
+    it('should', function() {
+
+        expect(generalServiceUtilities.formatDateYYYYMMDD(mock_date)).toEqual(
+            "20150102"
+        );
 
     });
 
