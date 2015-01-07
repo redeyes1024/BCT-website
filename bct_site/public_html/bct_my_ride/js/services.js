@@ -385,7 +385,7 @@ function(locationService, full_bstop_data, nearest_stops_service_constants) {
 
     //Calculate distance between two geographic points, not taking the Earth's
     //curvature into account since the comparison is between relatively short
-    //distances and it is unlikely that factoring this in would change the
+    //distances, and it is unlikely that factoring this in would change the
     //order of shorest-to-longest distances
     this.computeLinearDistance = function(coords1, coords2) {
 
@@ -503,7 +503,7 @@ function(locationService, full_bstop_data, nearest_stops_service_constants) {
 
             nearest_bstops = stops_below_cutoff;
 
-        } 
+        }
 
         else {
 
@@ -635,7 +635,7 @@ full_schedule_category_with_datepicker) {
         return $http({
             method: 'POST',
             url: 'http://174.94.153.48:7777/TransitApi/Stops/',
-            data: { 
+            data: {
                 "AgencyId": "BCT"
             },
             transformResponse: function(res) {

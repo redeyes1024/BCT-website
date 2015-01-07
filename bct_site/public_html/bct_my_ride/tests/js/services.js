@@ -245,11 +245,32 @@ function() {
 
     var mock_date = new Date("2015/01/02");
 
-    it('should', function() {
+    it('should convert a date object to the format YYYYMMDD', function() {
 
         expect(generalServiceUtilities.formatDateYYYYMMDD(mock_date)).toEqual(
             "20150102"
         );
+
+    });
+
+});
+
+describe('BCTAppServices.nearestStopsService.sortStopsByDistance', function() {
+
+    beforeEach(module('BCTAppServices', 'BCTAppValues'));
+
+    var nearestStopsService;
+
+    beforeEach(inject(function($injector) {
+
+        nearestStopsService = $injector.get('nearestStopsService');
+
+    }));
+
+    it('should sort a given list of stops by distance to a reference stop',
+    function() {
+
+        nearestStopsService.sortStopsByDistance
 
     });
 
