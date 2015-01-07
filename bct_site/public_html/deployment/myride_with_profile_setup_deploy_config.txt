@@ -26,9 +26,9 @@
     true
 #MINIFIED_SOURCE_OUTPUT_NAMES
     ##JS
-    myride_with_profile_scripts.js
+    compressed_javascript.js
     ##CSS
-    myride_with_profile_stylesheets.css
+    compressed_stylesheet.css
 #PROFILE_PAGE_PATH
     profile_page.html
 #OTHER_SOURCES_PATHS

@@ -138,6 +138,8 @@ class ProfilePageTargetExpressions:
     start_compressed = "<!-- START Compressed Sources"
     start_forms = "<!-- START Sources for forms -->"
     end_forms = "<!-- END Sources for forms -->"
+    stylesheets_tag = "<link"
+    scripts_tag = "<script"
 
 class AlteredProfilePageTempName:
 
@@ -432,6 +434,8 @@ def display_config_file_settings():
 
     sources_list_file_path = config_dict["SOURCES_LIST_FILE"]
 
+    minified_source_output_names = create_list_string_from_dict(config_dict["MINIFIED_SOURCE_OUTPUT_NAMES"])
+
     minification_settings = create_list_string_from_dict(config_dict["MINIFY_SETTINGS"])
 
     profile_page_path = config_dict["PROFILE_PAGE_PATH"]
@@ -444,19 +448,21 @@ def display_config_file_settings():
         Sources Root: {1}\n
         Target File Paths: {2}\n
         Alternate Web Roots: {3}\n
-        Sources List File Path: {4}\n
-        Minification Settings: {5}\n
-        Path to Profile Page: {6}\n
-        Paths to Other Sources: {7}
+        Minified Source Output Names: {4}\n
+        Sources List File Path: {5}\n
+        Minification Settings: {6}\n
+        Path to Profile Page: {7}\n
+        Paths to Other Sources: {8}
         """.format(
-            output_information,
-            sources_root,
-            path_list,
-            web_roots_list,
-            sources_list_file_path,
-            minification_settings,
-            profile_page_path,
-            other_sources_paths
+            output_information,  # {0}
+            sources_root,  # {1}
+            path_list,  # {2}
+            web_roots_list,  # {3}
+            minified_source_output_names,  # {4}
+            sources_list_file_path,  # {5}
+            minification_settings,  # {6}
+            profile_page_path,  # {7}
+            other_sources_paths  # {8}
         )
     )
 
@@ -802,6 +808,9 @@ def create_deployment_profile_page():
 
     sources_root = config_dict["SOURCES_ROOT"]
 
+    new_scripts_path = config_dict["MINIFIED_SOURCE_OUTPUT_NAMES"]["JS"]
+    new_stylesheets_path = config_dict["MINIFIED_SOURCE_OUTPUT_NAMES"]["CSS"]
+
     path_to_profile_page = sources_root + config_dict["PROFILE_PAGE_PATH"]
 
     with open(path_to_profile_page, "r") as profile_page_file:
@@ -814,16 +823,54 @@ def create_deployment_profile_page():
 
             line_is_beyond_start_forms_line = False
 
+            start_looking_for_stylesheets_path = False
+            start_looking_for_scripts_path = False
+
+            stop_looking_for_stylesheets_path = False
+            stop_looking_for_scripts_path = False
+
+            stop_looking_for_paths = False
+
             for line in profile_page_file:
+
+                if not stop_looking_for_paths and stop_checking_for_start_compressed_line:
+
+                    if start_looking_for_stylesheets_path or ".css" in line:
+
+                        if (len(re.findall("href=\".*\.css\"", line)) != 0):
+
+                            line = re.sub("href=\".*\.css", "href=\"" + new_stylesheets_path, line)
+
+                            stop_looking_for_stylesheets_path = True
+
+                    if start_looking_for_scripts_path or ".js" in line:
+
+                        if (len(re.findall("src=\".*\.js\"", line)) != 0):
+
+                            line = re.sub("src=\".*\.js", "src=\"" + new_scripts_path, line)
+
+                            stop_looking_for_scripts_path = True
+
+                    stop_looking_for_paths = (stop_looking_for_stylesheets_path + stop_looking_for_scripts_path) == 2
+
+                    if not stop_looking_for_paths:
+
+                        profile_page_working_file.write(line)
 
                 if (stop_checking_for_start_compressed_line or
                     ProfilePageTargetExpressions.start_compressed not in line):
 
-                    if (stop_checking_for_forms_lines or not
-                        (ProfilePageTargetExpressions.start_forms in line or
-                         line_is_beyond_start_forms_line)):
+                    if (ProfilePageTargetExpressions.stylesheets_tag in line):
 
-                        profile_page_working_file.write(line)
+                        start_looking_for_stylesheets_path = True
+
+                    if (stop_checking_for_forms_lines or not
+                       (ProfilePageTargetExpressions.start_forms in line or
+                        line_is_beyond_start_forms_line)):
+
+                            if (stop_looking_for_paths or not stop_checking_for_start_compressed_line):
+
+                                profile_page_working_file.write(line)
 
                     else:
 
@@ -832,6 +879,7 @@ def create_deployment_profile_page():
                             stop_checking_for_forms_lines = True
 
                         line_is_beyond_start_forms_line = True
+
 
                 else:
 

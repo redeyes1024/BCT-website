@@ -34,7 +34,7 @@ ISR.directories = {
 
 ISR.directories.site_roots.active =
 //START DEPLOYMENT_ROOT_TARGET
-ISR.directories.site_roots.local;
+ISR.directories.site_roots.remote_isr;
 //END DEPLOYMENT_ROOT_TARGET
 
 ISR.directories.paths.active =
