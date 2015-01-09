@@ -2193,8 +2193,7 @@ function (
 
         fullDataDownloadPromise = $q.all([
 
-            profilePageService.downloadUserFavorites().
-            then(function(res) {
+            profilePageService.downloadUserFavorites().then(function(res) {
 
                 if (res.data === null) {
 
@@ -2216,8 +2215,7 @@ function (
 
             }),
 
-            landmarkInfoService.downloadLandmarkInfo().
-            then(function(res) {
+            landmarkInfoService.downloadLandmarkInfo().then(function(res) {
 
                 full_landmark_data.orig = res.data;
 

@@ -111,7 +111,7 @@ describe('BCTAppServices.scheduleDownloadAndTransformation.' +
 describe('BCTAppServices.unitConversionAndDataReporting.' +
 'calculateAndFormatTimeDifferences', function() {
 
-    beforeEach(module('BCTAppServices', 'BCTAppValues', 'ServicesMockData'));
+    beforeEach(module('BCTAppServices', 'BCTAppValues'));
 
     var unitConversionAndDataReporting;
 
@@ -255,22 +255,88 @@ function() {
 
 });
 
-describe('BCTAppServices.nearestStopsService.sortStopsByDistance', function() {
+describe('BCTAppServices.nearestStopsService.findNearestStops', function() {
 
-    beforeEach(module('BCTAppServices', 'BCTAppValues'));
+    beforeEach(module('BCTAppServices', 'BCTAppValues', 'ServicesMockData'));
 
     var nearestStopsService;
+    var mock_findNearestStops_data;
 
     beforeEach(inject(function($injector) {
 
         nearestStopsService = $injector.get('nearestStopsService');
+
+        mock_findNearestStops_data = $injector.get(
+            'nearestStopsService_findNearestStops'
+        );
 
     }));
 
     it('should sort a given list of stops by distance to a reference stop',
     function() {
 
-        nearestStopsService.sortStopsByDistance
+        var mock_location = {
+            "LatLng":{
+                "Latitude": 26.00,
+                "Longitude": -80.25
+            }
+        };
+
+        expect(
+            nearestStopsService.findNearestStops(
+                mock_location,
+                false,
+                false
+            )
+        ).toEqual(
+            mock_findNearestStops_data.expected_output
+        );
+
+    });
+
+});
+
+/*
+
+    BCTAppServices_AllDataDownloads
+
+    This testing suite checks to see if JSON data returned from the backend
+    is always in the expected format. Due to its relatively slow nature, it
+    should always be the last suite to run.
+
+    The requests are not made with Angular's $http and $httpBackend service,
+    and instead are made from a utility found in test_main.js, the tests init
+    file. This is because, for unit testing and for this version of Angular
+    (1.2.x) and Jasmine (2.1.x), $httpBackend can only mock API requests.
+
+    With Angular's End-to-End testing package, $httpBackend allows actual
+    API calls to be made. However, for simplicity, formal end-to-end tests
+    have not yet been described.
+
+*/
+
+describe('BCTAppServices_AllDataDownloads', function() {
+
+    beforeEach(module('BCTAppServices', 'BCTAppValues'));
+
+    beforeEach(inject(function($injector) {
+
+    }));
+
+    it('should return properly-formatted landmark data',
+    function(done) {
+
+        ISR.utils.POSTRequestJSONFromAPI(
+            "http://174.94.153.48:7777/TransitApi/Landmarks/",
+            { "AgencyId":"BCT" },
+            function(responseText) {
+
+                expect(responseText).toEqual("boo");
+
+                done();
+
+            }
+        );
 
     });
 

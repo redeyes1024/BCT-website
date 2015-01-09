@@ -12,7 +12,10 @@ module.exports = function(grunt) {
                     browsers: ['PhantomJS'],
                     files: [
 
-                        //App dependencies
+                        // Test Init
+                        'bct_my_ride/tests/js/test_main.js',
+
+                        // App dependencies
                         'https://maps.googleapis.com/maps/api/js?key=AIzaSyCXxtwuyy3k9Ot5d44hgjHQt4kkg5KZ5Hw&sensor=false',
                         'bct_my_ride/js/libraries/angular.min.js',
                         'bower_components/angular-mocks/angular-mocks.js',
@@ -31,10 +34,10 @@ module.exports = function(grunt) {
                         'bct_my_ride/js/scrolling_alerts_service.js',
                         'bct_my_ride/js/directives.js',
 
-                        //Test sources
+                        // Test sources
                         'bct_my_ride/tests/js/services.js',
 
-                        //Mock data
+                        // Mock data
                         'bct_my_ride/tests/js/mock/*.mock.js'
 
                     ]

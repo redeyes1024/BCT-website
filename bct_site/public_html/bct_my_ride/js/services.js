@@ -468,31 +468,18 @@ function(locationService, full_bstop_data, nearest_stops_service_constants) {
 
         if (!disable_location_check) {
 
-            current_location =
-            locationService.
+            current_location = locationService.
             changeToDefaultLocationIfOutsideOfFlorida(current_location);
 
         }
 
-        var full_bstop_list_ids_coords = [];
-
-        for (var i=0;i<full_bstop_data.list.length;i++) {
-
-            full_bstop_list_ids_coords.push({
-                Id: full_bstop_data.list[i].Id,
-                LatLng: full_bstop_data.list[i].LatLng,
-                Code: full_bstop_data.list[i].Code
-            });
-
-        }
-
-        full_bstop_list_ids_coords = self.sortStopsByDistance(
+        var full_bstop_list_distance_sorted = self.sortStopsByDistance(
             current_location,
-            full_bstop_list_ids_coords,
+            full_bstop_data.list,
             true
         );
 
-        var stops_below_cutoff = full_bstop_list_ids_coords.
+        var sorted_stops_below_cutoff = full_bstop_list_distance_sorted.
         filter(function(sd) {
             return sd.distance < nearest_stops_service_constants.max_dist;
         });
@@ -501,13 +488,13 @@ function(locationService, full_bstop_data, nearest_stops_service_constants) {
 
         if (return_full_list) {
 
-            nearest_bstops = stops_below_cutoff;
+            nearest_bstops = sorted_stops_below_cutoff;
 
         }
 
         else {
 
-            nearest_bstops = stops_below_cutoff.
+            nearest_bstops = sorted_stops_below_cutoff.
             slice(0, nearest_stops_service_constants.max_reported_stops);
 
         }
@@ -517,14 +504,12 @@ function(locationService, full_bstop_data, nearest_stops_service_constants) {
             nearest_bstops[j].distance = self.
             labelDistancesAndConvertFromDegrees(nearest_bstops[j].distance);
 
-            nearest_bstops[j].Name =
-            full_bstop_data.dict[nearest_bstops[j].Id].Name;
-            
             nearest_bstops[j].show_dist = true;
 
         }
 
         return nearest_bstops;
+
     };
 
 }]);
@@ -1140,6 +1125,7 @@ BCTAppServices.service('generalServiceUtilities', [ function() {
         the call to generalServiceUtilities.passTopScopePropRefsToGenUtils
         in top_level_controller.js.
     */
+
     this.passTopScopePropRefsToGenUtils = function(top_level_scope_props) {
 
         self.top_level_scope_prop_refs = top_level_scope_props;
@@ -1164,8 +1150,7 @@ BCTAppServices.service('generalServiceUtilities', [ function() {
 
     this.tryParsingResponse = function(res, function_name) {
 
-        var error_message =
-        "There was a problem parsing the data into JSON: " +
+        var error_message = "There was a problem parsing the data into JSON: " +
         function_name;
 
         try {
@@ -1257,8 +1242,8 @@ function(map_navigation_marker_indices) {
             main_container, optional_class_label
         );
 
-        var c_buttons =
-        accordion_container.getElementsByClassName("collapse-button");
+        var c_buttons = accordion_container.
+        getElementsByClassName("collapse-button");
 
         var targ_cl = event.target.children[0].children[0].classList;
         var list = event.target.parentNode.children[1].classList.contains("in");
@@ -1311,9 +1296,8 @@ function(map_navigation_marker_indices) {
 
         }
 
-        var new_url =
-        location_prefix + "#routeschedules?route=" + route + "&" +
-        "stop=" + stop;
+        var new_url = location_prefix + "#routeschedules?route=" + route +
+        "&" + "stop=" + stop;
 
         return new_url;
 
@@ -1837,6 +1821,7 @@ function(results_exist, filter_buffer_data) {
 BCTAppServices.factory('routeAndStopFilters', [ 'nearestStopsService',
 'locationService', 'latest_location', 'filterHelpers', 'full_bstop_data',
 'full_route_data', 'full_landmark_data',
+
 function(nearestStopsService, locationService, latest_location, filterHelpers,
 full_bstop_data, full_route_data, full_landmark_data) {
 
@@ -1993,11 +1978,11 @@ function($compile, full_route_data, full_bstop_data, full_landmark_data) {
         scope, element, type
     ) {
 
-        var inner_template =
-        "<sub-panel-" + type + "s></sub-panel-" + type + "s>";
-
-        angular.element(element[0].childNodes[0].childNodes[1]).
+        angular.element(element[0].getElementsByClassName("panel-heading")).
         bind("click", function() {
+
+            var inner_template = "<sub-panel-" + type + "s>" +
+                                 "</sub-panel-" + type + "s>";
 
             element[0].parentNode.parentNode.parentNode.scrollTop =
             element[0].offsetTop - 10;
@@ -2006,7 +1991,7 @@ function($compile, full_route_data, full_bstop_data, full_landmark_data) {
 
             if (type === "route") {
 
-                data_id = element[0].childNodes[0].getAttribute("id");
+                data_id = scope.route.Id;
 
                 scope.cur_route = full_route_data.dict[data_id];
 
@@ -2018,7 +2003,7 @@ function($compile, full_route_data, full_bstop_data, full_landmark_data) {
 
             else if (type === "stop") {
 
-                data_id = element[0].childNodes[0].getAttribute("id");
+                data_id = scope.stop.Id;
 
                 scope.cur_stop = full_bstop_data.dict[data_id];
 
@@ -2030,7 +2015,7 @@ function($compile, full_route_data, full_bstop_data, full_landmark_data) {
 
             else if (type === "landmark") {
 
-                var landmark_id = element[0].childNodes[0].getAttribute("id");
+                var landmark_id = scope.landmark.Id;
 
                 var all_landmarks = full_landmark_data.list;
 
@@ -2052,8 +2037,9 @@ function($compile, full_route_data, full_bstop_data, full_landmark_data) {
 
             var sub_panel_already_exists = Boolean(
                 element.children().children()[1].childNodes[1].childNodes[3].
-                innerHTML.
-                match(/sub-panel-stops|sub-panel-landmarks|sub-panel-routes/)
+                innerHTML.match(
+                    /sub-panel-stops|sub-panel-landmarks|sub-panel-routes/
+                )
             );
 
             if(!sub_panel_already_exists) {
