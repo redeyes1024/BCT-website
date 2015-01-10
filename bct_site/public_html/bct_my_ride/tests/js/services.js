@@ -310,28 +310,69 @@ describe('BCTAppServices.nearestStopsService.findNearestStops', function() {
     (1.2.x) and Jasmine (2.1.x), $httpBackend can only mock API requests.
 
     With Angular's End-to-End testing package, $httpBackend allows actual
-    API calls to be made. However, for simplicity, formal end-to-end tests
-    have not yet been described.
+    API calls to be made. However, this simple suite does not technically
+    fall under the category integration testing. Since it involves making
+    non-mock requests to the application's backend, it perhaps cannot be
+    considered to be unit testing per se either.
+
+    For these reasons, this suite will be considered a form of "mid-way"
+    testing, and the data retrieval will rely solely on the built-in XHR
+    methods.
 
 */
 
 describe('BCTAppServices_AllDataDownloads', function() {
 
-    beforeEach(module('BCTAppServices', 'BCTAppValues'));
+    beforeAll(function() {
 
-    beforeEach(inject(function($injector) {
+        console.log("Performing mid-way tests.");
 
-    }));
+        jasmine.addMatchers(ISR.testing.utils.custom_matchers);
 
-    it('should return properly-formatted landmark data',
+    });
+
+    it('should return properly-formatted data for landmarks',
     function(done) {
 
-        ISR.utils.POSTRequestJSONFromAPI(
+        ISR.testing.utils.POSTRequestJSONFromAPI(
             "http://174.94.153.48:7777/TransitApi/Landmarks/",
             { "AgencyId":"BCT" },
             function(responseText) {
 
-                expect(responseText).toEqual("boo");
+                var landmarks = JSON.parse(responseText);
+
+                for (var lmk=0;lmk<landmarks.length;lmk++) {
+
+                    expect(landmarks[lmk]).toBeFormattedProperly("landmarks");
+
+                }
+
+                ISR.testing.utils.reportErrorsIfExist();
+
+                done();
+
+            }
+        );
+
+    });
+
+    it('should return properly-formatted data for routes',
+    function(done) {
+
+        ISR.testing.utils.POSTRequestJSONFromAPI(
+            "http://174.94.153.48:7777/TransitApi/Routes/",
+            { "AgencyId":"BCT" },
+            function(responseText) {
+
+                var routes = JSON.parse(responseText);
+
+                for (var route=0;route<routes.length;route++) {
+
+                    expect(routes[route]).toBeFormattedProperly("routes");
+
+                }
+
+                ISR.testing.utils.reportErrorsIfExist();
 
                 done();
 
