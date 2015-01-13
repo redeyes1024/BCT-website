@@ -992,26 +992,6 @@ function(scheduleDownloadAndTransformation) {
 
     };
 
-    this.checkIfCorrectTripPlannerIcon = function(leg_data, icon_type) {
-
-        var icon_is_correct = false;
-
-        if (leg_data.modeField === icon_type) {
-
-            icon_is_correct = true;
-
-        }
-
-        return icon_is_correct;
-
-    };
-
-    this.getAltOrTitleText = function(leg_data) {
-
-        return full_text;
-
-    };
-
     this.convertToTwelveHourTime = function(twenty_four_hour_time) {
 
         var twelve_hour_time;
@@ -1184,49 +1164,49 @@ function(map_navigation_marker_indices) {
 
         switch (main_container) {
 
-        case "landmark":
-        case "route":
+            case "landmark":
+            case "route":
 
-            accordion_container = document.getElementsByClassName(
-                "schedule-results-main-container"
-            )[0];
+                accordion_container = document.getElementsByClassName(
+                    "schedule-results-main-container"
+                )[0];
 
-            break;
+                break;
 
-        case "stop":
+            case "stop":
 
-            accordion_container = document.getElementsByClassName(
-                optional_class_label
-            )[0];
+                accordion_container = document.getElementsByClassName(
+                    optional_class_label
+                )[0];
 
-            break;
+                break;
 
-        case "recently_viewed":
+            case "recently_viewed":
 
-            accordion_container = document.getElementsByClassName(
-                "index-main-container"
-            )[0];
+                accordion_container = document.getElementsByClassName(
+                    "index-main-container"
+                )[0];
 
-            break;
+                break;
 
-        case "full_schedule":
+            case "full_schedule":
 
-            accordion_container = document.getElementById(
-                "full-schedule-accordion"
-            );
+                accordion_container = document.getElementById(
+                    "full-schedule-accordion"
+                );
 
-            break;
+                break;
 
-        default:
+            default:
 
-            console.log(
-                "setAccordionPlusMinusIcons: " +
-                "You must specify the name of the main target container."
-            );
+                console.log(
+                    "setAccordionPlusMinusIcons: " +
+                    "You must specify the name of the main target container."
+                );
 
-            accordion_container = false;
+                accordion_container = false;
 
-            break;
+                break;
 
         }
 
@@ -1288,7 +1268,7 @@ function(map_navigation_marker_indices) {
             location_prefix = "default.aspx";
 
         }
-        
+
         else if(window.location.toString().
                 match(/\/myride_deployment_sample.html/)) {
 
@@ -1303,32 +1283,42 @@ function(map_navigation_marker_indices) {
 
     };
 
-    this.cycleMarkerInfoWindows = function(original_index, counter_name) {
+    this.cycleMarkerInfoWindows = function(counter_name) {
 
-        var new_index = original_index;
+        var starting_index = map_navigation_marker_indices[counter_name];
 
-        var marker_list_length = 0;
+        var marker_list_length;
 
         if (counter_name === "planner") {
+
             marker_list_length = myride.dom_q.map.overlays.trip_points.length;
+
         }
 
         else if (counter_name === "schedule") {
-            marker_list_length =
-            myride.dom_q.map.overlays.ordered_stop_list.length;
-        }
 
-        if (map_navigation_marker_indices[counter_name] < 0) {
-
-            new_index =
-            map_navigation_marker_indices[counter_name] =
-            marker_list_length - 1;
+            marker_list_length = myride.dom_q.map.overlays.
+            ordered_stop_list.length;
 
         }
-        else if (map_navigation_marker_indices[counter_name] ===
-        marker_list_length) {
 
-            new_index = map_navigation_marker_indices[counter_name] = 0;
+        var new_index;
+
+        if (starting_index < 0) {
+
+            new_index = marker_list_length - 1;
+
+        }
+
+        else if (starting_index === marker_list_length) {
+
+            new_index = 0;
+
+        }
+
+        else {
+
+            new_index = starting_index;
 
         }
 

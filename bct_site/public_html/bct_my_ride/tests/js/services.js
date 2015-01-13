@@ -296,6 +296,71 @@ describe('BCTAppServices.nearestStopsService.findNearestStops', function() {
 
 });
 
+describe('BCTAppServices.generalUIUtilities.addRouteAndStopParamsToUrl',
+function() {
+
+    beforeEach(module('BCTAppServices', 'BCTAppValues'));
+
+    var generalUIUtilities;
+
+    beforeEach(inject(function($injector) {
+
+        generalUIUtilities = $injector.get('generalUIUtilities');
+
+    }));
+
+    it('should add route and stop IDs to the url in the form of parameters',
+    function() {
+
+        var new_url = generalUIUtilities.addRouteAndStopParamsToUrl(
+            "BCT01", "10"
+        );
+
+        // Service depends on window.location for prefix, but the one
+        // used by PhantomJS is not expected, so the prefix generated here
+        // must be removed.
+        var new_url_no_prefix = new_url.replace(/^.*#/, "");
+
+        expect(new_url_no_prefix).toEqual("routeschedules?route=BCT01&stop=10");
+
+    });
+
+});
+
+describe('BCTAppServices.generalUIUtilities.cycleMarkerInfoWindows',
+function() {
+
+    beforeEach(module('BCTAppServices', 'BCTAppValues'));
+
+    var generalUIUtilities;
+
+    beforeEach(inject(function($injector) {
+
+        generalUIUtilities = $injector.get('generalUIUtilities');
+
+    }));
+
+    it('should add route and stop IDs to the url in the form of parameters',
+    function() {
+
+        var old_trip_points = myride.dom_q.map.overlays.trip_points;
+
+        var trip_points_mock_length = 10;
+
+        myride.dom_q.map.overlays.trip_points = {
+            length: trip_points_mock_length
+        };
+
+        expect(generalUIUtilities.cycleMarkerInfoWindows(
+            myride.dom_q.map.overlays.trip_points.length, "planner")
+        ).toEqual(0);
+
+        myride.dom_q.map.overlays.trip_points = old_trip_points;
+
+    });
+
+});
+
 /*
 
     BCTAppServices_AllDataDownloads

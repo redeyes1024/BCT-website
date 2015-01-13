@@ -1,3 +1,5 @@
+'use strict';
+
 var BCTAppTopController = angular.module('BCTAppTopController', []);
 
 BCTAppTopController.controller('BCTController', [
@@ -1440,11 +1442,11 @@ function (
 
     $scope.full_schedule_error_dialog_hide_in_progress = false;
 
-    $scope.SCHEDULE_MAP_ERROR_STOP_SEEKER =
-    warning_messages.schedule_map.stop_seeker;
+    $scope.SCHEDULE_MAP_ERROR_STOP_SEEKER = warning_messages.schedule_map.
+    stop_seeker;
 
-    $scope.SCHEDULE_MAP_ERROR_MAIN_SCHEDULE =
-    warning_messages.schedule_map.main_schedule;
+    $scope.SCHEDULE_MAP_ERROR_MAIN_SCHEDULE = warning_messages.schedule_map.
+    main_schedule;
 
     $scope.full_schedule_error_dialog_hide_in_progress = false;
 
@@ -1493,33 +1495,23 @@ function (
 
     $scope.cycleMarkerInfoWindows = generalUIUtilities.cycleMarkerInfoWindows;
 
-    $scope.openMarkerInfoWindow = function(map_type, marker_index) {
+    $scope.openMarkerInfoWindow = function(map_type) {
 
-        var marker_instances = "";
-        var marker_position = {};
+        var marker_instances;
+
+        var marker_index = map_navigation_marker_indices[map_type];
 
         if (map_type === "planner") {
 
             marker_instances = "trip_points";
 
-            //Wrap around available trip planner steps if needed
-            marker_index = $scope.cycleMarkerInfoWindows(
-                marker_index,
-                "planner"
-            );
-
         }
+
         else if (map_type === "schedule") {
 
             marker_instances = "points";
 
-            //Wrap around available schedule stops if needed
-            marker_index = $scope.cycleMarkerInfoWindows(
-                marker_index,
-                "schedule"
-            );
-
-            //Get named index (needed for stop markers) from numeric index
+            // Get named index (needed for stop markers) from numeric index
             marker_index = myride.dom_q.map.overlays.
             ordered_stop_list[marker_index];
 
@@ -1561,8 +1553,8 @@ function (
     };
 
 
-    //The navigator should be unreachable in the UI until it is loaded
-    //Thus the following error handling function is just a precaution
+    // The navigator should be unreachable in the UI until it is loaded
+    // Thus the following error handling function is just a precaution
     $scope.checkIfScheduleMapNavigatorLoaded = function() {
 
         if (!myride.dom_q.map.overlays.ordered_stop_list[0]) {
@@ -1574,52 +1566,45 @@ function (
 
     };
 
-    $scope.goToNextInfoWindow = function(map_type) {
+    $scope.goToAdjacentInfoWindow = function(map_type, direction) {
 
-        if (map_type === "planner") {
-            map_navigation_marker_indices.planner++;
+        if (map_type === "schedule" &&
+            !$scope.checkIfScheduleMapNavigatorLoaded) {
 
-            $scope.openMarkerInfoWindow(
-                map_type, map_navigation_marker_indices.planner
-            );
-
-        }
-        else if (map_type === "schedule") {
-
-            if (!$scope.checkIfScheduleMapNavigatorLoaded) { return false; }
-
-            map_navigation_marker_indices.schedule++;
-
-            $scope.openMarkerInfoWindow(
-                map_type, map_navigation_marker_indices.schedule
-            );
-
-            myride.dom_q.map.inst.setZoom(map_setting_defaults.near_zoom);
+            return false;
 
         }
 
-    };
+        if (direction === "next") {
 
-    $scope.goToPrevInfoWindow = function(map_type) {
-
-        if (map_type === "planner") {
-
-            map_navigation_marker_indices.planner--;
-
-            $scope.openMarkerInfoWindow(
-                map_type, map_navigation_marker_indices.planner
-            );
+            map_navigation_marker_indices[map_type]++;
 
         }
-        else if (map_type === "schedule") {
 
-            if (!$scope.checkIfScheduleMapNavigatorLoaded) { return false; }
+        else if (direction === "prev") {
 
-            map_navigation_marker_indices.schedule--;
+            map_navigation_marker_indices[map_type]--;
 
-            $scope.openMarkerInfoWindow(
-                map_type, map_navigation_marker_indices.schedule
+        }
+
+        else {
+
+            console.log(
+                "goToAdjacentInfoWindow: Unrecognized direction: " + direction
             );
+
+            return false;
+
+        }
+
+        // Wrap around available schedule stops or trip planner steps if needed
+        map_navigation_marker_indices[map_type] = $scope.cycleMarkerInfoWindows(
+            map_type
+        );
+
+        $scope.openMarkerInfoWindow(map_type);
+
+        if (map_type === "schedule") {
 
             myride.dom_q.map.inst.setZoom(map_setting_defaults.near_zoom);
 
@@ -1632,14 +1617,9 @@ function (
         switch (point_choice) {
 
             case "next":
-
-                $scope.goToNextInfoWindow(map_type);
-
-                break;
-
             case "prev":
 
-                $scope.goToPrevInfoWindow(map_type);
+                $scope.goToAdjacentInfoWindow(map_type, point_choice);
 
                 break;
 
@@ -1647,10 +1627,7 @@ function (
 
                 map_navigation_marker_indices.planner = new_index;
 
-                $scope.openMarkerInfoWindow(
-                    map_type,
-                    new_index
-                );
+                $scope.openMarkerInfoWindow(map_type);
 
             break;
 
