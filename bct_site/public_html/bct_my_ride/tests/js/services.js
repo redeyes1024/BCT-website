@@ -331,12 +331,37 @@ describe('BCTAppServices_AllDataDownloads', function() {
 
     });
 
+    var info_types = {
+
+        landmarks: {
+
+            url: "http://174.94.153.48:7777/TransitApi/Landmarks/",
+            body: { "AgencyId": "BCT" }
+
+        },
+
+        routes: {
+
+            url: "http://174.94.153.48:7777/TransitApi/Routes/",
+            body: { "AgencyId": "BCT" }
+
+        },
+
+        stops: {
+
+            url: "http://174.94.153.48:7777/TransitApi/Stops/",
+            body: { "AgencyId": "BCT" }
+
+        }
+
+    };
+
     it('should return properly-formatted data for landmarks',
     function(done) {
 
         ISR.testing.utils.POSTRequestJSONFromAPI(
-            "http://174.94.153.48:7777/TransitApi/Landmarks/",
-            { "AgencyId":"BCT" },
+            info_types.landmarks.url,
+            info_types.landmarks.body,
             function(responseText) {
 
                 var landmarks = JSON.parse(responseText);
@@ -360,8 +385,8 @@ describe('BCTAppServices_AllDataDownloads', function() {
     function(done) {
 
         ISR.testing.utils.POSTRequestJSONFromAPI(
-            "http://174.94.153.48:7777/TransitApi/Routes/",
-            { "AgencyId":"BCT" },
+            info_types.routes.url,
+            info_types.routes.body,
             function(responseText) {
 
                 var routes = JSON.parse(responseText);
@@ -369,6 +394,31 @@ describe('BCTAppServices_AllDataDownloads', function() {
                 for (var route=0;route<routes.length;route++) {
 
                     expect(routes[route]).toBeFormattedProperly("routes");
+
+                }
+
+                ISR.testing.utils.reportErrorsIfExist();
+
+                done();
+
+            }
+        );
+
+    });
+
+    it('should return properly-formatted data for stops',
+    function(done) {
+
+        ISR.testing.utils.POSTRequestJSONFromAPI(
+            info_types.stops.url,
+            info_types.stops.body,
+            function(responseText) {
+
+                var stops = JSON.parse(responseText);
+
+                for (var bstop=0;bstop<stops.length;bstop++) {
+
+                    expect(stops[bstop]).toBeFormattedProperly("stops");
 
                 }
 

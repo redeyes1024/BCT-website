@@ -620,13 +620,13 @@ full_schedule_category_with_datepicker) {
         return $http({
             method: 'POST',
             url: 'http://174.94.153.48:7777/TransitApi/Stops/',
-            data: {
-                "AgencyId": "BCT"
-            },
+            data: { "AgencyId": "BCT" },
             transformResponse: function(res) {
 
                 if (localStorage) {
+
                     localStorage.setItem('stop_data', res);
+
                 }
 
                 return generalServiceUtilities.

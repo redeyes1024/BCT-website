@@ -14,6 +14,7 @@ module.exports = function(grunt) {
 
                         // Test Init
                         'bct_my_ride/tests/js/test_main.js',
+                        'bct_my_ride/tests/js/custom_matchers.js',
 
                         // App dependencies
                         'https://maps.googleapis.com/maps/api/js?key=AIzaSyCXxtwuyy3k9Ot5d44hgjHQt4kkg5KZ5Hw&sensor=false',
