@@ -1027,6 +1027,8 @@ function (
         $scope.show_map_full_screen_return_button = !full_screen_on;
         $scope.show_map_full_screen_modal = !full_screen_on;
 
+        $scope.show_trip_planner_options = false;
+
         $scope.show_trip_planner_step_navigation_bar =
         full_screen_on &&
         $scope.show_trip_planner_title &&

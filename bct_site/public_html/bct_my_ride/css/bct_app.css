@@ -164,10 +164,10 @@ em.hint-text {
 }
 .map-canvas-full-screen {
     position: fixed !important;
-    width: calc(100% - 6em) !important;
-    height: calc(100% - 8.5em) !important;
     left: 3em;
     top: 3em;
+    width: calc(100% - 6em) !important;
+    height: calc(100% - 7.7em) !important;
     z-index: 1031;
     -webkit-transform: none !important;
 }
@@ -237,9 +237,14 @@ em.hint-text {
     font-weight: 400;
     border-style: dotted;
     border-width: 1px 0px;
-    padding: 0.3em 0em;
+    padding: 0.3em 0em 0.4em;
     background-color: #FFF;
     text-align: center;
+}
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+    .single-button-bar {
+        padding: 0.3em 0em 0.6em;
+    }
 }
 .icon-legend-modal {
     position: absolute;
@@ -611,6 +616,10 @@ em.maker-info-window-title {
     width: 200px !important;
     height: 103px !important;
 }
+.trip-planner-info-box img {
+    z-index: 1;
+    margin: 3px 5px 0px !important;
+}
 .schedule-map-info-box-top {
     background-color: #888;
     height: 3.5em;
@@ -794,8 +803,11 @@ em.maker-info-window-title {
 }
 schedule-map-navigation-bar {
     border-width: 1px 0px !important;
-    padding-left: 0em !important;
-    padding-right: 0em !important;
+}
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+    .schedule-map-stop-navigation-bar {
+        margin: 0em 0em 1em;
+    }
 }
 .schedule-map-navigation-bar-activation-button {
     
@@ -943,7 +955,7 @@ schedule-map-navigation-bar {
 }
 #planner-option-date .quickdate-popup {
     margin: 3.4em 0em 0em -9em;
-    top: -263px;
+    top: -238px;
 }
 .schedule-full-result-row {
     display: table;
@@ -1339,11 +1351,13 @@ inline-filter-icons {
     margin: 0em 0em 1em;
     position: absolute;
     z-index: 1031;
-    top: -7.4em;
+    top: -7.3em;
     left: 0em;
     max-height: 7.5em;
 }
 .trip-marker-info-window {
+    position: relative;
+    top: -5px;
     width: 100%;
 }
 .trip-marker-info-window-top {
@@ -1362,6 +1376,12 @@ inline-filter-icons {
     width: 30px;
     display: table-cell;
 }
+.trip-marker-info-window-close-box {
+    width: 25px;
+    display: table-cell;
+    border-width: 0px 0px 1px 1px;
+    border-style: solid;
+}
 .trip-marker-info-window-number-contents {
     position: absolute;
     font-size: 20px;
@@ -1370,8 +1390,7 @@ inline-filter-icons {
 }
 @media screen and (-webkit-min-device-pixel-ratio:0) {
     .trip-marker-info-window {
-        position: relative;
-        top: -17px;
+        top: -22px;
         z-index: -1;
     }
     .trip-marker-info-window-number-contents {
@@ -1385,11 +1404,10 @@ inline-filter-icons {
     border-style: solid;
     border-width: 0px 0px 1px;
     vertical-align: middle;
-    padding: 0px 20px 0px 0px;
 }
 .trip-marker-info-window-bottom {
     display: block;
-    height: 73px;
+    height: 78px;
     background-color: #888;
     border-radius: 0px 0px 4px 4px;
     border-color: #444;
@@ -1583,7 +1601,9 @@ svg .destination-icon-fix {
 .trip-planer-itinerary-navigation-step {
     display: inline-block;
     position: relative;
-    margin: 0.2em;
+    height: 3.5em;
+    padding: 0.7em 0.2em 0em;
+    overflow: hidden;
 }
 .trip-planner-itinerary-step-highlighted {
     fill: #017AC2;
@@ -1593,6 +1613,11 @@ trip-planner-navigation-bar {
     border-width: 0px 0px 1px;
     background-color: white;
     padding: 0.5em 0em;
+}
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+    trip-planner-navigation-bar {
+        padding: 0.5em 0em 1.5em;
+    }
 }
 .trip-planner-itinerary-navigation-bar {
     height: 4em;
@@ -1829,7 +1854,7 @@ iframe .trip-planner-dialog-finish {
     }
     #planner-option-date .quickdate-popup {
         margin: 6em 0em 0em -9em;
-        top: -231px;
+        top: -212px;
     }
     .stops-list {
         height: calc(9em + 1px);
@@ -1888,7 +1913,7 @@ iframe .trip-planner-dialog-finish {
     }
     .trip-planner-transit-mode-icon-dest {
         transform: scale(2) translate(10px, -4px) !important;
-        padding: 14px 0px 0px;
+        padding: 12px 0px 0px;
     }
     .navigation-bar-directions {
         width: 1.5em;

@@ -469,10 +469,14 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
                 var icon_options =
                 marker_icon_options.schedule_map.default;
 
-                myride.dom_q.map.overlays[marker_list_name][marker_id].marker.
-                setOptions({
-                    icon: icon_options
-                });
+                if (marker_list_name !== "trip_points") {
+
+                    myride.dom_q.map.overlays[marker_list_name][marker_id].
+                    marker.setOptions({
+                        icon: icon_options
+                    });
+
+                }
 
                 self.createDummyInfoWindow(marker_list_name);
 
@@ -1616,6 +1620,7 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
             }
 
             trip_planner_info_box_contents = '' +
+
                 '<div class="trip-marker-info-window">' +
 
                     "<span class='trip-marker-info-window-top'>" +
@@ -1633,6 +1638,9 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
 
                         "<span class='trip-marker-info-window-title'>" +
                             label + " " + route_text +
+                        "</span>" +
+
+                        "<span class='trip-marker-info-window-close-box'>" +
                         "</span>" +
 
                     "</span>" +
