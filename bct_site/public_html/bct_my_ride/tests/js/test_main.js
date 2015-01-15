@@ -53,4 +53,4 @@ ISR.testing.utils.reportErrorsIfExist = function() {
 
 };
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 25000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 35000;

@@ -192,14 +192,14 @@ warning_messages, recentlyViewedService, locationService, timer_constants) {
 
     $scope.planner_error_alert_dialog_hide_in_progress = false;
 
-    $scope.selectTripPlannerErrorMessage = function (error_field) {
+    $scope.selectTripPlannerErrorMessage = function(error_field) {
 
         var trip_planner_error_dialog_text = "";
 
         if (!error_field || error_field.idField) {
 
-            trip_planner_error_dialog_text =
-            warning_messages.trip_planner.no_error_data;
+            trip_planner_error_dialog_text = warning_messages.
+            trip_planner.no_error_data;
 
             console.log(
                 "Trip planner error: problem communicating with server."
@@ -209,8 +209,8 @@ warning_messages, recentlyViewedService, locationService, timer_constants) {
 
         else if (error_field === "plan_start_late") {
 
-            trip_planner_error_dialog_text =
-            warning_messages.trip_planner.departure_time_passed;
+            trip_planner_error_dialog_text = warning_messages.
+            trip_planner.departure_time_passed;
 
             console.log(
                 "Trip planner error: plan start time already passed"
@@ -220,8 +220,8 @@ warning_messages, recentlyViewedService, locationService, timer_constants) {
 
         else if (error_field === "all_trips_filtered_out") {
 
-            trip_planner_error_dialog_text =
-            warning_messages.trip_planner.all_trips_filtered_out;
+            trip_planner_error_dialog_text = warning_messages.
+            trip_planner.all_trips_filtered_out;
 
             console.log(
                 "Trip planner error: no practical trips found."
@@ -272,8 +272,8 @@ warning_messages, recentlyViewedService, locationService, timer_constants) {
 
         }, timer_constants.error_dialog_delays.general.main);
 
-        $scope.geocoder_error_dialog_text =
-        $scope.selectTripPlannerErrorMessage(error_field);
+        $scope.geocoder_error_dialog_text = $scope.
+        selectTripPlannerErrorMessage(error_field);
 
     };
 

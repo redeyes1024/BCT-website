@@ -26,7 +26,20 @@
 
     }
 
-    /* Property Format Checkers */
+    /*
+
+        Property Format Checkers
+
+        These functions each correspond to a single top-level property of
+        a variety of expected response JSON objects.
+
+        Most of them are very basic: for instance, many simply check if
+        certain the properties are strings, numbers or arrays, etc. More
+        extensive format checking can be added as needed to any of these
+        format checker functions (e.g. for more complex and response
+        object properties with their own nested properties).
+
+    */
 
     function checkDescription(desc) {
 
@@ -468,6 +481,75 @@
 
     }
 
+    function checkRequestParametersField(request_parameters_field) {
+
+        var request_parameters_field_is_formatted_properly;
+
+        if (request_parameters_field.constructor === Array &&
+            request_parameters_field.length === 10) {
+
+            request_parameters_field_is_formatted_properly = true;
+
+        }
+
+        else {
+
+            request_parameters_field_is_formatted_properly = false;
+
+        }
+
+        return request_parameters_field_is_formatted_properly;
+
+    }
+
+    function checkPlanField(plan_field) {
+
+        var plan_field_is_formatted_properly;
+
+        if (typeof plan_field !== "undefined") {
+
+            if (plan_field.dateField !== "undefined" &&
+                plan_field.dateFieldSpecified !== "undefined" &&
+                plan_field.fromField !== "undefined" &&
+                plan_field.toField !== "undefined" &&
+                plan_field.itinerariesField !== "undefined") {
+
+                plan_field_is_formatted_properly = true;
+
+            }
+
+        }
+
+        else {
+
+            plan_field_is_formatted_properly = false;
+
+        }
+
+        return plan_field_is_formatted_properly;
+
+    }
+
+    function checkErrorField(error_field) {
+
+        var error_field_is_formatted_properly;
+
+        if (typeof error_field === "undefined") {
+
+            error_field_is_formatted_properly = false;
+
+        }
+
+        else {
+
+            error_field_is_formatted_properly = true;
+
+        }
+
+        return error_field_is_formatted_properly;
+
+    }
+
     var format_checker_dict = {
 
         "landmarks": {
@@ -499,6 +581,14 @@
             "Name": checkStopName,
             "Routes": checkRoutes,
             "Parent": checkStopParent
+
+        },
+
+        "trip_plan": {
+
+            "requestParametersField": checkRequestParametersField,
+            "planField": checkPlanField,
+            "errorField": checkErrorField
 
         }
 

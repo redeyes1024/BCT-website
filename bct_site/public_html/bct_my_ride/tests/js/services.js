@@ -334,28 +334,180 @@ function() {
 
     var generalUIUtilities;
 
+    var map_navigation_marker_indices;
+
     beforeEach(inject(function($injector) {
 
         generalUIUtilities = $injector.get('generalUIUtilities');
 
+        map_navigation_marker_indices = $injector.get(
+            'map_navigation_marker_indices'
+        );
+
     }));
 
-    it('should add route and stop IDs to the url in the form of parameters',
+    it('should cycle through an array of markers if needed',
     function() {
+
+        var old_planner_marker_idx = map_navigation_marker_indices.planner;
 
         var old_trip_points = myride.dom_q.map.overlays.trip_points;
 
+        // Set the mock length to at least 1
         var trip_points_mock_length = 10;
 
         myride.dom_q.map.overlays.trip_points = {
             length: trip_points_mock_length
         };
 
-        expect(generalUIUtilities.cycleMarkerInfoWindows(
-            myride.dom_q.map.overlays.trip_points.length, "planner")
+        var new_index_within_bounds = 0;
+
+        // Set the marker index within range
+        map_navigation_marker_indices.planner = new_index_within_bounds;
+
+        expect(generalUIUtilities.cycleMarkerInfoWindows("planner")
+        ).toEqual(new_index_within_bounds);
+
+        // Set the marker index out of range (too large)
+        map_navigation_marker_indices.planner = trip_points_mock_length;
+
+        expect(generalUIUtilities.cycleMarkerInfoWindows("planner")
         ).toEqual(0);
 
+        // Set the marker index out of range (too small)
+        map_navigation_marker_indices.planner = -1;
+
+        expect(generalUIUtilities.cycleMarkerInfoWindows("planner")
+        ).toEqual(trip_points_mock_length - 1);
+
         myride.dom_q.map.overlays.trip_points = old_trip_points;
+
+        map_navigation_marker_indices.planner = old_planner_marker_idx;
+
+    });
+
+});
+
+describe('BCTAppServices.tripPlannerService.formatRawTripStats',
+function() {
+
+    beforeEach(module('BCTAppServices', 'BCTAppValues', 'ServicesMockData'));
+
+    var tripPlannerService;
+
+    var mock_formatRawTripStats_data;
+
+    beforeEach(inject(function($injector) {
+
+        tripPlannerService = $injector.get('tripPlannerService');
+
+        mock_formatRawTripStats_data = $injector.get(
+            'tripPlannerService_formatRawTripStats_filterTripItineraries'
+        );
+
+    }));
+
+    it('should add formatted trip object properties and reset trip ' +
+    'leg highlighting',
+    function() {
+
+        var formatted_trip_stats = tripPlannerService.formatRawTripStats(
+            mock_formatRawTripStats_data.mock_input
+        )[0];
+
+        // Added formatted trip object properties
+        expect(formatted_trip_stats.durationFieldFormatted).
+        toEqual("58 minutes");
+
+        expect(formatted_trip_stats.startTimeFieldFormatted).
+        toEqual("15:50");
+
+        expect(formatted_trip_stats.endTimeFieldFormatted).
+        toEqual("16:48");
+
+        // All but the first trip leg should have a "highlighted" class
+        expect(formatted_trip_stats.legsField[0].styles).
+        toEqual("trip-planner-itinerary-step-highlighted");
+
+        for (var leg=1;leg<formatted_trip_stats.legsField.length;leg++) {
+
+            expect(formatted_trip_stats.legsField[leg].styles).
+            toEqual("");
+
+        }
+
+    });
+
+});
+
+describe('BCTAppServices.tripPlannerService.filterTripItineraries',
+function() {
+
+    beforeEach(module('BCTAppServices', 'BCTAppValues', 'ServicesMockData'));
+
+    var tripPlannerService;
+
+    var mock_filterTripItineraries_data;
+
+    var trip_planner_constants;
+
+    beforeEach(inject(function($injector) {
+
+        tripPlannerService = $injector.get('tripPlannerService');
+
+        mock_filterTripItineraries_data = $injector.get(
+            'tripPlannerService_formatRawTripStats_filterTripItineraries'
+        );
+
+        trip_planner_constants = $injector.get('trip_planner_constants');
+
+    }));
+
+    it('should filter out trip plans from display that fail to meet the ' +
+    'inclusion criteria',
+    function() {
+
+        expect(
+            tripPlannerService.filterTripItineraries(
+                mock_filterTripItineraries_data.mock_input
+            ).length
+        ).toEqual(1);
+
+        // Testing walking distance cutoff
+        var old_walk_distance = mock_filterTripItineraries_data.
+        mock_input[0].walkDistanceField;
+
+        mock_filterTripItineraries_data.mock_input[0].walkDistanceField = (
+            trip_planner_constants.trip_walking_cutoff_meters + 1
+        );
+
+        expect(
+            tripPlannerService.filterTripItineraries(
+                mock_filterTripItineraries_data.mock_input
+            ).length
+        ).toEqual(0);
+
+        mock_filterTripItineraries_data.mock_input[0].
+        walkDistanceField = old_walk_distance;
+
+        // Testing trip duration cutoff
+        var old_trip_duration = mock_filterTripItineraries_data.
+        mock_input[0].durationField;
+
+        mock_filterTripItineraries_data.mock_input[0].durationField = (
+            (
+                trip_planner_constants.trip_duration_cutoff_hours + 1
+            ) * 1000 * 60 * 60
+        );
+
+        expect(
+            tripPlannerService.filterTripItineraries(
+                mock_filterTripItineraries_data.mock_input
+            ).length
+        ).toEqual(0);
+
+        mock_filterTripItineraries_data.mock_input[0].
+        durationField = old_trip_duration;
 
     });
 
@@ -417,9 +569,62 @@ describe('BCTAppServices_AllDataDownloads', function() {
             url: "http://174.94.153.48:7777/TransitApi/Stops/",
             body: { "AgencyId": "BCT" }
 
+        },
+
+        // Mock Trip: 14791 Miramar Pkwy to 12400 Pembroke Rd
+        mock_trip: {
+
+            url: "http://174.94.153.48:7777/TransitApi/TripPlanner/",
+            body: {
+                 "From": { Latitude: 25.979204, Longitude: -80.34303499999999},
+                 "To": { Latitude: 25.9926764, Longitude: -80.31286160000002},
+                 "ArriveBy": "false",
+                 "MaxWalk": 900,
+                 "Date": "",
+                 "Time": "12:00",
+                 "Mode": ["WALK", "BUS", "TRAIN", "COM_BUS"]
+            }
+
         }
 
     };
+
+    it('should return properly-formatted data for a trip plan',
+    function(done) {
+
+        module('BCTAppServices', 'BCTAppValues');
+
+        var generalServiceUtilities;
+                
+        inject(function($injector) {
+
+            generalServiceUtilities = $injector.get('generalServiceUtilities');
+
+        });
+
+        var cur_date_formatted = generalServiceUtilities.formatDateYYYYMMDD(
+            new Date
+        );
+
+        info_types.mock_trip.body.date = cur_date_formatted;
+
+        ISR.testing.utils.POSTRequestJSONFromAPI(
+            info_types.mock_trip.url,
+            info_types.mock_trip.body,
+            function(responseText) {
+
+                var trip_plan = JSON.parse(responseText);
+
+                expect(trip_plan).toBeFormattedProperly("trip_plan");
+
+                ISR.testing.utils.reportErrorsIfExist();
+
+                done();
+
+            }
+        );
+
+    });
 
     it('should return properly-formatted data for landmarks',
     function(done) {

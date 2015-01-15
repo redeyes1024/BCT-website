@@ -1336,6 +1336,7 @@ function($http, $q, generalServiceUtilities, unitConversionAndDataReporting,
 trip_planner_constants, bct_routes_alt_names) {
 
     var self = this;
+
     var geocoder = new google.maps.Geocoder;
 
     this.geocodeAddress = function(query_address) {
@@ -1367,6 +1368,7 @@ trip_planner_constants, bct_routes_alt_names) {
                     if (status === google.maps.GeocoderStatus.OK) {
                         deferred.resolve(results);
                     }
+
                     else {
                         deferred.resolve(status);
                     }
@@ -1375,7 +1377,9 @@ trip_planner_constants, bct_routes_alt_names) {
             );
 
         }
+
         return deferred.promise;
+
     };
 
     this.getLatLon = function(start_input_string, finish_input_string) {
@@ -1403,11 +1407,14 @@ trip_planner_constants, bct_routes_alt_names) {
 
         var arrdep = false;
 
-        var date =
-        generalServiceUtilities.formatDateYYYYMMDD(trip_opts.datepick);
+        var date = generalServiceUtilities.formatDateYYYYMMDD(
+            trip_opts.datepick
+        );
 
         var time = trip_opts.datepick.toTimeString().slice(0,5);
-        var optimize = "";
+
+        //var optimize = "";
+
         var modearr = ["WALK"];
 
         if (trip_opts.datetarg === "arrive_by") {
@@ -1434,6 +1441,7 @@ trip_planner_constants, bct_routes_alt_names) {
                  "Mode": modearr
              }
          });
+
     };
 
     this.formatRawTripStats = function(all_itineraries) {
@@ -1472,19 +1480,18 @@ trip_planner_constants, bct_routes_alt_names) {
 
         var filtered_trip_itineraries = [];
 
-        var trip_duration_cutoff =
-        trip_planner_constants.trip_duration_cutoff_hours;
+        var trip_duration_cutoff = trip_planner_constants.
+        trip_duration_cutoff_hours;
 
-        var trip_walking_cutoff =
-        trip_planner_constants.trip_walking_cutoff_meters;
+        var trip_walking_cutoff = trip_planner_constants.
+        trip_walking_cutoff_meters;
 
         for (var i=0;i<all_itineraries.length;i++) {
             
-            var trip_duration_in_hours =
-            all_itineraries[i].durationField / 1000 / 60 / 60;
+            var trip_duration_in_hours = all_itineraries[i].
+            durationField / 1000 / 60 / 60;
 
-            var trip_walking_distance =
-            all_itineraries[i].walkDistanceField;
+            var trip_walking_distance = all_itineraries[i].walkDistanceField;
 
             if (trip_duration_in_hours < trip_duration_cutoff &&
                 trip_walking_distance < trip_walking_cutoff) {
