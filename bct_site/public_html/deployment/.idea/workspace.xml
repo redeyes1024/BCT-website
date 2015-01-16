@@ -27,10 +27,10 @@
       <file leaf-file-name="myride_with_profile_setup_deploy.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/myride_with_profile_setup_deploy.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="2.6506848" vertical-offset="4218" max-vertical-offset="13455">
-              <caret line="436" column="18" selection-start-line="436" selection-start-column="18" selection-end-line="436" selection-end-column="18" />
+            <state vertical-scroll-proportion="0.7248858" vertical-offset="5530" max-vertical-offset="11895">
+              <caret line="411" column="23" selection-start-line="411" selection-start-column="23" selection-end-line="411" selection-end-column="23" />
               <folding>
-                <element signature="e#7060#7069#0" expanded="true" />
+                <element signature="e#0#9#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -45,8 +45,8 @@
         <option value="$PROJECT_DIR$/../altered_profile_page.html" />
         <option value="$PROJECT_DIR$/../profile_page.html" />
         <option value="$USER_HOME$/Desktop/bct_my_ride_14_12_29/profile_page.html" />
-        <option value="$PROJECT_DIR$/myride_with_profile_setup_deploy.py" />
         <option value="$PROJECT_DIR$/myride_with_profile_setup_deploy_config.txt" />
+        <option value="$PROJECT_DIR$/myride_with_profile_setup_deploy.py" />
       </list>
     </option>
   </component>
@@ -79,6 +79,7 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -99,7 +100,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -311,7 +311,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-1296" y="42" width="1277" height="994" extended-state="0" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32964602" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
@@ -372,7 +372,17 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="13455">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#7060#7069#0" expanded="true" />
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/myride_with_profile_setup_deploy.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="13455">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -382,7 +392,7 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="12795">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#7060#7069#0" expanded="true" />
+            <element signature="e#0#9#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -392,7 +402,7 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="12735">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#7060#7069#0" expanded="true" />
+            <element signature="e#0#9#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -402,7 +412,7 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="8475">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#7060#7069#0" expanded="true" />
+            <element signature="e#0#9#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -412,7 +422,7 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="7440">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#7060#7069#0" expanded="true" />
+            <element signature="e#0#9#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -422,7 +432,7 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="5088" max-vertical-offset="5625">
           <caret line="363" column="24" selection-start-line="363" selection-start-column="24" selection-end-line="363" selection-end-column="24" />
           <folding>
-            <element signature="e#7060#7069#0" expanded="true" />
+            <element signature="e#0#9#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -431,20 +441,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.19634703" vertical-offset="53" max-vertical-offset="1635">
           <caret line="17" column="0" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/myride_with_profile_stylesheets.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="566">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/myride_with_profile_scripts.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-1.5706713" vertical-offset="889" max-vertical-offset="1455">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -486,10 +482,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/myride_with_profile_setup_deploy.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="2.6506848" vertical-offset="4218" max-vertical-offset="13455">
-          <caret line="436" column="18" selection-start-line="436" selection-start-column="18" selection-end-line="436" selection-end-column="18" />
+        <state vertical-scroll-proportion="0.7248858" vertical-offset="5530" max-vertical-offset="11895">
+          <caret line="411" column="23" selection-start-line="411" selection-start-column="23" selection-end-line="411" selection-end-column="23" />
           <folding>
-            <element signature="e#7060#7069#0" expanded="true" />
+            <element signature="e#0#9#0" expanded="true" />
           </folding>
         </state>
       </provider>
