@@ -668,6 +668,13 @@ BCTAppDirectives.directive('topSearchBar', [ '$timeout', function($timeout) {
 
             };
 
+            $timeout(function() {
+
+                myride.dom_q.inputs.elements.index_search_input = document.
+                getElementById("route-stop-search-index-input");
+
+            }, 0);
+
         }
 
         else if (scope.module === "search_results_page") {
@@ -688,11 +695,11 @@ BCTAppDirectives.directive('topSearchBar', [ '$timeout', function($timeout) {
 
             $timeout(function() {
                 
-                myride.dom_q.inputs.elements.rs_search_input =
-                document.getElementById("route-stop-search-input");
+                myride.dom_q.inputs.elements.rs_search_input = document.
+                getElementById("route-stop-search-input");
 
-                myride.dom_q.inputs.elements.rs_search_input.value =
-                top_level_scope.query_data.schedule_search;
+                myride.dom_q.inputs.elements.rs_search_input.
+                value = top_level_scope.query_data.schedule_search;
 
             }, 0);
 

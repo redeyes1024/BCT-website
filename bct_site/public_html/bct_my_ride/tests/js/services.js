@@ -513,6 +513,96 @@ function() {
 
 });
 
+describe('BCTAppServices.tripPlannerService.filterTripItineraries',
+function() {
+
+    beforeEach(module('BCTAppServices', 'BCTAppValues', 'ServicesMockData'));
+
+    var tripPlannerService;
+
+    var mock_filterTripItineraries_data;
+
+    beforeEach(inject(function($injector) {
+
+        tripPlannerService = $injector.get('tripPlannerService');
+
+        mock_filterTripItineraries_data = $injector.get(
+            'tripPlannerService_formatRawTripStats_filterTripItineraries'
+        );
+
+    }));
+
+    it('should add alternate route names to express bus routes', function() {
+
+        var old_routeField = mock_filterTripItineraries_data.mock_input[0].
+        legsField[0].routeField;
+
+        var old_routeLongNameField = mock_filterTripItineraries_data.
+        mock_input[0].legsField[0].routeLongNameField;
+
+        // Alter mock data for Trip Planner to include a special case
+        // for a route name that requires an alternate name to be added
+        var test_alt_route_name = "University Breeze";
+
+        mock_filterTripItineraries_data.mock_input[0].legsField[0].
+        routeField = test_alt_route_name;
+
+        mock_filterTripItineraries_data.mock_input[0].legsField[0].
+        routeLongNameField = test_alt_route_name;
+
+        tripPlannerService.addAlternateRouteIds(
+            mock_filterTripItineraries_data.mock_input
+        );
+
+        expect(
+            mock_filterTripItineraries_data.mock_input[0].
+            legsField[0].routeField
+        ).toEqual("102");
+
+        mock_filterTripItineraries_data.mock_input[0].legsField[0].
+        routeField = old_routeField;
+
+        mock_filterTripItineraries_data.mock_input[0].legsField[0].
+        routeLongNameField = old_routeLongNameField;
+
+    });
+
+});
+
+describe('BCTAppServices.tripPlannerService.filterTripItineraries',
+function() {
+
+    beforeEach(module('BCTAppServices', 'BCTAppValues', 'ServicesMockData'));
+
+    var tripPlannerService;
+
+    var mock_filterTripItineraries_data;
+
+    beforeEach(inject(function($injector) {
+
+        tripPlannerService = $injector.get('tripPlannerService');
+
+        mock_filterTripItineraries_data = $injector.get(
+            'tripPlannerService_formatRawTripStats_filterTripItineraries'
+        );
+
+    }));
+
+    it('should add alternate route names to express bus routes', function() {
+
+        tripPlannerService.addAlternateRouteIds(
+            mock_filterTripItineraries_data.mock_input
+        );
+
+        expect(
+            mock_filterTripItineraries_data.mock_input[0].
+            legsField[0].routeLongNameField
+        ).toEqual("102");
+
+    });
+
+});
+
 /*
 
     BCTAppServices_AllDataDownloads

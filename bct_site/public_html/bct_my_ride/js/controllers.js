@@ -67,9 +67,6 @@ function ($scope, $timeout, nearestStopsService, recently_viewed_items, $q) {
     //For ease of debugging (development only)
     window.index_scope = $scope;
 
-    myride.dom_q.inputs.elements.index_search_input =
-    document.getElementById("route-stop-search-index-input");
-
     $scope.nearest_bstops = $scope.nearest_bstops_loading;
 
     $scope.top_scope.stop_result_panel_top_container_class_name  =
@@ -585,10 +582,11 @@ warning_messages, recentlyViewedService, locationService, timer_constants) {
         $scope.showMapLoading();
 
         tripPlannerService.getLatLon(
+
             $scope.top_scope.trip_inputs.start,
             $scope.top_scope.trip_inputs.finish
-        ).
-        then(function(all_coords) {
+
+        ).then(function(all_coords) {
 
             if (!$scope.checkForGeocoderErrors(all_coords)) {
 
@@ -618,32 +616,58 @@ warning_messages, recentlyViewedService, locationService, timer_constants) {
             }
 
             tripPlannerService.getTripPlanPromise(
+
                 $scope.trip_opts,
                 start_coords,
                 finish_coords
+
             ).then(function(res) {
 
                 $scope.top_scope.show_schedule_map_loading_modal = false;
 
-                if (!res.data.planField) {
+                if (res.data.planField) {
+
+                    if ($scope.handleTripPlanTimePastDepartureTimes(res)) {
+
+                        
+
+                    }
+
+                    else {
+                        
+                        $scope.alertUserToTripPlannerErrors("plan_start_late");
+
+                    }
+
+                }
+
+                else {
 
                     $scope.alertUserToTripPlannerErrors(res.data.errorField);
 
-                    return false;
-
                 }
 
-                if (!$scope.handleTripPlanTimePastDepartureTimes(res)) {
+//                if (!res.data.planField) {
+//
+//                    $scope.alertUserToTripPlannerErrors(res.data.errorField);
+//
+//                    return false;
+//
+//                }
 
-                    $scope.alertUserToTripPlannerErrors("plan_start_late");
-
-                    return false;
-
-                }
+//                if (!$scope.handleTripPlanTimePastDepartureTimes(res)) {
+//
+//                    $scope.alertUserToTripPlannerErrors("plan_start_late");
+//
+//                    return false;
+//
+//                }
 
                 recentlyViewedService.saveRecentlyViewedItem("trip_planner", {
+
                     start: $scope.top_scope.trip_inputs.start,
                     finish: $scope.top_scope.trip_inputs.finish
+
                 });
 
                 if ($scope.trip_planner_is_open) {
@@ -664,13 +688,13 @@ warning_messages, recentlyViewedService, locationService, timer_constants) {
 
                 }
 
-                $scope.top_scope.current_trip_plan_data =
-                tripPlannerService.formatRawTripStats(
+                $scope.top_scope.current_trip_plan_data = tripPlannerService.
+                formatRawTripStats(
                     res.data.planField.itinerariesField
                 );
 
-                $scope.top_scope.current_trip_plan_data =
-                tripPlannerService.filterTripItineraries(
+                $scope.top_scope.current_trip_plan_data = tripPlannerService.
+                filterTripItineraries(
                     $scope.top_scope.current_trip_plan_data
                 );
 

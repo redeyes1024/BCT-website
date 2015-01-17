@@ -1793,24 +1793,22 @@ function(results_exist, filter_buffer_data) {
 
         results_exist[results_exist_flag] = false;
 
-        filter_buffer_data.results_exist_counter +=
-        current_results_exist;
+        filter_buffer_data.results_exist_counter += current_results_exist;
 
         filter_buffer_data.search_string_buffer.push(search_input);
 
-        if (filter_buffer_data.search_string_buffer[0] !== 
-        search_input) {
+        if (filter_buffer_data.search_string_buffer[0] !== search_input) {
 
-            filter_buffer_data.search_string_buffer =
-            [search_input];
+            filter_buffer_data.search_string_buffer = [search_input];
 
-            filter_buffer_data.results_exist_counter =
-            current_results_exist;
+            filter_buffer_data.results_exist_counter = current_results_exist;
 
         }
 
-        results_exist[results_exist_flag] =
-        Boolean(filter_buffer_data.results_exist_counter);
+        results_exist[results_exist_flag] = Boolean(
+            filter_buffer_data.results_exist_counter
+        );
+
     };
  
 }]);
@@ -1885,7 +1883,7 @@ full_bstop_data, full_route_data, full_landmark_data) {
             ) {
 
                 if (!items) {
-                    var items = self.full_item_list.list;
+                    items = self.full_item_list.list;
                 }
 
                 var filtered = [];
