@@ -1,3 +1,5 @@
+'use strict';
+
 var services_mock_data = angular.module('ServicesMockData', []);
 
 describe('BCTAppServices.miniScheduleService.convertToTime', function() {
@@ -569,35 +571,76 @@ function() {
 
 });
 
-describe('BCTAppServices.tripPlannerService.filterTripItineraries',
+describe('BCTAppServices.filterHelpers.bufferResultsExistTruthiness',
 function() {
 
-    beforeEach(module('BCTAppServices', 'BCTAppValues', 'ServicesMockData'));
+    beforeEach(module('BCTAppServices', 'BCTAppValues'));
 
-    var tripPlannerService;
+    var filterHelpers;
 
-    var mock_filterTripItineraries_data;
+    var results_exist;
+
+    var filter_buffer_data;
 
     beforeEach(inject(function($injector) {
 
-        tripPlannerService = $injector.get('tripPlannerService');
+        filterHelpers = $injector.get('filterHelpers');
 
-        mock_filterTripItineraries_data = $injector.get(
-            'tripPlannerService_formatRawTripStats_filterTripItineraries'
-        );
+        results_exist = $injector.get('results_exist');
+
+        filter_buffer_data = $injector.get('filter_buffer_data');
 
     }));
 
-    it('should add alternate route names to express bus routes', function() {
+    it('should set results_exist_flag to true if it was set to true at ' +
+    'least once before, for each new search input', function() {
 
-        tripPlannerService.addAlternateRouteIds(
-            mock_filterTripItineraries_data.mock_input
+        var old_results_exist = JSON.parse(JSON.stringify(results_exist));
+
+        var old_filter_buffer_data = JSON.parse(
+            JSON.stringify(filter_buffer_data)
         );
 
-        expect(
-            mock_filterTripItineraries_data.mock_input[0].
-            legsField[0].routeLongNameField
-        ).toEqual("102");
+        var test_buffer_label = "main";
+
+        var test_search_input_1 = "test1";
+        var test_search_input_2 = "test2";
+
+        filterHelpers.bufferResultsExistTruthiness(
+            test_buffer_label,
+            false,
+            test_search_input_1
+        );
+
+        expect(results_exist[test_buffer_label]).toEqual(false);
+
+        filterHelpers.bufferResultsExistTruthiness(
+            test_buffer_label,
+            true,
+            test_search_input_1
+        );
+
+        expect(results_exist[test_buffer_label]).toEqual(true);
+
+        filterHelpers.bufferResultsExistTruthiness(
+            test_buffer_label,
+            false,
+            test_search_input_1
+        );
+
+        expect(results_exist[test_buffer_label]).toEqual(true);
+
+        filterHelpers.bufferResultsExistTruthiness(
+            test_buffer_label,
+            false,
+            test_search_input_2
+        );
+
+        expect(results_exist[test_buffer_label]).toEqual(false);
+
+        filter_buffer_data = old_filter_buffer_data;
+
+        results_exist = old_results_exist;
 
     });
 

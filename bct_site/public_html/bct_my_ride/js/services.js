@@ -1,3 +1,5 @@
+'use strict';
+
 var BCTAppServices = angular.module('BCTAppServices', []);
 
 BCTAppServices.service('miniScheduleService', [ function() {
@@ -1791,29 +1793,25 @@ function(results_exist, filter_buffer_data) {
         search_input
     ) {
 
-        results_exist[results_exist_flag] = false;
+        if (search_input !== filter_buffer_data.search_string_buffer) {
 
-        filter_buffer_data.results_exist_counter += current_results_exist;
+            filter_buffer_data.search_string_buffer = search_input;
 
-        filter_buffer_data.search_string_buffer.push(search_input);
-
-        if (filter_buffer_data.search_string_buffer[0] !== search_input) {
-
-            filter_buffer_data.search_string_buffer = [search_input];
-
-            filter_buffer_data.results_exist_counter = current_results_exist;
+            results_exist[results_exist_flag] = false;
 
         }
 
-        results_exist[results_exist_flag] = Boolean(
-            filter_buffer_data.results_exist_counter
-        );
+        if (current_results_exist === true) {
+
+            results_exist[results_exist_flag] = true;
+
+        }
 
     };
- 
+
 }]);
 
-BCTAppServices.factory('routeAndStopFilters', [ 'nearestStopsService',
+BCTAppServices.factory('customFilterMaker', [ 'nearestStopsService',
 'locationService', 'latest_location', 'filterHelpers', 'full_bstop_data',
 'full_route_data', 'full_landmark_data',
 
@@ -1822,7 +1820,9 @@ full_bstop_data, full_route_data, full_landmark_data) {
 
     return {
 
-        RouteAndStopFilterMaker: function(filter_type, use_minimum_length) {
+        RouteStopLandmarkFilterMaker: function(
+            filter_type, use_minimum_length
+        ) {
 
             var self = this;
 
@@ -1961,6 +1961,42 @@ full_bstop_data, full_route_data, full_landmark_data) {
         }
 
     };
+
+}]);
+
+BCTAppServices.service('routeStopLandmarkFilters', [ 'customFilterMaker',
+
+function(customFilterMaker) {
+
+    var data = {
+
+        "routeFilterFunc": ["route", true],
+        "stopFilterFunc": ["stop", true],
+        "landmarkFilterFunc": ["landmark", true],
+        "routeSubFilterFunc": ["route", false],
+        "stopSubFilterFunc": ["stop", false]
+
+    };
+
+    this.routeFilterFunc = (
+        new customFilterMaker.RouteStopLandmarkFilterMaker("route", true)
+    ).filter;
+
+    this.stopFilterFunc = (
+        new customFilterMaker.RouteStopLandmarkFilterMaker("stop", true)
+    ).filter;
+
+    this.landmarkFilterFunc = (
+        new customFilterMaker.RouteStopLandmarkFilterMaker("landmark", true)
+    ).filter;
+
+    this.routeSubFilterFunc = (
+        new customFilterMaker.RouteStopLandmarkFilterMaker("route", false)
+    ).filter;
+
+    this.stopSubFilterFunc = (
+        new customFilterMaker.RouteStopLandmarkFilterMaker("stop", false)
+    ).filter;
 
 }]);
 

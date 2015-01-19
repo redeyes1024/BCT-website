@@ -12,7 +12,7 @@ BCTAppTopController.controller('BCTController', [
     'locationService', 'location_icons',
     'agency_filter_icons', 'results_exist', 'map_navigation_marker_indices',
     'legend_icon_list', 'profilePageService',
-    'routeAndStopFilters', 'warning_messages', 'selected_nearest_map_stop',
+    'routeStopLandmarkFilters', 'warning_messages', 'selected_nearest_map_stop',
     'nearest_map_stop_distances', 'landmarkInfoService', 'favorites_data',
     'svg_icon_paths', 'full_schedule_categories',
     'full_schedule_category_with_datepicker', 'recentlyViewedService',
@@ -29,7 +29,7 @@ function (
     unitConversionAndDataReporting, miniScheduleService,
     locationService, location_icons, agency_filter_icons, results_exist,
     map_navigation_marker_indices, legend_icon_list,
-    profilePageService, routeAndStopFilters, warning_messages,
+    profilePageService, routeStopLandmarkFilters, warning_messages,
     selected_nearest_map_stop, nearest_map_stop_distances, landmarkInfoService,
     favorites_data, svg_icon_paths, full_schedule_categories,
     full_schedule_category_with_datepicker, recentlyViewedService,
@@ -791,20 +791,25 @@ function (
     $scope.checkIfRouteStopFavorited =
     profilePageService.checkIfRouteStopFavorited;
 
-    $scope.routeFilterFunc =
-    (new routeAndStopFilters.RouteAndStopFilterMaker("route", true)).filter;
+    $scope.routeFilterFunc = (
+        new customFilterMaker.RouteStopLandmarkFilterMaker("route", true)
+    ).filter;
 
-    $scope.stopFilterFunc =
-    (new routeAndStopFilters.RouteAndStopFilterMaker("stop", true)).filter;
+    $scope.stopFilterFunc = (
+        new customFilterMaker.RouteStopLandmarkFilterMaker("stop", true)
+    ).filter;
 
-    $scope.landmarkFilterFunc =
-    (new routeAndStopFilters.RouteAndStopFilterMaker("landmark", true)).filter;
+    $scope.landmarkFilterFunc = (
+        new customFilterMaker.RouteStopLandmarkFilterMaker("landmark", true)
+    ).filter;
 
-    $scope.routeSubFilterFunc =
-    (new routeAndStopFilters.RouteAndStopFilterMaker("route", false)).filter;
+    $scope.routeSubFilterFunc = (
+        new customFilterMaker.RouteStopLandmarkFilterMaker("route", false)
+    ).filter;
 
-    $scope.stopSubFilterFunc =
-    (new routeAndStopFilters.RouteAndStopFilterMaker("stop", false)).filter;
+    $scope.stopSubFilterFunc = (
+        new customFilterMaker.RouteStopLandmarkFilterMaker("stop", false)
+    ).filter;
 
     $scope.schedule_map_alerts = all_alerts.schedule_map;
 

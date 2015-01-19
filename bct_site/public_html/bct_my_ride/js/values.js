@@ -702,10 +702,7 @@ BCTAppValues.value('agency_filter_icons', {
 
 });
 
-BCTAppValues.value('filter_buffer_data', {
-    search_string_buffer: [],
-    results_exist_counter: 0
-});
+BCTAppValues.value('filter_buffer_data', {});
 
 BCTAppValues.value('map_navigation_marker_indices', {
     planner: 0,
