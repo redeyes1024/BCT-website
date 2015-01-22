@@ -1965,38 +1965,22 @@ full_bstop_data, full_route_data, full_landmark_data) {
 }]);
 
 BCTAppServices.service('routeStopLandmarkFilters', [ 'customFilterMaker',
+'filter_making_info',
 
-function(customFilterMaker) {
+function(customFilterMaker, filter_making_info) {
 
-    var data = {
+    for (var filter in filter_making_info) {
 
-        "routeFilterFunc": ["route", true],
-        "stopFilterFunc": ["stop", true],
-        "landmarkFilterFunc": ["landmark", true],
-        "routeSubFilterFunc": ["route", false],
-        "stopSubFilterFunc": ["stop", false]
+        var cur_info_type = filter_making_info[filter].info_type;
+        var cur_use_min_length = filter_making_info[filter].use_min_length;
 
-    };
+        this[filter] = (
+            new customFilterMaker.RouteStopLandmarkFilterMaker(
+                cur_info_type, cur_use_min_length
+            )
+        ).filter;
 
-    this.routeFilterFunc = (
-        new customFilterMaker.RouteStopLandmarkFilterMaker("route", true)
-    ).filter;
-
-    this.stopFilterFunc = (
-        new customFilterMaker.RouteStopLandmarkFilterMaker("stop", true)
-    ).filter;
-
-    this.landmarkFilterFunc = (
-        new customFilterMaker.RouteStopLandmarkFilterMaker("landmark", true)
-    ).filter;
-
-    this.routeSubFilterFunc = (
-        new customFilterMaker.RouteStopLandmarkFilterMaker("route", false)
-    ).filter;
-
-    this.stopSubFilterFunc = (
-        new customFilterMaker.RouteStopLandmarkFilterMaker("stop", false)
-    ).filter;
+    }
 
 }]);
 

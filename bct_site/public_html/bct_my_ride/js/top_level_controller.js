@@ -18,7 +18,7 @@ BCTAppTopController.controller('BCTController', [
     'full_schedule_category_with_datepicker', 'recentlyViewedService',
     'full_schedule_availabilities', 'generalUIUtilities',
     'routeStopLandmarkTransformationService', 'generalServiceUtilities',
-    '$location', 'toggle_targets', 'schedule_data',
+    '$location', 'toggle_targets', 'schedule_data', 'filter_making_info',
 
 function (
 
@@ -35,7 +35,7 @@ function (
     full_schedule_category_with_datepicker, recentlyViewedService,
     full_schedule_availabilities, generalUIUtilities,
     routeStopLandmarkTransformationService, generalServiceUtilities,
-    $location, toggle_targets, schedule_data
+    $location, toggle_targets, schedule_data, filter_making_info
 
 ) {
 
@@ -791,25 +791,15 @@ function (
     $scope.checkIfRouteStopFavorited =
     profilePageService.checkIfRouteStopFavorited;
 
-    $scope.routeFilterFunc = (
-        new customFilterMaker.RouteStopLandmarkFilterMaker("route", true)
-    ).filter;
+    (function() { 
 
-    $scope.stopFilterFunc = (
-        new customFilterMaker.RouteStopLandmarkFilterMaker("stop", true)
-    ).filter;
+        for (var filter in filter_making_info) {
 
-    $scope.landmarkFilterFunc = (
-        new customFilterMaker.RouteStopLandmarkFilterMaker("landmark", true)
-    ).filter;
+            $scope[filter] = routeStopLandmarkFilters[filter];
 
-    $scope.routeSubFilterFunc = (
-        new customFilterMaker.RouteStopLandmarkFilterMaker("route", false)
-    ).filter;
+        }
 
-    $scope.stopSubFilterFunc = (
-        new customFilterMaker.RouteStopLandmarkFilterMaker("stop", false)
-    ).filter;
+    })();
 
     $scope.schedule_map_alerts = all_alerts.schedule_map;
 
@@ -827,8 +817,8 @@ function (
 
     $scope.cycleThroughRouteAlerts = function(old_index) {
 
-        var number_of_alerts =
-        full_route_data.dict[$scope.map_schedule_info.route].alerts.length;
+        var number_of_alerts = full_route_data.
+        dict[$scope.map_schedule_info.route].alerts.length;
 
         var new_index = old_index;
 

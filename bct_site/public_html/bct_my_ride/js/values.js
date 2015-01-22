@@ -4,6 +4,16 @@ var BCTAppValues = angular.module('BCTAppValues', []);
 //BCTAppValues.value('scheduleWebSocket',
 //new WebSocket("ws://echo.websocket.org"));
 
+BCTAppValues.value('filter_making_info', {
+
+    "routeFilterFunc": { info_type: "route", use_min_length: true },
+    "stopFilterFunc": { info_type: "stop", use_min_length: true },
+    "landmarkFilterFunc": { info_type: "landmark", use_min_length: true },
+    "routeSubFilterFunc": { info_type: "route", use_min_length: false },
+    "stopSubFilterFunc": { info_type: "stop", use_min_length: false }
+
+});
+
 BCTAppValues.value('schedule_data', {
 
     nearest: {},
