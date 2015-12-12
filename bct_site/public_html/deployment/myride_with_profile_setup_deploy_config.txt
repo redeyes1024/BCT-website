@@ -1,6 +1,6 @@
 #OUTPUT_INFO
     ##PATH
-    /Users/Andrew/Desktop/
+    /Users/isradmin/Desktop/
     ##FOLDER_NAME_BASE
     bct_my_ride
 #WEB_ROOTS
@@ -11,7 +11,7 @@
     ##LOCAL
     local
 #SOURCES_ROOT
-    /Users/Andrew/NetBeansProjects/ISR/BCT-website/bct_site/public_html/
+    /Users/isradmin/Desktop/myride/BCT-website/bct_site/public_html/
 #PATHS
     ##MYRIDE
     bct_my_ride/js/main.js

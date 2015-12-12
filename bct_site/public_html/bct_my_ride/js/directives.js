@@ -28,7 +28,9 @@ clusterer_options, $q) {
 
         myride.dom_q.map.cont = document.getElementById("map-canvas");
         googleMapsUtilities.mapMaker(myride.dom_q.map.cont);
-
+        
+        googleMapsUtilities.displayBikes();
+     
         function getNewMarkerIconProperty(event, prop) {
 
             var base_size = base_marker_sizes[event][prop];

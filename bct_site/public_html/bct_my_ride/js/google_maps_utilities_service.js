@@ -1095,6 +1095,75 @@ full_bstop_data, map_palette, clusterer_options, map_zoom_span_breakpoints) {
 
     };
 
+    /**this.displayBikes = function() {
+       
+        var marker_options = marker_icon_options.schedule_map.default;
+
+        marker_options.fillColor = map_palette.colors.red;
+
+        var marker = new google.maps.Marker({
+            map: myride.dom_q.map.inst,
+            position:new google.maps.LatLng(26.12026, -80.14819),
+            icon: marker_options
+        });
+       
+    };**/
+    this.displayBikes = function() {
+        var marker;
+        jQuery.ajax({
+         type: "POST",
+         url: "http://174.94.153.48:7777/TransitApi/BCycle",
+         data:"",
+         dataType: "json",
+         success: function (data, status, jqXHR) {
+         var arr = eval(data);
+         var bikeActive = 'https://madison.bcycle.com/Controls/StationLocationsMap/Images/key-active.png';
+         var bikeSpecialEvent ='https://broward.bcycle.com/Controls/StationLocationsMap/Images/key-specialevent.png';
+         var PartialService = 'https://broward.bcycle.com/Controls/StationLocationsMap/Images/key-partialservice.png';
+         var Unavailable = 'https://broward.bcycle.com/Controls/StationLocationsMap/Images/key-outofservice.png';
+         var ComingSoon = 'https://broward.bcycle.com/Controls/StationLocationsMap/Images/key-comingsoon.png';    
+         
+         jQuery.each(arr, function(index, value){
+        //marker_options.fillColor = map_palette.colors.red;
+             var myCenter=new google.maps.LatLng(value.Location.Latitude, value.Location.Longitude);
+             var marker_options = value.Status;
+             switch(marker_options){
+             	case 'Active' : marker_options = bikeActive;
+             	break;
+             	case 'SpecialEvent' : marker_options = bikeSpecialEvent;
+             	break;
+             	case 'PartialService' : marker_options = PartialService;
+             	break;
+             	case 'Unavailable' : marker_options = Unavailable;
+             	break;
+             	case 'ComingSoon' : marker_options = ComingSoon;
+             	break;
+             }
+             
+            marker = new google.maps.Marker({
+            map: myride.dom_q.map.inst,
+            position:myCenter,
+            icon: marker_options
+            });//end of var marker
+            var contentString = '<div>'+ '<div style="color:red">'+'<p>'+value.Name+'</p>'+'</div>'+'<div>'+'Adress: '+value.Address.Street+'</div>'+'<br>'+'<div>'+'Avalabilities:'+'</div>'+'bikes: ' + value.BikesAvailable +'  docks: '+ value.DocksAvailable + '</div>';
+  	    var infowindow = new google.maps.InfoWindow({
+  			     content:contentString 
+  			     }); 
+  	    marker.addListener('click', function() {
+    		infowindow.open(myride.dom_q.map.inst, this);
+  		});
+            marker.setMap(myride.dom_q.map.inst);
+           });//end success
+         
+         },   
+         error: function (jqXHR, status) {
+             alert('loading bixi error');
+         }
+        }); 
+    };//end of displaybike function
+    
+
+    
     this.displayNearestMapStops = function(nearest_stops) {
 
         for (var i=0; i<nearest_stops.length;i++) {

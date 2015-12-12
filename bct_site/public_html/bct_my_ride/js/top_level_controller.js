@@ -2305,7 +2305,7 @@ function (
     };
 
     $scope.changeURLHash = function(new_hash, model) {
-
+        
         if (model) {
 
             var input_str = $scope.query_data[model];
